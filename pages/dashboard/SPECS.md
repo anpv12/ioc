@@ -1,8 +1,7 @@
 # SPECS — p01: Tình hình dân cư theo giới tính
 
 ## Mục đích
-Phân tích và trực quan hóa cơ cấu dân số tỉnh Gia Lai chia theo giới tính, bao gồm tổng số nhân khẩu, phân bố theo địa bàn và bản đồ choropleth.
-
+Tôi đang thiết kế chức năng tạo chỉ đạo trên dashboard quy trình: Lãnh đạo tạo chỉ đạo trên dashboard qua event panel
 
 ## Files
 | File            | Vai trò                                                 |
