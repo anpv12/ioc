@@ -80,8 +80,8 @@ Cục Cảnh sát quản lý hành chính về trật tự xã hội — **C06**
 
 1. **`system_design.md`** — hiểu nghiệp vụ, vai trò, luồng, tính năng
 2. **Phần Design System bên dưới** — nắm chuẩn chung về màu, font, spacing
-3. **`pages/pXX/SPECS.md`** của màn hình cần làm — yêu cầu riêng
-4. **Tham chiếu `pages/p01`** như màn hình mẫu đã hoàn chỉnh
+3. **`pages/[man-hinh]/SPECS.md`** của màn hình cần làm — yêu cầu riêng
+4. **Tham chiếu `pages/dashboard`** như màn hình mẫu đã hoàn chỉnh
 
 **Nguyên tắc bắt buộc:**
 - Không hardcode giá trị màu, font-size, spacing — luôn dùng token
