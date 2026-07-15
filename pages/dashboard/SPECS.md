@@ -3,23 +3,6 @@
 ## Mục đích
 Phân tích và trực quan hóa cơ cấu dân số tỉnh Gia Lai chia theo giới tính, bao gồm tổng số nhân khẩu, phân bố theo địa bàn và bản đồ choropleth.
 
-## Chỉ số hiển thị
-| ID element              | Tên chỉ số                          | Đơn vị     |
-|-------------------------|-------------------------------------|------------|
-| `metric-tong-nhan-khau` | Tổng nhân khẩu (Nam + Nữ)           | Người      |
-| `metric-dien-tich`      | Diện tích tỉnh                      | Km²        |
-| `metric-mat-do`         | Mật độ dân số                       | Người/Km²  |
-| `metric-tre-em`         | Trẻ em (0-14 tuổi)                  | Nhân khẩu  |
-| `metric-lao-dong`       | Người lao động (15-64 tuổi)         | Nhân khẩu  |
-| `metric-nguoi-lon-tuoi` | Người lớn tuổi (Trên 65 tuổi)       | Nhân khẩu  |
-| `metric-chart-high`     | Biểu đồ Top 5 nhân khẩu cao nhất    | —          |
-| `metric-chart-low`      | Biểu đồ Top 5 nhân khẩu thấp nhất   | —          |
-| `metric-map`            | Bản đồ phân bố dân cư               | —          |
-
-## Nguồn dữ liệu
-- **Nguồn:** Cục Cảnh sát quản lý hành chính về trật tự xã hội (C06)
-- **Kỳ:** Năm 2026 – Tháng 06
-- **Phạm vi:** Toàn tỉnh Gia Lai
 
 ## Files
 | File            | Vai trò                                                 |
@@ -45,9 +28,3 @@ Phân tích và trực quan hóa cơ cấu dân số tỉnh Gia Lai chia theo gi
 - **Xử lý:** Admin Panel → chọn chỉ đạo → cập nhật trạng thái + báo cáo
 - **Trạng thái:** Chưa xử lý → Đang xử lý → Đã hoàn thành
 
-## Layout (1920×929px)
-- **Stage:** 1920×929px, position: relative
-- **Header:** left 197, top 9, width 1529, height 85
-- **Floatbar:** left 1868, top 660
-- **Tabbar:** bottom 49px
-- **Drawer:** right -360 → right 20 (khi open), width 340, height 763
