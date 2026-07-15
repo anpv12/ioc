@@ -22,8 +22,8 @@
   <!-- Flatpickr (Rule 8) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js (UMD build to expose global Chart object) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="stage" id="stage">
@@ -103,41 +103,39 @@
       </div>
     </div>
     <div class="subbox-row">
-      <div class="subbox"><p class="lbl">Nữ</p><p class="num">1.786.672</p></div>
+      <div class="subbox nu"><p class="lbl">Nữ</p><p class="num">1.786.672</p></div>
       <div class="subbox nam"><p class="lbl">Nam</p><p class="num">1.786.672</p></div>
     </div>
   </div>
 
   <!-- Card: Diện tích -->
-  <div class="abs card thin stat-card metric-block" id="metric-dien-tich" style="left:675px;top:112px;width:146px;height:72px;">
-    <span class="lbl">Dân số</span>
+  <div class="abs card thin stat-card compact metric-block" id="metric-dien-tich" style="left:672px; top:108px; width:327px; height:77px;">
+    <span class="lbl">Diện tích</span>
     <span class="num c-salmon">157,306</span>
     <span class="unit">Km²</span>
   </div>
 
   <!-- Card: Mật độ -->
-  <div class="abs card thin stat-card metric-block" id="metric-mat-do" style="left:675px;top:196px;width:146px;height:72px;">
+  <div class="abs card thin stat-card compact metric-block" id="metric-mat-do" style="left:671px; top:195px; width:326px; height:77px;">
     <span class="lbl">Mật độ dân số</span>
     <span class="num c-blue">169,88</span>
     <span class="unit">Người/Km²</span>
   </div>
 
   <!-- Card: Trẻ em -->
-  <div class="abs card thin stat-card compact metric-block" id="metric-tre-em" style="left:189px;top:280px;width:209px;height:66px;">
+  <div class="abs card thin stat-card stacked metric-block" id="metric-tre-em" style="left:188px; top:284px; width:264px; height:103px;">
     <span class="lbl">Trẻ em (0-14t)</span>
-    <span class="num c-salmon">842.339</span>
-    <span class="unit">Nhân khẩu</span>
+    <div class="row2"><span class="num c-salmon">842.339</span><span class="unit" style="margin-left:8px;">Nhân khẩu</span></div>
   </div>
 
   <!-- Card: Lao động -->
-  <div class="abs card thin stat-card compact metric-block" id="metric-lao-dong" style="left:403px;top:280px;width:236px;height:66px;">
+  <div class="abs card thin stat-card stacked metric-block" id="metric-lao-dong" style="left:463px; top:284px; width:264px; height:104px;">
     <span class="lbl">Người lao động (15-64t)</span>
-    <span class="num c-blue">2.436.390</span>
-    <span class="unit">Nhân khẩu</span>
+    <div class="row2"><span class="num c-blue">2.436.390</span><span class="unit" style="margin-left:8px;">Nhân khẩu</span></div>
   </div>
 
   <!-- Card: Người lớn tuổi -->
-  <div class="abs card thin stat-card stacked metric-block" id="metric-nguoi-lon-tuoi" style="left:645px;top:280px;width:178px;height:66px;">
+  <div class="abs card thin stat-card stacked metric-block" id="metric-nguoi-lon-tuoi" style="left:734px; top:284px; width:264px; height:104px;">
     <span class="lbl">Người lớn tuổi( Trên 65t)</span>
     <div class="row2"><span class="num c-magenta">302.192</span><span class="unit" style="margin-left:8px;">Nhân khẩu</span></div>
   </div>
