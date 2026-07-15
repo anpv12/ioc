@@ -19,7 +19,7 @@ new Chart(document.getElementById('chartHigh'), {
   options: {
     indexAxis: 'y',
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'top', align: 'start', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } },
+    plugins: { legend: { position: 'top', align: 'center', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } },
     scales: {
       x: { min: 0, max: 70000, ticks: { stepSize: 10000, callback: v => v.toLocaleString('vi-VN') }, grid: { color: '#eee' } },
       y: { grid: { display: false }, ticks: { font: { size: 12 } } }
@@ -40,7 +40,7 @@ new Chart(document.getElementById('chartLow'), {
   options: {
     indexAxis: 'y',
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'top', align: 'start', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } },
+    plugins: { legend: { position: 'top', align: 'center', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } },
     scales: {
       x: { min: 0, max: 2500, ticks: { stepSize: 500, callback: v => v.toLocaleString('vi-VN') }, grid: { color: '#eee' } },
       y: { grid: { display: false }, ticks: { font: { size: 12 } } }
