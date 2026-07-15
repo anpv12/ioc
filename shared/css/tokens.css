@@ -1,0 +1,39 @@
+/* ============================================================
+   TOKENS.CSS — Design Tokens
+   Dùng chung cho tất cả các trang trong dự án Dashboard Gia Lai.
+   Không chứa bất kỳ selector nào ngoài :root.
+   ============================================================ */
+
+:root {
+  /* Brand Colors */
+  --pink:         #FF5C6F;
+  --pink-light:   #FF7F7C;
+  --border-pink:  #FF6472;
+  --blue:         #4A90E2;
+  --salmon:       #F39798;
+  --magenta:      #B82C61;
+  --page-bg:      #F3F5F9;
+
+  /* Text */
+  --text-dark:    rgba(0, 0, 0, 0.87);
+  --text-muted:   rgba(0, 0, 0, 0.54);
+
+  /* Typography */
+  --font-family:  'Roboto', Helvetica, Arial, sans-serif;
+  --fs-xs:  12px;
+  --fs-sm:  14px;
+  --fs-md:  16px;
+  --fs-lg:  18px;
+  --fs-xl:  20px;
+  --fs-2xl: 24px;
+  --fs-3xl: 28px;
+  --fs-4xl: 32px;
+
+  /* Status Colors */
+  --status-pending-bg:       #fff3e0;
+  --status-pending-color:    #e65100;
+  --status-processing-bg:    #e1f5fe;
+  --status-processing-color: #0288d1;
+  --status-completed-bg:     #e8f5e9;
+  --status-completed-color:  #2e7d32;
+}
