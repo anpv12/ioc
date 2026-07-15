@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Phần mềm giám sát, điều hành trung tâm">
+  <title>Quản trị quy trình động</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    :root {
+      --sidebar-width: 250px;
+      --header-height: 74px;
+      --footer-height: 48px;
+      --primary: #0084e8;
+      --text: #212121;
+      --muted: #5d6066;
+      --line: #e4e7eb;
+      --page: #f5f7fa;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--page);
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-right: 1px solid #e7e7e7;
+      box-shadow: 1px 0 8px rgba(27, 39, 51, .08);
+      z-index: 5;
+      transition: width .2s ease, min-width .2s ease;
+    }
+
+    .sidebar.collapsed { width: 72px; min-width: 72px; }
+    .sidebar.collapsed .menu-title,
+    .sidebar.collapsed .search-wrap,
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .nav-arrow { display: none; }
+    .sidebar.collapsed .sidebar-heading { justify-content: center; }
+    .sidebar.collapsed .nav-link { justify-content: center; }
+    .sidebar.collapsed .nav-icon { margin: 0; }
+    .sidebar.collapsed .collapse-button i { transform: rotate(180deg); }
+
+    .sidebar-heading {
+      height: 58px;
+      padding: 0 16px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eceff2;
+    }
+
+    .menu-title { margin: 0; font-size: 18px; font-weight: 600; }
+    .icon-button {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      background: transparent;
+      cursor: pointer;
+    }
+    .icon-button:hover { background: #f0f3f6; }
+    .collapse-button i { transition: transform .2s ease; }
+
+    .sidebar-tools { padding: 16px 14px 10px; }
+    .search-wrap { position: relative; }
+    .search-wrap i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      color: #8b9198;
+      transform: translateY(-50%);
+    }
+    .search-wrap input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px 0 38px;
+      border: 1px solid #d5d9de;
+      border-radius: 7px;
+      outline: 0;
+      color: #30343a;
+      background: #fff;
+    }
+    .search-wrap input:focus { border-color: var(--primary); }
+
+    .nav { padding: 4px 10px; }
+    .nav-link {
+      width: 100%;
+      min-height: 45px;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      color: #3c4144;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--primary); background: #edf7ff; }
+    .nav-icon { width: 22px; margin-right: 12px; font-size: 18px; text-align: center; }
+    .nav-label { flex: 1; font-size: 14px; font-weight: 500; }
+    .nav-arrow { color: var(--muted); font-size: 10px; }
+
+    .workspace {
+      min-width: 0;
+      min-height: 100vh;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      height: var(--header-height);
+      min-height: var(--header-height);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand { min-width: 0; display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+    .brand-mark { width: 50px; height: 50px; flex: 0 0 auto; }
+    .brand-copy { min-width: 0; display: flex; flex-direction: column; gap: 4px; text-transform: uppercase; }
+    .brand-agency { font-size: 14px; font-weight: 600; white-space: nowrap; }
+    .brand-product { color: var(--primary); font-size: 18px; font-weight: 900; white-space: nowrap; }
+
+    .top-actions { display: flex; align-items: center; gap: 6px; }
+    .notification { position: relative; }
+    .notification i, .help-button i { color: #757575; font-size: 20px; }
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      margin: 0 4px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #6e747b;
+      background: #e2e5e8;
+      text-decoration: none;
+      font-size: 20px;
+    }
+    .admin-button {
+      height: 38px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #eef0f2;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .main-content {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: 20px 24px;
+    }
+    .page-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .page-title { margin: 0; font-size: 20px; font-weight: 600; }
+    .breadcrumb { margin: 10px 0 0; padding: 0; display: flex; align-items: center; gap: 10px; list-style: none; color: #747b84; }
+    .breadcrumb a { color: #616972; text-decoration: none; }
+    .breadcrumb i { color: #c0b9c7; font-size: 12px; }
+
+    .content-placeholder {
+      min-height: 420px;
+      margin-top: 20px;
+      border: 1px solid #edf0f3;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .footer {
+      min-height: var(--footer-height);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      color: #60666d;
+      background: #fff;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .copyright, .support, .support-item { display: flex; align-items: center; gap: 7px; }
+    .footer p { margin: 0; }
+
+    @media (max-width: 1050px) {
+      :root { --sidebar-width: 220px; }
+      .brand-agency { font-size: 12px; }
+      .brand-product { font-size: 15px; }
+    }
+    @media (max-width: 760px) {
+      .sidebar { width: 72px; min-width: 72px; }
+      .sidebar .menu-title, .sidebar .search-wrap, .sidebar .nav-label, .sidebar .nav-arrow { display: none; }
+      .sidebar-heading, .nav-link { justify-content: center; }
+      .nav-icon { margin: 0; }
+      .brand-copy { display: none; }
+      .topbar { padding: 0 12px; }
+      .main-content { padding: 16px; }
+      .footer { padding: 10px 16px; align-items: flex-start; flex-direction: column; }
+      .support { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-heading">
+        <h2 class="menu-title">Menu</h2>
+        <button class="icon-button collapse-button" id="collapseSidebar" type="button" aria-label="Thu gọn menu" aria-expanded="true">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </div>
+
+      <div class="sidebar-tools">
+        <label class="search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="search" placeholder="Tìm kiếm..." aria-label="Tìm kiếm menu">
+        </label>
+      </div>
+
+      <nav class="nav" aria-label="Menu chính">
+        <button class="nav-link active" type="button">
+          <i class="nav-icon fa-solid fa-gauge-high"></i>
+          <span class="nav-label">Dashboard</span>
+          <i class="nav-arrow fa-solid fa-chevron-down"></i>
+        </button>
+      </nav>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <a class="brand" href="/home" aria-label="Trang chủ">
+          <svg class="brand-mark" viewBox="0 0 64 64" role="img" aria-label="Logo iGiaLai">
+            <defs>
+              <linearGradient id="logoBlue" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#05a2ee"/>
+                <stop offset="1" stop-color="#0068bd"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#logoBlue)" d="M32 2 58 12v18c0 16-10.7 26.2-26 32C16.7 56.2 6 46 6 30V12z"/>
+            <path fill="#fff" d="M20 19h7v27h-7zm12 0h12v6H38v5h6v6h-6v10h-6z"/>
+            <circle cx="23.5" cy="13" r="3.5" fill="#f5c342"/>
+          </svg>
+          <span class="brand-copy">
+            <span class="brand-agency">Sở Khoa học và Công nghệ tỉnh Gia Lai</span>
+            <span class="brand-product">PM giám sát, điều hành trung tâm</span>
+          </span>
+        </a>
+
+        <div class="top-actions">
+          <button class="icon-button notification" type="button" aria-label="Thông báo">
+            <i class="fa-regular fa-bell"></i>
+          </button>
+          <a class="user-avatar" href="/user-info" aria-label="Thông tin người dùng">
+            <i class="fa-solid fa-user"></i>
+          </a>
+          <button class="admin-button" type="button">
+            <span>Quản trị</span>
+            <i class="fa-solid fa-angle-down"></i>
+          </button>
+          <button class="icon-button help-button" type="button" aria-label="Thông tin trợ giúp">
+            <i class="fa-solid fa-circle-info"></i>
+          </button>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div class="page-heading">
+          <div>
+            <h1 class="page-title">Quản trị quy trình động</h1>
+            <ol class="breadcrumb" aria-label="Đường dẫn trang">
+              <li><a href="/">Trang chủ</a></li>
+              <li aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></li>
+              <li>Quản trị quy trình động</li>
+            </ol>
+          </div>
+        </div>
+
+        <section class="content-placeholder" aria-label="Khu vực nội dung"></section>
+      </main>
+
+      <footer class="footer">
+        <div class="copyright">
+          <i class="fa-regular fa-copyright"></i>
+          <p>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</p>
+        </div>
+        <div class="support">
+          <p>Hỗ trợ:</p>
+          <div class="support-item"><i class="fa-solid fa-phone"></i><p>(0256) 3815.519</p></div>
+          <span aria-hidden="true">|</span>
+          <div class="support-item"><i class="fa-regular fa-envelope"></i><p>skhcn@gialai.gov.vn</p></div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const collapseButton = document.getElementById('collapseSidebar');
+
+    collapseButton.addEventListener('click', () => {
+      const collapsed = sidebar.classList.toggle('collapsed');
+      collapseButton.setAttribute('aria-expanded', String(!collapsed));
+      collapseButton.setAttribute('aria-label', collapsed ? 'Mở rộng menu' : 'Thu gọn menu');
+    });
+  </script>
+</body>
+</html>
