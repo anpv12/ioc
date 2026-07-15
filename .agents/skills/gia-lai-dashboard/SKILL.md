@@ -11,6 +11,7 @@ description: >
 - Phản hồi ngắn gọn, đúng trọng tâm
 - Rà soát code trước khi báo xong
 - **Save = Populate**: sau lưu data, phải xác nhận UI hiển thị đúng
+- **Git: tuyệt đối không push vào `main`** — chỉ push lên nhánh làm việc, merge vào main là quyền của user qua PR trên GitHub
 
 ## Quy tắc code
 - Không hardcode — dùng CSS token từ `shared/css/tokens.css`

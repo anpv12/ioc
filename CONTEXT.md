@@ -16,8 +16,8 @@ Giai đoạn hiện tại: **Thiết kế prototype UI** — chưa kết nối b
 | Bước | File | Mục đích |
 |------|------|----------|
 | 1 | [`system_design.md`](./system_design.md) | Nghiệp vụ: mục tiêu, vai trò, luồng, tính năng |
-| 2 | [`pages/p01-dan-cu-gioi-tinh/SPECS.md`](./pages/p01-dan-cu-gioi-tinh/SPECS.md) | Chi tiết trang đang hoàn thiện |
-| 3 | [`pages/p01-dan-cu-gioi-tinh/index.html`](./pages/p01-dan-cu-gioi-tinh/index.html) | HTML trang p01 |
+| 2 | [`pages/dashboard/SPECS.md`](./pages/dashboard/SPECS.md) | Chi tiết Dashboard đang hoàn thiện |
+| 3 | [`pages/dashboard/index.html`](./pages/dashboard/index.html) | HTML trang Dashboard |
 
 ---
 
@@ -25,7 +25,7 @@ Giai đoạn hiện tại: **Thiết kế prototype UI** — chưa kết nối b
 
 | Màn hình | Trạng thái |
 |----------|------------|
-| p01 — Dân cư theo giới tính | ✅ Prototype xong, đang hoàn thiện |
+| Dashboard — Dân cư theo giới tính | ✅ Prototype xong, đang hoàn thiện |
 | p02 → p06 | 📋 Chưa bắt đầu |
 
 ---
@@ -39,8 +39,8 @@ Thiết kế/
 │   ├── tokens.css          ← CSS vars dùng chung mọi trang
 │   └── base.css            ← Base layout dùng chung
 └── pages/
-    └── p[xx]-[ten-trang]/
-        ├── SPECS.md        ← Đặc tả trang
+    └── [ten-man-hinh]/
+        ├── SPECS.md        ← Đặc tả màn hình
         ├── index.html
         ├── style.css
         └── js/
