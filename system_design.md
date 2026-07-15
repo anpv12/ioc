@@ -56,19 +56,6 @@ Lãnh đạo
 
 ---
 
-## Danh sách màn hình
-
-| Mã   | Tên màn hình                        | Trạng thái    |
-|------|-------------------------------------|---------------|
-| p01  | Tình hình dân cư theo giới tính     | ✅ Hoàn thành |
-| p02  | Tình hình dân cư theo độ tuổi       | 📋 Chưa làm   |
-| p03  | Tình hình dân cư theo mức sinh      | 📋 Chưa làm   |
-| p04  | Tình hình dân cư theo dân tộc       | 📋 Chưa làm   |
-| p05  | Tình hình dân cư theo tôn giáo      | 📋 Chưa làm   |
-| p06  | Tình hình tham gia Bảo hiểm         | 📋 Chưa làm   |
-
----
-
 ## Nguồn dữ liệu
 Cục Cảnh sát quản lý hành chính về trật tự xã hội — **C06**
 
