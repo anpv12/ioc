@@ -28,9 +28,3 @@ Phân tích và trực quan hóa cơ cấu dân số tỉnh Gia Lai chia theo gi
 - **Xử lý:** Admin Panel → chọn chỉ đạo → cập nhật trạng thái + báo cáo
 - **Trạng thái:** Chưa xử lý → Đang xử lý → Đã hoàn thành
 
-## Layout (1920×929px)
-- **Stage:** 1920×929px, position: relative
-- **Header:** left 197, top 9, width 1529, height 85
-- **Floatbar:** left 1868, top 660
-- **Tabbar:** bottom 49px
-- **Drawer:** right -360 → right 20 (khi open), width 340, height 763
