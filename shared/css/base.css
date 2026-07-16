@@ -14,6 +14,7 @@ html, body {
   font-size: var(--fs-md);
   color: var(--text-dark);
   overflow: hidden;
+  background: var(--page-bg); /* lề 2 bên stage sẽ hiện màu này */
 }
 
 /* Ẩn spin arrows trên input[type=number] */
@@ -27,7 +28,7 @@ input[type=number] { -moz-appearance: textfield; }
   height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: var(--page-bg);
+  background: transparent; /* body bg hiện qua ở vùng lề */
   overflow: hidden;
 }
 
@@ -47,9 +48,12 @@ input[type=number] { -moz-appearance: textfield; }
 .header {
   display: flex;
   align-items: center;
-  padding: 0 clamp(16px, 8vw, 120px);
+  width: calc(100% - 16vw); /* lề 8vw mỗi bên */
+  margin: 8px auto 0;
+  padding: 0 20px;
   height: 75px;
   gap: 14px;
+  border-radius: 20px;
 }
 .header .logo {
   width: 58px; height: 58px; border-radius: 50%;
@@ -77,7 +81,9 @@ input[type=number] { -moz-appearance: textfield; }
   display: grid;
   grid-template-columns: 56fr 44fr;
   gap: 8px;
-  padding: 8px clamp(16px, 8vw, 120px);
+  width: calc(100% - 16vw); /* khớp với header */
+  margin: 0 auto;
+  padding: 8px 0;
   min-height: 0;
   overflow: hidden;
 }
@@ -164,7 +170,8 @@ input[type=number] { -moz-appearance: textfield; }
 /* ----- Floating Buttons (fixed) ----- */
 .floatbar {
   position: fixed;
-  right: 10px; top: 50%;
+  right: calc(8vw - 52px); /* ngay phải edge của content zone */
+  top: 50%;
   transform: translateY(-50%);
   z-index: 50;
   display: flex; flex-direction: column; gap: 8px;
@@ -182,7 +189,9 @@ input[type=number] { -moz-appearance: textfield; }
   border-top: 1px solid rgba(0,0,0,.12);
   background: var(--page-bg);
   display: flex; align-items: center;
-  padding: 0 clamp(16px, 8vw, 120px); gap: 30px;
+  width: calc(100% - 16vw); /* khớp với header */
+  margin: 0 auto;
+  padding: 0 20px; gap: 30px;
   overflow-x: auto;
 }
 .tabbar::-webkit-scrollbar { display: none; }
