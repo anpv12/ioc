@@ -169,8 +169,8 @@ input[type=number] { -moz-appearance: textfield; }
 
 /* ----- Floating Buttons (fixed) ----- */
 .floatbar {
-  position: fixed;
-  right: calc(8vw + 4px); /* right > 8vw = nằm trong content zone, sát phải map card */
+  position: absolute;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 50;
