@@ -7,9 +7,9 @@
 
 /* ----- Event Panel Drawer ----- */
 .event-drawer {
-  position: absolute;
-  right: -360px; top: 108px;
-  width: 340px; height: 763px;
+  position: fixed;
+  right: -360px; top: 75px;
+  width: 340px; bottom: 49px;
   background: #fff;
   border: 3px solid var(--pink);
   border-radius: 20px;
@@ -18,7 +18,7 @@
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
   display: flex; flex-direction: column; overflow: hidden;
 }
-.event-drawer.open { right: 20px; }
+.event-drawer.open { right: 10px; }
 
 .drawer-header {
   background: linear-gradient(100deg, var(--pink) 47%, var(--pink-light) 100%);
@@ -90,8 +90,8 @@
 
 /* ----- Admin Panel Overlay ----- */
 .admin-overlay {
-  position: absolute; top: 0; left: 0;
-  width: 1920px; height: 929px;
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background: rgba(243, 245, 249, 0.96);
   backdrop-filter: blur(8px);
   z-index: 150; display: none; flex-direction: column; padding: 10px;
@@ -129,8 +129,8 @@
 
 /* ----- Modal Overlay (shared pattern, page-scoped) ----- */
 .modal-overlay {
-  position: absolute; top: 0; left: 0;
-  width: 1920px; height: 929px;
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   z-index: 200; display: none; align-items: center; justify-content: center;
 }
