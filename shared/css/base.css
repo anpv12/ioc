@@ -26,9 +26,10 @@ input[type=number] { -moz-appearance: textfield; }
 .stage {
   width: 100vw;
   height: 100vh;
+  position: relative; /* floatbar absolute cần cái này */
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: transparent; /* body bg hiện qua ở vùng lề */
+  background: transparent;
   overflow: hidden;
 }
 
@@ -109,6 +110,7 @@ input[type=number] { -moz-appearance: textfield; }
   gap: 6px;
   flex: 1;
 }
+.stats-side > .card { flex: 1; } /* lấp đầy chiều cao card-tong */
 
 /* Stats age row: 3 cards equal */
 .stats-age {
@@ -123,9 +125,9 @@ input[type=number] { -moz-appearance: textfield; }
   padding: 8px 14px;
   display: flex; flex-direction: column;
   justify-content: center; gap: 8px;
-  width: 260px; flex-shrink: 0;
+  flex: 2; /* 2/3 chiều rộng, khớp tỉ lệ với stats-side (1/3) */
 }
-.tong-top { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+.tong-top { display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
 .tong-icon { width: 48px; height: 48px; flex-shrink: 0; }
 .tong-icon svg { width: 100%; height: 100%; }
 .tong-label { font-size: var(--fs-md); font-weight: 700; color: #000; margin: 0 0 2px; line-height: 1.15; }
@@ -140,11 +142,10 @@ input[type=number] { -moz-appearance: textfield; }
 .stat-card          { display: flex; align-items: center; padding: 0 14px; gap: 6px; }
 .stat-card .lbl     { font-size: var(--fs-md); font-weight: 700; color: #000; white-space: nowrap; }
 .stat-card .num     { font-size: var(--fs-3xl); font-weight: 800; }
-.stat-card .unit    { font-size: var(--fs-xs); color: #000; margin-left: auto; align-self: flex-end; margin-bottom: 4px; white-space: nowrap; }
+.stat-card .unit    { font-size: var(--fs-xs); color: #000; margin-left: auto; white-space: nowrap; }
 .stat-card.compact  { padding: 0 10px; gap: 4px; }
 .stat-card.compact .lbl  { font-size: var(--fs-sm); }
 .stat-card.compact .num  { font-size: var(--fs-2xl); }
-.stat-card.compact .unit { font-size: var(--fs-xs); margin-bottom: 3px; }
 .stat-card.stacked  { align-items: flex-start; flex-direction: column; justify-content: center; padding: 8px 14px; }
 .stat-card.stacked .row2 { display: flex; align-items: baseline; gap: 6px; width: 100%; }
 .c-salmon  { color: var(--salmon); }
@@ -169,10 +170,9 @@ input[type=number] { -moz-appearance: textfield; }
 
 /* ----- Floating Buttons (fixed) ----- */
 .floatbar {
-  position: fixed;
-  right: calc(8vw - 52px); /* ngay phải edge của content zone */
-  top: 50%;
-  transform: translateY(-50%);
+  position: absolute;
+  right: clamp(8px, 2.7vw, 52px);
+  bottom: 54px; /* sát trên tabbar (49px) + 5px gap */
   z-index: 50;
   display: flex; flex-direction: column; gap: 8px;
 }
