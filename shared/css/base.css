@@ -171,8 +171,8 @@ input[type=number] { -moz-appearance: textfield; }
 /* ----- Floating Buttons (fixed) ----- */
 .floatbar {
   position: absolute;
-  right: clamp(8px, 2.7vw, 52px); /* tỷ lệ gốc: 1868/1920 = 97.3% từ trái */
-  bottom: 19vh;                    /* tỷ lệ gốc: 660/929px từ trên */
+  right: clamp(8px, 2.7vw, 52px);
+  bottom: 54px; /* sát trên tabbar (49px) + 5px gap */
   z-index: 50;
   display: flex; flex-direction: column; gap: 8px;
 }
