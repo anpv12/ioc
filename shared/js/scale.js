@@ -15,12 +15,18 @@
     const scaleY = window.innerHeight / DESIGN_H;
     const scale  = Math.min(scaleX, scaleY);
 
-    stage.style.transform       = `scale(${scale})`;
+    const scaledW = Math.round(DESIGN_W * scale);
+    const scaledH = Math.round(DESIGN_H * scale);
+
+    // Căn giữa stage trong viewport
+    const offsetX = Math.max(0, Math.floor((window.innerWidth  - scaledW) / 2));
+    const offsetY = Math.max(0, Math.floor((window.innerHeight - scaledH) / 2));
+
+    stage.style.transform       = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     stage.style.transformOrigin = 'top left';
 
-    // Cho body khớp kích thước stage đã scale để không sinh scrollbar
-    document.body.style.width    = Math.round(DESIGN_W * scale) + 'px';
-    document.body.style.height   = Math.round(DESIGN_H * scale) + 'px';
+    document.body.style.width    = window.innerWidth  + 'px';
+    document.body.style.height   = window.innerHeight + 'px';
     document.body.style.overflow = 'hidden';
   }
 
