@@ -110,6 +110,7 @@ input[type=number] { -moz-appearance: textfield; }
   gap: 6px;
   flex: 1;
 }
+.stats-side > .card { flex: 1; } /* lấp đầy chiều cao card-tong */
 
 /* Stats age row: 3 cards equal */
 .stats-age {
