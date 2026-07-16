@@ -142,11 +142,10 @@ input[type=number] { -moz-appearance: textfield; }
 .stat-card          { display: flex; align-items: center; padding: 0 14px; gap: 6px; }
 .stat-card .lbl     { font-size: var(--fs-md); font-weight: 700; color: #000; white-space: nowrap; }
 .stat-card .num     { font-size: var(--fs-3xl); font-weight: 800; }
-.stat-card .unit    { font-size: var(--fs-xs); color: #000; margin-left: auto; align-self: flex-end; margin-bottom: 4px; white-space: nowrap; }
+.stat-card .unit    { font-size: var(--fs-xs); color: #000; margin-left: auto; white-space: nowrap; }
 .stat-card.compact  { padding: 0 10px; gap: 4px; }
 .stat-card.compact .lbl  { font-size: var(--fs-sm); }
 .stat-card.compact .num  { font-size: var(--fs-2xl); }
-.stat-card.compact .unit { font-size: var(--fs-xs); margin-left: auto; align-self: center; margin-bottom: 0; }
 .stat-card.stacked  { align-items: flex-start; flex-direction: column; justify-content: center; padding: 8px 14px; }
 .stat-card.stacked .row2 { display: flex; align-items: baseline; gap: 6px; width: 100%; }
 .c-salmon  { color: var(--salmon); }
