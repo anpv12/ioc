@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PM Giám sát, điều hành trung tâm – Quản trị</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <span class="menu-label">Menu</span>
+        <button class="collapse-btn"><i class="fa-solid fa-angles-left"></i></button>
+      </div>
+      <div class="sidebar-search"><input type="text" placeholder="Tìm kiếm..."></div>
+
+      <div class="nav-parent open" id="navParent">
+        <span class="nav-ic"><i class="fa-solid fa-table-columns"></i></span>
+        <span>Dashboard</span>
+        <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-children" id="navChildren">
+        <div class="nav-item" id="nav-qldashboard" onclick="switchView('qldashboard','Quản lý dashboard')">
+          <span class="dot"></span><span>Quản lý dashboard</span>
+        </div>
+        <div class="nav-item" id="nav-qllayout" onclick="switchView('qllayout','Quản lý layout')">
+          <span class="dot"></span><span>Quản lý layout</span>
+        </div>
+        <div class="nav-item" id="nav-loaibieudo" onclick="switchView('loaibieudo','Loại biểu đồ')">
+          <span class="dot"></span><span>Loại biểu đồ</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MAIN ================= -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="logoClip2"><circle cx="50" cy="50" r="43"/></clipPath>
+                <clipPath id="bandClip2"><rect x="0" y="73" width="100" height="27"/></clipPath>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4"/>
+              <circle cx="50" cy="50" r="43" fill="#ffffff"/>
+              <g clip-path="url(#logoClip2)">
+                <polygon points="10,66 34,26 55,66" fill="#1c6031"/>
+                <polygon points="45,66 66,26 92,66" fill="#1c6031"/>
+                <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2"/>
+                <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2"/>
+                <path d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z" fill="#ee522d"/>
+                <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6"/>
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip2)"/>
+                <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+              </g>
+              <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="bell-wrap"><i class="fa-solid fa-bell"></i><span class="bell-dot"></span></div>
+          <div class="admin-dd">
+            <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+            <span class="name">Quản trị</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <i class="fa-solid fa-circle-info info-ic"></i>
+        </div>
+      </div>
+
+      <div class="breadcrumb-row">
+        <div class="page-title" id="pageTitle">Quản lý dashboard</div>
+        <div class="breadcrumb">
+          Trang chủ
+          <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
+          <span class="cur" id="breadcrumbCurrent">Quản lý dashboard</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- ============ VIEW: Quản lý dashboard ============ -->
+        <div class="view active" id="view-qldashboard">
+          <div class="card">
+            <div class="tabs-row">
+              <div class="tab active">Dashboard chính</div>
+              <div class="tab">Dashboard được chia sẻ</div>
+            </div>
+            <div class="filter-row">
+              <input class="search-input" type="text" placeholder="Tìm kiếm ...">
+              <button class="icon-btn search-ic"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="icon-btn refresh-ic"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+              <div class="spacer"></div>
+              <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center">STT</th>
+                    <th>Tên dashboard<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th>Cơ quan<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th class="center">Mặc định</th>
+                    <th class="center">Công khai</th>
+                    <th class="center">Xử lý</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="center">1</td>
+                    <td>Kiểm thử layout</td>
+                    <td>SỞ KHOA HỌC VÀ CÔNG NGHỆ</td>
+                    <td class="center dash-txt">-</td>
+                    <td class="center"><span class="switch"><span class="knob"></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
+                        <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
+                        <button class="act-btn act-del"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="center">2</td>
+                    <td>TRUNG TÂM KHO DỮ LIỆU Y TẾ SỐ</td>
+                    <td>SỞ KHOA HỌC VÀ CÔNG NGHỆ</td>
+                    <td class="center dash-txt">-</td>
+                    <td class="center"><span class="switch"><span class="knob"></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
+                        <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
+                        <button class="act-btn act-del"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="center">3</td>
+                    <td>TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH THÔNG MINH TỈNH GIA LAI</td>
+                    <td>SỞ KHOA HỌC VÀ CÔNG NGHỆ</td>
+                    <td class="center"><i class="fa-solid fa-star star-ic"></i></td>
+                    <td class="center"><span class="switch on"><span class="knob"></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
+                        <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
+                        <button class="act-btn act-del"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select"><option>10</option></select>
+                <span class="pg-info">Hiển thị 1-0/0</span>
+              </div>
+              <div class="pg-btns">
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-left"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                <button class="pg-btn active">1</button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-right"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Quản lý layout ============ -->
+        <div class="view" id="view-qllayout">
+          <div class="card">
+            <div class="filter-row">
+              <input class="search-input" type="text" placeholder="Tìm kiếm...">
+              <div class="status-select">
+                <span>Trạng thái</span>
+                <i class="fa-solid fa-xmark"></i>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <button class="icon-btn search-ic"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="icon-btn refresh-ic"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+              <div class="spacer"></div>
+              <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center">STT</th>
+                    <th>Tên layout<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th>Số trang</th>
+                    <th>Số biểu đồ</th>
+                    <th class="center">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="qlLayoutBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select"><option>10</option></select>
+                <span class="pg-info">Hiển thị 1-10/10</span>
+              </div>
+              <div class="pg-btns">
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-left"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                <button class="pg-btn active">1</button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-right"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Loại biểu đồ ============ -->
+        <div class="view" id="view-loaibieudo">
+          <div class="card">
+            <div class="filter-row">
+              <input class="search-input" type="text" placeholder="Tìm kiếm...">
+              <div class="status-select">
+                <span>Trạng thái</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <button class="icon-btn search-ic"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="icon-btn refresh-ic"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+              <div class="spacer"></div>
+              <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center">STT</th>
+                    <th>Mã</th>
+                    <th>Tên loại biểu đồ<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th>Nhóm</th>
+                    <th class="center">Icon</th>
+                    <th class="center">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="chartTypesBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select" onchange="changePageSize(this)">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="pg-info" id="chartTypesInfo"></span>
+              </div>
+              <div class="pg-btns" id="chartTypesPgBtns"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.content -->
+
+      <div class="footer">
+        <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div>
+        <div class="support">
+          <span>Hỗ trợ:</span>
+          <span><i class="fa-solid fa-phone fi"></i>(0256) 3815.519</span>
+          <span class="sep2">|</span>
+          <span><i class="fa-solid fa-envelope fi"></i>skhcn@gialai.gov.vn</span>
+        </div>
+      </div>
+    </div><!-- /.main -->
+
+  </div><!-- /.app -->
+
+  <script src="js/ui.js"></script>
+</body>
+</html>
