@@ -127,7 +127,7 @@ input[type=number] { -moz-appearance: textfield; }
   justify-content: center; gap: 8px;
   flex: 2; /* 2/3 chiều rộng, khớp tỉ lệ với stats-side (1/3) */
 }
-.tong-top { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+.tong-top { display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
 .tong-icon { width: 48px; height: 48px; flex-shrink: 0; }
 .tong-icon svg { width: 100%; height: 100%; }
 .tong-label { font-size: var(--fs-md); font-weight: 700; color: #000; margin: 0 0 2px; line-height: 1.15; }
