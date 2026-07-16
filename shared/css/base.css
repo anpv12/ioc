@@ -26,9 +26,10 @@ input[type=number] { -moz-appearance: textfield; }
 .stage {
   width: 100vw;
   height: 100vh;
+  position: relative; /* floatbar absolute cần cái này */
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: transparent; /* body bg hiện qua ở vùng lề */
+  background: transparent;
   overflow: hidden;
 }
 
@@ -170,9 +171,8 @@ input[type=number] { -moz-appearance: textfield; }
 /* ----- Floating Buttons (fixed) ----- */
 .floatbar {
   position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: clamp(8px, 2.7vw, 52px); /* tỷ lệ gốc: 1868/1920 = 97.3% từ trái */
+  bottom: 19vh;                    /* tỷ lệ gốc: 660/929px từ trên */
   z-index: 50;
   display: flex; flex-direction: column; gap: 8px;
 }
