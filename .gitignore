@@ -1,0 +1,11 @@
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
