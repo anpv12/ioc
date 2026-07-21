@@ -1301,3 +1301,38 @@
 .history-attach-icon:hover {
   background: #ffe0ec;
 }
+/* ----- Metric Label Tooltip ----- */
+.metric-tooltip-wrap {
+  position: relative;
+  cursor: default;
+}
+
+.metric-tooltip {
+  position: absolute;
+  bottom: 120%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.metric-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 15px;
+  border: 4px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.8);
+}
+
+.metric-tooltip-wrap:hover .metric-tooltip {
+  opacity: 1;
+}

@@ -225,33 +225,29 @@
       </div>
       <div class="drawer-content" id="drawerContent">
 
-        <!-- Group 2 nút hành động ở đầu Drawer -->
-        <div class="drawer-top-actions">
-          <button class="btn-drawer-action active" id="btnShowCreateForm" onclick="openDirectiveFormModal()">
-            <i class="fa-solid fa-plus"></i> Thêm mới chỉ đạo
-          </button>
-          <button class="btn-drawer-action" id="btnShowUrgeForm" onclick="submitBatchUrgeDirectives()">
-            <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="urgeTopCount"></span>
-          </button>
-        </div>
 
         <!-- Tiêu đề + Alert Deadline Banner + Nút chọn tất cả & đôn đốc -->
         <div class="directive-list-header" style="flex-wrap:wrap; gap:8px;">
           <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-            <span class="drawer-section-title" style="margin:0;border:none;padding:0;">
+            <span class="drawer-section-title" style="margin:0;border:none;padding:0; font-size:14px;">
               <i class="fa-solid fa-list-check"></i> Danh sách chỉ đạo
             </span>
             <div style="display:flex; align-items:center; gap:10px;">
               <label
-                style="font-size:11px; font-weight:700; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; gap:4px;">
+                style="font-size:13px; font-weight:700; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; gap:4px;">
                 <input type="checkbox" id="selectAllDirectives" onchange="toggleSelectAllDirectives(this)"
                   style="cursor:pointer; accent-color:var(--pink);">
                 <span>Chọn tất cả</span>
               </label>
               <button class="btn-urge-inline" onclick="submitBatchUrgeDirectives()"
-                style="padding:4px 10px; background:linear-gradient(100deg, var(--pink), var(--pink-light)); color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                style="padding:6px 12px; background:linear-gradient(100deg, var(--pink), var(--pink-light)); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
                 <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="selectedUrgeInlineCount"></span>
               </button>
+              <button class="btn-create-inline" id="btnShowCreateForm" onclick="openDirectiveFormModal()"
+                style="padding:6px 12px; background:linear-gradient(100deg, #10b981, #34d399); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                <i class="fa-solid fa-plus"></i> Thêm mới
+              </button>
+              
             </div>
           </div>
         </div>

@@ -307,14 +307,16 @@ function updateDeadlineBell() {
   const badge = document.getElementById('deadlineBellBadge');
   const btn = document.getElementById('deadlineBellBtn');
 
-  if (total > 0) {
-    badge.textContent = total > 99 ? '99+' : total;
-    badge.style.display = 'flex';
-    btn.classList.add(overdue.length > 0 ? 'has-overdue' : 'has-warning');
-    btn.classList.remove(overdue.length > 0 ? 'has-warning' : 'has-overdue');
-  } else {
-    badge.style.display = 'none';
-    btn.classList.remove('has-overdue', 'has-warning');
+  if (badge && btn) {
+    if (total > 0) {
+      badge.textContent = total > 99 ? '99+' : total;
+      badge.style.display = 'flex';
+      btn.classList.add(overdue.length > 0 ? 'has-overdue' : 'has-warning');
+      btn.classList.remove(overdue.length > 0 ? 'has-warning' : 'has-overdue');
+    } else {
+      badge.style.display = 'none';
+      btn.classList.remove('has-overdue', 'has-warning');
+    }
   }
 
   // Render notification panel content
@@ -699,7 +701,7 @@ function populateUI() {
       let leaderAttachHtml = '';
       if (leaderFiles.length > 0) {
         leaderAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
-          '<span style="font-size:10px; font-weight:700; color:var(--pink);"><i class="fa-solid fa-paperclip"></i> File Lãnh đạo:</span> ' +
+          '<span style="font-size:10px; font-weight:700; color:var(--pink);"><i class="fa-solid fa-paperclip"></i> Lãnh đạo đính kèm:</span> ' +
           leaderFiles.map(f =>
             '<span class="file-preview-link leader" style="font-size:9px; padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
@@ -712,7 +714,7 @@ function populateUI() {
       let agencyAttachHtml = '';
       if (agencyFiles.length > 0) {
         agencyAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
-          '<span style="font-size:10px; font-weight:700; color:#2e7d32;"><i class="fa-solid fa-paperclip"></i> File Đơn vị:</span> ' +
+          '<span style="font-size:10px; font-weight:700; color:#2e7d32;"><i class="fa-solid fa-paperclip"></i> Đơn vị đính kèm:</span> ' +
           agencyFiles.map(f =>
             '<span class="file-preview-link agency" style="font-size:9px; padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
@@ -726,12 +728,17 @@ function populateUI() {
       item.className = 'directive-item';
       item.innerHTML =
         '<div class="directive-item-header">' +
-        '<div class="directive-loc">' +
-        '<input type="checkbox" class="directive-item-cb" value="' + dir.id + '" onchange="updateUrgeSelectedCounts()" style="cursor:pointer; accent-color:var(--pink); margin-right:6px;" title="Tích chọn đôn đốc">' +
-        '<span><i class="fa-solid fa-chart-bar"></i> ' + metricLabels + '</span>' +
-        '<span class="directive-status ' + statusClass + '" style="margin-left:6px;">' + dir.status + '</span>' +
+        '<div class="directive-loc" style="flex: 1; min-width: 0;">' +
+        '<input type="checkbox" class="directive-item-cb" value="' + dir.id + '" onchange="updateUrgeSelectedCounts()" style="cursor:pointer; accent-color:var(--pink); margin-right:6px; flex-shrink: 0;" title="Tích chọn đôn đốc">' +
+        '<div class="metric-tooltip-wrap" style="flex: 1; min-width: 0; padding-right: 8px;">' +
+        '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+        '<i class="fa-solid fa-chart-bar"></i> ' + metricLabels +
         '</div>' +
-        '<div class="directive-item-right">' +
+        '<span class="metric-tooltip">' + metricLabels + '</span>' +
+        '</div>' +
+        '<span class="directive-status ' + statusClass + '" style="margin-left:6px; flex-shrink: 0;">' + dir.status + '</span>' +
+        '</div>' +
+        '<div class="directive-item-right" style="flex-shrink: 0;">' +
         deadlineIcon +
         '<div class="directive-actions-menu-wrap">' +
         '<button class="btn-directive-actions" onclick="toggleDirectiveActionsMenu(\'' + dir.id + '\', event)" title="Chức năng">' +
