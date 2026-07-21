@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Phân tích Dân cư – Tỉnh Gia Lai | Giới tính</title>
-  <meta name="description" content="Tổng hợp số liệu phân tích tình hình dân cư tỉnh Gia Lai theo giới tính (Nguồn: C06).">
+  <meta name="description"
+    content="Tổng hợp số liệu phân tích tình hình dân cư tỉnh Gia Lai theo giới tính (Nguồn: C06).">
 
   <!-- Shared -->
   <link rel="stylesheet" href="../../shared/css/tokens.css">
@@ -25,259 +27,499 @@
   <!-- Chart.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
 </head>
+
 <body>
-<div class="stage" id="stage">
+  <div class="stage" id="stage">
 
-  <!-- Floatbar: absolute trong stage, không nằm trong card nào -->
-  <div class="floatbar">
-    <button title="Quay lại"><i class="fa-solid fa-arrow-left"></i></button>
-    <button title="Toàn màn hình"><i class="fa-solid fa-expand"></i></button>
-    <button title="Cài đặt" onclick="window.location.href='../Quản trị/admin.html'"><i class="fa-solid fa-gear"></i></button>
-    <button id="btnToggleDrawer" title="Bảng chỉ đạo" style="position:relative;">
-      <i class="fa-solid fa-bullhorn"></i>
-      <span id="drawerBadge" style="position:absolute;top:-2px;right:-2px;background:red;color:#fff;border-radius:50%;font-size:10px;width:16px;height:16px;display:none;align-items:center;justify-content:center;">0</span>
-    </button>
-  </div>
-
-  <!-- Header -->
-  <header class="header grad">
-    <div class="logo">
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <clipPath id="logoClip"><circle cx="50" cy="50" r="43"/></clipPath>
-          <clipPath id="bandClip"><rect x="0" y="73" width="100" height="27"/></clipPath>
-        </defs>
-        <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
-        <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4"/>
-        <circle cx="50" cy="50" r="43" fill="#ffffff"/>
-        <g clip-path="url(#logoClip)">
-          <polygon points="10,66 34,26 55,66" fill="#1c6031"/>
-          <polygon points="45,66 66,26 92,66" fill="#1c6031"/>
-          <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2"/>
-          <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2"/>
-          <path d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z" fill="#ee522d"/>
-          <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6"/>
-          <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip)"/>
-          <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-        </g>
-        <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
-      </svg>
-    </div>
-    <div class="titles">
-      <h1>DASHBOARD PHÂN TÍCH TÌNH HÌNH DÂN CƯ TỈNH GIA LAI</h1>
-      <p>Tổng hợp số liệu phân tích tình hình dân cư (Nguồn: Cục Cảnh sát quản lý hành chính về trật tự xã hội C06)</p>
-    </div>
-    <div class="filters">
-      <div class="filter-box">
-        <label>Năm</label>
-        <div class="val"><span>2026</span><i class="fa-solid fa-chevron-down"></i></div>
-      </div>
-      <div class="filter-box">
-        <label>Tháng</label>
-        <div class="val"><span>Tháng 06</span><i class="fa-solid fa-chevron-down"></i></div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Grid -->
-  <div class="main-grid">
-
-    <!-- Left Panel -->
-    <div class="left-panel">
-
-      <!-- Stats Top: Tổng nhân khẩu + Diện tích/Mật độ -->
-      <div class="stats-top">
-        <div class="card card-tong metric-block" id="metric-tong-nhan-khau">
-          <div class="tong-top">
-            <div class="tong-icon">
-              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="20" r="8" fill="#f6c69a"/>
-                <path d="M2 46c0-9 6-15 12-15s12 6 12 15z" fill="#f4c14e"/>
-                <circle cx="50" cy="20" r="8" fill="#f6c69a"/>
-                <path d="M38 46c0-9 6-15 12-15s12 6 12 15z" fill="#4fb3bf"/>
-                <circle cx="32" cy="16" r="9" fill="#f6c69a"/>
-                <path d="M18 46c0-10 6-17 14-17s14 7 14 17z" fill="#5b4b8a"/>
-                <circle cx="24" cy="28" r="7" fill="#f6c69a"/>
-                <path d="M14 50c0-8 4-13 10-13s10 5 10 13z" fill="#e8547a"/>
-                <circle cx="42" cy="28" r="7" fill="#f6c69a"/>
-                <path d="M32 50c0-8 4-13 10-13s10 5 10 13z" fill="#5b98d4"/>
-              </svg>
-            </div>
-            <div>
-              <p class="tong-label">Tổng nhân khẩu</p>
-              <p class="tong-num">3.580.921</p>
-            </div>
-          </div>
-          <div class="subbox-row">
-            <div class="subbox nu"><p class="lbl">Nữ</p><p class="num">1.786.672</p></div>
-            <div class="subbox nam"><p class="lbl">Nam</p><p class="num">1.786.672</p></div>
-          </div>
-        </div>
-
-        <div class="stats-side">
-          <div class="card thin stat-card compact metric-block" id="metric-dien-tich">
-            <span class="lbl">Diện tích</span>
-            <span class="num c-salmon">157,306</span>
-            <span class="unit">Km²</span>
-          </div>
-          <div class="card thin stat-card compact metric-block" id="metric-mat-do">
-            <span class="lbl">Mật độ dân số</span>
-            <span class="num c-blue">169,88</span>
-            <span class="unit">Người/Km²</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats Age Row -->
-      <div class="stats-age">
-        <div class="card thin stat-card stacked metric-block" id="metric-tre-em">
-          <span class="lbl">Trẻ em (0-14t)</span>
-          <div class="row2"><span class="num c-salmon">842.339</span><span class="unit" style="margin-left:6px;">Nhân khẩu</span></div>
-        </div>
-        <div class="card thin stat-card stacked metric-block" id="metric-lao-dong">
-          <span class="lbl">Người lao động (15-64t)</span>
-          <div class="row2"><span class="num c-blue">2.436.390</span><span class="unit" style="margin-left:6px;">Nhân khẩu</span></div>
-        </div>
-        <div class="card thin stat-card stacked metric-block" id="metric-nguoi-lon-tuoi">
-          <span class="lbl">Người lớn tuổi (Trên 65t)</span>
-          <div class="row2"><span class="num c-magenta">302.192</span><span class="unit" style="margin-left:6px;">Nhân khẩu</span></div>
-        </div>
-      </div>
-
-      <!-- Chart: Top 5 cao nhất -->
-      <div class="card hairline chart-card metric-block" id="metric-chart-high">
-        <div class="strip grad"><h3>Top 5 xã phường có nhân khẩu cao nhất</h3></div>
-        <div class="chart-wrap"><canvas id="chartHigh"></canvas></div>
-      </div>
-
-      <!-- Chart: Top 5 thấp nhất -->
-      <div class="card hairline chart-card metric-block" id="metric-chart-low">
-        <div class="strip grad"><h3>Top 5 xã phường có nhân khẩu thấp nhất</h3></div>
-        <div class="chart-wrap"><canvas id="chartLow"></canvas></div>
-      </div>
-
-    </div><!-- /left-panel -->
-
-    <!-- Map card -->
-    <div class="card thin map-card metric-block" id="metric-map">
-      <h3>Phân bố dân cư theo đơn vị hành chính</h3>
-      <div class="map-svg-wrap">
-        <svg id="mapSvg" viewBox="0 0 726 690" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"></svg>
-        <div class="map-legend">
-          <div class="item"><span class="sw" style="background:#0b3d91;"></span>Trên 104.000</div>
-          <div class="item"><span class="sw" style="background:#2f6fce;"></span>78.000-104.000</div>
-          <div class="item"><span class="sw" style="background:#7aa8e6;"></span>52.000-78.000</div>
-          <div class="item"><span class="sw" style="background:#b6d0f2;"></span>26.000-52.000</div>
-          <div class="item"><span class="sw" style="background:#e2ecfa;"></span>Dưới 26.000</div>
-        </div>
-      </div>
-    </div><!-- /map card -->
-
-  </div><!-- /main-grid -->
-
-  <!-- Tab Bar -->
-  <nav class="tabbar">
-    <div class="tab active">Tình hình dân cư theo giới tính</div>
-    <div class="tab">Tình hình dân cư theo độ tuổi</div>
-    <div class="tab">Tình hình dân cư theo mức sinh</div>
-    <div class="tab">Tình hình dân cư theo dân tộc</div>
-    <div class="tab">Tình hình dân cư theo tôn giáo</div>
-    <div class="tab">Tình hình tham gia Bảo hiểm</div>
-  </nav>
-
-  <!-- Event Panel Drawer (position: fixed via CSS) -->
-  <div class="event-drawer" id="eventDrawer">
-    <div class="drawer-header">
-      <span><i class="fa-solid fa-bullhorn"></i> Bảng chỉ đạo điều hành</span>
-      <button class="drawer-close" onclick="toggleDrawer()"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="drawer-content" id="drawerContent">
-      <div class="drawer-section-title"><i class="fa-solid fa-plus"></i> Tạo chỉ đạo mới</div>
-      <div class="drawer-add-form">
-        <div class="form-group">
-          <label for="formMetric">Chỉ số cần chỉ đạo</label>
-          <select id="formMetric">
-            <option value="">-- Chọn chỉ số --</option>
-            <option value="metric-tong-nhan-khau">Tổng nhân khẩu</option>
-            <option value="metric-dien-tich">Diện tích (Km²)</option>
-            <option value="metric-mat-do">Mật độ dân số</option>
-            <option value="metric-tre-em">Trẻ em (0-14t)</option>
-            <option value="metric-lao-dong">Người lao động (15-64t)</option>
-            <option value="metric-nguoi-lon-tuoi">Người lớn tuổi (Trên 65t)</option>
-            <option value="metric-chart-high">Biểu đồ Top 5 nhân khẩu cao nhất</option>
-            <option value="metric-chart-low">Biểu đồ Top 5 nhân khẩu thấp nhất</option>
-            <option value="metric-map">Bản đồ phân bố dân cư</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="formContent">Nội dung chỉ đạo</label>
-          <textarea id="formContent" rows="3" placeholder="Nhập nội dung chỉ đạo..."></textarea>
-        </div>
-        <div class="form-group">
-          <label for="formDueDate">Thời hạn hoàn thành</label>
-          <input type="text" id="formDueDate" placeholder="Chọn ngày..." readonly>
-        </div>
-        <button class="btn-add-directive" onclick="saveDirective()">
-          <i class="fa-solid fa-paper-plane"></i> Lưu chỉ đạo
-        </button>
-      </div>
-
-      <div class="drawer-section-title" style="margin-top:4px;"><i class="fa-solid fa-list-check"></i> Danh sách chỉ đạo</div>
-      <div id="directiveList"></div>
-
-      <button id="btnToggleAdmin" style="margin-top:8px;width:100%;padding:6px 0;background:var(--magenta);color:#fff;border:none;border-radius:8px;font-family:var(--font-family);font-size:var(--fs-sm);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-        <i class="fa-solid fa-shield-halved"></i> Quản trị Chỉ đạo
+    <!-- Floatbar: absolute trong stage, không nằm trong card nào -->
+    <div class="floatbar">
+      <button title="Quay lại"><i class="fa-solid fa-arrow-left"></i></button>
+      <button title="Toàn màn hình"><i class="fa-solid fa-expand"></i></button>
+      <button title="Cài đặt" onclick="window.location.href='../Quản trị/admin.html'"><i
+          class="fa-solid fa-gear"></i></button>
+      <button id="btnToggleDrawer" title="Bảng chỉ đạo" style="position:relative;">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span id="drawerBadge" style="position:absolute;
+      top:-8px;right:-11px;background:red;
+      color:#fff;border-radius:40%;font-size:10px;display:none;
+      align-items:center;justify-content:center; padding:3px">0</span>
       </button>
     </div>
-  </div>
 
-  <!-- Admin Panel Overlay (position: fixed via CSS) -->
-  <div class="admin-overlay" id="adminOverlay">
-    <div class="admin-header">
-      <h2 class="admin-title"><i class="fa-solid fa-user-gear"></i> Hệ thống Quản trị &amp; Báo cáo Chỉ đạo</h2>
-      <button id="btnExitAdmin" style="background:var(--magenta);color:#fff;display:flex;align-items:center;gap:6px;padding:6px 12px;border:none;border-radius:8px;cursor:pointer;font-family:var(--font-family);font-size:var(--fs-sm);">
-        <i class="fa-solid fa-chevron-left"></i> Quay lại Dashboard
-      </button>
-    </div>
-    <div class="admin-body">
-      <div class="admin-list-card">
-        <div class="admin-card-header">Danh sách chỉ đạo cần xử lý</div>
-        <div class="admin-list" id="adminList"></div>
+    <!-- Header -->
+    <header class="header grad">
+      <div class="logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="logoClip">
+              <circle cx="50" cy="50" r="43" />
+            </clipPath>
+            <clipPath id="bandClip">
+              <rect x="0" y="73" width="100" height="27" />
+            </clipPath>
+          </defs>
+          <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2" />
+          <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4" />
+          <circle cx="50" cy="50" r="43" fill="#ffffff" />
+          <g clip-path="url(#logoClip)">
+            <polygon points="10,66 34,26 55,66" fill="#1c6031" />
+            <polygon points="45,66 66,26 92,66" fill="#1c6031" />
+            <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2" />
+            <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2" />
+            <path
+              d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z"
+              fill="#ee522d" />
+            <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6" />
+            <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip)" />
+            <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+              stroke-linecap="round" />
+            <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+              stroke-linecap="round" />
+          </g>
+          <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="1"
+            font-family="Arial, sans-serif">GIA LAI</text>
+        </svg>
       </div>
-      <div class="admin-detail-card" id="adminDetailCard" style="display:none;">
-        <div class="admin-card-header" style="background:#e3f2fd;border-bottom:1px solid #bbdefb;margin:-10px -10px 10px -10px;border-radius:12px 12px 0 0;">Chi tiết &amp; Cập nhật Báo cáo</div>
-        <div class="form-group"><label>Chỉ số:</label><input type="text" id="adminDetailLoc" disabled></div>
-        <div class="form-group"><label>Nội dung chỉ đạo:</label><textarea id="adminDetailContent" rows="3" disabled style="background:#f5f5f5;"></textarea></div>
-        <div class="form-group"><label>Thời hạn:</label><input type="text" id="adminDetailDueDate" disabled style="background:#f5f5f5;"></div>
-        <div class="form-group">
-          <label for="adminStatus">Trạng thái xử lý</label>
-          <select id="adminStatus">
-            <option value="Chưa xử lý">Chưa xử lý</option>
-            <option value="Đang xử lý">Đang xử lý</option>
-            <option value="Đã hoàn thành">Đã hoàn thành</option>
-          </select>
+      <div class="titles">
+        <h1>DASHBOARD PHÂN TÍCH TÌNH HÌNH DÂN CƯ TỈNH GIA LAI</h1>
+        <p>Tổng hợp số liệu phân tích tình hình dân cư (Nguồn: Cục Cảnh sát quản lý hành chính về trật tự xã hội C06)
+        </p>
+      </div>
+      <div class="filters">
+        <div class="filter-box">
+          <label>Năm</label>
+          <div class="val"><span>2026</span><i class="fa-solid fa-chevron-down"></i></div>
         </div>
-        <div class="form-group"><label for="adminReportText">Nội dung báo cáo kết quả</label><textarea id="adminReportText" rows="4" placeholder="Nhập báo cáo tiến độ / kết quả xử lý..."></textarea></div>
-        <div><button style="background:var(--pink);color:#fff;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:var(--font-family);font-size:var(--fs-sm);" onclick="updateAdminDirective()">Cập nhật báo cáo</button></div>
+        <div class="filter-box">
+          <label>Tháng</label>
+          <div class="val"><span>Tháng 06</span><i class="fa-solid fa-chevron-down"></i></div>
+        </div>
       </div>
-      <div class="admin-detail-card" id="adminDetailPlaceholder" style="flex:1.5;justify-content:center;align-items:center;color:var(--text-muted);flex-direction:column;gap:8px;">
-        <i class="fa-solid fa-file-lines" style="font-size:var(--fs-4xl);"></i>
-        Chọn một chỉ đạo trong danh sách để cập nhật báo cáo tiến độ.
+    </header>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+
+      <!-- Left Panel -->
+      <div class="left-panel">
+
+        <!-- Stats Top: Tổng nhân khẩu + Diện tích/Mật độ -->
+        <div class="stats-top">
+          <div class="card card-tong metric-block" id="metric-tong-nhan-khau">
+            <div class="tong-top">
+              <div class="tong-icon">
+                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="14" cy="20" r="8" fill="#f6c69a" />
+                  <path d="M2 46c0-9 6-15 12-15s12 6 12 15z" fill="#f4c14e" />
+                  <circle cx="50" cy="20" r="8" fill="#f6c69a" />
+                  <path d="M38 46c0-9 6-15 12-15s12 6 12 15z" fill="#4fb3bf" />
+                  <circle cx="32" cy="16" r="9" fill="#f6c69a" />
+                  <path d="M18 46c0-10 6-17 14-17s14 7 14 17z" fill="#5b4b8a" />
+                  <circle cx="24" cy="28" r="7" fill="#f6c69a" />
+                  <path d="M14 50c0-8 4-13 10-13s10 5 10 13z" fill="#e8547a" />
+                  <circle cx="42" cy="28" r="7" fill="#f6c69a" />
+                  <path d="M32 50c0-8 4-13 10-13s10 5 10 13z" fill="#5b98d4" />
+                </svg>
+              </div>
+              <div>
+                <p class="tong-label">Tổng nhân khẩu</p>
+                <p class="tong-num">3.580.921</p>
+              </div>
+            </div>
+            <div class="subbox-row">
+              <div class="subbox nu">
+                <p class="lbl">Nữ</p>
+                <p class="num">1.786.672</p>
+              </div>
+              <div class="subbox nam">
+                <p class="lbl">Nam</p>
+                <p class="num">1.786.672</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-side">
+            <div class="card thin stat-card compact metric-block" id="metric-dien-tich">
+              <span class="lbl">Diện tích</span>
+              <span class="num c-salmon">157,306</span>
+              <span class="unit">Km²</span>
+            </div>
+            <div class="card thin stat-card compact metric-block" id="metric-mat-do">
+              <span class="lbl">Mật độ dân số</span>
+              <span class="num c-blue">169,88</span>
+              <span class="unit">Người/Km²</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Age Row -->
+        <div class="stats-age">
+          <div class="card thin stat-card stacked metric-block" id="metric-tre-em">
+            <span class="lbl">Trẻ em (0-14t)</span>
+            <div class="row2"><span class="num c-salmon">842.339</span><span class="unit" style="margin-left:6px;">Nhân
+                khẩu</span></div>
+          </div>
+          <div class="card thin stat-card stacked metric-block" id="metric-lao-dong">
+            <span class="lbl">Người lao động (15-64t)</span>
+            <div class="row2"><span class="num c-blue">2.436.390</span><span class="unit" style="margin-left:6px;">Nhân
+                khẩu</span></div>
+          </div>
+          <div class="card thin stat-card stacked metric-block" id="metric-nguoi-lon-tuoi">
+            <span class="lbl">Người lớn tuổi (Trên 65t)</span>
+            <div class="row2"><span class="num c-magenta">302.192</span><span class="unit" style="margin-left:6px;">Nhân
+                khẩu</span></div>
+          </div>
+        </div>
+
+        <!-- Chart: Top 5 cao nhất -->
+        <div class="card hairline chart-card metric-block" id="metric-chart-high">
+          <div class="strip grad">
+            <h3>Top 5 xã phường có nhân khẩu cao nhất</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartHigh"></canvas></div>
+        </div>
+
+        <!-- Chart: Top 5 thấp nhất -->
+        <div class="card hairline chart-card metric-block" id="metric-chart-low">
+          <div class="strip grad">
+            <h3>Top 5 xã phường có nhân khẩu thấp nhất</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartLow"></canvas></div>
+        </div>
+
+      </div><!-- /left-panel -->
+
+      <!-- Map card -->
+      <div class="card thin map-card metric-block" id="metric-map">
+        <h3>Phân bố dân cư theo đơn vị hành chính</h3>
+        <div class="map-svg-wrap">
+          <svg id="mapSvg" viewBox="0 0 726 690" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;height:100%;"></svg>
+          <div class="map-legend">
+            <div class="item"><span class="sw" style="background:#0b3d91;"></span>Trên 104.000</div>
+            <div class="item"><span class="sw" style="background:#2f6fce;"></span>78.000-104.000</div>
+            <div class="item"><span class="sw" style="background:#7aa8e6;"></span>52.000-78.000</div>
+            <div class="item"><span class="sw" style="background:#b6d0f2;"></span>26.000-52.000</div>
+            <div class="item"><span class="sw" style="background:#e2ecfa;"></span>Dưới 26.000</div>
+          </div>
+        </div>
+      </div><!-- /map card -->
+
+    </div><!-- /main-grid -->
+
+    <!-- Tab Bar -->
+    <nav class="tabbar">
+      <div class="tab active">Tình hình dân cư theo giới tính</div>
+      <div class="tab">Tình hình dân cư theo độ tuổi</div>
+      <div class="tab">Tình hình dân cư theo mức sinh</div>
+      <div class="tab">Tình hình dân cư theo dân tộc</div>
+      <div class="tab">Tình hình dân cư theo tôn giáo</div>
+      <div class="tab">Tình hình tham gia Bảo hiểm</div>
+    </nav>
+
+    <!-- Event Panel Drawer (position: fixed via CSS) -->
+    <div class="event-drawer" id="eventDrawer">
+      <div class="drawer-header">
+        <span><i class="fa-solid fa-bullhorn"></i> Bảng chỉ đạo điều hành</span>
+        <button class="drawer-close" onclick="toggleDrawer()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="drawer-content" id="drawerContent">
+
+        <!-- Group 2 nút hành động ở đầu Drawer -->
+        <div class="drawer-top-actions">
+          <button class="btn-drawer-action active" id="btnShowCreateForm" onclick="openDirectiveFormModal()">
+            <i class="fa-solid fa-plus"></i> Thêm mới chỉ đạo
+          </button>
+          <button class="btn-drawer-action" id="btnShowUrgeForm" onclick="submitBatchUrgeDirectives()">
+            <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="urgeTopCount"></span>
+          </button>
+        </div>
+
+        <!-- Tiêu đề + Alert Deadline Banner + Nút chọn tất cả & đôn đốc -->
+        <div class="directive-list-header" style="flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+            <span class="drawer-section-title" style="margin:0;border:none;padding:0;">
+              <i class="fa-solid fa-list-check"></i> Danh sách chỉ đạo
+            </span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <label
+                style="font-size:11px; font-weight:700; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; gap:4px;">
+                <input type="checkbox" id="selectAllDirectives" onchange="toggleSelectAllDirectives(this)"
+                  style="cursor:pointer; accent-color:var(--pink);">
+                <span>Chọn tất cả</span>
+              </label>
+              <button class="btn-urge-inline" onclick="submitBatchUrgeDirectives()"
+                style="padding:4px 10px; background:linear-gradient(100deg, var(--pink), var(--pink-light)); color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="selectedUrgeInlineCount"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deadline Notification Panel -->
+        <div class="deadline-panel" id="deadlinePanel" style="display:none;"></div>
+
+        <div class="directives-container" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Search & Filter Controls -->
+          <div class="directive-filters" style="flex-wrap: wrap;">
+            <div class="directive-search-wrap" style="flex: 1 1 100%;">
+              <input type="text" id="directiveSearch" placeholder="Tìm nội dung, chỉ số, cơ quan...">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <select id="directiveFilterOrganzation" class="directive-filter-select" onchange="onAgencyFilterChange()">
+              <option value="Tất cả">Tất cả đơn vị</option>
+              <option value="Sở Nội vụ">Sở Nội vụ</option>
+              <option value="Sở Thông tin và Truyền thông">Sở Thông tin và Truyền thông</option>
+              <option value="Sở Tư pháp">Sở Tư pháp</option>
+              <option value="Sở Lao động - Thương binh và Xã hội">Sở Lao động - Thương binh và Xã hội</option>
+              <option value="Sở Y tế">Sở Y tế</option>
+              <option value="Sở Giáo dục và Đào tạo">Sở Giáo dục và Đào tạo</option>
+              <option value="Sở Kế hoạch và Đầu tư">Sở Kế hoạch và Đầu tư</option>
+              <option value="Sở Tài chính">Sở Tài chính</option>
+              <option value="UBND Huyện Pleiku">UBND Huyện Pleiku</option>
+              <option value="UBND Huyện Ia Grai">UBND Huyện Ia Grai</option>
+              <option value="UBND Huyện Chư Sê">UBND Huyện Chư Sê</option>
+              <option value="UBND Huyện Đăk Đoa">UBND Huyện Đăk Đoa</option>
+              <option value="Cục Thống kê Gia Lai">Cục Thống kê Gia Lai</option>
+              <option value="Công an Tỉnh Gia Lai">Công an Tỉnh Gia Lai</option>
+            </select>
+            <select id="directiveFilterStatus" class="directive-filter-select">
+              <option value="Tất cả">Tất cả trạng thái</option>
+              <option value="Đã chỉ đạo">Đã chỉ đạo</option>
+              <option value="Chờ phân công">Chờ phân công</option>
+              <option value="Đang xử lý">Đang xử lý</option>
+              <option value="Đã có báo cáo">Đã có báo cáo</option>
+              <option value="Hoàn thành">Hoàn thành</option>
+              <option value="Bị từ chối">Bị từ chối</option>
+            </select>
+            <select id="directiveFilterDeadline" class="directive-filter-select">
+              <option value="Tất cả">Tất cả tình trạng</option>
+              <option value="Trong hạn">Trong hạn</option>
+              <option value="Quá hạn">Quá hạn</option>
+            </select>
+            <div class="directive-date-filter">
+              <input type="text" id="filterDateFrom" class="directive-filter-date" placeholder="Từ ngày" readonly>
+              <span style="color:var(--text-muted); font-size:10px;">—</span>
+              <input type="text" id="filterDateTo" class="directive-filter-date" placeholder="Đến ngày" readonly>
+            </div>
+          </div>
+
+          <div id="directiveList"></div>
+
+          <!-- Directive Pagination -->
+          <div class="directive-pagination" id="directivePagination" style="display: none;">
+            <div class="pagination-limit">
+              <span>Hiện:</span>
+              <select id="paginationLimit">
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="pagination-controls">
+              <button id="btnPrevPage" title="Trang trước"><i class="fa-solid fa-chevron-left"></i></button>
+              <span id="paginationInfo">1/1</span>
+              <button id="btnNextPage" title="Trang sau"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Form Thêm mới / Sửa Chỉ đạo Popup -->
+      <div class="modal-overlay" id="directiveFormModal">
+        <div class="modal-card" style="width: 640px; max-width: 95vw;">
+          <div class="modal-header">
+            <span id="directiveFormModalTitle">Thêm mới chỉ đạo điều hành</span>
+            <button class="modal-close" onclick="closeDirectiveFormModal()">&times;</button>
+          </div>
+          <div class="modal-body"
+            style="padding: 18px; display: flex; flex-direction: column; gap: 12px; max-height: 75vh; overflow-y: auto;">
+            <div class="form-group">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Ngày tạo</label>
+              <input type="text" id="formCreatedAt" disabled
+                style="background:#f8fafc; color: var(--text-muted); padding:8px; border:1px solid #cbd5e1; border-radius:6px;"
+                placeholder="DD/MM/YYYY HH:mm:ss">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Chỉ số cần chỉ đạo <span
+                  class="required-star">(*)</span> <span
+                  style="font-size:10px;color:var(--text-muted); font-weight:normal;">Chọn nhiều</span></label>
+              <div class="multiselect-wrap" id="formMetricMultiWrap">
+                <div class="multiselect-display" id="formMetricDisplay" onclick="toggleMultiselect()">
+                  <span id="formMetricPlaceholder" style="color:var(--text-muted);">-- Chọn chỉ số --</span>
+                </div>
+                <div class="multiselect-dropdown" id="formMetricDropdown">
+                  <label class="ms-opt"><input type="checkbox" value="metric-tong-nhan-khau"> Tổng nhân khẩu</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-dien-tich"> Diện tích (Km²)</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-mat-do"> Mật độ dân số</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-tre-em"> Trẻ em (0-14t)</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-lao-dong"> Người lao động (15-64t)</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-nguoi-lon-tuoi"> Người lớn tuổi (Trên
+                    65t)</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-chart-high"> Top 5 nhân khẩu cao
+                    nhất</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-chart-low"> Top 5 nhân khẩu thấp
+                    nhất</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-map"> Bản đồ phân bố dân cư</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="formAgency" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Cơ quan
+                tiếp nhận chỉ đạo <span class="required-star">(*)</span></label>
+              <select id="formAgency" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                <option value="">-- Chọn cơ quan --</option>
+                <option>Sở Nội vụ</option>
+                <option>Sở Thông tin và Truyền thông</option>
+                <option>Sở Tư pháp</option>
+                <option>Sở Lao động - Thương binh và Xã hội</option>
+                <option>Sở Y tế</option>
+                <option>Sở Giáo dục và Đào tạo</option>
+                <option>Sở Kế hoạch và Đầu tư</option>
+                <option>Sở Tài chính</option>
+                <option>UBND Huyện Pleiku</option>
+                <option>UBND Huyện Ia Grai</option>
+                <option>UBND Huyện Chư Sê</option>
+                <option>UBND Huyện Đăk Đoa</option>
+                <option>Cục Thống kê Gia Lai</option>
+                <option>Công an Tỉnh Gia Lai</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="formContent" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Nội dung
+                chỉ đạo <span class="required-star">(*)</span></label>
+              <textarea id="formContent" rows="3" placeholder="Nhập nội dung chỉ đạo..."
+                style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-family:var(--font-family); font-size:var(--fs-sm);"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="formDueDate" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Hạn xử
+                lý</label>
+              <input type="text" id="formDueDate" placeholder="Chọn ngày..." readonly
+                style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer;">
+            </div>
+            <div class="form-group">
+              <label for="formDirector" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Người
+                chỉ đạo <span class="required-star">(*)</span></label>
+              <select id="formDirector" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                <option value="">-- Chọn người chỉ đạo --</option>
+                <option>Chủ tịch UBND Tỉnh</option>
+                <option>Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)</option>
+                <option>Phó Chủ tịch UBND Tỉnh (phụ trách Nội chính)</option>
+                <option>Giám đốc Sở KHCN</option>
+                <option>Phó Giám đốc Sở KHCN</option>
+                <option>Chánh Văn phòng UBND Tỉnh</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đính kèm file</label>
+              <div class="file-attach-wrap">
+                <label class="btn-file-attach" for="formAttach">
+                  <i class="fa-solid fa-paperclip"></i> Chọn file
+                </label>
+                <input type="file" id="formAttach" multiple style="display:none;" onchange="handleFileAttach(this)">
+                <div class="file-attach-list" id="formAttachList"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer"
+            style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn-close-modal" onclick="closeDirectiveFormModal()"
+              style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Hủy
+              bỏ</button>
+            <button class="btn-submit-directive" id="btnSubmitDirectiveModal" onclick="saveDirectiveFromModal()"
+              style="padding: 8px 22px; background: var(--pink); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+              <i class="fa-solid fa-paper-plane"></i> Gửi chỉ đạo
+            </button>
+          </div>
+        </div>
+      </div>
+      </div> <!-- /drawer-content -->
+    </div> <!-- /event-drawer -->
+    <!-- Modal Xem Chi Tiết Chỉ Đạo -->
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <span>Chi tiết chỉ đạo điều hành</span>
+          <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Tabs -->
+          <div class="modal-tabs">
+            <div class="modal-tab active" id="tabBtnInfo" onclick="switchModalTab('info')">
+              Thông tin chỉ đạo
+            </div>
+            <div class="modal-tab" id="tabBtnHistory" onclick="switchModalTab('history')">
+              Lịch sử trạng thái
+            </div>
+          </div>
+          <!-- Tab 1: Thông tin -->
+          <div class="modal-tab-content active" id="tabContentInfo">
+            <!-- Điền bằng JS -->
+          </div>
+          <!-- Tab 2: Lịch sử -->
+          <div class="modal-tab-content" id="tabContentHistory" style="overflow-x:auto;">
+            <!-- Điền bằng JS -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-close-modal" onclick="closeDetailModal()"
+            style="padding: 7px 20px; background: #757575; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: opacity 0.2s;">Đóng</button>
+        </div>
       </div>
     </div>
-  </div>
 
-</div><!-- /stage -->
+    <!-- Modal Từ Chối Phê Duyệt -->
+    <div class="modal-overlay" id="rejectModal">
+      <div class="modal-card" style="width: 520px; max-width: 92vw;">
+        <div class="modal-header">
+          <span>Từ chối phê duyệt báo cáo</span>
+          <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+          <div
+            style="background:#fff5f5; border:1px solid #fed7d7; border-left:4px solid #e53e3e; padding:10px 14px; border-radius:6px; font-size:12px; color:#c53030;">
+            Chỉ đạo sẽ chuyển sang trạng thái <strong>Bị từ chối</strong> và yêu cầu đơn vị tiếp nhận tiến hành báo
+            cáo lại.
+          </div>
+          <div class="form-group">
+            <label for="rejectReasonInput" style="font-weight:700; font-size:var(--fs-sm);">Nội dung / Lý do từ chối
+              <span class="required-star">(*)</span></label>
+            <textarea id="rejectReasonInput" rows="4"
+              placeholder="Nhập chi tiết lý do từ chối và yêu cầu đơn vị báo cáo lại..."
+              style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:10px; font-family:var(--font-family); font-size:var(--fs-sm); outline:none;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer"
+          style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn-close-modal" onclick="closeRejectModal()"
+            style="padding: 8px 16px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Hủy
+            bỏ</button>
+          <button class="btn-submit-reject" onclick="submitRejectDirective()"
+            style="padding: 8px 20px; background: #d32f2f; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Gửi
+            từ chối</button>
+        </div>
+      </div>
+    </div>
 
-<!-- Flatpickr -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Toast Notification -->
+    <div id="toastNotification">
+      <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
+      <span id="toastMsg">Thông báo</span>
+    </div>
 
-<!-- JS -->
-<script src="./js/state.js"></script>
-<script src="./js/ui.js"></script>
-<script src="./js/charts.js"></script>
-<script src="./js/map.js"></script>
+  </div><!-- /stage -->
+
+  <!-- Flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <!-- JS -->
+  <script src="./js/state.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/charts.js"></script>
+  <script src="./js/map.js"></script>
 
 </body>
+
 </html>
