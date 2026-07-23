@@ -37,6 +37,16 @@
       <button title="Toàn màn hình"><i class="fa-solid fa-expand"></i></button>
       <button title="Cài đặt" onclick="window.location.href='../Quản trị/admin.html'"><i
           class="fa-solid fa-gear"></i></button>
+
+      <!-- Toggle Cảnh Báo -->
+      <div class="warning-toggle-wrap" title="Bật/Tắt hiệu ứng nhấp nháy cảnh báo chỉ đạo" style="display:flex; align-items:center; gap:6px; background:#fff; padding:4px 10px; border-radius:20px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+        <span style="font-size:11px; font-weight:700; color:#334155;"><i class="fa-solid fa-bell" style="color:var(--pink);"></i> Cảnh báo</span>
+        <label class="switch" style="position:relative; display:inline-block; width:34px; height:18px; margin:0;">
+          <input type="checkbox" id="toggleWarningAlert" checked onchange="handleWarningToggleChange(this)">
+          <span class="slider round"></span>
+        </label>
+      </div>
+
       <button id="btnToggleDrawer" title="Bảng chỉ đạo" style="position:relative;">
         <i class="fa-solid fa-bullhorn"></i>
         <span id="drawerBadge" style="position:absolute;
@@ -225,33 +235,29 @@
       </div>
       <div class="drawer-content" id="drawerContent">
 
-        <!-- Group 2 nút hành động ở đầu Drawer -->
-        <div class="drawer-top-actions">
-          <button class="btn-drawer-action active" id="btnShowCreateForm" onclick="openDirectiveFormModal()">
-            <i class="fa-solid fa-plus"></i> Thêm mới chỉ đạo
-          </button>
-          <button class="btn-drawer-action" id="btnShowUrgeForm" onclick="submitBatchUrgeDirectives()">
-            <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="urgeTopCount"></span>
-          </button>
-        </div>
 
         <!-- Tiêu đề + Alert Deadline Banner + Nút chọn tất cả & đôn đốc -->
         <div class="directive-list-header" style="flex-wrap:wrap; gap:8px;">
           <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-            <span class="drawer-section-title" style="margin:0;border:none;padding:0;">
+            <span class="drawer-section-title" style="margin:0;border:none;padding:0; font-size:14px;">
               <i class="fa-solid fa-list-check"></i> Danh sách chỉ đạo
             </span>
             <div style="display:flex; align-items:center; gap:10px;">
               <label
-                style="font-size:11px; font-weight:700; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; gap:4px;">
+                style="font-size:13px; font-weight:700; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; gap:4px;">
                 <input type="checkbox" id="selectAllDirectives" onchange="toggleSelectAllDirectives(this)"
                   style="cursor:pointer; accent-color:var(--pink);">
                 <span>Chọn tất cả</span>
               </label>
               <button class="btn-urge-inline" onclick="submitBatchUrgeDirectives()"
-                style="padding:4px 10px; background:linear-gradient(100deg, var(--pink), var(--pink-light)); color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                style="padding:6px 12px; background:linear-gradient(100deg, var(--pink), var(--pink-light)); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
                 <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="selectedUrgeInlineCount"></span>
               </button>
+              <button class="btn-create-inline" id="btnShowCreateForm" onclick="openDirectiveFormModal()"
+                style="padding:6px 12px; background:linear-gradient(100deg, #10b981, #34d399); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                <i class="fa-solid fa-plus"></i> Thêm mới
+              </button>
+              
             </div>
           </div>
         </div>
@@ -344,11 +350,11 @@
             </div>
             <div class="form-group">
               <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Chỉ số cần chỉ đạo <span
-                  class="required-star">(*)</span> <span
-                  style="font-size:10px;color:var(--text-muted); font-weight:normal;">Chọn nhiều</span></label>
+                  class="required-star">(*)</span></label>
               <div class="multiselect-wrap" id="formMetricMultiWrap">
-                <div class="multiselect-display" id="formMetricDisplay" onclick="toggleMultiselect()">
+                <div class="multiselect-display" id="formMetricDisplay" onclick="toggleMultiselect()" style="position:relative; padding-right:30px;">
                   <span id="formMetricPlaceholder" style="color:var(--text-muted);">-- Chọn chỉ số --</span>
+                  <i class="fa-solid fa-chevron-down" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:11px; color:#64748b; pointer-events:none;"></i>
                 </div>
                 <div class="multiselect-dropdown" id="formMetricDropdown">
                   <label class="ms-opt"><input type="checkbox" value="metric-tong-nhan-khau"> Tổng nhân khẩu</label>
@@ -356,12 +362,9 @@
                   <label class="ms-opt"><input type="checkbox" value="metric-mat-do"> Mật độ dân số</label>
                   <label class="ms-opt"><input type="checkbox" value="metric-tre-em"> Trẻ em (0-14t)</label>
                   <label class="ms-opt"><input type="checkbox" value="metric-lao-dong"> Người lao động (15-64t)</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-nguoi-lon-tuoi"> Người lớn tuổi (Trên
-                    65t)</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-chart-high"> Top 5 nhân khẩu cao
-                    nhất</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-chart-low"> Top 5 nhân khẩu thấp
-                    nhất</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-nguoi-lon-tuoi"> Người lớn tuổi (Trên 65t)</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-chart-high"> Top 5 nhân khẩu cao nhất</label>
+                  <label class="ms-opt"><input type="checkbox" value="metric-chart-low"> Top 5 nhân khẩu thấp nhất</label>
                   <label class="ms-opt"><input type="checkbox" value="metric-map"> Bản đồ phân bố dân cư</label>
                 </div>
               </div>
@@ -396,30 +399,36 @@
             <div class="form-group">
               <label for="formDueDate" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Hạn xử
                 lý</label>
-              <input type="text" id="formDueDate" placeholder="Chọn ngày..." readonly
+              <input type="text" id="formDueDate" placeholder="Chọn ngày" readonly
                 style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer;">
             </div>
             <div class="form-group">
               <label for="formDirector" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Người
                 chỉ đạo <span class="required-star">(*)</span></label>
-              <select id="formDirector" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
-                <option value="">-- Chọn người chỉ đạo --</option>
-                <option>Chủ tịch UBND Tỉnh</option>
-                <option>Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)</option>
-                <option>Phó Chủ tịch UBND Tỉnh (phụ trách Nội chính)</option>
-                <option>Giám đốc Sở KHCN</option>
-                <option>Phó Giám đốc Sở KHCN</option>
-                <option>Chánh Văn phòng UBND Tỉnh</option>
+              <select id="formDirector" disabled style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#f1f5f9; cursor:not-allowed; color:#475569; font-weight:600;">
+                <option value="Chủ tịch UBND Tỉnh" selected>Chủ tịch UBND Tỉnh</option>
               </select>
             </div>
             <div class="form-group">
-              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đính kèm file</label>
-              <div class="file-attach-wrap">
-                <label class="btn-file-attach" for="formAttach">
-                  <i class="fa-solid fa-paperclip"></i> Chọn file
-                </label>
-                <input type="file" id="formAttach" multiple style="display:none;" onchange="handleFileAttach(this)">
-                <div class="file-attach-list" id="formAttachList"></div>
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đính kèm file, hình ảnh</label>
+              <div class="file-attach-wrap" style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <label class="btn-file-attach" for="formAttach" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
+                    <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Chọn file / Ảnh
+                  </label>
+                  <input type="file" id="formAttach" multiple style="display:none;" onchange="handleFileAttach(this)">
+                  <div style="position:relative; display:inline-block;">
+                    <button type="button" onclick="toggleCaptureMenu(event)" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
+                      <i class="fa-solid fa-camera" style="color:#2563eb;"></i> Chụp màn hình <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                    </button>
+                    <div id="captureMenuDropdown" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; background:#fff; border:1px solid #cbd5e1; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:100; min-width:170px; overflow:hidden;">
+                      <button type="button" onclick="executeScreenCapture('full')" style="width:100%; text-align:left; padding:8px 12px; background:none; border:none; font-size:12px; cursor:pointer; color:#334155;"><i class="fa-solid fa-desktop" style="margin-right:6px; color:#2563eb;"></i> Chụp toàn trang</button>
+                      <button type="button" onclick="executeScreenCapture('single')" style="width:100%; text-align:left; padding:8px 12px; background:none; border:none; font-size:12px; cursor:pointer; color:#334155;"><i class="fa-chart-pie fa-solid" style="margin-right:6px; color:#16a34a;"></i> Chụp 1 biểu đồ</button>
+                      <button type="button" onclick="executeScreenCapture('multi')" style="width:100%; text-align:left; padding:8px 12px; background:none; border:none; font-size:12px; cursor:pointer; color:#334155;"><i class="fa-solid fa-chart-column" style="margin-right:6px; color:#d97706;"></i> Chụp nhiều biểu đồ</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="file-attach-list" id="formAttachList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;"></div>
               </div>
             </div>
           </div>
@@ -470,9 +479,32 @@
       </div>
     </div>
 
+    <!-- Modal Xác Nhận Phê Duyệt Báo Cáo -->
+    <div class="modal-overlay" id="confirmApproveModal">
+      <div class="modal-card" style="width: 460px; max-width: 92vw;">
+        <div class="modal-header" style="background: linear-gradient(100deg, #16a34a, #22c55e);">
+          <span><i class="fa-solid fa-circle-check"></i> Xác nhận phê duyệt báo cáo</span>
+          <button class="modal-close" onclick="closeConfirmApproveModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="width: 52px; height: 52px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
+            Phê duyệt báo cáo kết quả và đánh dấu Hoàn thành chỉ đạo này?
+          </p>
+          <span style="font-size: 12px; color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Hoàn thành và lưu vào hệ thống.</span>
+        </div>
+        <div class="modal-footer" style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn-close-modal" onclick="closeConfirmApproveModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Hủy bỏ</button>
+          <button id="btnConfirmApproveSubmit" onclick="executeConfirmApprove()" style="padding: 8px 22px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Phê duyệt</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal Từ Chối Phê Duyệt -->
     <div class="modal-overlay" id="rejectModal">
-      <div class="modal-card" style="width: 520px; max-width: 92vw;">
+      <div class="modal-card" style="width: 540px; max-width: 92vw;">
         <div class="modal-header">
           <span>Từ chối phê duyệt báo cáo</span>
           <button class="modal-close" onclick="closeRejectModal()">&times;</button>
@@ -486,9 +518,22 @@
           <div class="form-group">
             <label for="rejectReasonInput" style="font-weight:700; font-size:var(--fs-sm);">Nội dung / Lý do từ chối
               <span class="required-star">(*)</span></label>
-            <textarea id="rejectReasonInput" rows="4"
+            <textarea id="rejectReasonInput" rows="3"
               placeholder="Nhập chi tiết lý do từ chối và yêu cầu đơn vị báo cáo lại..."
               style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:10px; font-family:var(--font-family); font-size:var(--fs-sm); outline:none;"></textarea>
+          </div>
+          <div class="form-group">
+            <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tải file, Tải ảnh & Chụp màn hình đính kèm</label>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+              <label for="rejectAttachInput" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
+                <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Tải file / Ảnh
+              </label>
+              <input type="file" id="rejectAttachInput" multiple style="display:none;" onchange="handleRejectFileAttach(this)">
+              <button type="button" onclick="captureRejectScreenAttachment()" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
+                <i class="fa-solid fa-camera" style="color:#2563eb;"></i> Chụp màn hình
+              </button>
+            </div>
+            <div class="file-attach-list" id="rejectAttachList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
           </div>
         </div>
         <div class="modal-footer"
@@ -497,8 +542,57 @@
             style="padding: 8px 16px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Hủy
             bỏ</button>
           <button class="btn-submit-reject" onclick="submitRejectDirective()"
-            style="padding: 8px 20px; background: #d32f2f; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Gửi
-            từ chối</button>
+            style="padding: 8px 20px; background: #d32f2f; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Từ chối</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Xem Trước File Đính Kèm -->
+    <div class="modal-overlay" id="filePreviewModal">
+      <div class="modal-card" style="width: 720px; max-width: 92vw;">
+        <div class="modal-header">
+          <span id="filePreviewTitle"><i class="fa-solid fa-file"></i> Xem trước tài liệu đính kèm</span>
+          <button class="modal-close" onclick="closeFilePreviewModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 280px; background: #f8fafc;">
+          <i class="fa-solid fa-file-pdf" style="font-size: 64px; color: var(--pink);"></i>
+          <div style="text-align: center;">
+            <h4 id="filePreviewName" style="margin: 0 0 6px; font-size: 15px; color: var(--text-dark);">Tập tin đính kèm</h4>
+            <p style="margin: 0; font-size: 12px; color: var(--text-muted);">Bản xem trước dữ liệu tài liệu trực tuyến (Nguồn: C06 / Văn phòng UBND Tỉnh)</p>
+          </div>
+          <div style="width: 100%; height: 160px; background: #fff; border: 1px dashed #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px;">
+            <i class="fa-solid fa-eye" style="color: #64748b; font-size: 20px;"></i>
+            <span style="font-size: 12px; color: #475569; font-weight: 500;">Hệ thống đang hiển thị nội dung tài liệu trích xuất tự động</span>
+          </div>
+        </div>
+        <div class="modal-footer" style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn-close-modal" onclick="closeFilePreviewModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Đóng</button>
+          <button id="btnDownloadFromPreview" onclick="downloadCurrentPreviewFile()" style="padding: 8px 20px; background: var(--pink); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+            <i class="fa-solid fa-download"></i> Tải về
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Xác Nhận Xóa Chỉ Đạo -->
+    <div class="modal-overlay" id="confirmDeleteModal">
+      <div class="modal-card" style="width: 440px; max-width: 92vw;">
+        <div class="modal-header" style="background: linear-gradient(100deg, #ef4444, #f87171);">
+          <span><i class="fa-solid fa-triangle-exclamation"></i> Xác nhận xóa chỉ đạo</span>
+          <button class="modal-close" onclick="closeConfirmDeleteModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="width: 52px; height: 52px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+          <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
+            Bạn có chắc chắn muốn xoá chỉ đạo này không?
+          </p>
+          <span style="font-size: 12px; color: #64748b;">Hành động này không thể hoàn tác sau khi thực hiện.</span>
+        </div>
+        <div class="modal-footer" style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn-close-modal" onclick="closeConfirmDeleteModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Hủy</button>
+          <button id="btnConfirmDeleteSubmit" onclick="executeConfirmDelete()" style="padding: 8px 22px; background: #dc2626; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Đồng ý</button>
         </div>
       </div>
     </div>

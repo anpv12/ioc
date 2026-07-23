@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v9';
+const DATA_VERSION = 'gialai_directives_v11';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -70,112 +70,195 @@ try {
 
 // Reset nếu phiên bản dữ liệu cũ
 const currentVersion = localStorage.getItem('gialai_directives_version');
-if (currentVersion !== DATA_VERSION || !Array.isArray(directives) || directives.length < 30) {
+if (currentVersion !== DATA_VERSION || !Array.isArray(directives) || directives.length > 20) {
   directives = [];
   localStorage.setItem('gialai_directives_version', DATA_VERSION);
   localStorage.removeItem(STORAGE_KEY);
 }
 
-// Seed mock data (123 chỉ đạo) nếu cần
-if (directives.length < 123) {
-  const metricKeys = Object.keys(METRIC_LABELS);
-  const statuses = ['Đã chỉ đạo', 'Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Hoàn thành', 'Bị từ chối'];
-  const contents = [
-    'Rà soát toàn bộ số liệu thống kê dân cư định kỳ, đối chiếu dữ liệu hộ khẩu thực tế.',
-    'Báo cáo tình hình biến động nhân khẩu đột xuất tại địa phương trong quý.',
-    'Kiểm tra hạ tầng mạng và kết nối dữ liệu quốc gia về dân cư, khắc phục sự cố.',
-    'Tăng cường tuyên truyền, hướng dẫn công dân cập nhật định danh điện tử VNeID.',
-    'Tổng hợp danh sách đối tượng chính sách ưu tiên, trình phê duyệt trước cuối tháng.',
-    'Hỗ trợ kỹ thuật cho các điểm tiếp nhận thông tin người dân trên địa bàn.',
-    'Đẩy nhanh tiến độ nhập liệu hồ sơ hộ tịch còn tồn đọng theo chỉ tiêu.',
-    'Cập nhật bản đồ phân bố dân số theo phân cấp hành chính mới sau sáp nhập.',
-    'Theo dõi tỷ lệ sinh và mất tại các khu vực vùng sâu vùng xa, báo cáo kịp thời.',
-    'Thực hiện báo cáo định kỳ tình hình lao động có việc làm và tỷ lệ thất nghiệp.'
+// Seed mock data chuẩn (bao phủ toàn bộ trường hợp) nếu cần
+if (directives.length === 0) {
+  const todayStr = formatDateDMY(new Date());
+  const dueOverdue = formatDateDMY(new Date(Date.now() - 2 * 86400000));
+  const dueSoon = formatDateDMY(new Date(Date.now() + 2 * 86400000));
+  const dueNormal = formatDateDMY(new Date(Date.now() + 7 * 86400000));
+
+  directives = [
+    // --- Metric Tổng nhân khẩu: 3 chỉ đạo active (2 Đỏ + 1 Cam -> Ưu tiên Đỏ, hiện số 3 khoanh tròn) ---
+    {
+      id: 'dir_mock_1',
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Công an Tỉnh Gia Lai',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Rà soát dữ liệu hộ khẩu và cập nhật biến động nhân khẩu khu vực thành phố Pleiku.',
+      dueDate: dueSoon,
+      reportDueDate: '',
+      attachments: [{ name: 'Kế_hoạch_rà_soát_C06.pdf', source: 'leader' }],
+      status: 'Đã chỉ đạo',
+      report: '',
+      createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_2',
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Sở Thông tin và Truyền thông',
+      director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      content: 'Kiểm tra hạ tầng mạng kết nối dữ liệu dân cư quốc gia trên địa bàn tỉnh.',
+      dueDate: dueOverdue,
+      reportDueDate: '',
+      attachments: [{ name: 'Công_văn_chỉ_đạo_hạ_tầng.pdf', source: 'leader' }],
+      status: 'Chờ phân công',
+      report: '',
+      createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_3',
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Cục Thống kê Gia Lai',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Tổng hợp số liệu thống kê dân số phục vụ lập quy hoạch phát triển đợt mới.',
+      dueDate: dueNormal,
+      reportDueDate: dueNormal,
+      attachments: [{ name: 'Đề_đánh_giá_thống_kê.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: 'Đơn vị đang tiến hành tổng hợp dữ liệu thu thập từ các huyện cơ sở.',
+      createdAt: todayStr
+    },
+
+    // --- Metric Diện tích: 1 chỉ đạo Đỏ active (hiển thị Icon Cảnh báo màu Đỏ) ---
+    {
+      id: 'dir_mock_4',
+      metricIds: ['metric-dien-tich'],
+      metricId: 'metric-dien-tich',
+      agency: 'Sở Kế hoạch và Đầu tư',
+      director: 'Phó Chủ tịch UBND Tỉnh (phụ trách Nội chính)',
+      creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách Nội chính)',
+      content: 'Cập nhật bản đồ địa giới hành chính các xã phường sau quy hoạch sáp nhập.',
+      dueDate: dueNormal,
+      reportDueDate: '',
+      attachments: [{ name: 'Chi_dao_dia_gioi.pdf', source: 'leader' }],
+      status: 'Đã chỉ đạo',
+      report: '',
+      createdAt: todayStr
+    },
+
+    // --- Metric Mật độ dân số: 2 chỉ đạo Cam active (hiển thị Số 2 khoanh tròn màu Cam) ---
+    {
+      id: 'dir_mock_5',
+      metricIds: ['metric-mat-do'],
+      metricId: 'metric-mat-do',
+      agency: 'UBND Huyện Pleiku',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Báo cáo mật độ dân cư tập trung tại các vùng đô thị trọng điểm.',
+      dueDate: dueNormal,
+      reportDueDate: dueNormal,
+      attachments: [{ name: 'Chi_dao_mat_do.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: 'Đang thu thập báo cáo từ các phường xã trực thuộc.',
+      createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_6',
+      metricIds: ['metric-mat-do'],
+      metricId: 'metric-mat-do',
+      agency: 'Sở Lao động - Thương binh và Xã hội',
+      director: 'Giám đốc Sở KHCN',
+      creator: 'Giám đốc Sở KHCN',
+      content: 'Khảo sát biến động phân bố lực lượng lao động di cư theo mật độ dân số.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [
+        { name: 'Khảo_sát_lao_động.pdf', source: 'leader' },
+        { name: 'Báo_cáo_kết_quả_bước_1.docx', source: 'agency' }
+      ],
+      status: 'Đã có báo cáo',
+      report: 'Đã hoàn tất khảo sát đợt 1 tại 5 khu công nghiệp lớn.',
+      createdAt: todayStr
+    },
+
+    // --- Metric Trẻ em (0-14t): 1 chỉ đạo Cam active (hiển thị Icon Đồng hồ màu Cam) ---
+    {
+      id: 'dir_mock_7',
+      metricIds: ['metric-tre-em'],
+      metricId: 'metric-tre-em',
+      agency: 'Sở Y tế',
+      director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      content: 'Lập danh sách trẻ em trong độ tuổi tiêm chủng đợt 2 năm 2026.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [{ name: 'Ke_hoach_tiem_chung.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: 'Đã gửi công văn hướng dẫn xuống các trung tâm y tế huyện.',
+      createdAt: todayStr
+    },
+
+    // --- Metric Người lao động: 1 chỉ đạo Hoàn thành (Không hiện Ribbon active) ---
+    {
+      id: 'dir_mock_8',
+      metricIds: ['metric-lao-dong'],
+      metricId: 'metric-lao-dong',
+      agency: 'Sở Lao động - Thương binh và Xã hội',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Tổng hợp tỷ lệ giải quyết việc làm cho người lao động Quý 2.',
+      dueDate: todayStr,
+      reportDueDate: todayStr,
+      attachments: [
+        { name: 'Yeu_cau_viec_lam.pdf', source: 'leader' },
+        { name: 'Bao_cao_viec_lam_Q2.pdf', source: 'agency' }
+      ],
+      status: 'Hoàn thành',
+      report: 'Đã hoàn thành phê duyệt kết quả báo cáo giải quyết việc làm Quý 2.',
+      createdAt: todayStr
+    },
+
+    // --- Metric Người lớn tuổi: 1 chỉ đạo Bị từ chối (Không hiện Ribbon active) ---
+    {
+      id: 'dir_mock_9',
+      metricIds: ['metric-nguoi-lon-tuoi'],
+      metricId: 'metric-nguoi-lon-tuoi',
+      agency: 'Sở Y tế',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Thực hiện đợt khám sức khỏe định kỳ cho người cao tuổi trên 65 tuổi.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [
+        { name: 'Kham_suc_khoe_NCT.pdf', source: 'leader' },
+        { name: 'Bao_cao_kham_suc_khoe_NCT_draft.pdf', source: 'agency' }
+      ],
+      status: 'Bị từ chối',
+      report: 'Số liệu thống kê chưa đầy đủ các huyện miền núi. Yêu cầu đơn vị rà soát và báo cáo lại chi tiết.',
+      createdAt: todayStr
+    }
   ];
-  const reports = [
-    'Đang tiến hành rà soát dữ liệu thu thập từ các đơn vị cơ sở.',
-    'Đã phối hợp khắc phục xong các điểm nghẽn kết nối dữ liệu.',
-    'Đã hoàn thành đợt tuyên truyền lưu động đầu tiên, đạt kết quả tốt.',
-    'Đang lập danh sách chi tiết, dự kiến trình lãnh đạo trong tuần tới.',
-    'Đã hoàn tất rà soát số liệu và cập nhật dữ liệu báo cáo hệ thống.'
-  ];
-
-  // Tạo ngày deadline đa dạng: quá hạn, đến hạn, sắp đến hạn, còn xa
-  function randomDueDate() {
-    const roll = Math.random();
-    let offset;
-    if (roll < 0.15) offset = -(Math.floor(Math.random() * 10) + 1); // quá hạn
-    else if (roll < 0.25) offset = 0;                                      // đúng hạn hôm nay
-    else if (roll < 0.40) offset = Math.floor(Math.random() * 3) + 1;     // sắp đến hạn (1-3 ngày)
-    else offset = Math.floor(Math.random() * 25) + 4;     // còn nhiều thời gian
-    return formatDateDMY(new Date(Date.now() + offset * 86400000));
-  }
-
-  directives = [];
-  for (let i = 0; i < 123; i++) {
-    const status = statuses[i % statuses.length]; // phân bổ đều các trạng thái
-    const metricId = metricKeys[Math.floor(Math.random() * metricKeys.length)];
-    const numMets = Math.floor(Math.random() * 3) + 1;
-    const shuffled = [...metricKeys].sort(() => 0.5 - Math.random());
-    const metricIds = shuffled.slice(0, numMets);
-
-    let report = '';
-    if (status === 'Đang xử lý') {
-      report = reports[Math.floor(Math.random() * (reports.length - 2))];
-    } else if (status === 'Đã có báo cáo') {
-      report = reports[3];
-    } else if (status === 'Hoàn thành') {
-      report = reports[4];
-    } else if (status === 'Bị từ chối') {
-      report = 'Lý do từ chối: Báo cáo kết quả chưa đầy đủ số liệu theo yêu cầu (Yêu cầu đơn vị tiếp nhận báo cáo lại).';
-    }
-
-    const dueDate = randomDueDate();
-    const createOff = Math.floor(Math.random() * 14) + 1;
-    const createdAt = formatDateDMY(new Date(Date.now() - createOff * 86400000)) + ' 08:30';
-
-    // Thời hạn đơn vị gửi báo cáo (chỉ cho các trạng thái có báo cáo)
-    let reportDueDate = '';
-    if (status === 'Đã có báo cáo' || status === 'Hoàn thành' || status === 'Bị từ chối' || status === 'Đang xử lý') {
-      const rptOff = Math.floor(Math.random() * 10) + 3;
-      reportDueDate = formatDateDMY(new Date(Date.now() + rptOff * 86400000));
-    }
-
-    const attachments = [];
-    if (i % 3 === 0) {
-      attachments.push({ name: 'Chi_dao_so_' + (i + 1) + '.pdf', source: 'leader' });
-    }
-    if (status === 'Đã có báo cáo' || status === 'Hoàn thành') {
-      attachments.push({ name: 'Bao_cao_don_vi_' + (i + 1) + '.docx', source: 'agency' });
-    }
-
-    directives.push({
-      id: 'dir_mock_' + (i + 1),
-      metricId,
-      metricIds,
-      agency: AGENCIES[Math.floor(Math.random() * AGENCIES.length)],
-      director: DIRECTORS[Math.floor(Math.random() * DIRECTORS.length)],
-      creator: DIRECTORS[Math.floor(Math.random() * DIRECTORS.length)],
-      attachments,
-      content: contents[i % contents.length],
-      dueDate,
-      reportDueDate,
-      status,
-      report,
-      createdAt,
-      history: [] // sẽ sinh động qua getDirectiveHistory
-    });
-  }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(directives));
 }
 
 // Migration backward-compat: bổ sung trường mới cho bản ghi cũ thiếu trường
+const STATUS_MAP_EN = {
+  'Đã chỉ đạo': 'da_chi_dao',
+  'Chờ phân công': 'da_chi_dao',
+  'Đang xử lý': 'dang_xu_ly',
+  'Đã có báo cáo': 'da_co_bao_cao',
+  'Hoàn thành': 'hoan_thanh',
+  'Bị từ chối': 'bi_tu_choi'
+};
+
 directives = directives.map(function (d) {
   const normalizedAttachments = Array.isArray(d.attachments)
     ? d.attachments.map(att => typeof att === 'string' ? { name: att, source: 'leader' } : att)
     : [];
-  return Object.assign({
+  const base = Object.assign({
     metricIds: d.metricId ? [d.metricId] : [],
     agency: AGENCIES[0],
     director: DIRECTORS[0],
@@ -183,13 +266,58 @@ directives = directives.map(function (d) {
     reportDueDate: '',
     history: []
   }, d, { attachments: normalizedAttachments });
+
+  base.indicatorKeys = base.metricIds;
+  base.title = base.content || '';
+  base.statusEnum = STATUS_MAP_EN[base.status] || 'da_chi_dao';
+
+  return base;
 });
 
 function saveDirectives() {
+  const STATUS_MAP_EN = {
+    'Đã chỉ đạo': 'da_chi_dao',
+    'Chờ phân công': 'da_chi_dao',
+    'Đang xử lý': 'dang_xu_ly',
+    'Đã có báo cáo': 'da_co_bao_cao',
+    'Hoàn thành': 'hoan_thanh',
+    'Bị từ chối': 'bi_tu_choi'
+  };
+  directives.forEach(d => {
+    d.indicatorKeys = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
+    d.title = d.content || '';
+    d.statusEnum = STATUS_MAP_EN[d.status] || 'da_chi_dao';
+  });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(directives));
 }
 
-// Helper: Lấy/sinh lịch sử trạng thái đầy đủ 13 cột cho chỉ đạo
+// Selector lấy danh sách chỉ đạo active của chỉ số đó
+function getActiveDirectivesByIndicator(indicatorKey) {
+  const STATUS_MAP_EN = {
+    'Đã chỉ đạo': 'da_chi_dao',
+    'Chờ phân công': 'da_chi_dao',
+    'Đang xử lý': 'dang_xu_ly',
+    'Đã có báo cáo': 'da_co_bao_cao',
+    'Hoàn thành': 'hoan_thanh',
+    'Bị từ chối': 'bi_tu_choi'
+  };
+
+  return directives.filter(d => {
+    const keys = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
+    const isActive = d.status !== 'Hoàn thành' && d.status !== 'Bị từ chối';
+    return keys.includes(indicatorKey) && isActive;
+  }).map(d => {
+    return Object.assign({}, d, {
+      indicatorKeys: d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []),
+      title: d.content || '',
+      statusEnum: STATUS_MAP_EN[d.status] || 'da_chi_dao'
+    });
+  });
+}
+window.getActiveDirectivesByIndicator = getActiveDirectivesByIndicator;
+
+
+// Helper: Lấy/sinh lịch sử trạng thái đầy đủ các cột mới cho chỉ đạo
 function getDirectiveHistory(dir) {
   if (!dir) return [];
 
@@ -200,21 +328,21 @@ function getDirectiveHistory(dir) {
   const agencyRep = 'Đại diện ' + agency;
   const content1st = dir.content ? (dir.content.length > 60 ? dir.content.substring(0, 60) + '...' : dir.content) : '';
 
+  const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => f.name).join(', ') || '-';
+  const agencyFiles = (dir.attachments || []).filter(f => f.source === 'agency').map(f => f.name).join(', ') || '-';
+
   // ----- Bước 1: Đã chỉ đạo -----
   history.push({
     status: 'Đã chỉ đạo',
-    creator: creator,
-    createdAt: createdAt,
     agency: agency,
-    reporter: '-',
-    reportDate: '-',
+    createdAt: createdAt,
+    overdue: 'Đúng hạn',
     approver: '-',
     approvalDate: '-',
-    processDays: '0 ngày',
-    overdue: 'Đúng hạn',
-    contentNote: content1st,
-    progressNote: 'Khởi tạo và ban hành chỉ đạo.',
-    attachments: (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => f.name).join(', ') || '-'
+    agencyNote: '-',
+    agencyAttach: '-',
+    leaderNote: 'Khởi tạo chỉ đạo: ' + content1st,
+    leaderAttach: leaderFiles
   });
 
   // ----- Bước 2: Đang xử lý -----
@@ -223,18 +351,15 @@ function getDirectiveHistory(dir) {
     const rptDate = dir.reportDueDate || dir.dueDate || createdAt;
     history.push({
       status: 'Đang xử lý',
-      creator: creator,
-      createdAt: createdAt,
       agency: agency,
-      reporter: agencyRep,
-      reportDate: rptDate,
+      createdAt: rptDate,
+      overdue: 'Đúng hạn',
       approver: '-',
       approvalDate: '-',
-      processDays: '—',
-      overdue: 'Đúng hạn',
-      contentNote: '-',
-      progressNote: 'Đơn vị đã tiếp nhận và đang tiến hành xử lý.',
-      attachments: '-'
+      agencyNote: 'Đơn vị đã tiếp nhận và đang tiến hành xử lý.',
+      agencyAttach: '-',
+      leaderNote: '-',
+      leaderAttach: '-'
     });
   }
 
@@ -242,21 +367,13 @@ function getDirectiveHistory(dir) {
   const hasReport = ['Đã có báo cáo', 'Hoàn thành', 'Bị từ chối'].includes(dir.status);
   if (hasReport) {
     const rptDate = dir.reportDueDate || dir.dueDate || createdAt;
-    const agencyAttach = (dir.attachments || []).filter(f => f.source === 'agency').map(f => f.name).join(', ') || '-';
     const isRejected = dir.status === 'Bị từ chối';
-
-    // Tính số ngày xử lý
-    let processDays = '-';
-    const d1 = parseDMY(createdAt); const d2 = parseDMY(rptDate);
-    if (d1 && d2) {
-      const diff = Math.round((d2 - d1) / 86400000);
-      processDays = diff + ' ngày';
-    }
 
     // Kiểm tra trễ hạn
     let overdueStr = 'Đúng hạn';
     if (dir.dueDate) {
       const dDue = parseDMY(dir.dueDate);
+      const d2 = parseDMY(rptDate);
       if (dDue && d2 && d2 > dDue) {
         const late = Math.round((d2 - dDue) / 86400000);
         overdueStr = 'Trễ ' + late + ' ngày';
@@ -265,18 +382,15 @@ function getDirectiveHistory(dir) {
 
     history.push({
       status: isRejected ? 'Bị từ chối' : 'Đã có báo cáo',
-      creator: creator,
-      createdAt: createdAt,
       agency: agency,
-      reporter: agencyRep,
-      reportDate: rptDate,
-      approver: '-',
-      approvalDate: '-',
-      processDays: processDays,
+      createdAt: rptDate,
       overdue: overdueStr,
-      contentNote: '-',
-      progressNote: dir.report || (isRejected ? 'Lãnh đạo từ chối báo cáo. Yêu cầu đơn vị báo cáo lại.' : 'Đã nộp báo cáo kết quả thực hiện.'),
-      attachments: agencyAttach
+      approver: isRejected ? creator : '-',
+      approvalDate: isRejected ? rptDate : '-',
+      agencyNote: dir.report || 'Đã nộp báo cáo kết quả thực hiện.',
+      agencyAttach: agencyFiles,
+      leaderNote: isRejected ? (dir.report || 'Lãnh đạo từ chối báo cáo. Yêu cầu đơn vị báo cáo lại.') : '-',
+      leaderAttach: '-'
     });
   }
 
@@ -284,19 +398,16 @@ function getDirectiveHistory(dir) {
   if (dir.status === 'Hoàn thành') {
     const aprDate = dir.reportDueDate || dir.dueDate || createdAt;
     history.push({
-      status: 'Đã phê duyệt',
-      creator: creator,
-      createdAt: createdAt,
+      status: 'Hoàn thành',
       agency: agency,
-      reporter: agencyRep,
-      reportDate: aprDate,
+      createdAt: aprDate,
+      overdue: 'Đúng hạn',
       approver: creator,
       approvalDate: aprDate,
-      processDays: '—',
-      overdue: 'Đúng hạn',
-      contentNote: '-',
-      progressNote: 'Lãnh đạo đã phê duyệt kết quả và đóng chỉ đạo.',
-      attachments: '-'
+      agencyNote: '-',
+      agencyAttach: '-',
+      leaderNote: 'Lãnh đạo đã phê duyệt kết quả và đóng chỉ đạo.',
+      leaderAttach: '-'
     });
   }
 
@@ -311,3 +422,4 @@ function parseDMY(str) {
   const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
   return isNaN(d.getTime()) ? null : d;
 }
+
