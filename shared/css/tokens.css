@@ -28,6 +28,65 @@
   --fs-2xl: 24px;
   --fs-3xl: 28px;
   --fs-4xl: 32px;
+  --fw-semibold: 600;
+
+  /* Spacing */
+  --space-sm: 6px;
+  --space-md: 10px;
+  --space-lg: 14px;
+
+  /* Administration shell */
+  --admin-sidebar-width: 280px;
+  --admin-sidebar-collapsed-width: 72px;
+  --admin-header-height: 74px;
+  --admin-footer-height: 40px;
+  --admin-sidebar-heading-height: 58px;
+  --admin-control-height: 40px;
+  --admin-nav-height: 45px;
+  --admin-logo-size: 50px;
+  --admin-avatar-size: 38px;
+  --admin-icon-button-size: 34px;
+  --admin-layout-padding: 20px;
+  --admin-content-padding: 16px;
+  --admin-primary: #0084e8;
+  --admin-surface: #fff;
+  --admin-page: #f5f7fa;
+  --admin-line: #e4e7eb;
+  --admin-sidebar-line: #e7e7e7;
+  --admin-control-line: #d5d9de;
+  --admin-control-hover: #f0f3f6;
+  --admin-nav-active: #edf7ff;
+  --admin-button-bg: #eef0f2;
+  --admin-avatar-bg: #e2e5e8;
+  --admin-text: #212121;
+  --admin-muted: #5d6066;
+  --admin-icon-muted: #757575;
+  --admin-placeholder: #8b9198;
+  --admin-radius-sm: 6px;
+  --admin-radius-md: 8px;
+  --admin-submenu-indent: 36px;
+  --admin-tree-bullet-size: 6px;
+  --admin-tree-line-width: 1px;
+  --admin-tree-color: #9ca3af;
+  --admin-tree-line-color: rgba(156, 163, 175, 0.38);
+  --admin-submenu-hover: #f3f4f6;
+
+  /* Handling directives prototype */
+  --directive-info-bg: #eaf5ff;
+  --directive-info-color: #0877c9;
+  --directive-warning-bg: #fff4db;
+  --directive-warning-color: #a86600;
+  --directive-success-bg: #e8f7ef;
+  --directive-success-color: #17834f;
+  --directive-danger-bg: #fff0f1;
+  --directive-danger-color: #d63c4c;
+  --directive-neutral-bg: #f4f5f7;
+  --directive-neutral-color: #626a73;
+  --directive-overlay: rgba(23, 33, 43, 0.38);
+  --directive-shadow: rgba(33, 43, 54, 0.14);
+  --directive-panel-width: 520px;
+  --directive-table-min-width: 1120px;
+  --directive-radius-lg: 12px;
 
   /* Status Colors */
   --status-pending-bg:       #fff3e0;
