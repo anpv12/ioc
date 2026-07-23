@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v10';
+const DATA_VERSION = 'gialai_directives_v11';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -70,86 +70,176 @@ try {
 
 // Reset nếu phiên bản dữ liệu cũ
 const currentVersion = localStorage.getItem('gialai_directives_version');
-if (currentVersion !== DATA_VERSION || !Array.isArray(directives) || directives.length !== 20) {
+if (currentVersion !== DATA_VERSION || !Array.isArray(directives) || directives.length > 20) {
   directives = [];
   localStorage.setItem('gialai_directives_version', DATA_VERSION);
   localStorage.removeItem(STORAGE_KEY);
 }
 
-// Seed mock data (20 chỉ đạo được thiết kế chuẩn các trường hợp)
-if (directives.length !== 20) {
-  const seedConfigs = [
-    // 1 & 2: metric-tong-nhan-khau (2 active: 1 Đã chỉ đạo, 1 Đang xử lý -> TH1 Đỏ, 2 khoanh tròn)
-    { metricId: 'metric-tong-nhan-khau', status: 'Đã chỉ đạo', agency: 'Sở Thông tin và Truyền thông', content: 'Rà soát hạ tầng kết nối dữ liệu dân cư trên toàn tỉnh.', dueDate: 5 },
-    { metricId: 'metric-tong-nhan-khau', status: 'Đang xử lý', agency: 'Cục Thống kê Gia Lai', content: 'Đối chiếu số liệu nhân khẩu thực tế giữa các huyện.', dueDate: 7, report: 'Đã thu thập dữ liệu 8/17 huyện.' },
+// Seed mock data chuẩn (bao phủ toàn bộ trường hợp) nếu cần
+if (directives.length === 0) {
+  const todayStr = formatDateDMY(new Date());
+  const dueOverdue = formatDateDMY(new Date(Date.now() - 2 * 86400000));
+  const dueSoon = formatDateDMY(new Date(Date.now() + 2 * 86400000));
+  const dueNormal = formatDateDMY(new Date(Date.now() + 7 * 86400000));
 
-    // 3: metric-dien-tich (1 active: Đã chỉ đạo -> TH1 Đỏ, 1 icon cảnh báo)
-    { metricId: 'metric-dien-tich', status: 'Đã chỉ đạo', agency: 'Sở Tài nguyên và Môi trường', content: 'Cập nhật biến động diện tích đất ở sau điều chỉnh ranh giới hành chính.', dueDate: 3 },
+  directives = [
+    // --- Metric Tổng nhân khẩu: 3 chỉ đạo active (2 Đỏ + 1 Cam -> Ưu tiên Đỏ, hiện số 3 khoanh tròn) ---
+    {
+      id: 'dir_mock_1',
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Công an Tỉnh Gia Lai',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Rà soát dữ liệu hộ khẩu và cập nhật biến động nhân khẩu khu vực thành phố Pleiku.',
+      dueDate: dueSoon,
+      reportDueDate: '',
+      attachments: [{ name: 'Kế_hoạch_rà_soát_C06.pdf', source: 'leader' }],
+      status: 'Đã chỉ đạo',
+      report: '',
+      createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_2',
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Sở Thông tin và Truyền thông',
+      director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      content: 'Kiểm tra hạ tầng mạng kết nối dữ liệu dân cư quốc gia trên địa bàn tỉnh.',
+      dueDate: dueOverdue,
+      reportDueDate: '',
+      attachments: [{ name: 'Công_văn_chỉ_đạo_hạ_tầng.pdf', source: 'leader' }],
+      status: 'Chờ phân công',
+      report: '',
+      createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_3',
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Cục Thống kê Gia Lai',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Tổng hợp số liệu thống kê dân số phục vụ lập quy hoạch phát triển đợt mới.',
+      dueDate: dueNormal,
+      reportDueDate: dueNormal,
+      attachments: [{ name: 'Đề_đánh_giá_thống_kê.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: 'Đơn vị đang tiến hành tổng hợp dữ liệu thu thập từ các huyện cơ sở.',
+      createdAt: todayStr
+    },
 
-    // 4 & 5: metric-mat-do (2 active: 1 Đang xử lý, 1 Đã có báo cáo -> TH2 Cam, 2 khoanh tròn)
-    { metricId: 'metric-mat-do', status: 'Đang xử lý', agency: 'UBND Huyện Pleiku', content: 'Kiểm tra biến động mật độ dân số khu vực nội thành Pleiku.', dueDate: 4, report: 'Đang tổng hợp báo cáo biến động dân số các phường.' },
-    { metricId: 'metric-mat-do', status: 'Đã có báo cáo', agency: 'Sở Xây dựng', content: 'Đánh giá quy hoạch phân bố dân cư theo mật độ xây dựng.', dueDate: 2, report: 'Đã hoàn tất dự thảo báo cáo quy hoạch phân bố mật độ.' },
+    // --- Metric Diện tích: 1 chỉ đạo Đỏ active (hiển thị Icon Cảnh báo màu Đỏ) ---
+    {
+      id: 'dir_mock_4',
+      metricIds: ['metric-dien-tich'],
+      metricId: 'metric-dien-tich',
+      agency: 'Sở Kế hoạch và Đầu tư',
+      director: 'Phó Chủ tịch UBND Tỉnh (phụ trách Nội chính)',
+      creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách Nội chính)',
+      content: 'Cập nhật bản đồ địa giới hành chính các xã phường sau quy hoạch sáp nhập.',
+      dueDate: dueNormal,
+      reportDueDate: '',
+      attachments: [{ name: 'Chi_dao_dia_gioi.pdf', source: 'leader' }],
+      status: 'Đã chỉ đạo',
+      report: '',
+      createdAt: todayStr
+    },
 
-    // 6: metric-tre-em (1 active: Đang xử lý -> TH2 Cam, 1 icon đồng hồ)
-    { metricId: 'metric-tre-em', status: 'Đang xử lý', agency: 'Sở Lao động - Thương binh và Xã hội', content: 'Lập danh sách trẻ em từ 0-14 tuổi thuộc hộ nghèo để hỗ trợ BHYT.', dueDate: 6, report: 'Đã nhận danh sách từ 12 xã vùng sâu.' },
+    // --- Metric Mật độ dân số: 2 chỉ đạo Cam active (hiển thị Số 2 khoanh tròn màu Cam) ---
+    {
+      id: 'dir_mock_5',
+      metricIds: ['metric-mat-do'],
+      metricId: 'metric-mat-do',
+      agency: 'UBND Huyện Pleiku',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Báo cáo mật độ dân cư tập trung tại các vùng đô thị trọng điểm.',
+      dueDate: dueNormal,
+      reportDueDate: dueNormal,
+      attachments: [{ name: 'Chi_dao_mat_do.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: 'Đang thu thập báo cáo từ các phường xã trực thuộc.',
+      createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_6',
+      metricIds: ['metric-mat-do'],
+      metricId: 'metric-mat-do',
+      agency: 'Sở Lao động - Thương binh và Xã hội',
+      director: 'Giám đốc Sở KHCN',
+      creator: 'Giám đốc Sở KHCN',
+      content: 'Khảo sát biến động phân bố lực lượng lao động di cư theo mật độ dân số.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [
+        { name: 'Khảo_sát_lao_động.pdf', source: 'leader' },
+        { name: 'Báo_cáo_kết_quả_bước_1.docx', source: 'agency' }
+      ],
+      status: 'Đã có báo cáo',
+      report: 'Đã hoàn tất khảo sát đợt 1 tại 5 khu công nghiệp lớn.',
+      createdAt: todayStr
+    },
 
-    // 7 & 8: metric-lao-dong (1 Hoàn thành, 1 Bị từ chối -> Ribbon ẨN)
-    { metricId: 'metric-lao-dong', status: 'Hoàn thành', agency: 'Sở Lao động - Thương binh và Xã hội', content: 'Thống kê tỷ lệ người lao động trong độ tuổi có việc làm.', dueDate: -2, report: 'Đã hoàn thành báo cáo thống kê lao động quý II.' },
-    { metricId: 'metric-lao-dong', status: 'Bị từ chối', agency: 'Sở Kế hoạch và Đầu tư', content: 'Đánh giá ảnh hưởng chuyển dịch lao động tới thu hút đầu tư.', dueDate: -1, report: 'Báo cáo kết quả chưa đầy đủ số liệu theo yêu cầu (Yêu cầu đơn vị tiếp nhận báo cáo lại).' },
+    // --- Metric Trẻ em (0-14t): 1 chỉ đạo Cam active (hiển thị Icon Đồng hồ màu Cam) ---
+    {
+      id: 'dir_mock_7',
+      metricIds: ['metric-tre-em'],
+      metricId: 'metric-tre-em',
+      agency: 'Sở Y tế',
+      director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
+      content: 'Lập danh sách trẻ em trong độ tuổi tiêm chủng đợt 2 năm 2026.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [{ name: 'Ke_hoach_tiem_chung.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: 'Đã gửi công văn hướng dẫn xuống các trung tâm y tế huyện.',
+      createdAt: todayStr
+    },
 
-    // 9, 10, 11: metric-nguoi-lon-tuoi (3 active: 2 Đã chỉ đạo, 1 Đang xử lý -> TH1 Đỏ, 3 khoanh tròn)
-    { metricId: 'metric-nguoi-lon-tuoi', status: 'Đã chỉ đạo', agency: 'Sở Y tế', content: 'Triển khai khám sức khỏe định kỳ cho người cao tuổi trên 65t.', dueDate: 8 },
-    { metricId: 'metric-nguoi-lon-tuoi', status: 'Chờ phân công', agency: 'Sở Nội vụ', content: 'Rà soát chính sách bảo trợ xã hội cho người cao tuổi cô đơn.', dueDate: 10 },
-    { metricId: 'metric-nguoi-lon-tuoi', status: 'Đang xử lý', agency: 'Công an Tỉnh Gia Lai', content: 'Cấp CCCD và tài khoản VNeID mức 2 cho người cao tuổi tại nhà.', dueDate: 5, report: 'Đã tổ chức 15 tổ lưu động cấp CCCD tại nhà.' },
+    // --- Metric Người lao động: 1 chỉ đạo Hoàn thành (Không hiện Ribbon active) ---
+    {
+      id: 'dir_mock_8',
+      metricIds: ['metric-lao-dong'],
+      metricId: 'metric-lao-dong',
+      agency: 'Sở Lao động - Thương binh và Xã hội',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Tổng hợp tỷ lệ giải quyết việc làm cho người lao động Quý 2.',
+      dueDate: todayStr,
+      reportDueDate: todayStr,
+      attachments: [
+        { name: 'Yeu_cau_viec_lam.pdf', source: 'leader' },
+        { name: 'Bao_cao_viec_lam_Q2.pdf', source: 'agency' }
+      ],
+      status: 'Hoàn thành',
+      report: 'Đã hoàn thành phê duyệt kết quả báo cáo giải quyết việc làm Quý 2.',
+      createdAt: todayStr
+    },
 
-    // 12: metric-chart-high (1 active: Đã chỉ đạo -> TH1 Đỏ)
-    { metricId: 'metric-chart-high', status: 'Đã chỉ đạo', agency: 'UBND Huyện Ia Grai', content: 'Báo cáo nguyên nhân nhân khẩu tăng cao tại các xã biên giới.', dueDate: 4 },
-
-    // 13: metric-chart-low (1 active: Đã có báo cáo -> TH2 Cam)
-    { metricId: 'metric-chart-low', status: 'Đã có báo cáo', agency: 'UBND Huyện Chư Sê', content: 'Rà soát tình hình di dân tự do tại các xã có nhân khẩu thấp nhất.', dueDate: 1, report: 'Đã rà soát 5 xã có tỷ lệ di dân cao, nộp báo cáo chi tiết.' },
-
-    // 14: metric-map (1 active: Chờ phân công -> TH1 Đỏ)
-    { metricId: 'metric-map', status: 'Chờ phân công', agency: 'Sở Tư pháp', content: 'Chuẩn hóa dữ liệu địa danh hành chính trên bản đồ dân cư số.', dueDate: 12 },
-
-    // 15 - 20: Các chỉ đạo khác để làm phong phú danh sách
-    { metricId: 'metric-tong-nhan-khau', status: 'Hoàn thành', agency: 'Công an Tỉnh Gia Lai', content: 'Tăng cường công tác đăng ký quản lý cư trú đợt cao điểm.', dueDate: -5, report: 'Hoàn thành 100% chỉ tiêu cao điểm cư trú.' },
-    { metricId: 'metric-dien-tich', status: 'Đang xử lý', agency: 'Sở Giáo dục và Đào tạo', content: 'Rà soát mạng lưới trường lớp theo diện tích quy hoạch mới.', dueDate: 9, report: 'Đang lấy ý kiến các phòng GD&ĐT huyện.' },
-    { metricId: 'metric-tre-em', status: 'Đã chỉ đạo', agency: 'Sở Y tế', content: 'Triển khai chiến dịch tiêm chủng mở rộng cho trẻ em 0-5t.', dueDate: 3 },
-    { metricId: 'metric-lao-dong', status: 'Đang xử lý', agency: 'UBND Huyện Đăk Đoa', content: 'Đào tạo nghề cho lao động nông thôn chuyển đổi sản xuất.', dueDate: 14, report: 'Đã mở 3 lớp đào tạo nghề đợt 1.' },
-    { metricId: 'metric-chart-high', status: 'Đã có báo cáo', agency: 'Cục Thống kê Gia Lai', content: 'Phân tích cơ cấu dân số theo nhóm xã có nhân khẩu cao.', dueDate: 2, report: 'Đã nộp báo cáo phân tích cơ cấu dân số.' },
-    { metricId: 'metric-map', status: 'Đã chỉ đạo', agency: 'Sở Thông tin và Truyền thông', content: 'Tích hợp lớp dữ liệu GIS dân cư lên hệ thống IOC tỉnh.', dueDate: 15 }
+    // --- Metric Người lớn tuổi: 1 chỉ đạo Bị từ chối (Không hiện Ribbon active) ---
+    {
+      id: 'dir_mock_9',
+      metricIds: ['metric-nguoi-lon-tuoi'],
+      metricId: 'metric-nguoi-lon-tuoi',
+      agency: 'Sở Y tế',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Thực hiện đợt khám sức khỏe định kỳ cho người cao tuổi trên 65 tuổi.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [
+        { name: 'Kham_suc_khoe_NCT.pdf', source: 'leader' },
+        { name: 'Bao_cao_kham_suc_khoe_NCT_draft.pdf', source: 'agency' }
+      ],
+      status: 'Bị từ chối',
+      report: 'Số liệu thống kê chưa đầy đủ các huyện miền núi. Yêu cầu đơn vị rà soát và báo cáo lại chi tiết.',
+      createdAt: todayStr
+    }
   ];
-
-  directives = seedConfigs.map((cfg, idx) => {
-    const dueDateStr = formatDateDMY(new Date(Date.now() + cfg.dueDate * 86400000));
-    const createOff = Math.floor(Math.random() * 10) + 1;
-    const createdAtStr = formatDateDMY(new Date(Date.now() - createOff * 86400000)) + ' 08:30';
-
-    const attachments = [];
-    if (idx % 2 === 0) {
-      attachments.push({ name: 'Van_ban_chi_dao_' + (idx + 1) + '.pdf', source: 'leader' });
-    }
-    if (cfg.status === 'Đã có báo cáo' || cfg.status === 'Hoàn thành') {
-      attachments.push({ name: 'Bao_cao_don_vi_' + (idx + 1) + '.docx', source: 'agency' });
-    }
-
-    return {
-      id: 'dir_seed_' + (idx + 1),
-      metricId: cfg.metricId,
-      metricIds: [cfg.metricId],
-      agency: cfg.agency,
-      director: DIRECTORS[idx % DIRECTORS.length],
-      creator: DIRECTORS[idx % DIRECTORS.length],
-      attachments,
-      content: cfg.content,
-      dueDate: dueDateStr,
-      reportDueDate: cfg.report ? formatDateDMY(new Date(Date.now() + 2 * 86400000)) : '',
-      status: cfg.status,
-      report: cfg.report || '',
-      createdAt: createdAtStr,
-      history: []
-    };
-  });
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(directives));
 }
@@ -227,7 +317,7 @@ function getActiveDirectivesByIndicator(indicatorKey) {
 window.getActiveDirectivesByIndicator = getActiveDirectivesByIndicator;
 
 
-// Helper: Lấy/sinh lịch sử trạng thái 8 cột chuẩn cho chỉ đạo
+// Helper: Lấy/sinh lịch sử trạng thái đầy đủ các cột mới cho chỉ đạo
 function getDirectiveHistory(dir) {
   if (!dir) return [];
 
@@ -235,22 +325,24 @@ function getDirectiveHistory(dir) {
   const creator = dir.creator || dir.director || 'Chủ tịch UBND Tỉnh';
   const createdAt = dir.createdAt || 'N/A';
   const agency = dir.agency || 'Cơ quan tiếp nhận';
-  
-  const leaderAttach = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => f.name);
-  const agencyAttach = (dir.attachments || []).filter(f => f.source === 'agency').map(f => f.name);
+  const agencyRep = 'Đại diện ' + agency;
+  const content1st = dir.content ? (dir.content.length > 60 ? dir.content.substring(0, 60) + '...' : dir.content) : '';
+
+  const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => f.name).join(', ') || '-';
+  const agencyFiles = (dir.attachments || []).filter(f => f.source === 'agency').map(f => f.name).join(', ') || '-';
 
   // ----- Bước 1: Đã chỉ đạo -----
   history.push({
+    status: 'Đã chỉ đạo',
     agency: agency,
     createdAt: createdAt,
-    status: 'Đã chỉ đạo',
-    overdue: 'Đúng hạn (0 ngày)',
+    overdue: 'Đúng hạn',
     approver: '-',
     approvalDate: '-',
     agencyNote: '-',
-    agencyFiles: [],
-    leaderNote: dir.content || 'Khởi tạo và ban hành chỉ đạo.',
-    leaderFiles: leaderAttach
+    agencyAttach: '-',
+    leaderNote: 'Khởi tạo chỉ đạo: ' + content1st,
+    leaderAttach: leaderFiles
   });
 
   // ----- Bước 2: Đang xử lý -----
@@ -258,16 +350,16 @@ function getDirectiveHistory(dir) {
   if (hasProcessing) {
     const rptDate = dir.reportDueDate || dir.dueDate || createdAt;
     history.push({
+      status: 'Đang xử lý',
       agency: agency,
       createdAt: rptDate,
-      status: 'Đang xử lý',
       overdue: 'Đúng hạn',
       approver: '-',
       approvalDate: '-',
       agencyNote: 'Đơn vị đã tiếp nhận và đang tiến hành xử lý.',
-      agencyFiles: [],
+      agencyAttach: '-',
       leaderNote: '-',
-      leaderFiles: []
+      leaderAttach: '-'
     });
   }
 
@@ -277,10 +369,11 @@ function getDirectiveHistory(dir) {
     const rptDate = dir.reportDueDate || dir.dueDate || createdAt;
     const isRejected = dir.status === 'Bị từ chối';
 
-    // Tính trễ hạn
+    // Kiểm tra trễ hạn
     let overdueStr = 'Đúng hạn';
     if (dir.dueDate) {
-      const dDue = parseDMY(dir.dueDate); const d2 = parseDMY(rptDate);
+      const dDue = parseDMY(dir.dueDate);
+      const d2 = parseDMY(rptDate);
       if (dDue && d2 && d2 > dDue) {
         const late = Math.round((d2 - dDue) / 86400000);
         overdueStr = 'Trễ ' + late + ' ngày';
@@ -288,16 +381,16 @@ function getDirectiveHistory(dir) {
     }
 
     history.push({
+      status: isRejected ? 'Bị từ chối' : 'Đã có báo cáo',
       agency: agency,
       createdAt: rptDate,
-      status: isRejected ? 'Bị từ chối' : 'Đã có báo cáo',
       overdue: overdueStr,
       approver: isRejected ? creator : '-',
       approvalDate: isRejected ? rptDate : '-',
-      agencyNote: dir.report || (isRejected ? 'Báo cáo kết quả chưa đạt yêu cầu.' : 'Đã nộp báo cáo kết quả thực hiện.'),
-      agencyFiles: agencyAttach,
+      agencyNote: dir.report || 'Đã nộp báo cáo kết quả thực hiện.',
+      agencyAttach: agencyFiles,
       leaderNote: isRejected ? (dir.report || 'Lãnh đạo từ chối báo cáo. Yêu cầu đơn vị báo cáo lại.') : '-',
-      leaderFiles: isRejected ? leaderAttach : []
+      leaderAttach: '-'
     });
   }
 
@@ -305,16 +398,16 @@ function getDirectiveHistory(dir) {
   if (dir.status === 'Hoàn thành') {
     const aprDate = dir.reportDueDate || dir.dueDate || createdAt;
     history.push({
+      status: 'Hoàn thành',
       agency: agency,
       createdAt: aprDate,
-      status: 'Hoàn thành',
       overdue: 'Đúng hạn',
       approver: creator,
       approvalDate: aprDate,
       agencyNote: '-',
-      agencyFiles: [],
+      agencyAttach: '-',
       leaderNote: 'Lãnh đạo đã phê duyệt kết quả và đóng chỉ đạo.',
-      leaderFiles: []
+      leaderAttach: '-'
     });
   }
 
@@ -329,3 +422,4 @@ function parseDMY(str) {
   const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
   return isNaN(d.getTime()) ? null : d;
 }
+

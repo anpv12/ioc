@@ -129,7 +129,7 @@ function updateFormsVisibility() {
   }
 }
 
-// ----- Multiselect Chỉ số (Tự động đẩy item checked lên đầu) -----
+// ----- Multiselect Chỉ số -----
 window.toggleMultiselect = function () {
   document.getElementById('formMetricDropdown').classList.toggle('open');
 };
@@ -147,64 +147,153 @@ function getSelectedMetricIds() {
   ).map(cb => cb.value);
 }
 
-function sortMultiselectItems() {
-  const dropdown = document.getElementById('formMetricDropdown');
-  if (!dropdown) return;
-  const labels = Array.from(dropdown.querySelectorAll('label'));
-  labels.sort((a, b) => {
-    const aChecked = a.querySelector('input').checked ? 1 : 0;
-    const bChecked = b.querySelector('input').checked ? 1 : 0;
-    return bChecked - aChecked;
-  });
-  labels.forEach(lbl => dropdown.appendChild(lbl));
-}
+let selectedFormFiles = [];
 
 function updateMultiselectDisplay() {
-  sortMultiselectItems();
   const selected = getSelectedMetricIds();
   const display = document.getElementById('formMetricDisplay');
-  if (selected.length === 0) {
-    display.innerHTML = '<span id="formMetricPlaceholder" style="color:var(--text-muted);">-- Chọn chỉ số --</span>';
-  } else {
-    const labels = selected.map(id => METRIC_LABELS[id] || id);
-    display.innerHTML = labels.map(l =>
-      '<span class="ms-tag">' + l + '</span>'
-    ).join('') + '<span id="formMetricPlaceholder" style="display:none;"></span>';
+  if (display) {
+    if (selected.length === 0) {
+      display.innerHTML = '<span id="formMetricPlaceholder" style="color:var(--text-muted);">-- Chọn chỉ số --</span>';
+    } else {
+      const labels = selected.map(id => METRIC_LABELS[id] || id);
+      display.innerHTML = selected.map(id => {
+        const l = METRIC_LABELS[id] || id;
+        return '<span class="ms-tag-chip">' + l + ' <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckMetricChip(\'' + id + '\', event)"></i></span>';
+      }).join('');
+    }
+  }
+
+  // Tự động sắp xếp các label có checkbox:checked lên đầu dropdown list
+  const dropdown = document.getElementById('formMetricDropdown');
+  if (dropdown) {
+    const labels = Array.from(dropdown.querySelectorAll('label'));
+    labels.sort((a, b) => {
+      const cbA = a.querySelector('input[type=checkbox]');
+      const cbB = b.querySelector('input[type=checkbox]');
+      const checkedA = cbA && cbA.checked ? 1 : 0;
+      const checkedB = cbB && cbB.checked ? 1 : 0;
+      return checkedB - checkedA;
+    });
+    labels.forEach(lbl => dropdown.appendChild(lbl));
   }
 }
+
+window.uncheckMetricChip = function (metricId, event) {
+  if (event) event.stopPropagation();
+  const cb = document.querySelector('#formMetricDropdown input[value="' + metricId + '"]');
+  if (cb) {
+    cb.checked = false;
+    updateMultiselectDisplay();
+  }
+};
 
 document.querySelectorAll('#formMetricDropdown input[type=checkbox]').forEach(cb => {
   cb.addEventListener('change', updateMultiselectDisplay);
 });
 
-// ----- File Attach với chức năng Xóa -----
-let attachedFormFiles = [];
+// ----- File Attach & 3-Mode Screen Capture -----
+window.toggleCaptureMenu = function (event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('captureMenuDropdown');
+  if (dropdown) {
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+};
+
+document.addEventListener('click', function () {
+  const dropdown = document.getElementById('captureMenuDropdown');
+  if (dropdown) dropdown.style.display = 'none';
+});
+
+window.executeScreenCapture = function (mode) {
+  const dropdown = document.getElementById('captureMenuDropdown');
+  if (dropdown) dropdown.style.display = 'none';
+
+  let modeText = 'toàn trang';
+  let fileNamePrefix = 'Ảnh_chụp_toàn_trang_';
+  if (mode === 'single') {
+    modeText = '1 biểu đồ';
+    fileNamePrefix = 'Ảnh_chụp_1_biểu_đồ_';
+  } else if (mode === 'multi') {
+    modeText = 'nhiều biểu đồ';
+    fileNamePrefix = 'Ảnh_chụp_nhiều_biểu_đồ_';
+  }
+
+  const capName = fileNamePrefix + Date.now().toString().slice(-4) + '.png';
+  selectedFormFiles.push({ name: capName, source: 'leader' });
+  renderAttachFileList();
+  showToast('📷 Đã chụp ảnh màn hình (' + modeText + ') và đính kèm!');
+};
 
 window.handleFileAttach = function (input) {
-  if (!input.files || !input.files.length) return;
-  Array.from(input.files).forEach(file => {
-    if (!attachedFormFiles.some(f => f.name === file.name)) {
-      attachedFormFiles.push({ name: file.name, source: 'leader' });
-    }
-  });
-  renderAttachedFileList();
-  input.value = '';
+  if (input.files && input.files.length) {
+    Array.from(input.files).forEach(f => {
+      if (!selectedFormFiles.some(existing => existing.name === f.name)) {
+        selectedFormFiles.push({ name: f.name, fileObj: f, source: 'leader' });
+      }
+    });
+  }
+  renderAttachFileList();
 };
 
-window.removeAttachedFile = function (idx) {
-  attachedFormFiles.splice(idx, 1);
-  renderAttachedFileList();
+window.removeFormFile = function (index) {
+  if (index >= 0 && index < selectedFormFiles.length) {
+    selectedFormFiles.splice(index, 1);
+    renderAttachFileList();
+  }
 };
 
-function renderAttachedFileList() {
+function renderAttachFileList() {
   const list = document.getElementById('formAttachList');
   if (!list) return;
-  list.innerHTML = attachedFormFiles.map((f, idx) =>
-    '<span class="attach-tag" style="display:inline-flex; align-items:center; gap:6px; margin:2px 4px 2px 0; padding:3px 8px; background:#f1f5f9; border-radius:6px; font-size:11px;">' +
-    '<i class="fa-solid fa-file"></i> ' + f.name +
-    '<i class="fa-solid fa-xmark btn-remove-attach" onclick="removeAttachedFile(' + idx + ')" style="cursor:pointer; color:#ef4444; font-weight:bold; margin-left:4px;" title="Xóa file"></i>' +
-    '</span>'
-  ).join('');
+  list.innerHTML = selectedFormFiles.map((f, idx) =>
+    '<div class="attach-chip-large" onclick="previewFile(\'' + f.name + '\')">' +
+    '<i class="fa-solid fa-file-image" style="color:var(--pink); font-size:16px;"></i> ' +
+    '<span>' + f.name + '</span>' +
+    '<button type="button" class="btn-remove-attach" onclick="event.stopPropagation(); removeFormFile(' + idx + ')" title="Xoá file">&times;</button>' +
+    '</div>'
+  ).join(' ');
+}
+
+// ----- Reject Modal Attachments -----
+let rejectFormFiles = [];
+
+window.handleRejectFileAttach = function (input) {
+  if (input.files && input.files.length) {
+    Array.from(input.files).forEach(f => {
+      if (!rejectFormFiles.some(existing => existing.name === f.name)) {
+        rejectFormFiles.push({ name: f.name, fileObj: f });
+      }
+    });
+  }
+  renderRejectAttachFileList();
+};
+
+window.captureRejectScreenAttachment = function () {
+  const capName = 'Ảnh_từ_chối_chụp_màn_hình_' + Date.now().toString().slice(-4) + '.png';
+  rejectFormFiles.push({ name: capName });
+  renderRejectAttachFileList();
+  showToast('📷 Đã chụp ảnh màn hình và đính kèm vào lý do từ chối!');
+};
+
+window.removeRejectFormFile = function (index) {
+  if (index >= 0 && index < rejectFormFiles.length) {
+    rejectFormFiles.splice(index, 1);
+    renderRejectAttachFileList();
+  }
+};
+
+function renderRejectAttachFileList() {
+  const list = document.getElementById('rejectAttachList');
+  if (!list) return;
+  list.innerHTML = rejectFormFiles.map((f, idx) =>
+    '<div class="attach-chip-large" onclick="previewFile(\'' + f.name + '\')">' +
+    '<i class="fa-solid fa-file-image" style="color:var(--pink); font-size:16px;"></i> ' +
+    '<span>' + f.name + '</span>' +
+    '<button type="button" class="btn-remove-attach" onclick="event.stopPropagation(); removeRejectFormFile(' + idx + ')" title="Xoá file">&times;</button>' +
+    '</div>'
+  ).join(' ');
 }
 
 // ----- Deadline Utilities -----
@@ -475,7 +564,7 @@ window.openDirectiveFormModal = function (editId = null) {
 
     // Set form fields
     const createdAtEl = document.getElementById('formCreatedAt');
-    if (createdAtEl) createdAtEl.value = dir.createdAt || '';
+    if (createdAtEl) createdAtEl.value = dir.createdAt ? dir.createdAt.split(' ')[0] : '';
 
     const ids = dir.metricIds && dir.metricIds.length ? dir.metricIds : (dir.metricId ? [dir.metricId] : []);
     document.querySelectorAll('#formMetricDropdown input[type=checkbox]').forEach(cb => {
@@ -485,30 +574,25 @@ window.openDirectiveFormModal = function (editId = null) {
 
     if (dir.agency) document.getElementById('formAgency').value = dir.agency;
     if (dir.content) document.getElementById('formContent').value = dir.content;
-    if (dir.director) document.getElementById('formDirector').value = dir.director;
+    const dirSelect = document.getElementById('formDirector');
+    if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
     if (dir.dueDate && fpDueDate) fpDueDate.setDate(dir.dueDate);
 
-    // Populate attach file tags
-    const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source);
-    const listEl = document.getElementById('formAttachList');
-    if (listEl) {
-      listEl.innerHTML = leaderFiles.map(f => '<span class="attach-tag"><i class="fa-solid fa-file"></i> ' + f.name + '</span>').join(' ');
-    }
+    // Populate attach files
+    selectedFormFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => ({ name: f.name, source: 'leader' }));
+    renderAttachFileList();
   } else {
     if (modalTitle) modalTitle.textContent = 'Thêm mới chỉ đạo điều hành';
     if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Gửi chỉ đạo';
 
-    // Set current date time with seconds
+    // Set current date dd/mm/yyyy
     const now = new Date();
     const createdAtEl = document.getElementById('formCreatedAt');
     if (createdAtEl) {
       const dd = String(now.getDate()).padStart(2, '0');
       const mm = String(now.getMonth() + 1).padStart(2, '0');
       const yyyy = now.getFullYear();
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mi = String(now.getMinutes()).padStart(2, '0');
-      const ss = String(now.getSeconds()).padStart(2, '0');
-      createdAtEl.value = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi + ':' + ss;
+      createdAtEl.value = dd + '/' + mm + '/' + yyyy;
     }
 
     // Reset form
@@ -519,8 +603,8 @@ window.openDirectiveFormModal = function (editId = null) {
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
     if (fpDueDate) fpDueDate.clear();
-    const listEl = document.getElementById('formAttachList');
-    if (listEl) listEl.innerHTML = '';
+    selectedFormFiles = [];
+    renderAttachFileList();
   }
 
   document.getElementById('directiveFormModal').classList.add('open');
@@ -536,17 +620,16 @@ window.saveDirectiveFromModal = function () {
   const agency = document.getElementById('formAgency').value;
   const content = document.getElementById('formContent').value.trim();
   const dueDate = document.getElementById('formDueDate').value;
-  const director = document.getElementById('formDirector').value;
+  const director = 'Chủ tịch UBND Tỉnh';
 
-  if (!metricIds.length) { alert('Vui lòng chọn ít nhất một chỉ số cần chỉ đạo.'); return; }
-  if (!agency) { alert('Vui lòng chọn cơ quan tiếp nhận.'); return; }
-  if (!content) { alert('Vui lòng nhập nội dung chỉ đạo.'); return; }
-  if (!director) { alert('Vui lòng chọn người chỉ đạo.'); return; }
+  if (!metricIds.length || !agency || !content) {
+    showToast('Vui lòng nhập đầy đủ các thông tin bắt buộc (*)', 'error');
+    return;
+  }
 
-  const attachInput = document.getElementById('formAttach');
-  const attachments = attachInput ? Array.from(attachInput.files).map(f => f.name) : [];
+  const attachments = selectedFormFiles.map(f => ({ name: f.name, source: 'leader' }));
   const createdAtEl = document.getElementById('formCreatedAt');
-  const createdAt = createdAtEl ? createdAtEl.value : '';
+  const createdAt = createdAtEl ? createdAtEl.value.split(' ')[0] : formatDateDMY(new Date());
 
   if (editingDirectiveId) {
     const dir = directives.find(d => d.id === editingDirectiveId);
@@ -557,6 +640,7 @@ window.saveDirectiveFromModal = function () {
       dir.content = content;
       dir.dueDate = dueDate;
       dir.director = director;
+      dir.attachments = attachments;
       saveDirectives();
       showToast('Cập nhật chỉ đạo thành công!');
     }
@@ -571,13 +655,13 @@ window.saveDirectiveFromModal = function () {
       content,
       dueDate,
       reportDueDate: '',
-      attachments: attachments.map(n => ({ name: n, source: 'leader' })),
+      attachments,
       status: 'Đã chỉ đạo',
       report: '',
       createdAt
     });
     saveDirectives();
-    showToast('Đã gửi chỉ đạo thành công!');
+    showToast('Tạo và gửi chỉ đạo mới thành công!');
   }
 
   closeDirectiveFormModal();
@@ -735,9 +819,9 @@ function populateUI() {
         leaderAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
           '<span style="font-size:10px; font-weight:700; color:var(--pink);"><i class="fa-solid fa-paperclip"></i> Lãnh đạo đính kèm:</span> ' +
           leaderFiles.map(f =>
-            '<span class="file-preview-link leader" style="font-size:9px; padding:2px 7px; cursor:pointer;" onclick="openFilePreviewModal(\'' + f.name + '\')">' +
+            '<span class="file-preview-link leader" style="font-size:9px; padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
-            '<i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8;" onclick="downloadFile(\'' + f.name + '\', event)" title="Tải về"></i>' +
+            '<i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + f.name + '\')" title="Tải về"></i>' +
             '</span>'
           ).join('') +
           '</div>';
@@ -748,9 +832,9 @@ function populateUI() {
         agencyAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
           '<span style="font-size:10px; font-weight:700; color:#2e7d32;"><i class="fa-solid fa-paperclip"></i> Đơn vị đính kèm:</span> ' +
           agencyFiles.map(f =>
-            '<span class="file-preview-link agency" style="font-size:9px; padding:2px 7px; cursor:pointer;" onclick="openFilePreviewModal(\'' + f.name + '\')">' +
+            '<span class="file-preview-link agency" style="font-size:9px; padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
-            '<i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8;" onclick="downloadFile(\'' + f.name + '\', event)" title="Tải về"></i>' +
+            '<i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + f.name + '\')" title="Tải về"></i>' +
             '</span>'
           ).join('') +
           '</div>';
@@ -779,10 +863,10 @@ function populateUI() {
         '<div class="directive-actions-dropdown" id="dropdown-' + dir.id + '">' +
         '<button onclick="viewDirectiveDetail(\'' + dir.id + '\')"><i class="fa-regular fa-eye"></i> Xem</button>' +
         (canEdit ? '<button onclick="openDirectiveFormModal(\'' + dir.id + '\')"><i class="fa-regular fa-pen-to-square"></i> Sửa</button>' : '') +
-        '<button onclick="openDeleteConfirmModal(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' +
+        '<button onclick="deleteDirective(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' +
         (canApproveReject ? '<button onclick="approveDirective(\'' + dir.id + '\', event)" style="color:#2e7d32;"><i class="fa-regular fa-circle-check"></i> Phê duyệt</button>' : '') +
         (canApproveReject ? '<button onclick="openRejectModal(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-circle-xmark"></i> Từ chối</button>' : '') +
-        (canUrge ? '<button onclick="urgeSingleDirective(\'' + dir.id + '\', event)"><i class="fa-solid fa-bullhorn"></i> Đôn đốc</button>' : '') +
+        (canUrge ? '<button onclick="urgeDirective(\'' + dir.id + '\', event)"><i class="fa-solid fa-bullhorn"></i> Đôn đốc</button>' : '') +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -790,13 +874,9 @@ function populateUI() {
         (dir.agency ? '<div class="directive-agency"><i class="fa-regular fa-building"></i> ' + dir.agency + '</div>' : '') +
         '<p class="directive-text" style="margin-top:4px;">' + dir.content + '</p>' +
         leaderAttachHtml +
-        (dir.report && (dir.status === 'Đã có báo cáo' || dir.status === 'Hoàn thành' || dir.status === 'Bị từ chối')
-          ? (dir.status === 'Bị từ chối'
-            ? '<div class="rejection-reason-box" style="margin-top:6px;"><div class="rejection-reason-lbl"><i class="fa-solid fa-triangle-exclamation"></i> Lý do từ chối:</div>' + dir.report + '</div>'
-            : '<div class="directive-report"><span class="directive-report-lbl"><i class="fa-solid fa-reply"></i> Báo cáo kết quả:</span> ' + dir.report + '</div>')
-          : '') +
+        reportHtml +
         agencyAttachHtml +
-        '<div class="directive-date" style="margin-top:8px; border-top:1px solid #f1f5f9; padding-top:4px;"><i class="fa-regular fa-clock"></i> Hạn: ' + (dir.dueDate || 'N/A') + ' | Tạo: ' + dir.createdAt + '</div>';
+        '<div class="directive-date" style="margin-top:6px;"><i class="fa-regular fa-clock"></i> Hạn: ' + (dir.dueDate || 'N/A') + ' | Tạo: ' + dir.createdAt + '</div>';
 
       fragment.appendChild(item);
     });
@@ -865,10 +945,10 @@ window.viewDirectiveDetail = function (id) {
     '<p style="margin:0; font-size:13px; line-height:1.7; color:var(--text-dark);">' + dir.content + '</p>' +
     '</div>' +
 
-    // Metadata với Tag chỉ số màu (Căn trái - trên cùng)
+    // Metadata với Căn trái-trên cùng cho Chỉ số và Cơ quan
     '<div class="detail-info-grid" style="margin-top:12px; padding:10px 12px; background:#fafafa; border-radius:8px; border:1px solid #f0f0f0;">' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Chỉ số</strong><div style="display:flex; flex-wrap:wrap; gap:4px; align-items:flex-start;">' + metricTagsHtml + '</div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Cơ quan</strong><span style="align-self:flex-start; margin-top:2px;">' + (dir.agency || 'N/A') + '</span>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Chỉ số</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left;">' + metricTagsHtml + '</div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Cơ quan</strong><span style="text-align:left;">' + (dir.agency || 'N/A') + '</span>' +
     '<strong>Người chỉ đạo</strong><span>' + (dir.creator || dir.director || 'N/A') + '</span>' +
     '<strong>Ngày tạo</strong><span>' + dir.createdAt + '</span>' +
     '<strong>Thời hạn xử lý</strong><span>' + (dir.dueDate || 'Không giới hạn') + ' ' + (deadlineNote || '') + '</span>' +
@@ -915,7 +995,7 @@ window.viewDirectiveDetail = function (id) {
 
   document.getElementById('tabContentInfo').innerHTML = tabInfoHtml;
 
-  // ----- Tab 2: Lịch sử trạng thái (Bảng 8 cột chuẩn) -----
+  // ----- Tab 2: Lịch sử trạng thái (Cột Người/Thời gian phê duyệt, Tách Ghi chú & Đính kèm) -----
   const historyList = typeof getDirectiveHistory === 'function' ? getDirectiveHistory(dir) : [];
 
   const statusBadge = function (s) {
@@ -933,30 +1013,26 @@ window.viewDirectiveDetail = function (id) {
     return '<span style="background:#e8f5e9;color:#2e7d32;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;">' + s + '</span>';
   };
 
-  const buildHistoryFiles = function (files, cls) {
-    if (!files || !files.length) return '';
-    return '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">' +
-      files.map(f =>
-        '<span class="file-preview-link ' + cls + '" style="font-size:9px; padding:2px 6px; cursor:pointer;" onclick="openFilePreviewModal(\'' + f + '\')">' +
-        '<i class="fa-solid fa-file"></i> ' + f +
-        '<i class="fa-solid fa-download" style="margin-left:3px; opacity:0.8;" onclick="downloadFile(\'' + f + '\', event)" title="Tải về"></i>' +
-        '</span>'
-      ).join('') +
-      '</div>';
-  };
-
   let historyRowsHtml = '';
   if (historyList.length > 0) {
     historyRowsHtml = historyList.map(function (h) {
+      const agencyAttachHtml = (h.agencyAttach && h.agencyAttach !== '-')
+        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:9px; padding:2px 6px;" onclick="previewFile(\'' + h.agencyAttach + '\')"><i class="fa-solid fa-file"></i> ' + h.agencyAttach + ' <i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + h.agencyAttach + '\')" title="Tải về"></i></span></div>'
+        : '';
+
+      const leaderAttachHtml = (h.leaderAttach && h.leaderAttach !== '-')
+        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:9px; padding:2px 6px;" onclick="previewFile(\'' + h.leaderAttach + '\')"><i class="fa-solid fa-file"></i> ' + h.leaderAttach + ' <i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + h.leaderAttach + '\')" title="Tải về"></i></span></div>'
+        : '';
+
       return '<tr>' +
         '<td><strong>' + (h.agency || '-') + '</strong></td>' +
         '<td style="white-space:nowrap;">' + (h.createdAt || '-') + '</td>' +
         '<td>' + statusBadge(h.status) + '</td>' +
-        '<td style="white-space:nowrap;">' + overdueBadge(h.overdue) + '</td>' +
+        '<td>' + overdueBadge(h.overdue) + '</td>' +
         '<td>' + (h.approver || '-') + '</td>' +
         '<td style="white-space:nowrap;">' + (h.approvalDate || '-') + '</td>' +
-        '<td style="max-width:180px;">' + (h.agencyNote || '-') + buildHistoryFiles(h.agencyFiles, 'agency') + '</td>' +
-        '<td style="max-width:180px;">' + (h.leaderNote || '-') + buildHistoryFiles(h.leaderFiles, 'leader') + '</td>' +
+        '<td><div>' + (h.agencyNote || '-') + '</div>' + agencyAttachHtml + '</td>' +
+        '<td><div>' + (h.leaderNote || '-') + '</div>' + leaderAttachHtml + '</td>' +
         '</tr>';
     }).join('');
   } else {
@@ -965,16 +1041,16 @@ window.viewDirectiveDetail = function (id) {
 
   document.getElementById('tabContentHistory').innerHTML =
     '<div style="overflow-x:auto;">' +
-    '<table class="history-table">' +
-    '<thead><tr>' +
-    '<th>Đơn vị tiếp nhận</th>' +
-    '<th>Thời gian tiếp nhận</th>' +
-    '<th>Trạng thái chỉ đạo</th>' +
-    '<th>Số ngày / Trễ hạn</th>' +
-    '<th>Người phê duyệt</th>' +
-    '<th>Thời gian phê duyệt</th>' +
-    '<th>Ghi chú & Đính kèm Đơn vị</th>' +
-    '<th>Ghi chú & Đính kèm Lãnh đạo</th>' +
+    '<table class="history-table-new" style="width:100%; border-collapse:collapse; font-size:12px;">' +
+    '<thead><tr style="background:#f8fafc; color:#334155;">' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Đơn vị tiếp nhận</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Thời gian tiếp nhận</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Trạng thái chỉ đạo</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Tình trạng</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Người phê duyệt</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Thời gian phê duyệt</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Ghi chú & Đính kèm Đơn vị</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Ghi chú & Đính kèm Lãnh đạo</th>' +
     '</tr></thead>' +
     '<tbody>' + historyRowsHtml + '</tbody>' +
     '</table>' +
@@ -1031,35 +1107,7 @@ window.editDirective = function (id) {
   document.querySelector('.drawer-content').scrollTop = 0;
 };
 
-// ----- Delete Directive (Chỉ cho trạng thái 'Đã chỉ đạo') -----
-window.deleteDirective = function (id, event) {
-  if (event) event.stopPropagation();
-  const dir = directives.find(d => d.id === id);
-  if (!dir) return;
-
-  if (confirm('Bạn có chắc chắn muốn xoá chỉ đạo này không?')) {
-    directives = directives.filter(d => d.id !== id);
-    saveDirectives();
-    showToast('Đã xoá chỉ đạo thành công!');
-    populateUI();
-  }
-};
-
-// ----- Approve Directive (Chỉ đạo 'Đã có báo cáo' -> 'Hoàn thành') -----
-window.approveDirective = function (id, event) {
-  if (event) event.stopPropagation();
-  const dir = directives.find(d => d.id === id);
-  if (!dir) return;
-
-  if (confirm('Phê duyệt báo cáo kết quả và đánh dấu Hoàn thành chỉ đạo này?')) {
-    dir.status = 'Hoàn thành';
-    saveDirectives();
-    showToast('✅ Đã phê duyệt báo cáo chỉ đạo thành công!');
-    populateUI();
-  }
-};
-
-// ----- Reject Directive Modal (Chỉ đạo 'Đã có báo cáo' -> 'Bị từ chối') -----
+// ----- Reject Directive Modal -----
 let rejectingDirectiveId = null;
 
 window.openRejectModal = function (id, event) {
@@ -1069,12 +1117,15 @@ window.openRejectModal = function (id, event) {
 
   rejectingDirectiveId = id;
   document.getElementById('rejectReasonInput').value = '';
+  rejectFormFiles = [];
+  renderRejectAttachFileList();
   document.getElementById('rejectModal').classList.add('open');
 };
 
 window.closeRejectModal = function () {
   document.getElementById('rejectModal').classList.remove('open');
   rejectingDirectiveId = null;
+  rejectFormFiles = [];
 };
 
 window.submitRejectDirective = function () {
@@ -1084,47 +1135,26 @@ window.submitRejectDirective = function () {
 
   const reason = document.getElementById('rejectReasonInput').value.trim();
   if (!reason) {
-    alert('Vui lòng nhập chi tiết lý do từ chối báo cáo.');
+    showToast('Vui lòng nhập nội dung / lý do từ chối (*)', 'error');
     return;
   }
 
   dir.status = 'Bị từ chối';
   dir.report = 'Lý do từ chối: ' + reason + ' (Yêu cầu đơn vị tiếp nhận báo cáo lại).';
 
+  if (rejectFormFiles && rejectFormFiles.length > 0) {
+    if (!dir.attachments) dir.attachments = [];
+    rejectFormFiles.forEach(f => {
+      if (!dir.attachments.some(att => att.name === f.name)) {
+        dir.attachments.push({ name: f.name, source: 'leader' });
+      }
+    });
+  }
+
   saveDirectives();
   closeRejectModal();
-  showToast('❌ Đã từ chối báo cáo chỉ đạo và yêu cầu đơn vị báo cáo lại!');
+  showToast('❌ Đã từ chối báo cáo chỉ đạo!');
   populateUI();
-};
-
-window.urgeDirective = function (id, event) {
-  if (event) event.stopPropagation();
-  const dir = directives.find(d => d.id === id);
-  if (!dir) return;
-
-  showToast('Đã gửi thông báo đôn đốc thực hiện chỉ đạo thành công!');
-};
-
-window.remindDirective = function () { };
-
-window.showToast = function (msg) {
-  const toast = document.getElementById('toastNotification');
-  const toastMsg = document.getElementById('toastMsg');
-  toastMsg.textContent = msg;
-  toast.style.display = 'flex';
-  // trigger animation
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    });
-  });
-  clearTimeout(toast._hideTimer);
-  toast._hideTimer = setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(-10px)';
-    setTimeout(() => { toast.style.display = 'none'; }, 320);
-  }, 3500);
 };
 
 // ----- Batch Urge Functions -----
@@ -1381,15 +1411,15 @@ class DirectiveRibbon extends HTMLElement {
     `;
     const iconSvg = hasPending ? alertTriangleSvg : clockSvg;
 
-    // 2. Icon hoặc Số đếm khoanh tròn ở giữa ribbon
+    // 2. Số khoanh tròn thay thế vị trí icon khi có ≥ 2 chỉ đạo active
     let centerHtml = '';
     if (this.activeDirectives.length === 1) {
       centerHtml = `<div class="directive-ribbon-icon">${iconSvg}</div>`;
     } else {
-      centerHtml = `<div class="directive-ribbon-center-count">${this.activeDirectives.length}</div>`;
+      centerHtml = `<div class="directive-ribbon-number">${this.activeDirectives.length}</div>`;
     }
 
-    // 3. Popover HTML (khi có >= 2 chỉ đạo)
+    // 3. Popover HTML
     let popoverHtml = '';
     if (this.activeDirectives.length >= 2) {
       const itemsHtml = this.activeDirectives.map(d => {
@@ -1435,7 +1465,7 @@ class DirectiveRibbon extends HTMLElement {
 
     // Gắn click handler
     const triangle = this.querySelector('.directive-ribbon-triangle');
-    const icon = this.querySelector('.directive-ribbon-icon');
+    const centerEl = this.querySelector('.directive-ribbon-icon, .directive-ribbon-number');
     
     const handleClick = (e) => {
       e.stopPropagation();
@@ -1459,7 +1489,7 @@ class DirectiveRibbon extends HTMLElement {
     };
 
     if (triangle) triangle.addEventListener('click', handleClick);
-    if (icon) icon.addEventListener('click', handleClick);
+    if (centerEl) centerEl.addEventListener('click', handleClick);
 
     this.querySelectorAll('.directive-ribbon-popover-item').forEach(item => {
       item.addEventListener('click', (e) => {
@@ -1498,68 +1528,130 @@ if (!customElements.get('directive-ribbon')) {
   customElements.define('directive-ribbon', DirectiveRibbon);
 }
 
-// ----- Actions & Modals mới (Confirm Delete, File Preview, Download, Single Urge) -----
-let pendingDeleteId = null;
-let currentPreviewingFileName = '';
-
-window.openDeleteConfirmModal = function (id, event) {
-  if (event) event.stopPropagation();
-  closeAllDirectiveActionsMenus();
-  pendingDeleteId = id;
-  const modal = document.getElementById('deleteConfirmModal');
-  if (modal) modal.classList.add('open');
+// ----- Modal Handlers -----
+let isWarningAlertEnabled = true;
+window.handleWarningToggleChange = function (input) {
+  isWarningAlertEnabled = input.checked;
+  const blocks = document.querySelectorAll('.metric-block');
+  blocks.forEach(b => {
+    if (!isWarningAlertEnabled) {
+      b.style.animation = 'none';
+    } else {
+      b.style.animation = '';
+    }
+  });
+  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị hiệu ứng nhấp nháy cảnh báo!' : '🔕 Đã TẮT hiển thị hiệu ứng nhấp nháy cảnh báo!');
 };
 
-window.closeDeleteConfirmModal = function () {
-  pendingDeleteId = null;
-  const modal = document.getElementById('deleteConfirmModal');
-  if (modal) modal.classList.remove('open');
-};
-
-window.confirmDeleteDirectiveSubmit = function () {
-  if (!pendingDeleteId) return;
-  const idx = directives.findIndex(d => d.id === pendingDeleteId);
-  if (idx !== -1) {
-    directives.splice(idx, 1);
-    saveDirectives();
-    applyDirectiveIndicators();
-    populateDirectiveList();
-    showToast('🗑️ Đã xóa chỉ đạo thành công!');
-  }
-  closeDeleteConfirmModal();
-};
-
-window.openFilePreviewModal = function (fileName) {
-  currentPreviewingFileName = fileName;
-  const elName = document.getElementById('previewFileName');
-  if (elName) elName.textContent = fileName;
+let currentPreviewFileName = '';
+window.previewFile = function (fileName) {
+  currentPreviewFileName = fileName;
+  const titleEl = document.getElementById('filePreviewTitle');
+  const nameEl = document.getElementById('filePreviewName');
+  if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-file"></i> Xem trước tài liệu: ' + fileName;
+  if (nameEl) nameEl.textContent = fileName;
   const modal = document.getElementById('filePreviewModal');
   if (modal) modal.classList.add('open');
 };
 
 window.closeFilePreviewModal = function () {
-  currentPreviewingFileName = '';
   const modal = document.getElementById('filePreviewModal');
   if (modal) modal.classList.remove('open');
 };
 
-window.downloadFile = function (fileName, event) {
-  if (event) event.stopPropagation();
-  showToast('📥 Đã khởi tạo tải xuống file: ' + fileName);
-};
-
-window.downloadPreviewFileAction = function () {
-  if (currentPreviewingFileName) {
-    showToast('📥 Đã khởi tạo tải xuống file: ' + currentPreviewingFileName);
+window.downloadCurrentPreviewFile = function () {
+  if (currentPreviewFileName) {
+    downloadFile(currentPreviewFileName);
   }
-  closeFilePreviewModal();
 };
 
-window.urgeSingleDirective = function (id, event) {
+window.downloadFile = function (fileName) {
+  showToast('📥 Đang tải tài liệu: ' + fileName);
+};
+
+let approveTargetDirectiveId = null;
+window.approveDirective = function (id, event) {
   if (event) event.stopPropagation();
-  closeAllDirectiveActionsMenus();
+  approveTargetDirectiveId = id;
+  const modal = document.getElementById('confirmApproveModal');
+  if (modal) modal.classList.add('open');
+};
+
+window.closeConfirmApproveModal = function () {
+  const modal = document.getElementById('confirmApproveModal');
+  if (modal) modal.classList.remove('open');
+  approveTargetDirectiveId = null;
+};
+
+window.executeConfirmApprove = function () {
+  if (approveTargetDirectiveId) {
+    const dir = directives.find(d => d.id === approveTargetDirectiveId);
+    if (dir) {
+      dir.status = 'Hoàn thành';
+      saveDirectives();
+      showToast('Đã phê duyệt báo cáo và đánh dấu Hoàn thành chỉ đạo!');
+      closeConfirmApproveModal();
+      populateUI();
+    }
+  }
+};
+
+let deleteTargetDirectiveId = null;
+window.deleteDirective = function (id, event) {
+  if (event) event.stopPropagation();
+  deleteTargetDirectiveId = id;
+  const modal = document.getElementById('confirmDeleteModal');
+  if (modal) modal.classList.add('open');
+};
+
+window.closeConfirmDeleteModal = function () {
+  const modal = document.getElementById('confirmDeleteModal');
+  if (modal) modal.classList.remove('open');
+  deleteTargetDirectiveId = null;
+};
+
+window.executeConfirmDelete = function () {
+  if (deleteTargetDirectiveId) {
+    directives = directives.filter(d => d.id !== deleteTargetDirectiveId);
+    saveDirectives();
+    showToast('Đã xoá chỉ đạo thành công!');
+    closeConfirmDeleteModal();
+    populateUI();
+  }
+};
+
+window.urgeDirective = function (id, event) {
+  if (event) event.stopPropagation();
   const dir = directives.find(d => d.id === id);
   if (dir) {
-    showToast('📢 Đã gửi đôn đốc chỉ đạo tới: ' + (dir.agency || 'đơn vị tiếp nhận'));
+    showToast('📢 Đã gửi đôn đốc chỉ đạo tới ' + (dir.agency || 'Đơn vị tiếp nhận') + '!');
   }
+};
+
+window.showToast = function (msg, type = 'success') {
+  const toast = document.getElementById('toastNotification');
+  const toastMsg = document.getElementById('toastMsg');
+  if (!toast || !toastMsg) return;
+
+  toastMsg.textContent = msg;
+  const icon = toast.querySelector('i');
+  if (type === 'error') {
+    toast.classList.add('toast-error');
+    if (icon) {
+      icon.className = 'fa-solid fa-circle-exclamation';
+      icon.style.color = '#ef4444';
+    }
+  } else {
+    toast.classList.remove('toast-error');
+    if (icon) {
+      icon.className = 'fa-solid fa-circle-check';
+      icon.style.color = '#4ade80';
+    }
+  }
+
+  toast.classList.add('show');
+  if (window._toastTimeout) clearTimeout(window._toastTimeout);
+  window._toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
 };
