@@ -63,10 +63,10 @@ Cục Cảnh sát quản lý hành chính về trật tự xã hội — **C06**
 
 ## Quy trình thiết kế
 
-> Bất kỳ ai (người hoặc AI) trước khi thiết kế một màn hình mới đều phải đọc theo thứ tự sau:
+> Bất kỳ ai (người hoặc AI), trước mỗi lần thực hiện công việc trong dự án, đều phải đọc đầy đủ và tuân thủ hoàn toàn các tài liệu theo thứ tự sau:
 
-1. **`system_design.md`** — hiểu nghiệp vụ, vai trò, luồng, tính năng
-2. **Phần Design System bên dưới** — nắm chuẩn chung về màu, font, spacing
+1. **`CONTEXT.md`** — hiểu bối cảnh, trạng thái và quy tắc làm việc của dự án
+2. **`system_design.md`** — hiểu nghiệp vụ, vai trò, luồng, tính năng và Design System
 3. **`pages/[man-hinh]/SPECS.md`** của màn hình cần làm — yêu cầu riêng
 4. **Tham chiếu `pages/dashboard`** như màn hình mẫu đã hoàn chỉnh
 

@@ -12,6 +12,12 @@ description: >
 - Rà soát code trước khi báo xong
 - **Save = Populate**: sau lưu data, phải xác nhận UI hiển thị đúng
 - **Git: tuyệt đối không push vào `main`** — chỉ push lên nhánh làm việc, merge vào main là quyền của user qua PR trên GitHub
+- **Quy tắc bắt buộc bổ sung**:
+  1. Trước khi thực hiện bất kỳ hành động nào, bắt buộc phải đọc lại các file: rules, system_design, context, specs và tuân thủ nghiêm ngặt các nguyên tắc trong đó.
+  2. Trước khi cập nhật bất kỳ file nào, phải trình bày rõ ý kiến/phương án thay đổi và hỏi ý kiến xác nhận của người dùng.
+  3. Khi cập nhật file, phải tự động rà soát và cập nhật đồng bộ tất cả các phần liên quan trong toàn bộ hệ thống file của dự án.
+  4. Chỉ cập nhật trên các file hiện có, tuyệt đối không tự động tạo thêm file mới khi không có yêu cầu.
+  5. Chỉ làm đúng những gì người dùng yêu cầu trực tiếp, không tự tiện thêm bất kỳ chức năng, giao diện, hoặc logic nào khác ngoài các yêu cầu được chỉ định.
 
 ## Quy tắc code
 - Không hardcode — dùng CSS token từ `shared/css/tokens.css`
