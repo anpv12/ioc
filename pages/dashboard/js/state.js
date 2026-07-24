@@ -376,8 +376,8 @@ function getDirectiveHistory(dir) {
   const agencyRep = 'Đại diện ' + agency;
   const content1st = dir.content ? (dir.content.length > 60 ? dir.content.substring(0, 60) + '...' : dir.content) : '';
 
-  const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => f.name).join(', ') || '-';
-  const agencyFiles = (dir.attachments || []).filter(f => f.source === 'agency').map(f => f.name).join(', ') || '-';
+  const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source).map(f => f.name).join(', ') || 'Cong_van_chi_dao_102.pdf, Screenshot_P01_GioiTinh.png';
+  const agencyFiles = (dir.attachments || []).filter(f => f.source === 'agency').map(f => f.name).join(', ') || 'Bao_cao_ket_qua_thuc_hien.pdf, Anh_minh_hoa_thuc_te.jpg';
 
   // ----- Bước 1: Đã chỉ đạo -----
   history.push({
@@ -405,7 +405,7 @@ function getDirectiveHistory(dir) {
       approver: '-',
       approvalDate: '-',
       agencyNote: 'Đơn vị đã tiếp nhận và đang tiến hành xử lý.',
-      agencyAttach: '-',
+      agencyAttach: 'Ke_hoach_trien_khai_chi_tiet.docx',
       leaderNote: '-',
       leaderAttach: '-'
     });
@@ -435,10 +435,10 @@ function getDirectiveHistory(dir) {
       overdue: overdueStr,
       approver: isRejected ? creator : '-',
       approvalDate: isRejected ? rptDate : '-',
-      agencyNote: dir.report || 'Đã nộp báo cáo kết quả thực hiện.',
+      agencyNote: dir.report || 'Đã nộp báo cáo kết quả thực hiện kèm tài liệu minh chứng.',
       agencyAttach: agencyFiles,
       leaderNote: isRejected ? (dir.report || 'Lãnh đạo từ chối báo cáo. Yêu cầu đơn vị báo cáo lại.') : '-',
-      leaderAttach: '-'
+      leaderAttach: isRejected ? 'Cong_van_yeu_cau_giai_trinh.pdf' : '-'
     });
   }
 

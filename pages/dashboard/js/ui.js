@@ -130,9 +130,37 @@ window.toggleMultiselect = function () {
 };
 
 document.addEventListener('click', function (e) {
-  const wrap = document.getElementById('formMetricMultiWrap');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('formMetricDropdown').classList.remove('open');
+  // 1. Metric Multiselect
+  const metricWrap = document.getElementById('formMetricMultiWrap');
+  if (metricWrap && !metricWrap.contains(e.target)) {
+    const drop = document.getElementById('formMetricDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 2. Agency Multiselect
+  const agencyWrap = document.getElementById('formAgencyWrap');
+  if (agencyWrap && !agencyWrap.contains(e.target)) {
+    const drop = document.getElementById('formAgencyDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 3. Layout Group Radio Dropdown
+  const groupWrap = document.getElementById('formLayoutGroupWrap');
+  if (groupWrap && !groupWrap.contains(e.target)) {
+    const drop = document.getElementById('formLayoutGroupDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 4. Data Page Multiselect
+  const pageWrap = document.getElementById('formDataPageMultiWrap');
+  if (pageWrap && !pageWrap.contains(e.target)) {
+    const drop = document.getElementById('formDataPageDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 5. Directive Action 3-dots Dropdowns
+  if (!e.target.closest('.directive-actions-menu-wrap')) {
+    document.querySelectorAll('.directive-actions-dropdown.open').forEach(el => el.classList.remove('open'));
   }
 });
 
@@ -352,54 +380,41 @@ function getDeadlineIconHtml(dir) {
 }
 
 function updateAllCountdowns() {
-  const now = new Date();
-
-  // Update tooltip for each clock icon in the directive list
+  // Update tooltip for each clock icon in the directive list (Chỉ lấy ngày dd/mm/yyyy)
   document.querySelectorAll('.deadline-clock-icon').forEach(el => {
     const dueDateStr = el.getAttribute('data-due');
     const tooltip = el.querySelector('.deadline-tooltip');
     if (!dueDateStr || !tooltip) return;
 
     const targetDate = parseDDMMYYYY(dueDateStr);
-    if (!targetDate) return;
-    targetDate.setHours(23, 59, 59, 999);
+    if (!targetDate) {
+      tooltip.textContent = 'Hạn: ' + dueDateStr;
+      return;
+    }
 
-    const diffMs = targetDate.getTime() - now.getTime();
-    const isOverdue = diffMs < 0;
-    const absDiff = Math.abs(diffMs);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const target = new Date(targetDate);
+    target.setHours(0, 0, 0, 0);
 
-    const secs = Math.floor((absDiff / 1000) % 60);
-    const mins = Math.floor((absDiff / (1000 * 60)) % 60);
-    const hours = Math.floor((absDiff / (1000 * 60 * 60)) % 24);
-    const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
-
-    const timeStr = days + ' ngày ' + hours + ' giờ ' + mins + ' phút ' + secs + ' giây';
-    tooltip.textContent = isOverdue ? 'Quá hạn ' + timeStr : 'Còn ' + timeStr;
+    const diffDays = Math.round((target.getTime() - now.getTime()) / 86400000);
+    if (diffDays < 0) {
+      tooltip.textContent = 'Quá hạn ' + Math.abs(diffDays) + ' ngày (Hạn: ' + dueDateStr.split(' ')[0] + ')';
+    } else if (diffDays === 0) {
+      tooltip.textContent = 'Hôm nay là hạn xử lý (' + dueDateStr.split(' ')[0] + ')';
+    } else {
+      tooltip.textContent = 'Còn ' + diffDays + ' ngày (Hạn: ' + dueDateStr.split(' ')[0] + ')';
+    }
   });
 
-  // Update modal countdown if open
+  // Update modal countdown if open (Chỉ hiển thị ngày)
   if (activeDetailDirectiveId) {
     const modalEl = document.getElementById('modalCountdownText');
     if (modalEl) {
       const dir = directives.find(d => d.id === activeDetailDirectiveId);
       if (dir && dir.status !== 'Hoàn thành' && dir.dueDate) {
-        const targetDate = parseDDMMYYYY(dir.dueDate);
-        if (targetDate) {
-          targetDate.setHours(23, 59, 59, 999);
-          const diffMs = targetDate.getTime() - now.getTime();
-          const isOverdue = diffMs < 0;
-          const absDiff = Math.abs(diffMs);
-
-          const secs = Math.floor((absDiff / 1000) % 60);
-          const mins = Math.floor((absDiff / (1000 * 60)) % 60);
-          const hours = Math.floor((absDiff / (1000 * 60 * 60)) % 24);
-          const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
-
-          const timeStr = days + ' ngày ' + hours + ' giờ ' + mins + ' phút ' + secs + ' giây';
-          modalEl.innerHTML = isOverdue
-            ? '<span style="color:#d32f2f; font-weight:bold; font-size:11px;">(Quá hạn ' + timeStr + ')</span>'
-            : '<span style="color:#2e7d32; font-weight:bold; font-size:11px;">(Còn ' + timeStr + ')</span>';
-        }
+        const dueDateClean = dir.dueDate.split(' ')[0];
+        modalEl.innerHTML = '<span style="color:#2e7d32; font-weight:bold; font-size:11px;">(Hạn xử lý: ' + dueDateClean + ')</span>';
       } else {
         modalEl.innerHTML = '';
       }
@@ -571,13 +586,13 @@ window.openDirectiveFormModal = function (editId = null) {
     if (sourceGroup) sourceGroup.style.display = 'block';
 
     if (sourceLinks) {
-      sourceLinks.innerHTML = `<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd;"><i class="fa-solid fa-link"></i> Bảng điều khiển (Dashboard)</a>`;
+      sourceLinks.innerHTML = `<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> Tình hình dân cư theo giới tính</a>`;
     }
 
     if (screenshotPreview) {
-      screenshotPreview.innerHTML = `<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden;">
+      screenshotPreview.innerHTML = `<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
         <img src="image/IOC_TinhHinhDanCuTheoGioiTinh.png" onerror="this.src='https://via.placeholder.com/600x300?text=Dashboard+Screenshot'" alt="Dashboard Screenshot" style="width:100%; max-height:220px; object-fit:cover; display:block; object-position: top;">
-        <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-camera"></i> Tự động chụp</div>
+        <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
       </div>`;
     }
 
@@ -627,14 +642,14 @@ window.openDirectiveFormModal = function (editId = null) {
 
     // Sinh link page hiện tại
     if (sourceLinks) {
-      sourceLinks.innerHTML = `<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd;"><i class="fa-solid fa-link"></i> Bảng điều khiển (Dashboard)</a>`;
+      sourceLinks.innerHTML = `<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> Tình hình dân cư theo giới tính</a>`;
     }
 
     // Sinh ảnh page hiện tại
     if (screenshotPreview) {
-      screenshotPreview.innerHTML = `<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden;">
+      screenshotPreview.innerHTML = `<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
         <img src="image/IOC_TinhHinhDanCuTheoGioiTinh.png" onerror="this.src='https://via.placeholder.com/600x300?text=Dashboard+Screenshot'" alt="Dashboard Screenshot" style="width:100%; max-height:220px; object-fit:cover; display:block; object-position: top;">
-        <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-camera"></i> Tự động chụp</div>
+        <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
       </div>`;
     }
 
@@ -789,6 +804,9 @@ function populateUI() {
   };
   const tabStatuses = TAB_STATUSES[currentDirectiveTab] || TAB_STATUSES.inprogress;
 
+  const deadlineFilterEl = document.getElementById('directiveFilterDeadline');
+  const deadlineFilterVal = deadlineFilterEl ? deadlineFilterEl.value : 'Tất cả';
+
   const filteredDirectives = directives.filter(dir => {
     const metricLabel = (dir.metricIds || []).map(id => METRIC_LABELS[id] || id).join(' ');
     const matchKW = dir.content.toLowerCase().includes(keyword) ||
@@ -797,6 +815,7 @@ function populateUI() {
     const matchOrg = filterOrgValues.length === 0 || filterOrgValues.includes(dir.agency);
     const matchStatus = filterStatusValues.length === 0 || filterStatusValues.includes(dir.status);
     const matchTab = tabStatuses.includes(dir.status);
+    const matchDL = deadlineFilterVal === 'Tất cả' || isMatchDeadlineFilter(dir, deadlineFilterVal);
 
     let matchDate = true;
     if (fromDate || toDate) {
@@ -807,7 +826,7 @@ function populateUI() {
       }
     }
 
-    return matchKW && matchOrg && matchStatus && matchTab && matchDate;
+    return matchKW && matchOrg && matchStatus && matchTab && matchDL && matchDate;
   });
 
   // Badge count — only count non-Kết thúc
@@ -863,8 +882,8 @@ function populateUI() {
 
       const deadlineIcon = getDeadlineIconHtml(dir);
 
-      const canEdit = dir.status === 'Chờ phân công';
-      const canDelete = true;
+      const canEdit = dir.status === 'Chờ phân công' || dir.status === 'Đã chỉ đạo';
+      const canDelete = dir.status === 'Đã chỉ đạo';
       const canApproveReject = dir.status === 'Đã có báo cáo' || dir.status === 'Chờ phê duyệt';
 
       const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source);
@@ -918,7 +937,7 @@ function populateUI() {
         '<div class="directive-actions-dropdown" id="dropdown-' + dir.id + '">' +
         '<button onclick="viewDirectiveDetail(\'' + dir.id + '\')" ><i class="fa-regular fa-eye"></i> Xem</button>' +
         (canEdit ? '<button onclick="openDirectiveFormModal(\'' + dir.id + '\')"><i class="fa-regular fa-pen-to-square"></i> Sửa</button>' : '') +
-        '<button onclick="deleteDirective(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' +
+        (canDelete ? '<button onclick="deleteDirective(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' : '') +
         (canApproveReject ? '<button onclick="approveDirective(\'' + dir.id + '\', event)" style="color:#2e7d32;"><i class="fa-regular fa-circle-check"></i> Phê duyệt</button>' : '') +
         (canApproveReject ? '<button onclick="openRejectModal(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-circle-xmark"></i> Từ chối</button>' : '') +
         '</div>' +
@@ -947,6 +966,20 @@ window.switchDirectiveTab = function (tab) {
   document.querySelectorAll('.drawer-tab').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.getElementById(tab === 'inprogress' ? 'tabInProgress' : 'tabDone');
   if (activeBtn) activeBtn.classList.add('active');
+
+  // Cập nhật các lựa chọn trạng thái theo từng tab
+  const statusDropdown = document.getElementById('filterStatusDropdown');
+  if (statusDropdown) {
+    const statuses = tab === 'inprogress'
+      ? ['Đã chỉ đạo', 'Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối']
+      : ['Hoàn thành', 'Kết thúc'];
+    
+    statusDropdown.innerHTML = statuses.map(s =>
+      '<label class="ms-opt"><input type="checkbox" value="' + s + '" onchange="onMultiFilterChange(\'status\')"> <span>' + s + '</span></label>'
+    ).join('');
+  }
+
+  updateFilterLabel('status');
   currentPage = 1;
   populateUI();
 };
@@ -982,28 +1015,33 @@ function updateFilterLabel(type) {
     label.style.display = 'inline';
     label.textContent = type === 'org' ? 'Tất cả đơn vị' : 'Tất cả trạng thái';
     label.className = 'fms-placeholder';
-    // Remove tags (keep only label and chevron)
     display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
-  } else if (checked.length <= 2) {
-    label.style.display = 'none';
-    display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
-    const chevron = display.querySelector('.filter-multiselect-chevron');
-    checked.forEach(cb => {
-      const tag = document.createElement('span');
-      tag.className = 'fms-tag';
-      tag.textContent = cb.value.length > 14 ? cb.value.substring(0, 14) + '…' : cb.value;
-      if (chevron) display.insertBefore(tag, chevron);
-      else display.appendChild(tag);
-    });
   } else {
     label.style.display = 'none';
     display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
     const chevron = display.querySelector('.filter-multiselect-chevron');
-    const badge = document.createElement('span');
-    badge.className = 'fms-count-badge';
-    badge.textContent = checked.length + ' đã chọn';
-    if (chevron) display.insertBefore(badge, chevron);
-    else display.appendChild(badge);
+
+    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
+    const visibleItems = checked.slice(0, 2);
+    visibleItems.forEach(cb => {
+      const tag = document.createElement('span');
+      tag.className = 'fms-tag';
+      tag.textContent = cb.value; // Giữ đầy đủ tên đơn vị
+      tag.title = cb.value;
+      if (chevron) display.insertBefore(tag, chevron);
+      else display.appendChild(tag);
+    });
+
+    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị đã chọn
+    if (checked.length > 2) {
+      const remainingCount = checked.length - 2;
+      const badge = document.createElement('span');
+      badge.className = 'fms-count-badge';
+      badge.textContent = '+' + remainingCount;
+      badge.title = 'Đã chọn tổng cộng ' + checked.length + ' mục';
+      if (chevron) display.insertBefore(badge, chevron);
+      else display.appendChild(badge);
+    }
   }
 }
 
@@ -1110,8 +1148,10 @@ window.viewDirectiveDetail = function (id) {
     : metricTagsHtml;
 
   const sourceLinksHtml = (dir.dataSourceUrls && dir.dataSourceUrls.length)
-    ? dir.dataSourceUrls.map(u => '<a href="' + u.url + '" target="_blank" class="data-source-link-chip" onclick="event.stopPropagation(); previewFile(\'' + u.url + '\')"><i class="fa-solid fa-link"></i> ' + u.name + '</a>').join(' ')
-    : '<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd;"><i class="fa-solid fa-link"></i> Bảng điều khiển (Dashboard)</a>';
+    ? dir.dataSourceUrls.map(u => '<a href="' + u.url + '" target="_blank" class="ds-link" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> ' + u.name + '</a>').join(' ')
+    : '<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> Tình hình dân cư theo giới tính</a>';
+
+  const imageSrc = 'image/IOC_TinhHinhDanCuTheoGioiTinh.png';
 
   const tabInfoHtml =
     // Nội dung chỉ đạo
@@ -1122,12 +1162,12 @@ window.viewDirectiveDetail = function (id) {
 
     // Metadata
     '<div class="detail-info-grid" style="margin-top:12px; padding:10px 12px; background:#fafafa; border-radius:8px; border:1px solid #f0f0f0;">' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Nguồn dữ liệu</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left;">' + sourceLinksHtml + '</div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Hình ảnh chỉ đạo</strong><div style="text-align:left;"><div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden;"><img src="image/IOC_TinhHinhDanCuTheoGioiTinh.png" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:160px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;"><i class="fa-solid fa-camera"></i> Tự động chụp</div></div></div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Đơn vị xử lý</strong><span style="text-align:left;">' + (dir.agency || 'N/A') + '</span>' +
-    '<strong>Người chỉ đạo</strong><span>' + (dir.creator || dir.director || 'N/A') + '</span>' +
-    '<strong>Ngày tạo</strong><span>' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</span>' +
-    '<strong>Thời hạn xử lý</strong><span>' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</span>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Nguồn dữ liệu</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left; align-items:flex-start;">' + sourceLinksHtml + '</div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Hình ảnh chỉ đạo</strong><div style="text-align:left;"><div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal(\'' + imageSrc + '\')"><img src="' + imageSrc + '" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:160px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal(\'' + imageSrc + '\')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div></div></div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Đơn vị xử lý</strong><span style="text-align:left; font-weight:400;">' + (dir.agency || 'N/A') + '</span>' +
+    '<strong>Người chỉ đạo</strong><span style="font-weight:400;">' + (dir.creator || dir.director || 'N/A') + '</span>' +
+    '<strong>Ngày tạo</strong><span style="font-weight:400;">' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</span>' +
+    '<strong>Thời hạn xử lý</strong><span style="font-weight:400;">' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</span>' +
     '</div>' +
 
     // Trạng thái
@@ -1193,11 +1233,11 @@ window.viewDirectiveDetail = function (id) {
   if (historyList.length > 0) {
     historyRowsHtml = historyList.map(function (h) {
       const agencyAttachHtml = (h.agencyAttach && h.agencyAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:9px; padding:2px 6px;" onclick="previewFile(\'' + h.agencyAttach + '\')"><i class="fa-solid fa-file"></i> ' + h.agencyAttach + ' <i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + h.agencyAttach + '\')" title="Tải về"></i></span></div>'
+        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.agencyAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.agencyAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
         : '';
 
       const leaderAttachHtml = (h.leaderAttach && h.leaderAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:9px; padding:2px 6px;" onclick="previewFile(\'' + h.leaderAttach + '\')"><i class="fa-solid fa-file"></i> ' + h.leaderAttach + ' <i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + h.leaderAttach + '\')" title="Tải về"></i></span></div>'
+        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.leaderAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.leaderAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
         : '';
 
       return '<tr>' +
@@ -1553,7 +1593,7 @@ class DirectiveRibbon extends HTMLElement {
       this.activeDirectives = [];
     }
 
-    if (this.activeDirectives.length === 0) {
+    if (this.activeDirectives.length === 0 || !isWarningAlertEnabled) {
       this.style.display = 'none';
       // Đảm bảo card cha không bị dính class open
       const parent = this.closest('.metric-block');
@@ -1718,7 +1758,13 @@ window.handleWarningToggleChange = function (input) {
       b.style.animation = '';
     }
   });
-  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị hiệu ứng nhấp nháy cảnh báo!' : '🔕 Đã TẮT hiển thị hiệu ứng nhấp nháy cảnh báo!');
+
+  const ribbons = document.querySelectorAll('directive-ribbon');
+  ribbons.forEach(r => {
+    r.style.display = isWarningAlertEnabled ? 'block' : 'none';
+  });
+
+  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị cảnh báo chỉ đạo!' : '🔕 Đã TẮT hiển thị cảnh báo chỉ đạo!');
 };
 
 // ============================================================
@@ -1840,31 +1886,45 @@ window.selectAgencyMulti = function () {
 
   if (checked.length === 0) {
     if (placeholder) placeholder.style.display = 'inline';
-  } else if (checked.length <= 2) {
-    if (placeholder) placeholder.style.display = 'none';
-    const chevron = display.querySelector('.multiselect-arrow-icon');
-    checked.forEach(cb => {
-      const chip = document.createElement('span');
-      chip.className = 'ms-tag-chip';
-      chip.innerHTML = cb.value.length > 14 ? cb.value.substring(0, 14) + '…' : cb.value;
-      if (chevron) display.insertBefore(chip, chevron);
-      else display.appendChild(chip);
-    });
   } else {
     if (placeholder) placeholder.style.display = 'none';
     const chevron = display.querySelector('.multiselect-arrow-icon');
-    const badge = document.createElement('span');
-    badge.className = 'fms-count-badge';
-    // Style similar to chips
-    badge.style.padding = '4px 8px';
-    badge.style.borderRadius = '12px';
-    badge.style.background = 'var(--pink)';
-    badge.style.color = '#fff';
-    badge.style.fontSize = '12px';
-    badge.style.fontWeight = '700';
-    badge.textContent = checked.length + ' đã chọn';
-    if (chevron) display.insertBefore(badge, chevron);
-    else display.appendChild(badge);
+
+    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
+    const visibleItems = checked.slice(0, 2);
+    visibleItems.forEach(cb => {
+      const chip = document.createElement('span');
+      chip.className = 'ms-tag-chip';
+      chip.innerHTML = cb.value + ' <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckAgencyChip(\'' + cb.value.replace(/'/g, "\\'") + '\', event)"></i>';
+      if (chevron) display.insertBefore(chip, chevron);
+      else display.appendChild(chip);
+    });
+
+    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị trước
+    if (checked.length > 2) {
+      const remainingCount = checked.length - 2;
+      const badge = document.createElement('span');
+      badge.className = 'fms-count-badge';
+      badge.style.padding = '3px 8px';
+      badge.style.borderRadius = '6px';
+      badge.style.background = 'var(--pink)';
+      badge.style.color = '#fff';
+      badge.style.fontSize = '11px';
+      badge.style.fontWeight = '700';
+      badge.textContent = '+' + remainingCount;
+      badge.title = 'Đã chọn tổng cộng ' + checked.length + ' đơn vị';
+      if (chevron) display.insertBefore(badge, chevron);
+      else display.appendChild(badge);
+    }
+  }
+};
+
+window.uncheckAgencyChip = function (agencyVal, event) {
+  if (event) event.stopPropagation();
+  const cb = Array.from(document.querySelectorAll('#formAgencyDropdown input[type=checkbox]')).find(c => c.value === agencyVal);
+  if (cb) {
+    cb.checked = false;
+    selectAgencyMulti();
   }
 };
 
@@ -2001,12 +2061,27 @@ function autoGenerateSourceLinksAndAttachments() {
   renderAttachFileList();
 }
 
-// ----- Rich File Preview Modal (Hiển thị đầy đủ dạng Ảnh/File/Link cho Dev) -----
+// ----- Image Zoom Modal Handlers -----
+window.openImageZoomModal = function (imgSrc) {
+  const modal = document.getElementById('imageZoomModal');
+  const imgEl = document.getElementById('imageZoomSrc');
+  if (modal && imgEl) {
+    imgEl.src = imgSrc || 'image/IOC_TinhHinhDanCuTheoGioiTinh.png';
+    modal.classList.add('open');
+  }
+};
+
+window.closeImageZoomModal = function () {
+  const modal = document.getElementById('imageZoomModal');
+  if (modal) modal.classList.remove('open');
+};
+
+// ----- Rich File Preview Modal (Hiển thị chọn 1/tất cả file đính kèm để tải hoặc xem trước) -----
 let currentPreviewFileName = '';
 window.previewFile = function (fileName) {
   currentPreviewFileName = fileName;
   const titleEl = document.getElementById('filePreviewTitle');
-  if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-file"></i> Xem trước tài liệu: ' + fileName;
+  if (titleEl) titleEl.textContent = 'Xem trước tài liệu';
 
   const contentEl = document.getElementById('filePreviewContent');
   if (!contentEl) {
@@ -2016,76 +2091,113 @@ window.previewFile = function (fileName) {
   }
 
   const lower = fileName.toLowerCase();
-  const isImage = /\.(png|jpg|jpeg|gif|webp|bmp)$/i.test(lower) || lower.includes('screenshot');
+  const isImage = /\.(png|jpg|jpeg|gif|webp|bmp)$/i.test(lower) || lower.includes('screenshot') || lower.includes('image');
   const isPdf = lower.endsWith('.pdf');
   const isWord = lower.endsWith('.docx') || lower.endsWith('.doc');
-  const isExcel = lower.endsWith('.xlsx') || lower.endsWith('.xls');
-  const isLink = /^https?:\/\//.test(fileName);
 
-  // Mẫu tập hợp file/link đủ dạng cho Dev trực quan hình dung
   const sampleFiles = [
-    { name: fileName, type: isLink ? 'link' : isImage ? 'image' : isPdf ? 'pdf' : isWord ? 'word' : isExcel ? 'excel' : 'generic', source: 'Trích xuất tự động' },
-    { name: 'Screenshot_Trang_Giam_Sat_Truong_Hoc.png', type: 'screenshot', source: 'Hệ thống chụp tự động' },
-    { name: 'Bao_cao_tong_hop_chi_dao_dieu_hanh.pdf', type: 'pdf', source: 'Văn phòng UBND Tỉnh' },
-    { name: 'Cong_van_huong_dan_thuc_hien.docx', type: 'word', source: 'Sở Thông tin và Truyền thông' },
-    { name: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/ty-le-ho-so', type: 'link', source: 'Cổng thông tin Tỉnh' }
+    { id: 'f1', name: fileName, type: isImage ? 'image' : isPdf ? 'pdf' : isWord ? 'word' : 'pdf', source: 'Hình ảnh chụp hệ thống', url: fileName },
+    { id: 'f2', name: 'Cong_van_huong_dan_thuc_hien_GiaLai.pdf', type: 'pdf', source: 'Lãnh đạo (Chủ tịch UBND Tỉnh) đính kèm', url: 'Cong_van_huong_dan_thuc_hien_GiaLai.pdf' },
+    { id: 'f3', name: 'IOC_TinhHinhDanCuTheoGioiTinh.png', type: 'image', source: 'Hình ảnh chụp hệ thống', url: 'image/IOC_TinhHinhDanCuTheoGioiTinh.png' },
+    { id: 'f4', name: 'Ke_hoach_trien_khai_chi_tiet_2026.docx', type: 'word', source: 'Đơn vị (Sở Thông tin và Truyền thông) đính kèm', url: 'Ke_hoach_trien_khai_chi_tiet_2026.docx' }
   ];
 
   const iconMap = {
-    pdf: '<i class="fa-solid fa-file-pdf"></i>',
-    word: '<i class="fa-solid fa-file-word"></i>',
-    excel: '<i class="fa-solid fa-file-excel"></i>',
-    image: '<i class="fa-solid fa-image"></i>',
-    screenshot: '<i class="fa-solid fa-camera"></i>',
-    link: '<i class="fa-solid fa-link"></i>',
-    generic: '<i class="fa-solid fa-file"></i>'
+    pdf: '<i class="fa-solid fa-file-pdf" style="color:#ef4444; font-size:22px;"></i>',
+    word: '<i class="fa-solid fa-file-word" style="color:#2563eb; font-size:22px;"></i>',
+    image: '<i class="fa-solid fa-file-image" style="color:#db2777; font-size:22px;"></i>'
   };
 
-  const labelMap = {
-    pdf: 'Tài liệu PDF',
-    word: 'Văn bản Word',
-    excel: 'Bảng tính Excel',
-    image: 'Hình ảnh đính kèm',
-    screenshot: 'Ảnh chụp màn hình Trang dữ liệu',
-    link: 'Hyperlink Nguồn dữ liệu',
-    generic: 'Tập tin dữ liệu'
-  };
+  const fileRowsHtml = sampleFiles.map((f, idx) => {
+    const iconHtml = iconMap[f.type] || iconMap.pdf;
+    const isImg = f.type === 'image';
+    const activeBorder = (f.name === fileName) ? 'border-color:var(--pink); background:#fff0f5;' : 'border-color:#e2e8f0; background:#fff;';
 
-  contentEl.innerHTML = sampleFiles.map((f, i) => {
-    const iconHtml = iconMap[f.type] || iconMap.generic;
-    const label = labelMap[f.type] || 'Tài liệu';
-    const isFirstImage = (f.type === 'image' || f.type === 'screenshot') && i === 0;
-
-    let previewExtra = '';
-    if (isFirstImage) {
-      previewExtra = `
-        <div class="file-preview-img-placeholder" style="margin-top:8px; background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:8px;">
-          <div style="width:100%; height:140px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#1e40af;">
-            <i class="fa-solid fa-chart-line" style="font-size:32px;"></i>
-            <span style="font-size:12px; font-weight:700;">[XEM TRƯỚC ẢNH MÀN HÌNH P01 - TRANG DỮ LIỆU]</span>
-          </div>
-        </div>
-      `;
-    }
-
-    const displayName = f.type === 'link'
-      ? `<a href="${f.name}" target="_blank" style="color:#1d4ed8; word-break:break-all; font-weight:700;"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${f.name}</a>`
-      : f.name;
+    const imgPreviewBlock = isImg ? `
+      <div style="margin-top:6px; position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('${f.url}')">
+        <img src="${f.url}" onerror="this.src='image/IOC_TinhHinhDanCuTheoGioiTinh.png'" alt="Preview" style="width:100%; max-height:120px; object-fit:cover; display:block;">
+        <div style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.75); color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;" onclick="event.stopPropagation(); openImageZoomModal('${f.url}')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
+      </div>
+    ` : '';
 
     return `
-      <div class="file-preview-card" onclick="if('${f.type}'==='link') window.open('${f.name}', '_blank');">
-        <div class="fpc-icon ${f.type}">${iconHtml}</div>
-        <div class="fpc-info">
-          <div class="fpc-name">${displayName}</div>
-          <div class="fpc-meta">${label} &bull; Nguồn: ${f.source}</div>
-          ${previewExtra}
+      <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; ${activeBorder} transition:all 0.2s;">
+        <input type="checkbox" class="preview-file-cb" value="${f.name}" onchange="updatePreviewSelectCount()" style="margin-top:4px; cursor:pointer; accent-color:var(--pink);">
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            ${iconHtml}
+            <span style="font-size:12px; font-weight:700; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" onclick="previewSingleFile('${f.name}', '${f.type}', '${f.url}')">${f.name}</span>
+          </div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">Nguồn: ${f.source}</div>
+          ${imgPreviewBlock}
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button type="button" onclick="previewSingleFile('${f.name}', '${f.type}', '${f.url}')" style="padding:4px 10px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; font-weight:700; color:#334155; cursor:pointer;"><i class="fa-regular fa-eye"></i> Xem</button>
+          <button type="button" onclick="downloadFile('${f.name}')" style="padding:4px 10px; background:var(--pink); border:none; border-radius:6px; font-size:11px; font-weight:700; color:#fff; cursor:pointer;"><i class="fa-solid fa-download"></i> Tải</button>
         </div>
       </div>
     `;
   }).join('');
 
+  contentEl.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:8px; border-bottom:1px solid #e2e8f0; margin-bottom:10px;">
+      <label style="font-size:12px; font-weight:700; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="selectAllPreviewFiles" onchange="toggleSelectAllPreviewFiles(this)" style="cursor:pointer; accent-color:var(--pink);">
+        <span id="previewSelectAllLabel">Chọn tất cả</span>
+      </label>
+      <button type="button" id="btnDownloadSelectedFiles" onclick="downloadSelectedPreviewFiles()" style="display:none; padding:5px 12px; background:#10b981; color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; align-items:center; gap:4px;">
+        <i class="fa-solid fa-download"></i> Tải các file đã chọn
+      </button>
+    </div>
+    <div style="max-height:360px; overflow-y:auto; padding-right:4px;">
+      ${fileRowsHtml}
+    </div>
+  `;
+
   const modal = document.getElementById('filePreviewModal');
   if (modal) modal.classList.add('open');
+  updatePreviewSelectCount();
+};
+
+window.previewSingleFile = function (fileName, type, url) {
+  if (type === 'image') {
+    openImageZoomModal(url);
+  } else {
+    showToast('📄 Đang mở bản xem trước file: ' + fileName);
+  }
+};
+
+window.updatePreviewSelectCount = function () {
+  const checked = document.querySelectorAll('.preview-file-cb:checked').length;
+  const selectAllCb = document.getElementById('selectAllPreviewFiles');
+  const total = document.querySelectorAll('.preview-file-cb').length;
+  if (selectAllCb) selectAllCb.checked = (checked === total && total > 0);
+
+  const labelEl = document.getElementById('previewSelectAllLabel');
+  if (labelEl) {
+    labelEl.textContent = checked > 0 ? ('Chọn tất cả (' + checked + ')') : 'Chọn tất cả';
+  }
+
+  const btnDl = document.getElementById('btnDownloadSelectedFiles');
+  if (btnDl) {
+    btnDl.style.display = checked > 0 ? 'inline-flex' : 'none';
+  }
+};
+
+window.toggleSelectAllPreviewFiles = function (cb) {
+  document.querySelectorAll('.preview-file-cb').forEach(itemCb => {
+    itemCb.checked = cb.checked;
+  });
+  updatePreviewSelectCount();
+};
+
+window.downloadSelectedPreviewFiles = function () {
+  const selected = Array.from(document.querySelectorAll('.preview-file-cb:checked')).map(cb => cb.value);
+  if (!selected.length) {
+    showToast('Vui lòng chọn ít nhất 1 file để tải xuống', 'error');
+    return;
+  }
+  showToast('📥 Đang tải xuống ' + selected.length + ' file đính kèm đã chọn!');
 };
 
 

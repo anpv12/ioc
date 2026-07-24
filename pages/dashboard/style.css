@@ -1668,6 +1668,15 @@ input:checked + .slider:before { transform: translateX(16px); }
   border-left-color: #ef4444 !important;
 }
 
+/* Dropdown option normal weight */
+#filterOrgDropdown label,
+#formAgency option,
+#directiveFilterOrganzation option,
+.filter-multiselect-dropdown label,
+.multiselect-dropdown label {
+  font-weight: 400 !important;
+}
+
 .multiselect-arrow-icon {
   position: absolute;
   right: 12px;
