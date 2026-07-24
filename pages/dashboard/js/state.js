@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v11';
+const DATA_VERSION = 'gialai_directives_v13';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -84,9 +84,13 @@ if (directives.length === 0) {
   const dueNormal = formatDateDMY(new Date(Date.now() + 7 * 86400000));
 
   directives = [
-    // --- Metric Tổng nhân khẩu: 3 chỉ đạo active (2 Đỏ + 1 Cam -> Ưu tiên Đỏ, hiện số 3 khoanh tròn) ---
+    // --- Metric Tổng nhân khẩu: Chờ phân công ---
     {
       id: 'dir_mock_1',
+      layoutGroup: 'du-lieu-khac',
+      dataPageIds: ['dlk-1'],
+      dataPageNames: ['Trang Phân bố Dân cư theo Giới tính'],
+      dataSourceUrls: [{ name: 'Trang Phân bố Dân cư theo Giới tính', url: 'https://gialai.gov.vn/giam-sat/dan-cu/gioi-tinh' }],
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
       agency: 'Công an Tỉnh Gia Lai',
@@ -95,13 +99,21 @@ if (directives.length === 0) {
       content: 'Rà soát dữ liệu hộ khẩu và cập nhật biến động nhân khẩu khu vực thành phố Pleiku.',
       dueDate: dueSoon,
       reportDueDate: '',
-      attachments: [{ name: 'Kế_hoạch_rà_soát_C06.pdf', source: 'leader' }],
-      status: 'Đã chỉ đạo',
+      attachments: [
+        { name: 'Kế_hoạch_rà_soát_C06.pdf', source: 'leader' },
+        { name: 'Screenshot_Trang_Phan_bo_Dan_cu_theo_Gioi_tinh.png', source: 'leader', isScreenshot: true },
+        { name: 'https://gialai.gov.vn/giam-sat/dan-cu/gioi-tinh', source: 'leader', isLink: true }
+      ],
+      status: 'Chờ phân công',
       report: '',
       createdAt: todayStr
     },
     {
       id: 'dir_mock_2',
+      layoutGroup: 'dich-vu-cong',
+      dataPageIds: ['dvc-1'],
+      dataPageNames: ['Trang Tỷ lệ Hồ sơ Đúng hạn & Quá hạn'],
+      dataSourceUrls: [{ name: 'Trang Tỷ lệ Hồ sơ Đúng hạn & Quá hạn', url: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/ty-le-ho-so' }],
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
       agency: 'Sở Thông tin và Truyền thông',
@@ -110,13 +122,20 @@ if (directives.length === 0) {
       content: 'Kiểm tra hạ tầng mạng kết nối dữ liệu dân cư quốc gia trên địa bàn tỉnh.',
       dueDate: dueOverdue,
       reportDueDate: '',
-      attachments: [{ name: 'Công_văn_chỉ_đạo_hạ_tầng.pdf', source: 'leader' }],
+      attachments: [
+        { name: 'Công_văn_chỉ_đạo_hạ_tầng.pdf', source: 'leader' },
+        { name: 'Biên_bản_kiểm_tra_hạ_tầng.docx', source: 'leader' }
+      ],
       status: 'Chờ phân công',
       report: '',
       createdAt: todayStr
     },
     {
       id: 'dir_mock_3',
+      layoutGroup: 'quan-ly-van-ban',
+      dataPageIds: ['vb-3'],
+      dataPageNames: ['Trang Theo dõi Chỉ đạo Điều hành'],
+      dataSourceUrls: [{ name: 'Trang Theo dõi Chỉ đạo Điều hành', url: 'https://gialai.gov.vn/giam-sat/van-ban/theo-doi-chi-dao' }],
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
       agency: 'Cục Thống kê Gia Lai',
@@ -125,13 +144,16 @@ if (directives.length === 0) {
       content: 'Tổng hợp số liệu thống kê dân số phục vụ lập quy hoạch phát triển đợt mới.',
       dueDate: dueNormal,
       reportDueDate: dueNormal,
-      attachments: [{ name: 'Đề_đánh_giá_thống_kê.pdf', source: 'leader' }],
+      attachments: [
+        { name: 'Đề_đánh_giá_thống_kê.pdf', source: 'leader' },
+        { name: 'Bang_tong_hop_dan_so.xlsx', source: 'agency' }
+      ],
       status: 'Đang xử lý',
       report: 'Đơn vị đang tiến hành tổng hợp dữ liệu thu thập từ các huyện cơ sở.',
       createdAt: todayStr
     },
 
-    // --- Metric Diện tích: 1 chỉ đạo Đỏ active (hiển thị Icon Cảnh báo màu Đỏ) ---
+    // --- Metric Diện tích: Chờ phân công ---
     {
       id: 'dir_mock_4',
       metricIds: ['metric-dien-tich'],
@@ -142,13 +164,17 @@ if (directives.length === 0) {
       content: 'Cập nhật bản đồ địa giới hành chính các xã phường sau quy hoạch sáp nhập.',
       dueDate: dueNormal,
       reportDueDate: '',
-      attachments: [{ name: 'Chi_dao_dia_gioi.pdf', source: 'leader' }],
-      status: 'Đã chỉ đạo',
+      attachments: [
+        { name: 'Chi_dao_dia_gioi.pdf', source: 'leader' },
+        { name: 'Screenshot_DiaTich_2026.png', source: 'leader', isScreenshot: true },
+        { name: 'https://gialai.gov.vn/dashboard/dien-tich', source: 'leader', isLink: true }
+      ],
+      status: 'Chờ phân công',
       report: '',
       createdAt: todayStr
     },
 
-    // --- Metric Mật độ dân số: 2 chỉ đạo Cam active (hiển thị Số 2 khoanh tròn màu Cam) ---
+    // --- Metric Mật độ dân số: Đang xử lý + Đã có báo cáo ---
     {
       id: 'dir_mock_5',
       metricIds: ['metric-mat-do'],
@@ -176,14 +202,15 @@ if (directives.length === 0) {
       reportDueDate: dueSoon,
       attachments: [
         { name: 'Khảo_sát_lao_động.pdf', source: 'leader' },
-        { name: 'Báo_cáo_kết_quả_bước_1.docx', source: 'agency' }
+        { name: 'Báo_cáo_kết_quả_bước_1.docx', source: 'agency' },
+        { name: 'Hinh_anh_thuc_te.jpg', source: 'agency' }
       ],
       status: 'Đã có báo cáo',
       report: 'Đã hoàn tất khảo sát đợt 1 tại 5 khu công nghiệp lớn.',
       createdAt: todayStr
     },
 
-    // --- Metric Trẻ em (0-14t): 1 chỉ đạo Cam active (hiển thị Icon Đồng hồ màu Cam) ---
+    // --- Metric Trẻ em: Đang xử lý ---
     {
       id: 'dir_mock_7',
       metricIds: ['metric-tre-em'],
@@ -200,7 +227,7 @@ if (directives.length === 0) {
       createdAt: todayStr
     },
 
-    // --- Metric Người lao động: 1 chỉ đạo Hoàn thành (Không hiện Ribbon active) ---
+    // --- Metric Người lao động: Kết thúc ---
     {
       id: 'dir_mock_8',
       metricIds: ['metric-lao-dong'],
@@ -215,12 +242,12 @@ if (directives.length === 0) {
         { name: 'Yeu_cau_viec_lam.pdf', source: 'leader' },
         { name: 'Bao_cao_viec_lam_Q2.pdf', source: 'agency' }
       ],
-      status: 'Hoàn thành',
+      status: 'Kết thúc',
       report: 'Đã hoàn thành phê duyệt kết quả báo cáo giải quyết việc làm Quý 2.',
       createdAt: todayStr
     },
 
-    // --- Metric Người lớn tuổi: 1 chỉ đạo Bị từ chối (Không hiện Ribbon active) ---
+    // --- Metric Người lớn tuổi: Bị từ chối ---
     {
       id: 'dir_mock_9',
       metricIds: ['metric-nguoi-lon-tuoi'],
@@ -238,6 +265,27 @@ if (directives.length === 0) {
       status: 'Bị từ chối',
       report: 'Số liệu thống kê chưa đầy đủ các huyện miền núi. Yêu cầu đơn vị rà soát và báo cáo lại chi tiết.',
       createdAt: todayStr
+    },
+
+    // --- Metric Bản đồ: Chờ phê duyệt ---
+    {
+      id: 'dir_mock_10',
+      metricIds: ['metric-map'],
+      metricId: 'metric-map',
+      agency: 'Sở Nội vụ',
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Phê duyệt bản đồ phân bố dân cư hành chính năm 2026 trình HĐND tỉnh.',
+      dueDate: dueNormal,
+      reportDueDate: dueNormal,
+      attachments: [
+        { name: 'Ban_do_phan_bo_dan_cu_2026.pdf', source: 'leader' },
+        { name: 'Bao_cao_ket_qua_tong_hop.docx', source: 'agency' },
+        { name: 'Screenshot_BanDo_2026.png', source: 'agency', isScreenshot: true }
+      ],
+      status: 'Chờ phê duyệt',
+      report: 'Đơn vị đã hoàn chỉnh báo cáo và đang chờ lãnh đạo phê duyệt.',
+      createdAt: todayStr
     }
   ];
 
@@ -246,11 +294,11 @@ if (directives.length === 0) {
 
 // Migration backward-compat: bổ sung trường mới cho bản ghi cũ thiếu trường
 const STATUS_MAP_EN = {
-  'Đã chỉ đạo': 'da_chi_dao',
-  'Chờ phân công': 'da_chi_dao',
+  'Chờ phân công': 'cho_phan_cong',
   'Đang xử lý': 'dang_xu_ly',
   'Đã có báo cáo': 'da_co_bao_cao',
-  'Hoàn thành': 'hoan_thanh',
+  'Chờ phê duyệt': 'cho_phe_duyet',
+  'Kết thúc': 'ket_thuc',
   'Bị từ chối': 'bi_tu_choi'
 };
 
@@ -276,17 +324,17 @@ directives = directives.map(function (d) {
 
 function saveDirectives() {
   const STATUS_MAP_EN = {
-    'Đã chỉ đạo': 'da_chi_dao',
-    'Chờ phân công': 'da_chi_dao',
+    'Chờ phân công': 'cho_phan_cong',
     'Đang xử lý': 'dang_xu_ly',
     'Đã có báo cáo': 'da_co_bao_cao',
-    'Hoàn thành': 'hoan_thanh',
+    'Chờ phê duyệt': 'cho_phe_duyet',
+    'Kết thúc': 'ket_thuc',
     'Bị từ chối': 'bi_tu_choi'
   };
   directives.forEach(d => {
     d.indicatorKeys = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
     d.title = d.content || '';
-    d.statusEnum = STATUS_MAP_EN[d.status] || 'da_chi_dao';
+    d.statusEnum = STATUS_MAP_EN[d.status] || 'cho_phan_cong';
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(directives));
 }
@@ -294,23 +342,23 @@ function saveDirectives() {
 // Selector lấy danh sách chỉ đạo active của chỉ số đó
 function getActiveDirectivesByIndicator(indicatorKey) {
   const STATUS_MAP_EN = {
-    'Đã chỉ đạo': 'da_chi_dao',
-    'Chờ phân công': 'da_chi_dao',
+    'Chờ phân công': 'cho_phan_cong',
     'Đang xử lý': 'dang_xu_ly',
     'Đã có báo cáo': 'da_co_bao_cao',
-    'Hoàn thành': 'hoan_thanh',
+    'Chờ phê duyệt': 'cho_phe_duyet',
+    'Kết thúc': 'ket_thuc',
     'Bị từ chối': 'bi_tu_choi'
   };
 
   return directives.filter(d => {
     const keys = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
-    const isActive = d.status !== 'Hoàn thành' && d.status !== 'Bị từ chối';
+    const isActive = d.status !== 'Kết thúc';
     return keys.includes(indicatorKey) && isActive;
   }).map(d => {
     return Object.assign({}, d, {
       indicatorKeys: d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []),
       title: d.content || '',
-      statusEnum: STATUS_MAP_EN[d.status] || 'da_chi_dao'
+      statusEnum: STATUS_MAP_EN[d.status] || 'cho_phan_cong'
     });
   });
 }
@@ -346,7 +394,7 @@ function getDirectiveHistory(dir) {
   });
 
   // ----- Bước 2: Đang xử lý -----
-  const hasProcessing = ['Đang xử lý', 'Đã có báo cáo', 'Hoàn thành', 'Bị từ chối'].includes(dir.status);
+  const hasProcessing = ['Đang xử lý', 'Đã có báo cáo', 'Chờ phê duyệt', 'Kết thúc', 'Bị từ chối'].includes(dir.status);
   if (hasProcessing) {
     const rptDate = dir.reportDueDate || dir.dueDate || createdAt;
     history.push({
@@ -364,7 +412,7 @@ function getDirectiveHistory(dir) {
   }
 
   // ----- Bước 3: Đã có báo cáo / Bị từ chối -----
-  const hasReport = ['Đã có báo cáo', 'Hoàn thành', 'Bị từ chối'].includes(dir.status);
+  const hasReport = ['Đã có báo cáo', 'Chờ phê duyệt', 'Kết thúc', 'Bị từ chối'].includes(dir.status);
   if (hasReport) {
     const rptDate = dir.reportDueDate || dir.dueDate || createdAt;
     const isRejected = dir.status === 'Bị từ chối';
@@ -394,11 +442,28 @@ function getDirectiveHistory(dir) {
     });
   }
 
-  // ----- Bước 4: Đã phê duyệt / Hoàn thành -----
-  if (dir.status === 'Hoàn thành') {
+  // ----- Bước 4: Chờ phê duyệt -----
+  if (dir.status === 'Chờ phê duyệt' || dir.status === 'Kết thúc') {
     const aprDate = dir.reportDueDate || dir.dueDate || createdAt;
     history.push({
-      status: 'Hoàn thành',
+      status: 'Chờ phê duyệt',
+      agency: agency,
+      createdAt: aprDate,
+      overdue: 'Đúng hạn',
+      approver: '-',
+      approvalDate: '-',
+      agencyNote: '-',
+      agencyAttach: '-',
+      leaderNote: 'Đang chờ lãnh đạo phê duyệt kết quả.',
+      leaderAttach: '-'
+    });
+  }
+
+  // ----- Bước 5: Kết thúc -----
+  if (dir.status === 'Kết thúc') {
+    const aprDate = dir.reportDueDate || dir.dueDate || createdAt;
+    history.push({
+      status: 'Kết thúc',
       agency: agency,
       createdAt: aprDate,
       overdue: 'Đúng hạn',
@@ -406,7 +471,7 @@ function getDirectiveHistory(dir) {
       approvalDate: aprDate,
       agencyNote: '-',
       agencyAttach: '-',
-      leaderNote: 'Lãnh đạo đã phê duyệt kết quả và đóng chỉ đạo.',
+      leaderNote: 'Lãnh đạo đã phê duyệt kết quả và kết thúc chỉ đạo.',
       leaderAttach: '-'
     });
   }
