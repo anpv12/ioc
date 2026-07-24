@@ -4,6 +4,9 @@
 
 /* ---------------- Menu switching ---------------- */
 function switchView(view, label) {
+  document.querySelectorAll('.was-validated').forEach(el => el.classList.remove('was-validated'));
+  document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+  document.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + view).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -189,6 +192,20 @@ renderChartTypes();
 
 /* ---------------- Quản trị quy trình động ---------------- */
 const orgList = [
+  'Sở Thông tin và Truyền thông',
+  'Sở Y tế',
+  'UBND Tỉnh Gia Lai',
+  'Sở Giáo dục và Đào tạo',
+  'Sở Tài chính',
+  'Sở Xây dựng',
+  'Sở Kế hoạch và Đầu tư',
+  'Sở Giao thông vận tải',
+  'Sở Công Thương',
+  'Sở Nội vụ',
+  'Sở Lao động Thương binh và Xã hội',
+  'Công an Tỉnh',
+  'Cục Thống kê tỉnh Gia Lai',
+  'UBND Thành phố Pleiku',
   'Phường An Bình',
   'Phường An Khê',
   'Phường An Phú',
@@ -198,7 +215,6 @@ const orgList = [
   'Phường Pleiku',
   'Phường Thống Nhất',
   'Sở Tài Chính',
-  'Thống kê tỉnh Gia Lai',
   'UBND phường An Nhơn Bắc',
   'UBND phường An Nhơn Đông',
   'UBND phường An Nhơn Nam',
@@ -338,14 +354,14 @@ const scopeList = [
   'Hành chính công'
 ];
 const statusList = [
-  'Phân công xử lý',
+  'Chờ phân công',
   'Đang xử lý',
   'Đã có báo cáo',
   'Chờ phê duyệt',
   'Đã kết thúc'
 ];
 const legacyProcessStatusMap = {
-  'Chuyển xử lý': 'Phân công xử lý',
+  'Chuyển xử lý': 'Chờ phân công',
   'Trình duyệt': 'Đã có báo cáo',
   'Phê duyệt': 'Chờ phê duyệt',
   'Đã hoàn thành': 'Đã kết thúc'
@@ -355,7 +371,59 @@ const userList = [
   'Trưởng phòng Chuyên môn',
   'Chuyên viên Xử lý',
   'Lãnh đạo UBND',
-  'Chuyên viên Tổng hợp'
+  'Chuyên viên Tổng hợp',
+  'Nguyễn Văn A',
+  'Nguyễn Văn B',
+  'Nguyễn Văn C',
+  'Nguyễn Văn D',
+  'Nguyễn Văn E',
+  'Nguyễn Văn F',
+  'Nguyễn Văn G',
+  'Nguyễn Văn H',
+  'Nguyễn Văn I',
+  'Nguyễn Văn J',
+  'Nguyễn Văn K',
+  'Nguyễn Văn L',
+  'Nguyễn Văn M',
+  'Nguyễn Văn N',
+  'Nguyễn Văn O',
+  'Nguyễn Văn P',
+  'Nguyễn Văn Q',
+  'Nguyễn Văn R',
+  'Nguyễn Văn S',
+  'Nguyễn Văn T',
+  'Nguyễn Văn U',
+  'Nguyễn Văn V',
+  'Nguyễn Văn W',
+  'Nguyễn Văn X',
+  'Nguyễn Văn Y',
+  'Nguyễn Văn Z',
+  'Phùng Văn A',
+  'Phùng Văn B',
+  'Phùng Văn C',
+  'Phùng Văn D',
+  'Phùng Văn E',
+  'Phùng Văn F',
+  'Phùng Văn G',
+  'Phùng Văn H',
+  'Phùng Văn I',
+  'Phùng Văn J',
+  'Phùng Văn K',
+  'Phùng Văn L',
+  'Phùng Văn M',
+  'Phùng Văn N',
+  'Phùng Văn O',
+  'Phùng Văn P',
+  'Phùng Văn Q',
+  'Phùng Văn R',
+  'Phùng Văn S',
+  'Phùng Văn T',
+  'Phùng Văn U',
+  'Phùng Văn V',
+  'Phùng Văn W',
+  'Phùng Văn X',
+  'Phùng Văn Y',
+  'Phùng Văn Z'
 ];
 
 const formatStepOrgs = (orgs) => {
@@ -369,776 +437,196 @@ const getOrgsTooltip = (orgs) => {
   return orgs.join('\n');
 };
 
+const ALL_ORGS = ['Sở Thông tin và Truyền thông', 'Sở Y tế', 'UBND Tỉnh Gia Lai', 'Sở Giáo dục và Đào tạo', 'Sở Tài chính', 'Sở Xây dựng', 'Sở Kế hoạch và Đầu tư', 'Sở Giao thông vận tải', 'Sở Công Thương', 'Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh', 'Cục Thống kê tỉnh Gia Lai', 'UBND Thành phố Pleiku'];
+
+const getFakeAssigneeArray = (orgsList) => {
+  const names = ['Nguyễn Văn Anh', 'Trần Thị Bích Vân', 'Lê Văn Cường', 'Phạm Văn Dũng', 'Hoàng Thị Mỹ Linh', 'Vũ Văn Hải', 'Đặng Thị Lan Hương', 'Bùi Văn Hùng'];
+  return orgsList.map(org => {
+    let hash = 0;
+    for (let i = 0; i < org.length; i++) hash += org.charCodeAt(i);
+    return names[hash % names.length];
+  });
+};
+
+const FULL_STEPS = (orgsList) => [
+  {
+    id: 'node-x-1',
+    unitName: 'Tiếp nhận và Phân công xử lý',
+    status: 'Chờ phân công',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Lãnh đạo đơn vị tiếp nhận và phân công việc xử lý chỉ đạo cho chuyên viên.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-2' }]
+  },
+  {
+    id: 'node-x-2',
+    unitName: 'Thực hiện nhiệm vụ',
+    status: 'Đang xử lý',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Chuyên viên nghiên cứu thực hiện nhiệm vụ được giao.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-3' }]
+  },
+  {
+    id: 'node-x-3',
+    unitName: 'Báo cáo kết quả',
+    status: 'Đã có báo cáo',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Xây dựng dự thảo báo cáo kết quả xử lý.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-4' }]
+  },
+  {
+    id: 'node-x-4',
+    unitName: 'Trình Lãnh đạo phê duyệt',
+    status: 'Chờ phê duyệt',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Trình lãnh đạo xem xét và ký duyệt báo cáo.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-5' }, { name: 'Trả về', nextNodeId: 'node-x-3' }]
+  },
+  {
+    id: 'node-x-5',
+    unitName: 'Kết thúc chỉ đạo',
+    status: 'Đã kết thúc',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Lưu trữ hồ sơ xử lý và kết thúc quy trình.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
+  }
+];
+
+const THREE_STEPS = (orgsList) => [
+  {
+    id: 'node-x-1',
+    unitName: 'Phân công xử lý',
+    status: 'Chờ phân công',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Lãnh đạo đơn vị tiếp nhận và phân công việc xử lý chỉ đạo cho chuyên viên.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-2' }]
+  },
+  {
+    id: 'node-x-2',
+    unitName: 'Thực hiện nhiệm vụ',
+    status: 'Đang xử lý',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Chuyên viên nghiên cứu thực hiện nhiệm vụ được giao.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-3' }]
+  },
+  {
+    id: 'node-x-3',
+    unitName: 'Báo cáo kết quả',
+    status: 'Đã có báo cáo',
+    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
+    orgs: orgsList,
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeAssigneeArray(orgsList),
+    description: 'Báo cáo kết quả xử lý và kết thúc quy trình.',
+    persisted: true,
+    actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
+  }
+];
+
 const processCatalog = [
   {
     id: 'process-1',
     code: 'QT-2026-001',
-    name: 'Quy trình Dân cư chung',
+    name: 'Quy trình xử lý PAHT',
     version: '1.0',
-    scope: 'Dân cư',
-    orgs: ['Sở Tài Chính', 'Thống kê tỉnh Gia Lai'],
+    scope: 'Phản ánh hiện trường',
+    orgs: ['Sở Thông tin và Truyền thông', 'Sở Y tế'],
     active: true,
     processStatus: 'active',
-    createdAt: '17/07/2026 08:30',
-    description: 'Quy trình giám sát và xử lý số liệu dân cư chung toàn tỉnh từ đầu đến cuối.',
-    nodes: [
-      {
-        id: 'node-1-1',
-        unitName: 'Giao việc chuyên viên',
-        status: 'Phân công xử lý',
-        org: 'Thống kê tỉnh Gia Lai',
-        orgs: ['Thống kê tỉnh Gia Lai'],
-        assignees: ['Lãnh đạo Đơn vị', 'Chuyên viên Xử lý'],
-        description: 'Lãnh đạo đơn vị phân công việc xử lý chỉ đạo cho chuyên viên.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-1-2' }]
-      },
-      {
-        id: 'node-1-2',
-        unitName: 'Chuyên viên xử lý chi tiết',
-        status: 'Đang xử lý',
-        org: 'Thống kê tỉnh Gia Lai',
-        orgs: ['Thống kê tỉnh Gia Lai'],
-        assignees: ['Chuyên viên Xử lý'],
-        description: 'Chuyên viên nghiên cứu thực hiện nhiệm vụ.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-1-3' }]
-      },
-      {
-        id: 'node-1-3',
-        unitName: 'Tổng hợp báo cáo',
-        status: 'Đã có báo cáo',
-        org: 'Thống kê tỉnh Gia Lai',
-        orgs: ['Thống kê tỉnh Gia Lai'],
-        assignees: ['Chuyên viên Xử lý'],
-        description: 'Xây dựng dự thảo báo cáo gửi cấp trên.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-1-4' }]
-      },
-      {
-        id: 'node-1-4',
-        unitName: 'Trình lãnh đạo phê duyệt',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Tài Chính',
-        orgs: ['Sở Tài Chính'],
-        assignees: ['Lãnh đạo Đơn vị'],
-        description: 'Lãnh đạo xem xét và ký duyệt báo cáo.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'node-1-5' },
-          { name: 'Trả xử lý', nextNodeId: 'node-1-3' }
-        ]
-      },
-      {
-        id: 'node-1-5',
-        unitName: 'Lưu trữ hồ sơ',
-        status: 'Đã kết thúc',
-        org: 'Sở Tài Chính',
-        orgs: ['Sở Tài Chính'],
-        assignees: ['Chuyên viên Tổng hợp'],
-        description: 'Hoàn tất và đóng hồ sơ chỉ đạo.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
+    createdAt: '23/07/2026 09:30',
+    description: 'Mô phỏng quy trình đang hoạt động, full tất cả các bước xử lý, 2 cơ quan áp dụng.',
+    nodes: FULL_STEPS(['Sở Thông tin và Truyền thông', 'Sở Y tế'])
   },
   {
     id: 'process-2',
     code: 'QT-2026-002',
-    name: 'Quy trình Phân tích Giới tính và Độ tuổi',
+    name: 'Quy trình Báo cáo Kinh tế - Xã hội',
     version: '1.0',
-    scope: 'Phản ánh hiện trường',
-    orgs: [...orgList], // Chứa tất cả 135 cơ quan tham gia
+    scope: 'Kinh tế xã hội',
+    orgs: ALL_ORGS,
     active: true,
     processStatus: 'active',
-    createdAt: '17/07/2026 09:45',
-    description: 'Quy trình liên cơ quan có sự tham gia của tất cả 135 đơn vị trên toàn tỉnh.',
-    nodes: [
-      {
-        id: 'node-2-1',
-        unitName: 'Khảo sát giới tính và độ tuổi',
-        status: 'Đang xử lý',
-        org: 'Sở Tài Chính',
-        orgs: [...orgList],
-        assignees: ['Chuyên viên Xử lý'],
-        description: 'Khảo sát biến động dân số tại tất cả các xã, phường.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
+    createdAt: '02/08/2026 08:00',
+    description: 'Mô phỏng quy trình đang hoạt động, yêu cầu báo cáo định kỳ từ tất cả các Sở, Ban, Ngành trên địa bàn.',
+    nodes: FULL_STEPS(ALL_ORGS)
   },
   {
     id: 'process-3',
     code: 'QT-2026-003',
-    name: 'Quy trình Quản lý Hành chính công',
+    name: 'Quy trình Đánh giá Trường chuẩn Quốc gia',
     version: '1.0',
-    scope: 'Hành chính công',
-    orgs: ['Phường Pleiku', 'Phường Thống Nhất'],
+    scope: 'Giáo dục',
+    orgs: ['Sở Giáo dục và Đào tạo'],
     active: false,
     processStatus: 'draft',
-    createdAt: '19/07/2026 14:15',
-    description: 'Quy trình giám sát giải quyết thủ tục hành chính công (Bản nháp).',
-    nodes: [
-      {
-        id: 'node-3-1',
-        unitName: 'Tiếp nhận hồ sơ một cửa',
-        status: 'Phân công xử lý',
-        org: 'Phường Pleiku',
-        orgs: ['Phường Pleiku'],
-        assignees: ['Chuyên viên Xử lý'],
-        description: 'Tiếp nhận và lập hồ sơ theo dõi.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
+    createdAt: '03/08/2026 08:00',
+    description: 'Bản nháp quy trình thẩm định, lấy ý kiến hiệp thương từ tất cả các cơ quan (mô phỏng phân công toàn bộ).',
+    nodes: FULL_STEPS(ALL_ORGS)
   },
   {
     id: 'process-4',
     code: 'QT-2026-004',
-    name: 'Quy trình Giám sát Phổ cập Giáo dục Tiểu học',
-    version: '1.0',
-    scope: 'Giáo dục',
-    orgs: ['Sở Giáo dục và Đào tạo'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '20/07/2026 08:00',
-    description: 'Quy trình kiểm tra, giám sát tỷ lệ trẻ em hoàn thành chương trình tiểu học.',
-    nodes: [
-      {
-        id: 'node-4-1',
-        unitName: 'Thu thập số liệu phổ cập',
-        status: 'Phân công xử lý',
-        org: 'Sở Giáo dục và Đào tạo',
-        orgs: ['Sở Giáo dục và Đào tạo'],
-        assignees: ['Sở Giáo dục và Đào tạo - Chuyên viên Xử lý'],
-        description: 'Tập hợp báo cáo phổ cập từ phòng Giáo dục các huyện.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-4-2' }]
-      },
-      {
-        id: 'node-4-2',
-        unitName: 'Thẩm định hồ sơ phổ cập',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Giáo dục và Đào tạo',
-        orgs: ['Sở Giáo dục và Đào tạo'],
-        assignees: ['Sở Giáo dục và Đào tạo - Chuyên viên Xử lý'],
-        description: 'Xem xét và kiểm tra tính chính xác của dữ liệu.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-4-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-5',
-    code: 'QT-2026-005',
-    name: 'Quy trình Theo dõi Chỉ số Giá tiêu dùng CPI',
-    version: '1.0',
-    scope: 'Kinh tế xã hội',
-    orgs: ['Cục Thống kê tỉnh Gia Lai'],
-    active: false,
-    processStatus: 'draft',
-    createdAt: '20/07/2026 09:30',
-    description: 'Quy trình khảo sát giá và tính toán chỉ số giá tiêu dùng hàng tháng.',
-    nodes: [
-      {
-        id: 'node-5-1',
-        unitName: 'Khảo sát giá thị trường',
-        status: 'Đang xử lý',
-        org: 'Cục Thống kê tỉnh Gia Lai',
-        orgs: ['Cục Thống kê tỉnh Gia Lai'],
-        assignees: ['Cục Thống kê tỉnh Gia Lai - Chuyên viên Xử lý'],
-        description: 'Ghi chép giá bán lẻ các mặt hàng tại chợ đầu mối.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-6',
-    code: 'QT-2026-006',
-    name: 'Quy trình Đánh giá Xếp hạng Công chức',
-    version: '1.0',
-    scope: 'Cán bộ công chức',
-    orgs: ['Sở Nội vụ'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '21/07/2026 07:15',
-    description: 'Quy trình tự đánh giá và xếp loại chất lượng cán bộ cuối năm.',
-    nodes: [
-      {
-        id: 'node-6-1',
-        unitName: 'Lập bản tự đánh giá',
-        status: 'Phân công xử lý',
-        org: 'Sở Nội vụ',
-        orgs: ['Sở Nội vụ'],
-        assignees: ['Sở Nội vụ - Chuyên viên Xử lý'],
-        description: 'Công chức điền phiếu tự đánh giá nhiệm vụ.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-6-2' }]
-      },
-      {
-        id: 'node-6-2',
-        unitName: 'Hội đồng bình xét thi đua',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Nội vụ',
-        orgs: ['Sở Nội vụ'],
-        assignees: ['Sở Nội vụ - Chuyên viên Xử lý'],
-        description: 'Đánh giá chéo và bỏ phiếu xếp loại chất lượng.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-6-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-7',
-    code: 'QT-2026-007',
-    name: 'Quy trình Tiếp nhận & Xử lý Văn bản đi/đến',
-    version: '1.0',
-    scope: 'Văn bản điều hành',
-    orgs: ['Văn phòng UBND tỉnh Gia Lai'],
-    active: false,
-    processStatus: 'draft',
-    createdAt: '21/07/2026 10:20',
-    description: 'Quy trình xử lý hồ sơ công văn chỉ đạo đến từ các bộ ngành.',
-    nodes: [
-      {
-        id: 'node-7-1',
-        unitName: 'Phân loại công văn đến',
-        status: 'Phân công xử lý',
-        org: 'Văn phòng UBND tỉnh Gia Lai',
-        orgs: ['Văn phòng UBND tỉnh Gia Lai'],
-        assignees: ['Văn phòng UBND tỉnh Gia Lai - Chuyên viên Xử lý'],
-        description: 'Đóng dấu văn thư và phân phối công việc cho các phòng chuyên môn.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-8',
-    code: 'QT-2026-008',
-    name: 'Quy trình Quyết toán Ngân sách Nhà nước',
-    version: '1.0',
-    scope: 'CSDL quốc gia về tài chính',
-    orgs: ['Sở Tài chính Gia Lai'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '21/07/2026 14:00',
-    description: 'Quy trình kiểm soát chi ngân sách địa phương và quyết toán cuối năm tài khóa.',
-    nodes: [
-      {
-        id: 'node-8-1',
-        unitName: 'Thu thập hồ sơ quyết toán',
-        status: 'Phân công xử lý',
-        org: 'Sở Tài chính Gia Lai',
-        orgs: ['Sở Tài chính Gia Lai'],
-        assignees: ['Sở Tài chính Gia Lai - Chuyên viên Xử lý'],
-        description: 'Tập hợp chứng từ quyết toán của các chủ đầu tư.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-8-2' }]
-      },
-      {
-        id: 'node-8-2',
-        unitName: 'Phê duyệt báo cáo quyết toán',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Tài chính Gia Lai',
-        orgs: ['Sở Tài chính Gia Lai'],
-        assignees: ['Sở Tài chính Gia Lai - Chuyên viên Xử lý'],
-        description: 'Trình Giám đốc Sở ký duyệt văn bản quyết toán.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-8-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-9',
-    code: 'QT-2026-009',
-    name: 'Quy trình Cấp giấy phép xây dựng nhà ở',
+    name: 'Quy trình Thẩm định Dự án Đầu tư',
     version: '1.0',
     scope: 'Hành chính công',
-    orgs: ['Sở Xây dựng Gia Lai'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '22/07/2026 08:30',
-    description: 'Quy trình xử lý hồ sơ xin phép xây dựng nhà ở của người dân.',
-    nodes: [
-      {
-        id: 'node-9-1',
-        unitName: 'Kiểm tra hồ sơ thực địa',
-        status: 'Đang xử lý',
-        org: 'Sở Xây dựng Gia Lai',
-        orgs: ['Sở Xây dựng Gia Lai'],
-        assignees: ['Sở Xây dựng Gia Lai - Chuyên viên Xử lý'],
-        description: 'Đo đạc kiểm tra ranh giới quy hoạch đô thị.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-10',
-    code: 'QT-2026-010',
-    name: 'Quy trình Đăng ký khai sinh và nhập hộ khẩu',
-    version: '1.0',
-    scope: 'Dân cư',
-    orgs: ['UBND Thành phố Pleiku'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '22/07/2026 09:00',
-    description: 'Quy trình liên thông đăng ký hộ tịch và cấp mã định danh cá nhân mới.',
-    nodes: [
-      {
-        id: 'node-10-1',
-        unitName: 'Tiếp nhận hồ sơ đăng ký',
-        status: 'Phân công xử lý',
-        org: 'UBND Thành phố Pleiku',
-        orgs: ['UBND Thành phố Pleiku'],
-        assignees: ['UBND Thành phố Pleiku - Chuyên viên Xử lý'],
-        description: 'Kiểm tra giấy chứng sinh và sổ hộ khẩu gốc.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-10-2' }]
-      },
-      {
-        id: 'node-10-2',
-        unitName: 'Cấp trích lục khai sinh',
-        status: 'Chờ phê duyệt',
-        org: 'UBND Thành phố Pleiku',
-        orgs: ['UBND Thành phố Pleiku'],
-        assignees: ['UBND Thành phố Pleiku - Chuyên viên Xử lý'],
-        description: 'Trình ký và trao trích lục giấy khai sinh cho gia đình.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-10-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-11',
-    code: 'QT-2026-011',
-    name: 'Quy trình Xử lý tin báo Hiện trường đô thị',
-    version: '1.0',
-    scope: 'Phản ánh hiện trường',
-    orgs: ['UBND Thành phố Pleiku'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '22/07/2026 11:30',
-    description: 'Quy trình xử lý phản ánh của người dân về lấn chiếm lòng lề đường.',
-    nodes: [
-      {
-        id: 'node-11-1',
-        unitName: 'Xác minh hiện trạng đô thị',
-        status: 'Đang xử lý',
-        org: 'UBND Thành phố Pleiku',
-        orgs: ['UBND Thành phố Pleiku'],
-        assignees: ['UBND Thành phố Pleiku - Chuyên viên Xử lý'],
-        description: 'Chụp hình và lập biên bản kiểm tra thực địa.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-12',
-    code: 'QT-2026-012',
-    name: 'Quy trình Giám sát chất lượng Nguồn nước sinh hoạt',
-    version: '1.0',
-    scope: 'Phản ánh hiện trường',
-    orgs: ['Sở Y tế Gia Lai'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '22/07/2026 15:45',
-    description: 'Quy trình giám định vi sinh vật của nhà máy nước sinh hoạt thành phố.',
-    nodes: [
-      {
-        id: 'node-12-1',
-        unitName: 'Lấy mẫu nước xét nghiệm',
-        status: 'Phân công xử lý',
-        org: 'Sở Y tế Gia Lai',
-        orgs: ['Sở Y tế Gia Lai'],
-        assignees: ['Sở Y tế Gia Lai - Chuyên viên Xử lý'],
-        description: 'Lấy mẫu tại các vòi nước công cộng và bể chứa trung tâm.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-12-2' }]
-      },
-      {
-        id: 'node-12-2',
-        unitName: 'Phê duyệt phiếu xét nghiệm',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Y tế Gia Lai',
-        orgs: ['Sở Y tế Gia Lai'],
-        assignees: ['Sở Y tế Gia Lai - Chuyên viên Xử lý'],
-        description: 'Xác nhận nồng độ clo đạt chuẩn y tế.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-12-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-13',
-    code: 'QT-2026-013',
-    name: 'Quy trình Giải ngân vốn vay ưu đãi học đường',
-    version: '1.0',
-    scope: 'Giáo dục',
-    orgs: ['Sở Giáo dục và Đào tạo'],
+    orgs: ['Sở Xây dựng', 'Sở Kế hoạch và Đầu tư'],
     active: false,
     processStatus: 'draft',
-    createdAt: '23/07/2026 08:15',
-    description: 'Quy trình lập danh sách học sinh nghèo vay vốn đi học (Bản nháp).',
-    nodes: [
-      {
-        id: 'node-13-1',
-        unitName: 'Lập danh sách học sinh xin vay',
-        status: 'Phân công xử lý',
-        org: 'Sở Giáo dục và Đào tạo',
-        orgs: ['Sở Giáo dục và Đào tạo'],
-        assignees: ['Sở Giáo dục và Đào tạo - Chuyên viên Xử lý'],
-        description: 'Xét đơn của học sinh dân tộc thiểu số và có hoàn cảnh khó khăn.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-14',
-    code: 'QT-2026-014',
-    name: 'Quy trình Cấp chứng nhận đầu tư dự án FDI',
-    version: '1.0',
-    scope: 'Kinh tế xã hội',
-    orgs: ['Sở Kế hoạch và Đầu tư'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 09:10',
-    description: 'Quy trình tiếp nhận và thẩm định dự án đầu tư nước ngoài trên địa bàn tỉnh.',
-    nodes: [
-      {
-        id: 'node-14-1',
-        unitName: 'Thẩm định hồ sơ tài chính',
-        status: 'Phân công xử lý',
-        org: 'Sở Kế hoạch và Đầu tư',
-        orgs: ['Sở Kế hoạch và Đầu tư'],
-        assignees: ['Sở Kế hoạch và Đầu tư - Chuyên viên Xử lý'],
-        description: 'Thẩm tra năng lực tài chính của doanh nghiệp ngoại.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-14-2' }]
-      },
-      {
-        id: 'node-14-2',
-        unitName: 'Cấp chứng nhận đăng ký đầu tư',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Kế hoạch và Đầu tư',
-        orgs: ['Sở Kế hoạch và Đầu tư'],
-        assignees: ['Sở Kế hoạch và Đầu tư - Chuyên viên Xử lý'],
-        description: 'Trình UBND tỉnh quyết định chấp thuận chủ trương đầu tư.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-14-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-15',
-    code: 'QT-2026-015',
-    name: 'Quy trình Đào tạo bồi dưỡng lý luận chính trị',
-    version: '1.0',
-    scope: 'Cán bộ công chức',
-    orgs: ['Sở Nội vụ'],
-    active: false,
-    processStatus: 'draft',
-    createdAt: '23/07/2026 10:15',
-    description: 'Quy trình lập kế hoạch đào tạo cán bộ quy hoạch (Bản nháp).',
-    nodes: [
-      {
-        id: 'node-15-1',
-        unitName: 'Tổng hợp danh sách đề cử',
-        status: 'Phân công xử lý',
-        org: 'Sở Nội vụ',
-        orgs: ['Sở Nội vụ'],
-        assignees: ['Sở Nội vụ - Chuyên viên Xử lý'],
-        description: 'Lấy danh sách đề xuất của các cơ quan trực thuộc tỉnh.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-16',
-    code: 'QT-2026-016',
-    name: 'Quy trình Giám sát tiến độ chỉ đạo của UBND tỉnh',
-    version: '1.0',
-    scope: 'Văn bản điều hành',
-    orgs: ['Văn phòng UBND tỉnh Gia Lai'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 11:30',
-    description: 'Quy trình đôn đốc việc thực hiện các thông báo kết luận chỉ đạo của UBND tỉnh.',
-    nodes: [
-      {
-        id: 'node-16-1',
-        unitName: 'Đôn đốc đơn vị thực hiện',
-        status: 'Phân công xử lý',
-        org: 'Văn phòng UBND tỉnh Gia Lai',
-        orgs: ['Văn phòng UBND tỉnh Gia Lai'],
-        assignees: ['Văn phòng UBND tỉnh Gia Lai - Chuyên viên Xử lý'],
-        description: 'Gửi văn bản nhắc nhở thời hạn hoàn thành các nhiệm vụ trễ hạn.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-16-2' }]
-      },
-      {
-        id: 'node-16-2',
-        unitName: 'Duyệt báo cáo tiến độ tổng hợp',
-        status: 'Chờ phê duyệt',
-        org: 'Văn phòng UBND tỉnh Gia Lai',
-        orgs: ['Văn phòng UBND tỉnh Gia Lai'],
-        assignees: ['Văn phòng UBND tỉnh Gia Lai - Chuyên viên Xử lý'],
-        description: 'Trình chánh văn phòng phê duyệt trước khi báo cáo chủ tịch.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-16-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-17',
-    code: 'QT-2026-017',
-    name: 'Quy trình Công khai báo cáo tình hình nợ công',
-    version: '1.0',
-    scope: 'CSDL quốc gia về tài chính',
-    orgs: ['Sở Tài chính Gia Lai'],
-    active: false,
-    processStatus: 'draft',
-    createdAt: '23/07/2026 13:40',
-    description: 'Quy trình xây dựng báo cáo phân tích nợ công định kỳ hàng năm (Bản nháp).',
-    nodes: [
-      {
-        id: 'node-17-1',
-        unitName: 'Tổng hợp số liệu nợ công',
-        status: 'Đang xử lý',
-        org: 'Sở Tài chính Gia Lai',
-        orgs: ['Sở Tài chính Gia Lai'],
-        assignees: ['Sở Tài chính Gia Lai - Chuyên viên Xử lý'],
-        description: 'Tập hợp các khoản vay ODA và vay nợ ngân sách tỉnh.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-18',
-    code: 'QT-2026-018',
-    name: 'Quy trình Giải quyết Khiếu nại đất đai cấp xã',
-    version: '1.0',
-    scope: 'Hành chính công',
-    orgs: ['UBND Thành phố Pleiku'],
-    active: false,
-    processStatus: 'draft',
-    createdAt: '23/07/2026 14:10',
-    description: 'Quy trình hòa giải và thẩm định tranh chấp đất đai cơ sở (Bản nháp).',
-    nodes: [
-      {
-        id: 'node-18-1',
-        unitName: 'Hòa giải tranh chấp đất đai',
-        status: 'Phân công xử lý',
-        org: 'UBND Thành phố Pleiku',
-        orgs: ['UBND Thành phố Pleiku'],
-        assignees: ['UBND Thành phố Pleiku - Chuyên viên Xử lý'],
-        description: 'Mời các bên tranh chấp lên làm việc tại UBND xã.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-19',
-    code: 'QT-2026-019',
-    name: 'Quy trình Thống kê và hỗ trợ Hộ nghèo',
-    version: '1.0',
-    scope: 'Dân cư',
-    orgs: ['Sở Lao động Thương binh và Xã hội'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 14:45',
-    description: 'Quy trình rà soát và cấp thẻ bảo hiểm y tế miễn phí cho hộ nghèo.',
-    nodes: [
-      {
-        id: 'node-19-1',
-        unitName: 'Lập danh sách rà soát nghèo',
-        status: 'Phân công xử lý',
-        org: 'Sở Lao động Thương binh và Xã hội',
-        orgs: ['Sở Lao động Thương binh và Xã hội'],
-        assignees: ['Sở Lao động Thương binh và Xã hội - Chuyên viên Xử lý'],
-        description: 'Tập hợp báo cáo hộ nghèo chuẩn đa chiều từ cơ sở.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-19-2' }]
-      },
-      {
-        id: 'node-19-2',
-        unitName: 'Phê duyệt kế hoạch trợ cấp',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Lao động Thương binh và Xã hội',
-        orgs: ['Sở Lao động Thương binh và Xã hội'],
-        assignees: ['Sở Lao động Thương binh và Xã hội - Chuyên viên Xử lý'],
-        description: 'Ký duyệt cấp kinh phí hỗ trợ gạo Tết.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-19-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-20',
-    code: 'QT-2026-020',
-    name: 'Quy trình Phản ánh an toàn giao thông đô thị',
-    version: '1.0',
-    scope: 'Phản ánh hiện trường',
-    orgs: ['Sở Giao thông vận tải Gia Lai'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 15:00',
-    description: 'Quy trình sửa chữa ổ gà, ổ voi và nắp hố ga mất an toàn trên các tuyến tỉnh lộ.',
-    nodes: [
-      {
-        id: 'node-20-1',
-        unitName: 'Sửa chữa hạ tầng giao thông',
-        status: 'Đang xử lý',
-        org: 'Sở Giao thông vận tải Gia Lai',
-        orgs: ['Sở Giao thông vận tải Gia Lai'],
-        assignees: ['Sở Giao thông vận tải Gia Lai - Chuyên viên Xử lý'],
-        description: 'Thi công thảm nhựa mặt đường bị sụt lún.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-21',
-    code: 'QT-2026-021',
-    name: 'Quy trình Xét duyệt cấp bằng tốt nghiệp THPT',
-    version: '1.0',
-    scope: 'Giáo dục',
-    orgs: ['Sở Giáo dục và Đào tạo'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 15:15',
-    description: 'Quy trình hậu kiểm điểm thi THPT quốc gia và in bằng tốt nghiệp chính thức.',
-    nodes: [
-      {
-        id: 'node-21-1',
-        unitName: 'Rà soát dữ liệu điểm thi',
-        status: 'Phân công xử lý',
-        org: 'Sở Giáo dục và Đào tạo',
-        orgs: ['Sở Giáo dục và Đào tạo'],
-        assignees: ['Sở Giáo dục và Đào tạo - Chuyên viên Xử lý'],
-        description: 'Đối chiếu dữ liệu điểm thi giữa Bộ và Sở.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-21-2' }]
-      },
-      {
-        id: 'node-21-2',
-        unitName: 'Duyệt in phôi bằng gốc',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Giáo dục và Đào tạo',
-        orgs: ['Sở Giáo dục và Đào tạo'],
-        assignees: ['Sở Giáo dục và Đào tạo - Chuyên viên Xử lý'],
-        description: 'Trình Giám đốc Sở duyệt danh sách cấp bằng tốt nghiệp.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-21-1' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'process-22',
-    code: 'QT-2026-022',
-    name: 'Quy trình Tổng hợp báo cáo chỉ số công nghiệp IIP',
-    version: '1.0',
-    scope: 'Kinh tế xã hội',
-    orgs: ['Sở Công Thương Gia Lai'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 15:30',
-    description: 'Quy trình tổng hợp báo cáo sản lượng điện thương phẩm và sản xuất công nghiệp.',
-    nodes: [
-      {
-        id: 'node-22-1',
-        unitName: 'Thu thập báo cáo từ nhà máy',
-        status: 'Đang xử lý',
-        org: 'Sở Công Thương Gia Lai',
-        orgs: ['Sở Công Thương Gia Lai'],
-        assignees: ['Sở Công Thương Gia Lai - Chuyên viên Xử lý'],
-        description: 'Ghi nhận sản lượng sản xuất của các nhà máy thủy điện trên địa bàn.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
-      }
-    ]
-  },
-  {
-    id: 'process-23',
-    code: 'QT-2026-023',
-    name: 'Quy trình Đăng ký tuyển dụng công chức cấp sở',
-    version: '1.0',
-    scope: 'Cán bộ công chức',
-    orgs: ['Sở Nội vụ'],
-    active: true,
-    processStatus: 'active',
-    createdAt: '23/07/2026 15:40',
-    description: 'Quy trình thẩm định năng lực và tổ chức thi tuyển công chức hàng năm.',
-    nodes: [
-      {
-        id: 'node-23-1',
-        unitName: 'Nhận hồ sơ dự thi tuyển',
-        status: 'Phân công xử lý',
-        org: 'Sở Nội vụ',
-        orgs: ['Sở Nội vụ'],
-        assignees: ['Sở Nội vụ - Chuyên viên Xử lý'],
-        description: 'Tiếp nhận hồ sơ xin việc và thẩm định điều kiện dự thi.',
-        persisted: true,
-        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-23-2' }]
-      },
-      {
-        id: 'node-23-2',
-        unitName: 'Duyệt danh sách đủ điều kiện',
-        status: 'Chờ phê duyệt',
-        org: 'Sở Nội vụ',
-        orgs: ['Sở Nội vụ'],
-        assignees: ['Sở Nội vụ - Chuyên viên Xử lý'],
-        description: 'Trình Giám đốc Sở Nội vụ ký duyệt danh sách thí sinh dự thi vòng 2.',
-        persisted: true,
-        actions: [
-          { name: 'Chuyển xử lý', nextNodeId: 'end' },
-          { name: 'Trả xử lý', nextNodeId: 'node-23-1' }
-        ]
-      }
-    ]
+    createdAt: '04/08/2026 08:00',
+    description: 'Bản nháp quy trình thẩm định, phối hợp ngắn gọn 3 bước giữa Sở Xây dựng và Sở KH&ĐT.',
+    nodes: THREE_STEPS(['Sở Xây dựng', 'Sở Kế hoạch và Đầu tư'])
   }
 ];
-
 (() => {
+
   const state = { rows: processCatalog, search: '', active: '', scope: '', org: '', version: '', page: 1, pageSize: 10, draft: null, editingId: null, selectedStepId: null, viewOnly: false, zoom: 1.0, panX: 0, panY: 0, isPanning: false, startX: 0, startY: 0 };
   /*Lọc*/
   const elements = {
-    list: document.getElementById('processListContainer'), search: document.getElementById('processSearch'), searchButton: document.getElementById('processSearchButton'), filterToggle: document.getElementById('processFilterToggle'), filterPanel: document.getElementById('processFilterPanel'), active: document.getElementById('filterProcessActive'), scope: document.getElementById('filterProcessScope'), org: document.getElementById('filterProcessOrg'), version: document.getElementById('filterProcessVersion'), refresh: document.getElementById('processRefreshButton'), add: document.getElementById('processAddButton'), notice: document.getElementById('processListNotice'), body: document.getElementById('processTableBody'), empty: document.getElementById('processEmptyState'), pageSize: document.getElementById('processPageSize'), pageInfo: document.getElementById('processPageInfo'), pages: document.getElementById('processPageButtons'), overlay: document.getElementById('processEditorOverlay'), form: document.getElementById('processEditorForm'), title: document.getElementById('processEditorTitle'), eyebrow: document.getElementById('processEditorEyebrow'), name: document.getElementById('processNameInput'), versionInput: document.getElementById('processVersionInput'), scopeContainer: document.getElementById('processScopeContainer'), orgs: document.getElementById('processOrgsContainer'), description: document.getElementById('processDescriptionInput'), steps: document.getElementById('processEditorNodeList'), diagram: document.getElementById('processEditorDiagram'), addStep: document.getElementById('addProcessNode'), clone: document.getElementById('cloneProcessEditor'), save: document.querySelector('[form="processEditorForm"]'), close: document.getElementById('closeProcessEditor'), cancel: document.getElementById('cancelProcessEditor'), error: document.getElementById('processEditorError'), nodeOverlay: document.getElementById('nodeConfigOverlay'), nodeForm: document.getElementById('processEditorNodeForm'), closeNode: document.getElementById('closeNodeConfig'), saveNode: document.getElementById('saveNodeConfig'),
+    list: document.getElementById('processListContainer'), search: document.getElementById('processSearch'), searchButton: document.getElementById('processSearchButton'), filterToggle: document.getElementById('processFilterToggle'), filterPanel: document.getElementById('processFilterPanel'), activeContainer: document.getElementById('filterProcessActiveContainer'), scopeContainer: document.getElementById('processScopeContainer'), orgs: document.getElementById('processOrgsContainer'), description: document.getElementById('processDescriptionInput'), steps: document.getElementById('processEditorNodeList'), diagram: document.getElementById('processEditorDiagram'), addStep: document.getElementById('addProcessNode'), clone: document.getElementById('cloneProcessEditor'), save: document.querySelector('[form="processEditorForm"]'), close: document.getElementById('closeProcessEditor'), cancel: document.getElementById('cancelProcessEditor'), error: document.getElementById('processEditorError'), nodeOverlay: document.getElementById('nodeConfigOverlay'), nodeForm: document.getElementById('processEditorNodeForm'), closeNode: document.getElementById('closeNodeConfig'), saveNode: document.getElementById('saveNodeConfig'),
+    filterOrgContainer: document.getElementById('filterProcessOrgContainer'),
+    filterScopeContainer: document.getElementById('filterProcessScopeContainer'),
+    version: document.getElementById('filterProcessVersion'),
+    refresh: document.getElementById('processRefreshButton'),
+    add: document.getElementById('processAddButton'),
+    notice: document.getElementById('processListNotice'),
+    body: document.getElementById('processTableBody'),
+    empty: document.getElementById('processEmptyState'),
+    pageSize: document.getElementById('processPageSize'),
+    pageInfo: document.getElementById('processPageInfo'),
+    pages: document.getElementById('processPageButtons'),
+    overlay: document.getElementById('processEditorOverlay'),
+    form: document.getElementById('processEditorForm'),
+    title: document.getElementById('processEditorTitle'),
+    eyebrow: document.getElementById('processEditorEyebrow'),
+    name: document.getElementById('processNameInput'),
+    versionInput: document.getElementById('processVersionInput'),
     actionsOverlay: document.getElementById('stepActionsOverlay'),
     actionsTitle: document.getElementById('stepActionsTitle'),
     actionsTable: document.getElementById('stepActionsTableContainer'),
@@ -1149,44 +637,105 @@ const processCatalog = [
   };
   const escapeText = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
   const clone = value => JSON.parse(JSON.stringify(value));
-  const getFittingSummaryText = (selected, selectBox) => {
-    if (selected.length === 0) return '';
-    if (selected.length === 1) return selected[0];
 
-    const selectBoxWidth = selectBox.clientWidth || 300;
-    const maxAllowedWidth = selectBoxWidth - 48; // dự phòng cho arrow-icon và padding
+  const bindAutoComplete = (container) => {
+    const searchInput = container.querySelector('.dropdown-search-input');
+    if (!searchInput) return;
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      const items = container.querySelectorAll('.dropdown-menu .dropdown-item:not(.select-all-item)');
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    });
+  };
 
-    const tempSpan = document.createElement('span');
-    tempSpan.style.visibility = 'hidden';
-    tempSpan.style.position = 'absolute';
-    tempSpan.style.fontSize = '14px';
-    tempSpan.style.fontWeight = '500';
-    tempSpan.style.fontFamily = 'inherit';
-    tempSpan.style.whiteSpace = 'nowrap';
-    document.body.appendChild(tempSpan);
-
-    const fullText = selected.join(', ');
-    tempSpan.textContent = fullText;
-
-    if (tempSpan.offsetWidth <= maxAllowedWidth) {
-      document.body.removeChild(tempSpan);
-      return fullText;
+  const updateDropdownSummary = (container, selectedList, isMulti = true) => {
+    const selectBox = container.querySelector('.select-box');
+    if (!selectBox) return;
+    selectBox.querySelectorAll('.selected-val-label, .tag-summary-container').forEach(el => el.remove());
+    const placeholder = selectBox.querySelector('.placeholder');
+    if (!selectedList || selectedList.length === 0) {
+      container.classList.add('is-empty');
+      if (placeholder) placeholder.style.display = 'inline';
+      selectBox.removeAttribute('title');
+      const oldTooltip = selectBox.querySelector('.custom-dropdown-tooltip');
+      if (oldTooltip) oldTooltip.remove();
+      return;
     }
-
-    for (let i = selected.length - 1; i >= 1; i--) {
-      const remainingCount = selected.length - i;
-      const text = `${selected.slice(0, i).join(', ')}... và +${remainingCount}`;
-      tempSpan.textContent = text;
-      if (tempSpan.offsetWidth <= maxAllowedWidth || i === 1) {
-        document.body.removeChild(tempSpan);
-        return text;
+    container.classList.remove('is-empty');
+    if (placeholder) placeholder.style.display = 'none';
+    const summaryWrap = document.createElement('div');
+    summaryWrap.className = 'tag-summary-container';
+    summaryWrap.style.display = 'flex';
+    summaryWrap.style.alignItems = 'center';
+    summaryWrap.style.gap = '4px';
+    summaryWrap.style.width = 'calc(100% - 30px)';
+    summaryWrap.style.overflow = 'hidden';
+    summaryWrap.style.pointerEvents = 'none';
+    const textSpan = document.createElement('span');
+    textSpan.className = 'selected-val-label';
+    textSpan.style.fontSize = '14px';
+    textSpan.style.fontWeight = 'normal';
+    textSpan.style.color = '#0f172a';
+    textSpan.style.whiteSpace = 'nowrap';
+    textSpan.style.overflow = 'hidden';
+    textSpan.style.textOverflow = 'ellipsis';
+    textSpan.style.maxWidth = '100%';
+    if (!isMulti || selectedList.length === 1) {
+      textSpan.textContent = selectedList[0];
+      summaryWrap.appendChild(textSpan);
+    } else {
+      const selectBoxWidth = selectBox.clientWidth || 300;
+      const maxAllowedWidth = selectBoxWidth - 65;
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.position = 'absolute';
+      tempSpan.style.fontSize = '14px';
+      tempSpan.style.fontWeight = 'normal';
+      tempSpan.style.whiteSpace = 'nowrap';
+      document.body.appendChild(tempSpan);
+      let displayText = selectedList.join(', ');
+      tempSpan.textContent = displayText;
+      if (tempSpan.offsetWidth <= maxAllowedWidth) {
+        textSpan.textContent = displayText;
+        summaryWrap.appendChild(textSpan);
+      } else {
+        let fitIdx = selectedList.length - 1;
+        let text = '';
+        for (let i = selectedList.length - 1; i >= 1; i--) {
+          text = selectedList.slice(0, i).join(', ') + '...';
+          tempSpan.textContent = text;
+          if (tempSpan.offsetWidth <= maxAllowedWidth - 40) {
+            fitIdx = i;
+            break;
+          }
+        }
+        textSpan.textContent = selectedList.slice(0, fitIdx).join(', ') + '...';
+        summaryWrap.appendChild(textSpan);
+        const plusSpan = document.createElement('span');
+        plusSpan.style.fontSize = '11px';
+        plusSpan.style.fontWeight = '600';
+        plusSpan.style.color = '#0284c7';
+        plusSpan.style.background = '#e0f2fe';
+        plusSpan.style.padding = '2px 6px';
+        plusSpan.style.borderRadius = '4px';
+        plusSpan.style.flexShrink = '0';
+        plusSpan.textContent = `+${selectedList.length - fitIdx}`;
+        summaryWrap.appendChild(plusSpan);
       }
+      document.body.removeChild(tempSpan);
     }
-    document.body.removeChild(tempSpan);
-    return `${selected[0]}... và +${selected.length - 1}`;
+    selectBox.insertBefore(summaryWrap, selectBox.querySelector('.arrow-icon'));
+    selectBox.setAttribute('title', selectedList.join(', '));
   };
   const processCode = () => `QT-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
-  const nowText = () => new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+  const nowText = () => {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
   const normalizeStep = (step, index, rows) => ({ id: step.id || `step-${Date.now()}-${index}`, order: index + 1, unitName: step.unitName || step.name || `Bước xử lý ${index + 1}`, status: legacyProcessStatusMap[step.status] || step.status || statusList[Math.min(index, statusList.length - 1)], org: step.org || '', assignees: step.assignees?.length ? step.assignees : [step.accountName || userList[0]], description: step.description || '', actions: step.actions?.length ? step.actions : [{ name: 'Chuyển xử lý', nextNodeId: rows[index + 1]?.id || 'end' }], persisted: true, parentNodeId: index ? rows[index - 1]?.id || null : null });
   state.rows.forEach(process => {
     const sourceNodes = process.nodes || [];
@@ -1195,27 +744,35 @@ const processCatalog = [
     process.nodes = sourceNodes.map((step, index) => normalizeStep(step, index, sourceNodes));
   });
   let noticeTimeout = null;
-  const showNotice = (message, autoHideMs = 4000) => {
+  const showNotice = (message, autoHideMs = 2500) => {
+    if (!message) return;
+
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    const titleEl = document.getElementById('toast-title');
+    const msgEl = document.getElementById('toast-message');
+    if (titleEl) titleEl.innerText = 'Thành công';
+    if (msgEl) msgEl.innerText = message;
+
+    toast.classList.add('show');
+
     if (noticeTimeout) {
       clearTimeout(noticeTimeout);
-      noticeTimeout = null;
     }
-    elements.notice.textContent = message;
-    elements.notice.hidden = !message;
-    if (message && autoHideMs > 0) {
+
+    if (autoHideMs > 0) {
       noticeTimeout = setTimeout(() => {
-        elements.notice.hidden = true;
-        elements.notice.textContent = '';
-        noticeTimeout = null;
+        toast.classList.remove('show');
       }, autoHideMs);
     }
   };
   const showError = message => { elements.error.textContent = message; elements.error.hidden = !message; };
-  const fillOptions = (select, values, firstLabel) => { select.innerHTML = `<option value="">${firstLabel}</option>${values.map(value => `<option value="${escapeText(value)}">${escapeText(value)}</option>`).join('')}`; };
   const refreshFilterOptions = () => {
-    fillOptions(elements.scope, scopeList, '-- Chọn --');
-    fillOptions(elements.org, [...new Set(state.rows.filter(row => !row.deleted).flatMap(row => row.orgs))], '-- Chọn --');
-    elements.active.value = state.active; elements.scope.value = state.scope; elements.org.value = state.org; elements.version.value = state.version;
+    renderFilterScopeChoices();
+    renderFilterOrgChoices();
+    renderFilterActiveChoices();
+    elements.version.value = state.version;
   };
   const filteredRows = () => { const keyword = state.search.trim().toLocaleLowerCase('vi'); const version = state.version.trim().toLocaleLowerCase('vi'); return state.rows.filter(row => !row.deleted && (!keyword || `${row.code} ${row.name}`.toLocaleLowerCase('vi').includes(keyword)) && (!state.active || row.processStatus === state.active) && (!state.scope || row.scope === state.scope) && (!state.org || row.orgs.includes(state.org)) && (!version || String(row.version).toLocaleLowerCase('vi').includes(version))); };
   const closeMenus = () => document.querySelectorAll('.process-action-menu').forEach(menu => { menu.hidden = true; });
@@ -1251,42 +808,19 @@ const processCatalog = [
   };
   state.rows.forEach(compatibilityFields);
   const updateOrganizationSummary = () => {
-    const selectBox = elements.orgs.querySelector('.select-box');
-    if (!selectBox) return;
-    selectBox.querySelectorAll('.selected-val-label, .tag').forEach(tag => tag.remove());
-    const placeholder = selectBox.querySelector('.placeholder');
     const checkedCheckboxes = [...elements.orgs.querySelectorAll('.dropdown-item input.process-org-checkbox:checked')];
     const selected = checkedCheckboxes.map(input => input.value);
-    if (selected.length > 0) {
-      if (placeholder) placeholder.style.display = 'none';
-      const displayText = getFittingSummaryText(selected, selectBox);
-
-      const label = document.createElement('span');
-      label.className = 'selected-val-label';
-      label.style.fontSize = '14px';
-      label.style.fontWeight = '500';
-      label.style.color = '#0f172a';
-      label.style.whiteSpace = 'nowrap';
-      label.style.overflow = 'hidden';
-      label.style.textOverflow = 'ellipsis';
-      label.style.maxWidth = 'calc(100% - 30px)';
-      label.textContent = displayText;
-      selectBox.insertBefore(label, selectBox.querySelector('.arrow-icon'));
-    } else {
-      if (placeholder) placeholder.style.display = 'inline';
-    }
+    updateDropdownSummary(elements.orgs, selected, true);
   };
   const renderOrganizationChoices = selected => {
     const isAllSelected = orgList.length > 0 && orgList.every(org => selected.includes(org));
     elements.orgs.innerHTML = `
       <div class="select-box" ${state.viewOnly ? 'style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;"' : ''}>
         <span class="placeholder">Chọn cơ quan...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
       <div class="dropdown-menu">
-        <div class="dropdown-search-wrapper" style="position: sticky; top: -6px; background: #ffffff; padding: 6px 12px; border-bottom: 1px solid var(--admin-line); z-index: 10; margin-bottom: 4px;">
-          <input type="text" placeholder="Tìm kiếm nhanh..." class="dropdown-search-input" style="width: 100%; padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; font-weight: normal; color: var(--admin-text); outline: none;">
-        </div>
         <label class="dropdown-item select-all-item">
           <input type="checkbox" id="selectAllProcessOrgs" ${isAllSelected ? 'checked' : ''} ${state.viewOnly ? 'disabled' : ''}>
           <span style="font-weight: bold; color: var(--admin-text);">Chọn tất cả</span>
@@ -1300,30 +834,17 @@ const processCatalog = [
       </div>
     `;
     updateOrganizationSummary();
+    bindAutoComplete(elements.orgs);
   };
   const updateScopeSummary = () => {
-    const selectBox = elements.scopeContainer.querySelector('.select-box');
-    if (!selectBox) return;
-    selectBox.querySelectorAll('.selected-val-label').forEach(el => el.remove());
-    const placeholder = selectBox.querySelector('.placeholder');
     const selectedVal = state.draft ? state.draft.scope : '';
-    if (selectedVal) {
-      if (placeholder) placeholder.style.display = 'none';
-      const label = document.createElement('span');
-      label.className = 'selected-val-label';
-      label.style.fontSize = '14px';
-      label.style.fontWeight = '500';
-      label.style.color = '#0f172a';
-      label.textContent = selectedVal;
-      selectBox.insertBefore(label, selectBox.querySelector('.arrow-icon'));
-    } else {
-      if (placeholder) placeholder.style.display = 'inline';
-    }
+    updateDropdownSummary(elements.scopeContainer, selectedVal ? [selectedVal] : [], false);
   };
   const renderScopeChoices = selected => {
     elements.scopeContainer.innerHTML = `
       <div class="select-box">
         <span class="placeholder">Chọn phạm vi...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
       <div class="dropdown-menu">
@@ -1335,7 +856,73 @@ const processCatalog = [
       </div>
     `;
     updateScopeSummary();
+    bindAutoComplete(elements.scopeContainer);
   };
+
+  const renderFilterScopeChoices = () => {
+    elements.filterScopeContainer.innerHTML = `
+      <div class="select-box">
+        <span class="placeholder">Chọn nhóm...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+      <div class="dropdown-menu">
+        ${scopeList.map(scope => `
+          <div class="dropdown-item" data-filter-scope-val="${escapeText(scope)}">
+            <span>${escapeText(scope)}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    updateDropdownSummary(elements.filterScopeContainer, state.scope ? [state.scope] : [], false);
+    bindAutoComplete(elements.filterScopeContainer);
+  };
+
+  const renderFilterOrgChoices = () => {
+    const allOrgs = orgList;
+    elements.filterOrgContainer.innerHTML = `
+      <div class="select-box">
+        <span class="placeholder">Chọn cơ quan...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+      <div class="dropdown-menu">
+        ${allOrgs.map(org => `
+          <div class="dropdown-item" data-filter-org-val="${escapeText(org)}">
+            <span>${escapeText(org)}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    updateDropdownSummary(elements.filterOrgContainer, state.org ? [state.org] : [], false);
+    bindAutoComplete(elements.filterOrgContainer);
+  };
+
+  const renderFilterActiveChoices = () => {
+    if (!elements.activeContainer) return;
+    const statusOptions = [
+      { value: 'draft', label: 'Bản nháp' },
+      { value: 'active', label: 'Hoạt động' }
+    ];
+    elements.activeContainer.innerHTML = `
+      <div class="select-box">
+        <span class="placeholder">Chọn trạng thái...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+      <div class="dropdown-menu">
+        ${statusOptions.map(opt => `
+          <div class="dropdown-item" data-filter-active-val="${escapeText(opt.value)}">
+            <span>${escapeText(opt.label)}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    const getLabel = val => statusOptions.find(o => o.value === val)?.label || '';
+    updateDropdownSummary(elements.activeContainer, state.active ? [getLabel(state.active)] : [], false);
+    bindAutoComplete(elements.activeContainer);
+  };
+
   const renderSteps = () => {
     const draft = state.draft; if (!draft) return;
 
@@ -1375,7 +962,7 @@ const processCatalog = [
       `;
     }).join('');
 
-    // Render biểu đồ trực quan bằng SVG
+    // Render biểu đồ trực quan (chỉ chứa các circle-node)
     const diagramHtml = [];
     processSteps.forEach((step, index) => {
       const isStart = step.id === 'start';
@@ -1383,7 +970,7 @@ const processCatalog = [
       const icon = isStart ? 'fa-play' : isEnd ? 'fa-flag-checkered' : '';
 
       diagramHtml.push(`
-        <div class="circle-node ${step.id === state.selectedStepId ? 'active' : ''} ${step.fixed ? 'fixed' : ''}" data-new-step-id="${step.id}">
+        <div class="circle-node ${step.id === state.selectedStepId ? 'active' : ''} ${step.fixed ? 'fixed' : ''}" data-new-step-id="${step.id}" style="margin-bottom: 70px; position: relative; z-index: 2;">
           <span class="node-number">${icon ? `<i class="fa-solid ${icon}" style="font-size: 13px;"></i>` : index}</span>
           ${(step.fixed || state.flowLocked) ? '' : `
             <div class="step-action-menu-container" style="position: absolute; top: -8px; right: -12px; z-index: 10;">
@@ -1400,77 +987,198 @@ const processCatalog = [
           <div style="position: absolute; left: calc(50% + 40px); top: 50%; transform: translateY(-50%); text-align: left; width: 220px; font-size: 12px; font-weight: 600; color: var(--admin-text); line-height: 1.3; pointer-events: auto;">
             <div style="font-size: 12px; font-weight: 700; white-space: nowrap;" title="${escapeText(step.unitName)}">${escapeText(step.unitName)}</div>
             ${step.fixed ? '' : `
-              <div style="font-size: 10px; font-weight: normal; color: var(--admin-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeText(step.status)} – ${escapeText(getOrgsTooltip(step.orgs || [step.org]))}">
+              <div style="font-size: 10px; font-weight: normal; color: var(--admin-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeText(step.status)} – ${escapeText(formatStepOrgs(step.orgs || [step.org]))}">
                 ${escapeText(step.status)} – ${escapeText(formatStepOrgs(step.orgs || [step.org]))}
               </div>
             `}
           </div>
         </div>
       `);
-
-      if (index < processSteps.length - 1) {
-        const actions = step.actions || [];
-        const hasForward = actions.some(a => a.name === 'Chuyển xử lý');
-        const hasBackward = actions.some(a => a.name === 'Trả xử lý');
-
-        if (hasForward && hasBackward) {
-          const forwardAction = actions.find(a => a.name === 'Chuyển xử lý');
-          const backwardAction = actions.find(a => a.name === 'Trả xử lý');
-
-          const getTargetName = (id) => {
-            if (id === 'end') return 'Kết thúc';
-            if (id === 'start') return 'Start';
-            const targetStep = draft.nodes.find(n => n.id === id);
-            return targetStep ? targetStep.unitName : 'Không xác định';
-          };
-
-          const targetIndex = processSteps.findIndex(n => n.id === backwardAction.nextNodeId);
-          const diff = index - (targetIndex >= 0 ? targetIndex : 0);
-          const targetCenterY = -27 - (diff * 114);
-
-          diagramHtml.push(`
-            <div class="decision-wrapper">
-              <div class="diamond-node"></div>
-              <svg class="uml-svg-overlay" viewBox="0 0 500 190">
-                <defs>
-                  <marker id="arrow-black" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
-                  </marker>
-                  <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669" />
-                  </marker>
-                  <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#e11d48" />
-                  </marker>
-                </defs>
-                <path d="M 250 4 L 250 42" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-black)" />
-                <path d="M 226 70 L 115 70 L 115 ${targetCenterY} L 220 ${targetCenterY}" stroke="#e11d48" stroke-width="2" stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-red)" />
-                <path d="M 250 98 L 250 180" stroke="#059669" stroke-width="2" stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-green)" />
-              </svg>
-              <span class="label-text label-reject">Trả xử lý</span>
-              <span class="label-text label-approve">Chuyển xử lý</span>
-            </div>
-          `);
-        } else {
-          diagramHtml.push(`
-            <div class="connector-wrapper">
-              <svg class="uml-svg-overlay" viewBox="0 0 500 60">
-                <defs>
-                  <marker id="arrow-black" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
-                  </marker>
-                </defs>
-                <path d="M 250 4 L 250 52" stroke="#64748b" stroke-width="2" stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-black)" />
-              </svg>
-            </div>
-          `);
-        }
-      }
     });
 
     elements.diagram.innerHTML = `<div class="pe-diagram-zoom-wrapper" style="transform: translate(${state.panX}px, ${state.panY}px) scale(${state.zoom}); transform-origin: top center; width: 100%; display: flex; flex-direction: column; align-items: center; transition: none; cursor: grab;">
-      <div class="process-simple-diagram">${diagramHtml.join('')}</div>
+      <div class="process-simple-diagram" style="position: relative; width: 100%; display: flex; flex-direction: column; align-items: center;">${diagramHtml.join('')}</div>
     </div>`;
+
+    // Vẽ động tất cả các mũi tên UML dựa trên vị trí thực tế của các node
+    setTimeout(renderDiagramLinks, 50);
+    bindDragDropEvents();
+  };
+
+  const renderDiagramLinks = () => {
+    const diagram = elements.diagram;
+    const wrapper = diagram.querySelector('.pe-diagram-zoom-wrapper');
+    if (!wrapper) return;
+    const oldSvg = wrapper.querySelector('.uml-svg-overlay-global');
+    if (oldSvg) oldSvg.remove();
+    const simpleDiagram = wrapper.querySelector('.process-simple-diagram');
+    if (!simpleDiagram) return;
+
+    const nodes = [...simpleDiagram.querySelectorAll('.circle-node')];
+    const nodeCoords = {};
+
+    nodes.forEach(nodeEl => {
+      const id = nodeEl.dataset.newStepId;
+      nodeCoords[id] = {
+        x: nodeEl.offsetLeft + nodeEl.offsetWidth / 2,
+        y: nodeEl.offsetTop + nodeEl.offsetHeight / 2,
+        width: nodeEl.offsetWidth,
+        height: nodeEl.offsetHeight
+      };
+    });
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'uml-svg-overlay-global');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    svg.style.zIndex = '1';
+
+    svg.innerHTML = `
+      <defs>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171" />
+        </marker>
+        <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#4ade80" />
+        </marker>
+      </defs>
+    `;
+
+    const draft = state.draft;
+    const processSteps = [{ id: 'start', unitName: 'Start' }, ...draft.nodes];
+    const hasCompletion = draft.nodes.some(step => step.status === 'Đã kết thúc');
+    if (hasCompletion) processSteps.push({ id: 'end', unitName: 'Kết thúc' });
+
+    processSteps.forEach((step, idx) => {
+      if (step.id === 'end') return;
+      let actions = [];
+      if (step.id === 'start') {
+        actions = [{ name: 'Bắt đầu', nextNodeId: draft.nodes[0]?.id || 'end' }];
+      } else {
+        actions = step.actions || [];
+      }
+
+      actions.forEach((act, actIdx) => {
+        const targetId = act.nextNodeId;
+        if (!nodeCoords[step.id] || !nodeCoords[targetId]) return;
+
+        const from = nodeCoords[step.id];
+        const to = nodeCoords[targetId];
+        const fromIdx = processSteps.findIndex(s => s.id === step.id);
+        const toIdx = processSteps.findIndex(s => s.id === targetId);
+
+        let pathD = '';
+
+        if (toIdx === fromIdx + 1) {
+          // Đi thẳng xuống
+          const startY = from.y + from.height / 2;
+          const endY = to.y - to.height / 2;
+          pathD = `M ${from.x} ${startY} L ${from.x} ${endY}`;
+        } else {
+          // Đi vòng qua bên trái
+          const stepDiff = Math.abs(fromIdx - toIdx);
+          const offset = 45 + stepDiff * 20 + actIdx * 10;
+          const startX = from.x - from.width / 2;
+          const endX = to.x - to.width / 2;
+          pathD = `M ${startX} ${from.y} L ${from.x - offset} ${from.y} L ${from.x - offset} ${to.y} L ${endX} ${to.y}`;
+        }
+
+        const isReject = toIdx < fromIdx;
+        const color = isReject ? '#f87171' : '#4ade80';
+        const marker = isReject ? 'url(#arrow-red)' : 'url(#arrow-green)';
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('stroke-dasharray', '4 4');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('marker-end', marker);
+        svg.appendChild(path);
+      });
+    });
+
+    simpleDiagram.appendChild(svg);
+  };
+
+  const bindDragDropEvents = () => {
+    const stepsList = elements.steps;
+    const nodes = stepsList.querySelectorAll('.process-flow-node:not(.fixed)');
+
+    nodes.forEach(node => {
+      const stepObj = state.draft.nodes.find(n => n.id === node.dataset.newStepId);
+      const isEndStep = stepObj && stepObj.status === 'Đã kết thúc';
+
+      if (!isEndStep) {
+        node.setAttribute('draggable', 'true');
+      } else {
+        node.removeAttribute('draggable');
+        node.style.cursor = 'not-allowed';
+      }
+
+      node.addEventListener('dragstart', event => {
+        if (state.viewOnly || state.flowLocked || isEndStep) {
+          event.preventDefault();
+          return;
+        }
+        event.dataTransfer.setData('text/plain', node.dataset.newStepId);
+        node.classList.add('dragging');
+      });
+      node.addEventListener('dragend', () => {
+        node.classList.remove('dragging');
+        stepsList.querySelectorAll('.process-flow-node').forEach(el => el.classList.remove('drag-over'));
+      });
+      node.addEventListener('dragover', event => {
+        event.preventDefault();
+        const draggingNode = stepsList.querySelector('.dragging');
+        if (draggingNode && draggingNode !== node && !isEndStep) {
+          node.classList.add('drag-over');
+        }
+      });
+      node.addEventListener('dragleave', () => {
+        node.classList.remove('drag-over');
+      });
+      node.addEventListener('drop', event => {
+        event.preventDefault();
+        node.classList.remove('drag-over');
+        if (isEndStep) return;
+        const srcId = event.dataTransfer.getData('text/plain');
+        const dstId = node.dataset.newStepId;
+        if (!srcId || !dstId || srcId === dstId) return;
+
+        const draft = state.draft;
+        const srcIdx = draft.nodes.findIndex(n => n.id === srcId);
+        const dstIdx = draft.nodes.findIndex(n => n.id === dstId);
+        if (srcIdx === -1 || dstIdx === -1) return;
+
+        const [movedNode] = draft.nodes.splice(srcIdx, 1);
+        draft.nodes.splice(dstIdx, 0, movedNode);
+
+        draft.nodes.forEach((n, idx) => {
+          n.order = idx + 1;
+          n.parentNodeId = idx > 0 ? draft.nodes[idx - 1].id : null;
+          if (n.actions) {
+            n.actions.forEach(act => {
+              if (act.name === 'Chuyển xử lý' || act.name === 'Phê duyệt') {
+                act.nextNodeId = draft.nodes[idx + 1]?.id || 'end';
+              } else if (act.name === 'Trả về' || act.name === 'Từ chối') {
+                act.nextNodeId = idx > 0 ? draft.nodes[idx - 1].id : 'start';
+              }
+            });
+          }
+        });
+
+        renderSteps();
+        if (state.selectedStepId && !elements.nodeOverlay.hidden) {
+          const currentStep = draft.nodes.find(n => n.id === state.selectedStepId);
+          if (currentStep) renderStepForm(currentStep);
+        }
+      });
+    });
   };
   const deleteStep = stepId => {
     if (state.viewOnly) return;
@@ -1500,6 +1208,7 @@ const processCatalog = [
     renderSteps();
     showNotice(`Đã xóa bước "${stepToDelete.unitName}" và tự động nối luồng xử lý.`);
   };
+
   const openEditor = (id, viewOnly = false, copyMode = false) => {
     state.zoom = 1.0; state.panX = 0; state.panY = 0; state.isPanning = false;
     const source = id ? state.rows.find(row => row.id === id) : null;
@@ -1524,11 +1233,10 @@ const processCatalog = [
       state.draft.code = processCode();
       state.draft.name = `${source.name} - bản sao`;
       state.draft.createdAt = nowText();
-      state.draft.version = '1.0'; // Phiên bản mặc định 1.0 không được thay đổi
+      state.draft.version = '1.0';
       state.draft.processStatus = 'draft';
     }
 
-    // Thiết lập trạng thái khóa luồng và các nút lưu trữ
     const draftStatus = state.draft.processStatus || 'draft';
     const btnDraft = document.getElementById('draftProcessEditor');
     const btnPublish = document.getElementById('publishProcessEditor');
@@ -1562,9 +1270,9 @@ const processCatalog = [
       }
 
       if (draftStatus === 'active') {
-        state.flowLocked = true; // Không sửa được luồng quy trình
+        state.flowLocked = true;
       } else {
-        state.flowLocked = false; // Cho phép sửa luồng
+        state.flowLocked = false;
       }
 
       if (btnPublish) {
@@ -1578,12 +1286,16 @@ const processCatalog = [
     elements.eyebrow.textContent = state.draft.code;
     elements.name.value = state.draft.name;
     elements.versionInput.value = state.draft.version;
+
+    elements.list.hidden = true;
+    elements.overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+
     renderScopeChoices(state.draft.scope);
     elements.description.value = state.draft.description || '';
     renderOrganizationChoices(state.draft.orgs);
 
     elements.form.querySelectorAll('input, select, textarea').forEach(field => {
-      // Phiên bản luôn bị khóa, không cho phép sửa chỉ cho phép xem
       if (field.id === 'processVersionInput') {
         field.disabled = true;
       } else {
@@ -1596,12 +1308,30 @@ const processCatalog = [
     if (btnClone) btnClone.hidden = !source || copyMode;
     showError('');
     renderSteps();
-    elements.list.hidden = true;
-    elements.overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
   };
-  const closeEditor = () => { elements.overlay.hidden = true; elements.list.hidden = false; elements.nodeOverlay.hidden = true; document.body.style.overflow = ''; state.draft = null; };
-  const actionOptions = (draft, selectedId) => [{ id: 'start', unitName: 'Start' }, ...draft.nodes, { id: 'end', unitName: 'Kết thúc' }].map(step => `<option value="${step.id}" ${step.id === selectedId ? 'selected' : ''}>${escapeText(step.unitName)}</option>`).join('');
+  const closeEditor = () => {
+    document.querySelectorAll('.was-validated').forEach(el => el.classList.remove('was-validated'));
+    document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+    document.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
+    elements.overlay.hidden = true;
+    elements.list.hidden = false;
+    elements.nodeOverlay.hidden = true;
+    document.body.style.overflow = '';
+    state.draft = null;
+  };
+
+  const actionOptions = (draft, selectedId, currentStepId, actionName) => {
+    if (!currentStepId) {
+      return draft.nodes.map(step => `<option value="${step.id}" ${step.id === selectedId ? 'selected' : ''}>${escapeText(step.unitName)}</option>`).join('');
+    }
+    const currentIndex = draft.nodes.findIndex(n => n.id === currentStepId);
+    const validNodes = draft.nodes.filter((step, index) => {
+      if (actionName === 'Trả về') return index < currentIndex;
+      return index > currentIndex;
+    });
+    let html = validNodes.map(step => `<option value="${step.id}" ${step.id === selectedId ? 'selected' : ''}>${escapeText(step.unitName)}</option>`).join('');
+    return html;
+  };
 
   const updateStepAssigneeSummary = (step) => {
     const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
@@ -1609,33 +1339,25 @@ const processCatalog = [
     const selectBox = container.querySelector('.select-box');
     if (!selectBox) return;
 
-    // Khóa giao diện Người xử lý
+    if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
+      selectBox.style.backgroundColor = '#ffffff';
+      selectBox.style.cursor = 'not-allowed';
+      selectBox.style.opacity = '1';
+      selectBox.querySelectorAll('.selected-val-label, .tag-summary-container').forEach(el => el.remove());
+      const placeholder = selectBox.querySelector('.placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'inline';
+        placeholder.style.color = 'transparent';
+      }
+      return;
+    }
+
     selectBox.style.backgroundColor = '#f1f5f9';
     selectBox.style.cursor = 'not-allowed';
     selectBox.style.opacity = '0.8';
 
-    selectBox.querySelectorAll('.selected-val-label, .tag').forEach(tag => tag.remove());
-    const placeholder = selectBox.querySelector('.placeholder');
     const selected = step ? (step.assignees || []) : [];
-
-    if (selected.length > 0) {
-      if (placeholder) placeholder.style.display = 'none';
-      const displayText = getFittingSummaryText(selected, selectBox);
-
-      const label = document.createElement('span');
-      label.className = 'selected-val-label';
-      label.style.fontSize = '14px';
-      label.style.fontWeight = '500';
-      label.style.color = '#64748b'; // Màu xám thể hiện chế độ read-only
-      label.style.whiteSpace = 'nowrap';
-      label.style.overflow = 'hidden';
-      label.style.textOverflow = 'ellipsis';
-      label.style.maxWidth = 'calc(100% - 30px)';
-      label.textContent = displayText;
-      selectBox.insertBefore(label, selectBox.querySelector('.arrow-icon'));
-    } else {
-      if (placeholder) placeholder.style.display = 'inline';
-    }
+    updateDropdownSummary(container, selected, true);
   };
 
   const renderStepAssigneeChoices = step => {
@@ -1643,16 +1365,23 @@ const processCatalog = [
     if (!container) return;
     const selectedOrgs = step.orgs || (step.org ? [step.org] : []);
 
-    // Tự động map Người xử lý = [Cơ quan] - Chuyên viên Xử lý
-    step.assignees = selectedOrgs.map(org => `${org} - Chuyên viên Xử lý`);
+    const getFakeAssignee = (org) => {
+      const names = ['Nguyễn Văn Anh', 'Trần Thị Bích Vân', 'Lê Văn Cường', 'Phạm Văn Dũng', 'Hoàng Thị Mỹ Linh', 'Vũ Văn Hải', 'Đặng Thị Lan Hương', 'Bùi Văn Hùng'];
+      let hash = 0;
+      for (let i = 0; i < org.length; i++) hash += org.charCodeAt(i);
+      return names[hash % names.length];
+    };
+    step.assignees = selectedOrgs.map(getFakeAssignee);
     const availableAssignees = step.assignees;
 
+    const isApproval = step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo';
+
     container.innerHTML = `
-      <div class="select-box" style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;">
-        <span class="placeholder">Chọn người xử lý...</span>
-        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      <div class="select-box" style="${isApproval ? 'background-color: #ffffff; cursor: not-allowed; opacity: 1;' : 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;'}">
+        <span class="placeholder" style="${isApproval ? 'color: transparent;' : ''}">Chọn người xử lý...</span>
+        <svg class="arrow-icon" viewBox="0 0 24 24" style="${isApproval ? 'display: none;' : ''}"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
-      <div class="dropdown-menu">
+      <div class="dropdown-menu" style="${isApproval ? 'display: none !important;' : ''}">
         ${availableAssignees.map(user => `
           <label class="dropdown-item" style="cursor: not-allowed; opacity: 0.8;">
             <input type="checkbox" data-step-assignee value="${escapeText(user)}" checked disabled style="cursor: not-allowed;">
@@ -1663,27 +1392,13 @@ const processCatalog = [
     `;
     updateStepAssigneeSummary(step);
   };
+
   const updateStepStatusSummary = (step) => {
     const container = elements.nodeForm.querySelector('.process-step-status-dropdown');
     if (!container) return;
-    const selectBox = container.querySelector('.select-box');
-    if (!selectBox) return;
-    container.querySelectorAll('.selected-val-label').forEach(el => el.remove());
-    const placeholder = selectBox.querySelector('.placeholder');
-    const selectedVal = step ? step.status : '';
-    if (selectedVal) {
-      if (placeholder) placeholder.style.display = 'none';
-      const label = document.createElement('span');
-      label.className = 'selected-val-label';
-      label.style.fontSize = '14px';
-      label.style.fontWeight = '500';
-      label.style.color = '#0f172a';
-      label.textContent = selectedVal;
-      selectBox.insertBefore(label, selectBox.querySelector('.arrow-icon'));
-    } else {
-      if (placeholder) placeholder.style.display = 'inline';
-    }
+    updateDropdownSummary(container, step ? [step.status] : [], false);
   };
+
   const renderStepStatusChoices = step => {
     const container = elements.nodeForm.querySelector('.process-step-status-dropdown');
     if (!container) return;
@@ -1691,6 +1406,7 @@ const processCatalog = [
     container.innerHTML = `
       <div class="select-box" ${isStepFieldsDisabled ? 'style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;"' : ''}>
         <span class="placeholder">Chọn trạng thái...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
       <div class="dropdown-menu">
@@ -1702,62 +1418,85 @@ const processCatalog = [
       </div>
     `;
     updateStepStatusSummary(step);
+    bindAutoComplete(container);
   };
+
   const checkDefaultAssignee = (step) => {
     const selectedOrgs = step.orgs || [];
     if (!selectedOrgs.length) {
       step.assignees = [];
       return;
     }
-    step.assignees = ['Lãnh đạo Đơn vị', 'Chuyên viên Xử lý'];
+    const getFakeAssignee = (org) => {
+      const names = ['Nguyễn Văn A', 'Trần Thị B', 'Lê Văn C', 'Phạm Văn D', 'Hoàng Thị E', 'Vũ Văn F', 'Đặng Thị G', 'Bùi Văn H'];
+      let hash = 0;
+      for (let i = 0; i < org.length; i++) hash += org.charCodeAt(i);
+      return names[hash % names.length];
+    };
+    step.assignees = selectedOrgs.map(getFakeAssignee);
   };
+
   const updateStepOrgSummary = (step) => {
     const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
     if (!container) return;
     const selectBox = container.querySelector('.select-box');
     if (!selectBox) return;
-    selectBox.querySelectorAll('.selected-val-label, .tag').forEach(tag => tag.remove());
-    const placeholder = selectBox.querySelector('.placeholder');
-    const checkedCheckboxes = [...container.querySelectorAll('.dropdown-item input.org-item-checkbox:checked')];
-    const selected = checkedCheckboxes.map(input => input.value);
+
+    if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
+      selectBox.style.backgroundColor = '#ffffff';
+      selectBox.style.cursor = 'not-allowed';
+      selectBox.style.opacity = '1';
+      selectBox.querySelectorAll('.selected-val-label, .tag-summary-container').forEach(el => el.remove());
+      const placeholder = selectBox.querySelector('.placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'inline';
+        placeholder.style.color = 'transparent';
+      }
+      return;
+    }
+
+    const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
+    selectBox.style.backgroundColor = isStepFieldsDisabled ? '#f1f5f9' : '#ffffff';
+    selectBox.style.cursor = isStepFieldsDisabled ? 'not-allowed' : 'pointer';
+    selectBox.style.opacity = isStepFieldsDisabled ? '0.8' : '1';
+
+    const checkedCheckboxes = [...container.querySelectorAll('.dropdown-menu input.org-item-checkbox:checked')];
+    const selected = step.status === 'Chờ phân công'
+      ? checkedCheckboxes.map(input => input.value)
+      : (step.orgs || []);
 
     step.orgs = selected;
     step.org = selected.join(', ');
 
-    if (selected.length > 0) {
-      if (placeholder) placeholder.style.display = 'none';
-      const displayText = getFittingSummaryText(selected, selectBox);
-
-      const label = document.createElement('span');
-      label.className = 'selected-val-label';
-      label.style.fontSize = '14px';
-      label.style.fontWeight = '500';
-      label.style.color = '#0f172a';
-      label.style.whiteSpace = 'nowrap';
-      label.style.overflow = 'hidden';
-      label.style.textOverflow = 'ellipsis';
-      label.style.maxWidth = 'calc(100% - 30px)';
-      label.textContent = displayText;
-      selectBox.insertBefore(label, selectBox.querySelector('.arrow-icon'));
-    } else {
-      if (placeholder) placeholder.style.display = 'inline';
-    }
+    updateDropdownSummary(container, selected, step.status === 'Chờ phân công');
   };
+
   const renderStepOrgChoices = step => {
     const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
     if (!container) return;
     const selectedOrgs = step.orgs || (step.org ? [step.org] : []);
     const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
-    const isAllSelected = orgList.length > 0 && orgList.every(org => selectedOrgs.includes(org));
-    container.innerHTML = `
-      <div class="select-box" ${isStepFieldsDisabled ? 'style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;"' : ''}>
-        <span class="placeholder">Chọn cơ quan...</span>
-        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-      </div>
-      <div class="dropdown-menu">
-        <div class="dropdown-search-wrapper" style="position: sticky; top: -6px; background: #ffffff; padding: 6px 12px; border-bottom: 1px solid var(--admin-line); z-index: 10; margin-bottom: 4px;">
-          <input type="text" placeholder="Tìm kiếm nhanh..." class="dropdown-search-input" style="width: 100%; padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; font-weight: normal; color: var(--admin-text); outline: none;">
+
+    const isApproval = step.status === 'Phê duyệt' || step.status === 'Phê duyệt báo cáo';
+    const isMulti = step.status === 'Chờ phân công';
+
+    if (isApproval) {
+      container.innerHTML = `
+        <div class="select-box" style="background-color: #ffffff; cursor: not-allowed; opacity: 1;">
+          <span class="placeholder" style="color: transparent;">Chọn cơ quan...</span>
+          <svg class="arrow-icon" viewBox="0 0 24 24" style="display: none;"><path d="M7 10l5 5 5-5z"/></svg>
         </div>
+        <div class="dropdown-menu" style="display: none !important;"></div>
+      `;
+      updateStepOrgSummary(step);
+      return;
+    }
+
+    const isAllSelected = orgList.length > 0 && orgList.every(org => selectedOrgs.includes(org));
+
+    let menuContent = '';
+    if (isMulti) {
+      menuContent = `
         <label class="dropdown-item select-all-item">
           <input type="checkbox" id="selectAllOrgs" ${isAllSelected ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
           <span style="font-weight: bold; color: var(--admin-text);">Chọn tất cả</span>
@@ -1768,95 +1507,43 @@ const processCatalog = [
             <span>${escapeText(org)}</span>
           </label>
         `).join('')}
+      `;
+    } else {
+      menuContent = orgList.map(org => `
+        <div class="dropdown-item" data-step-org-val="${escapeText(org)}">
+          <span>${escapeText(org)}</span>
+        </div>
+      `).join('');
+    }
+
+    container.innerHTML = `
+      <div class="select-box" ${isStepFieldsDisabled ? 'style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;"' : ''}>
+        <span class="placeholder">Chọn cơ quan...</span>
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+      <div class="dropdown-menu">
+        ${menuContent}
       </div>
     `;
     updateStepOrgSummary(step);
+    bindAutoComplete(container);
   };
   const getActionName = (stepId, targetNodeId) => {
     if (targetNodeId === 'end') return 'Chuyển xử lý';
-    if (targetNodeId === 'start') return 'Trả xử lý';
+    if (targetNodeId === 'start') return 'Trả về';
     const nodes = state.draft?.nodes || [];
     const currentIdx = nodes.findIndex(n => n.id === stepId);
     const targetIdx = nodes.findIndex(n => n.id === targetNodeId);
     if (currentIdx !== -1 && targetIdx !== -1 && targetIdx < currentIdx) {
-      return 'Trả xử lý';
+      return 'Trả về';
     }
     return 'Chuyển xử lý';
   };
 
   const renderStepForm = step => {
-    let actionSection = '';
     const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
-    if (step.persisted) {
-      if (step.status === 'Phê duyệt báo cáo') {
-        if (!step.actions || step.actions.length < 2) {
-          step.actions = [
-            { name: 'Phê duyệt', nextNodeId: 'end' },
-            { name: 'Từ chối', nextNodeId: step.parentNodeId || 'start' }
-          ];
-        } else {
-          if (step.actions[0]) step.actions[0].name = 'Phê duyệt';
-          if (step.actions[1]) step.actions[1].name = 'Từ chối';
-        }
-        actionSection = `
-        <section class="process-step-actions">
-          <div class="process-step-actions-heading">
-            <h4>Cấu hình đường đi phê duyệt</h4>
-          </div>
-          <div class="process-step-action-table" style="margin-top: var(--space-sm); display: flex; flex-direction: column; gap: var(--space-md); padding: 12px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md);">
-            <label class="form-field">
-              <span>Đường đi khi "Phê duyệt" *</span>
-              <select data-step-approval-action-next="0" ${isStepFieldsDisabled ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''}>
-                ${actionOptions(state.draft, step.actions[0].nextNodeId)}
-              </select>
-            </label>
-            <label class="form-field" style="margin-top: 8px;">
-              <span>Đường đi khi "Từ chối" *</span>
-              <select data-step-approval-action-next="1" ${isStepFieldsDisabled ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''}>
-                ${actionOptions(state.draft, step.actions[1].nextNodeId)}
-              </select>
-            </label>
-          </div>
-        </section>`;
-      } else {
-        const isActionsDisabled = isStepFieldsDisabled || step.status === 'Đã kết thúc';
-        actionSection = `
-        <section class="process-step-actions">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--admin-text);">Hoạt động</h4>
-            ${isActionsDisabled ? '' : `
-              <span id="addStepActionIcon" style="cursor: pointer; color: var(--admin-primary); font-size: 14px; font-weight: bold; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--admin-line); border-radius: 4px; background: #fff;" title="Thêm hành động">
-                <i class="fa-solid fa-plus"></i>
-              </span>
-            `}
-          </div>
-          <div class="process-step-action-table">
-            <div class="process-step-action-head">
-              <span>Tên hành động</span>
-              <span>Bước tiếp nhận</span>
-              <span>Thao tác</span>
-            </div>
-            ${(step.actions || []).map((action, index) => {
-          const actName = action.name || 'Chuyển xử lý';
-          return `
-              <div class="process-step-action-row">
-                <select data-step-action-name="${index}" ${isActionsDisabled ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''} style="font-weight: bold; color: var(--admin-text);">
-                  <option value="Chuyển xử lý" ${actName === 'Chuyển xử lý' ? 'selected' : ''}>Chuyển xử lý</option>
-                  <option value="Trả xử lý" ${actName === 'Trả xử lý' ? 'selected' : ''}>Trả xử lý</option>
-                </select>
-                <select data-step-action-next="${index}" ${isActionsDisabled ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''}>
-                  ${actionOptions(state.draft, action.nextNodeId)}
-                </select>
-                <button class="act-btn act-del" type="button" data-delete-step-action="${index}" ${isActionsDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </div>
-              `;
-        }).join('')}
-          </div>
-        </section>`;
-      }
-    }
+
     elements.nodeForm.innerHTML = `
       <div class="form-grid">
         <div class="form-group full-width">
@@ -1876,7 +1563,7 @@ const processCatalog = [
           </div>
         </div>
         <div class="form-group full-width">
-          <label>Người xử lý <span class="required">*</span> <span class="sub-label">(Chọn nhiều)</span></label>
+          <label>Người xử lý <span class="required">*</span></label>
           <div class="multiselect-container process-assignee-multiselect">
             <!-- Render động -->
           </div>
@@ -1886,12 +1573,13 @@ const processCatalog = [
           <input type="text" class="form-control" data-step-field="description" placeholder="Nhập mô tả ngắn cho bước này..." value="${escapeText(step.description)}" ${state.draft.processStatus === 'active' ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''}>
         </div>
       </div>
-      ${actionSection}
     `;
+    elements.saveNode.hidden = state.viewOnly;
+    elements.nodeOverlay.hidden = false;
+
     renderStepStatusChoices(step);
     renderStepOrgChoices(step);
     renderStepAssigneeChoices(step);
-    elements.saveNode.hidden = state.viewOnly; elements.nodeOverlay.hidden = false;
   };
   const clearValidationErrors = container => {
     if (!container) return;
@@ -1930,13 +1618,16 @@ const processCatalog = [
       showFieldError(statusContainer, 'Vui lòng chọn trạng thái xử lý.');
       isValid = false;
     }
-    if (!step.org) {
-      showFieldError(orgContainer, 'Vui lòng chọn cơ quan xử lý.');
-      isValid = false;
-    }
-    if (!assignees.length) {
-      showFieldError(assigneeContainer, 'Vui lòng chọn ít nhất một người xử lý.');
-      isValid = false;
+    const isApproval = step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo';
+    if (!isApproval) {
+      if (!step.org) {
+        showFieldError(orgContainer, 'Vui lòng chọn cơ quan xử lý.');
+        isValid = false;
+      }
+      if (!assignees.length) {
+        showFieldError(assigneeContainer, 'Vui lòng chọn ít nhất một người xử lý.');
+        isValid = false;
+      }
     }
     if (!isValid) return;
 
@@ -2072,11 +1763,28 @@ const processCatalog = [
     showNotice(`Đã ${isPublish ? 'phát hành' : 'lưu'} quy trình "${draft.name}".`);
   };
   const closeFilterPanel = () => { elements.filterPanel.classList.remove('show'); elements.filterToggle.classList.remove('active'); };
-  const applyProcessFilters = () => { state.search = elements.search.value; state.active = elements.active.value; state.scope = elements.scope.value; state.org = elements.org.value; state.version = elements.version.value; state.page = 1; renderList(); };
-  elements.searchButton.addEventListener('click', applyProcessFilters); elements.search.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyProcessFilters(); } });
+  const applyProcessFilters = () => {
+    state.search = elements.search.value;
+    state.version = elements.version.value;
+    state.page = 1;
+    renderList();
+  };
+  elements.searchButton.addEventListener('click', applyProcessFilters);
+  elements.search.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyProcessFilters(); } });
   elements.filterToggle.addEventListener('click', () => { elements.filterPanel.classList.toggle('show'); elements.filterToggle.classList.toggle('active'); });
-  elements.refresh.addEventListener('click', () => { state.search = state.active = state.scope = state.org = state.version = ''; elements.search.value = ''; elements.active.value = ''; elements.scope.value = ''; elements.org.value = ''; elements.version.value = ''; state.page = 1; showNotice(''); renderList(); }); elements.add.addEventListener('click', () => openEditor()); elements.pageSize.addEventListener('change', () => { state.pageSize = Number(elements.pageSize.value); state.page = 1; renderList(); }); elements.pages.addEventListener('click', event => { const button = event.target.closest('[data-process-page]'); if (button) { state.page = Number(button.dataset.processPage); renderList(); } });
-  elements.body.addEventListener('click', event => { const toggle = event.target.closest('[data-process-toggle]'); if (toggle) { const row = state.rows.find(item => item.id === toggle.dataset.processToggle); row.active = !row.active; renderList(); return; } const menuButton = event.target.closest('[data-process-menu]'); if (menuButton) { const panel = elements.body.querySelector(`[data-process-menu-panel="${menuButton.dataset.processMenu}"]`); const wasHidden = panel.hidden; closeMenus(); panel.hidden = !wasHidden; return; } const action = event.target.closest('[data-process-action]'); if (!action) return; const row = state.rows.find(item => item.id === action.dataset.processId); closeMenus(); if (action.dataset.processAction === 'view') openEditor(row.id, true); if (action.dataset.processAction === 'edit') openEditor(row.id); if (action.dataset.processAction === 'clone') openEditor(row.id, false, true);     if (action.dataset.processAction === 'delete') {
+  elements.refresh.addEventListener('click', () => {
+    state.search = state.active = state.scope = state.org = state.version = '';
+    elements.search.value = '';
+    elements.version.value = '';
+    state.page = 1;
+    showNotice('');
+    renderList();
+  });
+  elements.add.addEventListener('click', () => openEditor());
+  elements.pageSize.addEventListener('change', () => { state.pageSize = Number(elements.pageSize.value); state.page = 1; renderList(); });
+  elements.pages.addEventListener('click', event => { const button = event.target.closest('[data-process-page]'); if (button) { state.page = Number(button.dataset.processPage); renderList(); } });
+  elements.body.addEventListener('click', event => {
+    const toggle = event.target.closest('[data-process-toggle]'); if (toggle) { const row = state.rows.find(item => item.id === toggle.dataset.processToggle); row.active = !row.active; renderList(); return; } const menuButton = event.target.closest('[data-process-menu]'); if (menuButton) { const panel = elements.body.querySelector(`[data-process-menu-panel="${menuButton.dataset.processMenu}"]`); const wasHidden = panel.hidden; closeMenus(); panel.hidden = !wasHidden; return; } const action = event.target.closest('[data-process-action]'); if (!action) return; const row = state.rows.find(item => item.id === action.dataset.processId); closeMenus(); if (action.dataset.processAction === 'view') openEditor(row.id, true); if (action.dataset.processAction === 'edit') openEditor(row.id); if (action.dataset.processAction === 'clone') openEditor(row.id, false, true); if (action.dataset.processAction === 'delete') {
       if (row.processStatus === 'active') {
         showCustomAlert(`Quy trình "${row.name}" đang hoạt động, không được phép xóa!`);
       } else {
@@ -2087,11 +1795,15 @@ const processCatalog = [
           showNotice(`Đã xóa quy trình "${row.name}".`);
         });
       }
-    } });
+    }
+  });
   document.addEventListener('click', event => {
     if (!event.target.closest('.process-more')) closeMenus();
     if (!event.target.closest('#processOrgsContainer')) { elements.orgs.classList.remove('open'); }
     if (!event.target.closest('#processScopeContainer')) { elements.scopeContainer.classList.remove('open'); }
+    if (!event.target.closest('#filterProcessOrgContainer')) { elements.filterOrgContainer.classList.remove('open'); }
+    if (!event.target.closest('#filterProcessScopeContainer')) { elements.filterScopeContainer.classList.remove('open'); }
+    if (elements.activeContainer && !event.target.closest('#filterProcessActiveContainer')) { elements.activeContainer.classList.remove('open'); }
     if (!event.target.closest('.process-assignee-multiselect')) {
       const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
       if (container) container.classList.remove('open');
@@ -2111,7 +1823,7 @@ const processCatalog = [
 
   elements.orgs.addEventListener('click', event => {
     if (state.viewOnly) return;
-    if (event.target.closest('.select-box') && !event.target.classList.contains('remove-tag')) {
+    if (event.target.closest('.select-box') && !event.target.classList.contains('remove-tag') && !event.target.classList.contains('dropdown-search-input')) {
       elements.orgs.classList.toggle('open');
       if (elements.orgs.classList.contains('open')) {
         const searchInput = elements.orgs.querySelector('.dropdown-search-input');
@@ -2154,8 +1866,16 @@ const processCatalog = [
   elements.scopeContainer.addEventListener('click', event => {
     if (state.viewOnly) return;
     const selectBox = event.target.closest('.select-box');
-    if (selectBox) {
+    if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
       elements.scopeContainer.classList.toggle('open');
+      if (elements.scopeContainer.classList.contains('open')) {
+        const searchInput = elements.scopeContainer.querySelector('.dropdown-search-input');
+        if (searchInput) {
+          searchInput.value = '';
+          elements.scopeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      }
       return;
     }
     const item = event.target.closest('[data-scope-val]');
@@ -2166,9 +1886,119 @@ const processCatalog = [
     }
   });
 
+  elements.scopeContainer.addEventListener('input', event => {
+    if (event.target.classList.contains('dropdown-search-input')) {
+      const query = event.target.value.toLowerCase().trim();
+      const items = elements.scopeContainer.querySelectorAll('.dropdown-item');
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    }
+  });
+
+  // Filter Nhóm giám sát
+  elements.filterScopeContainer.addEventListener('click', event => {
+    const selectBox = event.target.closest('.select-box');
+    if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
+      elements.filterScopeContainer.classList.toggle('open');
+      if (elements.filterScopeContainer.classList.contains('open')) {
+        const searchInput = elements.filterScopeContainer.querySelector('.dropdown-search-input');
+        if (searchInput) {
+          searchInput.value = '';
+          elements.filterScopeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      }
+      return;
+    }
+    const item = event.target.closest('[data-filter-scope-val]');
+    if (item) {
+      state.scope = item.dataset.filterScopeVal;
+      updateDropdownSummary(elements.filterScopeContainer, state.scope ? [state.scope] : [], false);
+      elements.filterScopeContainer.classList.remove('open');
+      applyProcessFilters();
+    }
+  });
+
+  // Filter Cơ quan
+  elements.filterOrgContainer.addEventListener('click', event => {
+    const selectBox = event.target.closest('.select-box');
+    if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
+      elements.filterOrgContainer.classList.toggle('open');
+      if (elements.filterOrgContainer.classList.contains('open')) {
+        const searchInput = elements.filterOrgContainer.querySelector('.dropdown-search-input');
+        if (searchInput) {
+          searchInput.value = '';
+          elements.filterOrgContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      }
+      return;
+    }
+    const item = event.target.closest('[data-filter-org-val]');
+    if (item) {
+      state.org = item.dataset.filterOrgVal;
+      updateDropdownSummary(elements.filterOrgContainer, state.org ? [state.org] : [], false);
+      elements.filterOrgContainer.classList.remove('open');
+      applyProcessFilters();
+    }
+  });
+
+  if (elements.activeContainer) {
+    elements.activeContainer.addEventListener('click', event => {
+      const selectBox = event.target.closest('.select-box');
+      if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
+        elements.activeContainer.classList.toggle('open');
+        if (elements.activeContainer.classList.contains('open')) {
+          const searchInput = elements.activeContainer.querySelector('.dropdown-search-input');
+          if (searchInput) {
+            searchInput.value = '';
+            elements.activeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
+            setTimeout(() => searchInput.focus(), 50);
+          }
+        }
+        return;
+      }
+      const item = event.target.closest('[data-filter-active-val]');
+      if (item) {
+        state.active = item.dataset.filterActiveVal;
+        const label = item.querySelector('span').textContent;
+        updateDropdownSummary(elements.activeContainer, state.active ? [label] : [], false);
+        elements.activeContainer.classList.remove('open');
+        applyProcessFilters();
+      }
+    });
+  }
+
   elements.addStep.addEventListener('click', () => {
-    const step = { id: `step-${Date.now()}`, unitName: `Bước xử lý ${state.draft.nodes.length + 1}`, status: statusList[0], org: [], assignees: [], description: '', actions: [], persisted: false };
+    const step = {
+      id: `step-${Date.now()}`,
+      unitName: `Bước xử lý ${state.draft.nodes.length + 1}`,
+      status: statusList[0],
+      orgs: [],
+      org: '',
+      assignees: [],
+      description: '',
+      actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }],
+      persisted: false
+    };
     state.draft.nodes.push(step);
+
+    state.draft.nodes.forEach((n, idx) => {
+      n.order = idx + 1;
+      n.parentNodeId = idx > 0 ? state.draft.nodes[idx - 1].id : null;
+      if (n.actions) {
+        n.actions.forEach(act => {
+          if (act.name === 'Chuyển xử lý' || act.name === 'Phê duyệt') {
+            act.nextNodeId = state.draft.nodes[idx + 1]?.id || 'end';
+          } else if (act.name === 'Trả về' || act.name === 'Từ chối') {
+            act.nextNodeId = idx > 0 ? state.draft.nodes[idx - 1].id : 'start';
+          }
+        });
+      }
+    });
+
     state.selectedStepId = step.id;
     renderSteps();
     renderStepForm(step);
@@ -2418,7 +2248,7 @@ const processCatalog = [
     if (!step) return;
     const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
     const statusSelectBox = event.target.closest('.process-step-status-dropdown .select-box');
-    if (statusSelectBox) {
+    if (statusSelectBox && !event.target.classList.contains('dropdown-search-input')) {
       if (isStepFieldsDisabled) return;
       const container = elements.nodeForm.querySelector('.process-step-status-dropdown');
       if (container) container.classList.toggle('open');
@@ -2428,11 +2258,18 @@ const processCatalog = [
     if (statusItem) {
       if (isStepFieldsDisabled) return;
       step.status = statusItem.dataset.stepStatusVal;
+
+      if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
+        step.orgs = [];
+        step.org = '';
+        step.assignees = [];
+      }
+
       updateStepStatusSummary(step);
       const container = elements.nodeForm.querySelector('.process-step-status-dropdown');
       if (container) container.classList.remove('open');
       if (step.status === 'Chờ phê duyệt') {
-        step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }, { name: 'Trả xử lý', nextNodeId: step.parentNodeId || 'start' }];
+        step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }, { name: 'Trả về', nextNodeId: step.parentNodeId || 'start' }];
       } else {
         step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }];
       }
@@ -2441,8 +2278,8 @@ const processCatalog = [
       return;
     }
     const orgSelectBox = event.target.closest('.process-step-org-dropdown .select-box');
-    if (orgSelectBox && !event.target.classList.contains('remove-tag')) {
-      if (isStepFieldsDisabled) return;
+    if (orgSelectBox && !event.target.classList.contains('remove-tag') && !event.target.classList.contains('dropdown-search-input')) {
+      if (isStepFieldsDisabled || step.status === 'Chờ phê duyệt') return;
       const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
       if (container) {
         container.classList.toggle('open');
@@ -2457,9 +2294,22 @@ const processCatalog = [
       }
       return;
     }
+    const orgItem = event.target.closest('[data-step-org-val]');
+    if (orgItem) {
+      if (isStepFieldsDisabled || step.status === 'Chờ phê duyệt') return;
+      step.orgs = [orgItem.dataset.stepOrgVal];
+      step.org = orgItem.dataset.stepOrgVal;
+      updateStepOrgSummary(step);
+      checkDefaultAssignee(step);
+      renderStepAssigneeChoices(step);
+      renderSteps();
+      const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
+      if (container) container.classList.remove('open');
+      return;
+    }
     const assigneeSelectBox = event.target.closest('.process-assignee-multiselect .select-box');
     if (assigneeSelectBox) {
-      if (isStepFieldsDisabled) return;
+      if (isStepFieldsDisabled || step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') return;
       const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
       if (container) container.classList.toggle('open');
       return;
@@ -2538,17 +2388,34 @@ const processCatalog = [
 
   const renderActionsPopupList = () => {
     const isLocked = state.viewOnly || state.draft.processStatus === 'active';
+    const currentStep = state.draft?.nodes.find(n => n.id === currentActionsStepId);
+    const isEndStep = currentStep && currentStep.status === 'Đã kết thúc';
+
     elements.actionsTable.innerHTML = currentActionsDraft.map((action, index) => {
       const actName = action.name || 'Chuyển xử lý';
+
+      let nextSelectHtml = '';
+      if (isEndStep && actName === 'Chuyển xử lý') {
+        nextSelectHtml = `
+          <select data-popup-action-next="${index}" disabled style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; background-color: #f1f5f9; cursor: not-allowed; width: 100%;">
+            <option value="end" selected> </option>
+          </select>
+        `;
+      } else {
+        nextSelectHtml = `
+          <select data-popup-action-next="${index}" ${isLocked ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; width: 100%;">
+            ${actionOptions(state.draft, action.nextNodeId, currentActionsStepId, actName)}
+          </select>
+        `;
+      }
+
       return `
         <div class="process-step-action-row" style="display: grid; grid-template-columns: 1.5fr 2fr auto; gap: 10px; align-items: center; margin-bottom: 8px;">
           <select data-popup-action-name="${index}" ${isLocked ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; font-weight: bold; color: var(--admin-text);">
             <option value="Chuyển xử lý" ${actName === 'Chuyển xử lý' ? 'selected' : ''}>Chuyển xử lý</option>
-            <option value="Trả xử lý" ${actName === 'Trả xử lý' ? 'selected' : ''}>Trả xử lý</option>
+            <option value="Trả về" ${actName === 'Trả về' ? 'selected' : ''}>Trả về</option>
           </select>
-          <select data-popup-action-next="${index}" ${isLocked ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px;">
-            ${actionOptions(state.draft, action.nextNodeId)}
-          </select>
+          ${nextSelectHtml}
           <button class="act-btn act-del" type="button" data-popup-delete-action="${index}" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid #ef4444; color: #ef4444; background: none; border-radius: var(--admin-radius-md); cursor: pointer;">
             <i class="fa-solid fa-trash"></i>
           </button>
@@ -2576,7 +2443,17 @@ const processCatalog = [
       }
       const nameIdx = event.target.dataset.popupActionName;
       if (nameIdx !== undefined) {
-        currentActionsDraft[Number(nameIdx)].name = event.target.value;
+        const actionType = event.target.value;
+        currentActionsDraft[Number(nameIdx)].name = actionType;
+
+        const draft = state.draft;
+        const currentStepIdx = draft.nodes.findIndex(n => n.id === currentActionsStepId);
+        if (actionType === 'Trả về') {
+          currentActionsDraft[Number(nameIdx)].nextNodeId = currentStepIdx > 0 ? draft.nodes[currentStepIdx - 1].id : 'start';
+        } else {
+          currentActionsDraft[Number(nameIdx)].nextNodeId = draft.nodes[currentStepIdx + 1]?.id || 'end';
+        }
+
         renderActionsPopupList();
       }
     });
@@ -2599,7 +2476,7 @@ const processCatalog = [
       const step = state.draft?.nodes.find(n => n.id === currentActionsStepId);
       if (step) {
         step.actions = clone(currentActionsDraft);
-        if (state.selectedStepId === currentActionsStepId) {
+        if (state.selectedStepId === currentActionsStepId && !elements.nodeOverlay.hidden) {
           renderStepForm(step);
         }
         renderSteps();
