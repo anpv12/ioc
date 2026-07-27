@@ -967,7 +967,7 @@ const processCatalog = [
       }
 
       renderSteps();
-      showNotice("Đã xóa bước và tự động nối luồng xử lý.");
+      showNotice('Đã xóa bước xử lý');
     });
   };
 
@@ -1712,7 +1712,7 @@ const processCatalog = [
     closeEditor();
     state.page = 1;
     renderList();
-    showNotice(`Đã ${isPublish ? 'phát hành' : 'lưu'} quy trình.`);
+    showNotice(isPublish ? 'Đã lưu quy trình' : 'Đã lưu quy trình');
   };
   const closeFilterPanel = () => { elements.filterPanel.classList.remove('show'); elements.filterToggle.classList.remove('active'); };
   const applyProcessFilters = () => {
@@ -1747,7 +1747,7 @@ const processCatalog = [
           row.deleted = true;
           row.active = false;
           renderList();
-          showNotice("Đã xóa quy trình.");
+          showNotice('Đã xóa quy trình');
         });
       }
     }
@@ -2440,7 +2440,7 @@ const processCatalog = [
           renderStepForm(step);
         }
         renderSteps();
-        showNotice("Đã lưu cấu hình hành động cho bước này.");
+        showNotice('Đã lưu bước xử lý');
       }
       elements.actionsOverlay.hidden = true;
     });

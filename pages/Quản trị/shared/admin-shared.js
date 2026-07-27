@@ -116,14 +116,18 @@ function bindNavigationGroup(parentId, childrenId) {
 
 /* ---------------- Toast / showNotice ---------------- */
 let _noticeTimeout = null;
-function showNotice(message, autoHideMs = 2500) {
+function showNotice(message, autoHideMs = 2000) {
   if (!message) return;
   const toast = document.getElementById('toast');
   if (!toast) return;
   const titleEl = document.getElementById('toast-title');
   const msgEl = document.getElementById('toast-message');
   if (titleEl) titleEl.innerText = 'Thành công';
-  if (msgEl) msgEl.innerText = message;
+  if (msgEl) {
+    // Hiện message ngắn gọn, ẩn nếu trống
+    msgEl.innerText = message;
+    msgEl.hidden = !message;
+  }
   toast.classList.add('show');
   if (_noticeTimeout) clearTimeout(_noticeTimeout);
   if (autoHideMs > 0) {
