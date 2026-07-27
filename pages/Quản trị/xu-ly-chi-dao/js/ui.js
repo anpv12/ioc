@@ -220,9 +220,11 @@
 
     // Pagination buttons
     const btns = [];
+    btns.push(`<button class="pg-btn pg-prev" data-page="${state.page - 1}" type="button" ${state.page <= 1 ? 'disabled' : ''} title="Trang trước"><i class="fa-solid fa-chevron-left"></i></button>`);
     for (let p = 1; p <= maxPage; p++) {
-      btns.push(`<button class="pg-btn${p===state.page?' active':''}" data-page="${p}" type="button">${p}</button>`);
+      btns.push(`<button class="pg-btn${p === state.page ? ' active' : ''}" data-page="${p}" type="button">${p}</button>`);
     }
+    btns.push(`<button class="pg-btn pg-next" data-page="${state.page + 1}" type="button" ${state.page >= maxPage ? 'disabled' : ''} title="Trang sau"><i class="fa-solid fa-chevron-right"></i></button>`);
     el.pageButtons().innerHTML = btns.join('');
   };
 
