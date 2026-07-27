@@ -199,7 +199,7 @@
         <td class="col-groups">${escHtml(firstGroup)}</td>
         <td class="col-date">${escHtml(item.issuedDate)}</td>
         <td class="col-deadline">
-          <span class="deadline-tag ${cond === 'overdue' ? 'overdue' : 'in-time'}">
+          <span class="deadline-tag ${cond === 'overdue' ? 'overdue' : 'in-time'}" title="${cond === 'overdue' ? 'Trễ hạn' : 'Còn hạn'}">
             <span>${escHtml(dlLabel)}</span>
             <i class="fa-regular fa-clock"></i>
           </span>
