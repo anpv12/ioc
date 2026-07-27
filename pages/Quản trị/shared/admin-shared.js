@@ -8,34 +8,8 @@
  * @param {string} activeNavId  - id của nav-item cần active, vd: 'nav-quy-trinh-dong'
  * @param {string} pageTitle    - Tiêu đề hiển thị ở breadcrumb và pageTitle
  */
-async function loadSharedLayout(activeNavId, pageTitle) {
-  const app = document.querySelector('.app');
-  if (!app) return;
-
-  try {
-    const res = await fetch(new URL('../shared/layout.html', location.href).href);
-    if (!res.ok) throw new Error('fetch failed');
-    const html = await res.text();
-
-    // Inject layout vào đầu .app (trước #pageContent)
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    // Sidebar
-    const sidebar = tmp.querySelector('.sidebar');
-    const main = tmp.querySelector('.main');
-    if (sidebar) app.insertBefore(sidebar, app.firstChild);
-    if (main) {
-      // Chuyển #pageContent vào main.content nếu có
-      const existingContent = app.querySelector('#pageContent');
-      const mainContent = main.querySelector('#pageContent');
-      if (existingContent && mainContent) {
-        mainContent.replaceWith(existingContent);
-      }
-      app.appendChild(main);
-    }
-  } catch {
-    // Fallback: layout.html không load được — dùng inline HTML đã có
-  }
+function loadSharedLayout(activeNavId, pageTitle) {
+  // Layout đã inline trong từng trang — không fetch layout.html (file:// không cho phép cross-origin)
 
   // Đánh dấu nav-item active
   if (activeNavId) {

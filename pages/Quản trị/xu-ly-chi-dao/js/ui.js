@@ -167,7 +167,7 @@ const directiveState = {
       staff: { key: 'completed', label: 'Đã hoàn thành' }
     }
   },
-  processes: processCatalog,
+  processes: JSON.parse(localStorage.getItem('gialai_processes') || '[]'),
   directives: createPrototypeDirectives(),
   timeline: [
     { title: 'Tỉnh ban hành chỉ đạo', description: 'Chỉ đạo được đồng bộ về phân hệ Xử lý chỉ đạo.' },
