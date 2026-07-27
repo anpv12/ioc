@@ -19,7 +19,7 @@
     - Trạng thái `Chờ phân công`: Cho phép chọn nhiều cơ quan. Người xử lý mặc định là lãnh đạo của các cơ quan đó (không cho sửa). Lưu danh sách cơ quan được phân công.
     - Trạng thái `Đang xử lý`: Cơ quan mặc định là tất cả các cơ quan trong danh sách cơ quan được phân công (khóa chỉnh sửa). Người xử lý được chọn từ danh sách nhân viên trong các cơ quan đó dưới dạng dropdown nhóm nhân viên theo cơ quan, cho phép tìm kiếm theo cơ quan, theo tên và chọn nhiều người xử lý.
     - Trạng thái `Đã có báo cáo`: Cơ quan và người xử lý mặc định là danh sách cơ quan được phân công và lãnh đạo của cơ quan tương ứng (khóa chỉnh sửa).
-    - Trạng thái `Đã kết thúc`: Cơ quan mặc định là "Tỉnh Gia Lai", người xử lý mặc định là người tạo chỉ đạo đã được lưu dưới backend (khóa chỉnh sửa).
+    - Trạng thái `Đã kết thúc`, `Chờ phê duyệt` (hoặc `Phê duyệt báo cáo`): Cơ quan mặc định là "Tỉnh Gia Lai", người xử lý mặc định là người tạo chỉ đạo đã được lưu dưới backend (khóa chỉnh sửa).
     - Các trường là mặc định: Khóa tương tác chỉnh sửa (view-only), hiển thị tooltip chi tiết khi hover chuột.
   - **UML đồng bộ động bằng SVG overlay**: Sử dụng một lớp SVG overlay phủ trên sơ đồ để tính toán tọa độ (x, y) thực tế của các node hình tròn và tự động vẽ các đường mũi tên rẽ nhánh/quay lui hoặc đi thẳng dựa trên cấu hình hành động thực tế của từng bước.
   - Cấu hình hành động: Bỏ node `Bắt đầu` (Start) và `Kết thúc` (End) khỏi danh sách dropdown lựa chọn "Bước tiếp nhận" của các hành động. Trạng thái "Chờ phê duyệt" có thêm hành động "Trả xử lý" mặc định trỏ về bước liền trước (`parentNodeId`). Mặc định có 1 bước Chuyển xử lý.
