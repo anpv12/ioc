@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IAM – Quản lý Cơ quan | Gia Lai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <span class="menu-label">Menu</span>
+        <button class="collapse-btn"><i class="fa-solid fa-angles-left"></i></button>
+      </div>
+
+      <div class="nav-item active" id="nav-quan-ly-co-quan">
+        <span class="dot"></span><span>Quản lý cơ quan</span>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
+              <circle cx="50" cy="50" r="43" fill="#ffffff"/>
+              <text x="50" y="58" text-anchor="middle" fill="#ee522d" font-size="28" font-weight="900" font-family="Arial">IAM</text>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">HỆ THỐNG QUẢN LÝ TRUY CẬP VÀ XÁC THỰC (IAM)</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="admin-dd">
+            <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+            <span class="name">Quản trị viên</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="breadcrumb-row">
+        <div class="page-title">Quản lý cơ quan</div>
+        <div class="breadcrumb">Trang chủ <span class="sep">&gt;</span> IAM <span class="sep">&gt;</span> <span class="cur">Quản lý cơ quan</span></div>
+      </div>
+
+      <div class="content">
+        <div class="card">
+          <div class="filter-row">
+            <div class="search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input class="search-input" type="text" placeholder="Tìm kiếm ...">
+            </div>
+            <button class="btn-search">Tìm kiếm</button>
+            <button class="btn-reset">Làm mới</button>
+            <div style="flex:1;"></div>
+            <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm cơ quan</button>
+          </div>
+
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center" style="width: 60px;">STT</th>
+                  <th>Tên cơ quan</th>
+                  <th style="width: 180px;">Người phụ trách</th>
+                  <th>Địa chỉ</th>
+                  <th class="center" style="width: 110px;">Hoạt động</th>
+                  <th class="center" style="width: 140px;">Xử lý</th>
+                </tr>
+              </thead>
+              <tbody id="iamAgencyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ Tỉnh Gia Lai</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/ui.js"></script>
+</body>
+
+</html>
