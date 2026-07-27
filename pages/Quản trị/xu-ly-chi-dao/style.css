@@ -424,17 +424,15 @@
 }
 
 .deadline-cell .overdue {
-  color: #ef4444;
-  font-weight: 700;
-}
-
-.deadline-cell .warning {
-  color: #f59e0b;
+  color: #dc2626;
   font-weight: 600;
 }
 
-.deadline-cell .normal {
-  color: var(--admin-text);
+.deadline-cell .warning,
+.deadline-cell .normal,
+.deadline-cell .available {
+  color: #16a34a;
+  font-weight: 600;
 }
 
 /* SLA clock button */
@@ -449,15 +447,13 @@
 }
 
 .time-budget-button.overdue {
-  color: #ef4444;
+  color: #dc2626;
 }
 
-.time-budget-button.warning {
-  color: #f59e0b;
-}
-
+.time-budget-button.warning,
+.time-budget-button.normal,
 .time-budget-button.available {
-  color: #22c55e;
+  color: #16a34a;
 }
 
 /* Empty state */

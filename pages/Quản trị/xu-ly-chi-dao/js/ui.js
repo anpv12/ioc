@@ -186,39 +186,36 @@
 
     // Rows
     tbody.innerHTML = paged.map((item, idx) => {
-      const status  = statusFor(item);
-      const cond    = deadlineCondition(item);
-      const dlLabel = deadlineLabel(item);
-      const groups  = (item.dataGroups || []).slice(0, 2)
-        .map(g => `<span class="dg-mini-tag">${escHtml(g)}</span>`).join('');
-      const more = (item.dataGroups||[]).length > 2
-        ? `<span class="dg-mini-tag" style="background:#f1f5f9;color:#64748b">+${(item.dataGroups.length-2)}</span>` : '';
+      const status     = statusFor(item);
+      const cond       = deadlineCondition(item);
+      const dlLabel    = deadlineLabel(item);
+      const firstGroup = (item.dataGroups && item.dataGroups.length > 0) ? item.dataGroups[0] : '';
+      const groupHtml  = firstGroup ? `<span class="dg-mini-tag">${escHtml(firstGroup)}</span>` : '';
 
       return `<tr>
         <td class="center col-stt">${start + idx + 1}</td>
         <td class="col-id">${escHtml(item.id)}</td>
         <td class="col-title">
-          <div class="dir-title-cell">
-            <span class="dir-title-main">${escHtml(item.title)}</span>
-            <span class="dir-domain-tag">${escHtml(item.domain)}</span>
-          </div>
+          <span class="dir-title-main">${escHtml(item.title)}</span>
         </td>
-        <td class="col-groups"><div class="data-group-mini">${groups}${more}</div></td>
+        <td class="col-groups"><div class="data-group-mini">${groupHtml}</div></td>
         <td class="col-date">${escHtml(item.issuedDate)}</td>
         <td class="col-deadline">
           <div class="deadline-cell">
             <span class="${escHtml(cond)}">${escHtml(dlLabel)}</span>
             <button class="time-budget-button ${escHtml(cond)}" data-time-id="${escHtml(item.id)}"
-              title="${cond==='overdue'?'Trễ hạn':cond==='warning'?'Sắp đến hạn':'Còn hạn'}" type="button">
+              title="${cond==='overdue'?'Trễ hạn':'Còn hạn'}" type="button">
               <i class="fa-regular fa-clock"></i>
             </button>
           </div>
         </td>
         <td class="col-status">${statusBadgeHtml(status)}</td>
-        <td class="col-act">
-          <button class="btn-action-view" data-open-id="${escHtml(item.id)}" type="button">
-            <i class="fa-solid fa-eye"></i> Xem
-          </button>
+        <td class="col-act center">
+          <div class="row-actions" style="display: flex; justify-content: center;">
+            <button class="act-btn act-edit" data-open-id="${escHtml(item.id)}" type="button" title="Xem chi tiết">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </div>
         </td>
       </tr>`;
     }).join('');
