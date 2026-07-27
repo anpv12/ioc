@@ -189,8 +189,7 @@
       const status     = statusFor(item);
       const cond       = deadlineCondition(item);
       const dlLabel    = deadlineLabel(item);
-      const firstGroup = (item.dataGroups && item.dataGroups.length > 0) ? item.dataGroups[0] : '';
-      const groupHtml  = firstGroup ? `<span class="dg-mini-tag">${escHtml(firstGroup)}</span>` : '';
+      const firstGroup = (item.dataGroups && item.dataGroups.length > 0) ? item.dataGroups[0] : '—';
 
       return `<tr>
         <td class="center col-stt">${start + idx + 1}</td>
@@ -198,7 +197,7 @@
         <td class="col-title">
           <span class="dir-title-main">${escHtml(item.title)}</span>
         </td>
-        <td class="col-groups"><div class="data-group-mini">${groupHtml}</div></td>
+        <td class="col-groups">${escHtml(firstGroup)}</td>
         <td class="col-date">${escHtml(item.issuedDate)}</td>
         <td class="col-deadline">
           <div class="deadline-cell">
