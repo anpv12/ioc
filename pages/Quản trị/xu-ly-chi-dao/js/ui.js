@@ -190,8 +190,8 @@
 
       return `<tr>
         <td class="center col-stt">${start + idx + 1}</td>
-        <td class="col-title">
-          <span class="dir-title-main">${escHtml(item.title)}</span>
+        <td class="col-title" title="${escHtml(item.title)}">
+          <span class="dir-title-main" title="${escHtml(item.title)}">${escHtml(item.title)}</span>
         </td>
         <td class="col-groups">${escHtml(firstGroup)}</td>
         <td class="col-date">${escHtml(item.issuedDate)}</td>
