@@ -185,16 +185,17 @@
 }
 
 .filter-select {
+  width: 175px;
   height: var(--admin-control-height);
   padding: 0 10px;
   border: 1px solid var(--admin-control-line);
-  border-radius: var(--admin-radius-md);
+  border-radius: 6px;
   background: var(--admin-surface);
   color: var(--admin-text);
   font-size: 14px;
   font-family: 'Roboto', sans-serif;
   outline: 0;
-  min-width: 160px;
+  cursor: pointer;
 }
 
 .filter-select:focus {
@@ -205,10 +206,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 175px;
   height: var(--admin-control-height);
   padding: 0 10px;
   border: 1px solid var(--admin-control-line);
-  border-radius: var(--admin-radius-md);
+  border-radius: 6px;
   background: var(--admin-surface);
   position: relative;
 }
@@ -226,7 +228,7 @@
   background: transparent;
   color: var(--admin-text);
   cursor: pointer;
-  min-width: 150px;
+  width: 100%;
 }
 
 .clear-date-btn {

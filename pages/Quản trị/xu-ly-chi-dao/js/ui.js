@@ -125,7 +125,7 @@
   const filteredForTab = (tab) => {
     const search = (state.filters.search || '').trim().toLowerCase();
     const statusF = state.filters.status || '';
-    const [dlFrom, dlTo] = state.filters.deadlineRange || [];
+    const selDate = state.filters.deadlineDate;
     const tcF = state.filters.timeCondition || '';
 
     return state.directives.filter(item => {
@@ -139,12 +139,11 @@
       const matchStatus = !statusF || itemStatus === statusF;
 
       const dl = deadlineDate(item);
-      const matchDlFrom = !dlFrom || (dl && dl >= dlFrom);
-      const matchDlTo   = !dlTo   || (dl && dl <= dlTo);
+      const matchDl = !selDate || (dl && dl.toDateString() === selDate.toDateString());
 
       const matchTc = !tcF || deadlineCondition(item) === tcF;
 
-      return matchSearch && matchStatus && matchDlFrom && matchDlTo && matchTc;
+      return matchSearch && matchStatus && matchDl && matchTc;
     });
   };
 
@@ -700,7 +699,7 @@
 
     // Clear deadline
     el.clearDeadline().addEventListener('click', () => {
-      state.filters.deadlineRange = [];
+      state.filters.deadlineDate = null;
       el.deadlineRange().value = '';
       el.clearDeadline().hidden = true;
       state.page = 1;
@@ -709,7 +708,7 @@
 
     // Reset filters
     el.resetFilters().addEventListener('click', () => {
-      state.filters = { search: '', status: '', deadlineRange: [], timeCondition: '' };
+      state.filters = { search: '', status: '', deadlineDate: null, timeCondition: '' };
       el.search().value = '';
       el.statusFilter().value = '';
       el.deadlineRange().value = '';
@@ -754,12 +753,11 @@
     const imgOverlay = el.imageOverlay();
     if (imgOverlay) imgOverlay.addEventListener('click', e => { if (e.target === imgOverlay) imgOverlay.hidden = true; });
 
-    // Deadline flatpickr
+    // Deadline flatpickr (single date selection)
     flatpickr(el.deadlineRange(), {
-      mode: 'range', dateFormat: 'd/m/Y',
+      dateFormat: 'd/m/Y',
       onChange: dates => {
-        state.filters.deadlineRange = dates.length === 2
-          ? [dates[0], dates[1]] : [];
+        state.filters.deadlineDate = dates.length === 1 ? dates[0] : null;
         el.clearDeadline().hidden = dates.length === 0;
         state.page = 1;
         render();
