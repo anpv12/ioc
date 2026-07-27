@@ -2130,35 +2130,34 @@ details.history-card[open] .history-body {
   background-color: #0072c7 !important;
 }
 
-/* ── Bảng danh sách quy trình: fix cột & truncate Cơ quan ──────────
-   Đặt cuối file để thắng source-order với admin-base.css
-   ----------------------------------------------------------------- */
-#view-dynamic-process .tbl-wrap table {
+/* ── Bảng danh sách quy trình: fix cột & truncate Cơ quan */
+.tbl-wrap table {
   table-layout: fixed !important;
   width: 100% !important;
+  min-width: 0 !important;
 }
 
 /* Tên quy trình: 35% */
-#view-dynamic-process .tbl-wrap th:nth-child(1),
-#view-dynamic-process .tbl-wrap td:nth-child(1) {
+.tbl-wrap th:nth-child(1),
+.tbl-wrap td:nth-child(1) {
   width: 35% !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
 
 /* Phiên bản: 5% */
-#view-dynamic-process .tbl-wrap th:nth-child(2),
-#view-dynamic-process .tbl-wrap td:nth-child(2) {
+.tbl-wrap th:nth-child(2),
+.tbl-wrap td:nth-child(2) {
   width: 5% !important;
   text-align: center !important;
   white-space: nowrap !important;
 }
 
-/* Cơ quan: 28% — truncate 1 dòng */
-#view-dynamic-process .tbl-wrap th:nth-child(3) {
+/* Cơ quan: 28% — truncate 1 dòng, không xuống dòng */
+.tbl-wrap th:nth-child(3) {
   width: 28% !important;
 }
-#view-dynamic-process .tbl-wrap td:nth-child(3) {
+.tbl-wrap td:nth-child(3) {
   width: 28% !important;
   max-width: 0 !important;
   white-space: nowrap !important;
@@ -2170,15 +2169,15 @@ details.history-card[open] .history-body {
 }
 
 /* Trạng thái: 12% */
-#view-dynamic-process .tbl-wrap th:nth-child(4),
-#view-dynamic-process .tbl-wrap td:nth-child(4) {
+.tbl-wrap th:nth-child(4),
+.tbl-wrap td:nth-child(4) {
   width: 12% !important;
   text-align: center !important;
 }
 
 /* Ngày tạo: 12% */
-#view-dynamic-process .tbl-wrap th:nth-child(5),
-#view-dynamic-process .tbl-wrap td:nth-child(5) {
+.tbl-wrap th:nth-child(5),
+.tbl-wrap td:nth-child(5) {
   width: 12% !important;
   text-align: center !important;
   white-space: nowrap !important;
@@ -2187,8 +2186,8 @@ details.history-card[open] .history-body {
 }
 
 /* Xử lý: 8% */
-#view-dynamic-process .tbl-wrap th:nth-child(6),
-#view-dynamic-process .tbl-wrap td:nth-child(6) {
+.tbl-wrap th:nth-child(6),
+.tbl-wrap td:nth-child(6) {
   width: 8% !important;
   text-align: center !important;
 }
