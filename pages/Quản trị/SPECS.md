@@ -10,17 +10,24 @@
 
 ## 2. Quản trị Quy trình động
 - **Danh sách quy trình**:
-  - Tìm kiếm theo mã/tên. Lọc theo Cơ quan, Nhóm giám sát (8 nhóm theo danh sách thông giám sát), Trạng thái (Bản nháp, Hoạt động) và Phiên bản.
+  - Tìm kiếm theo mã/tên. Lọc theo Cơ quan, Nhóm giám sát, Trạng thái (Bản nháp, Hoạt động) và Phiên bản qua các dropdown custom autocomplete.
   - Chặn xóa quy trình đang "Hoạt động" và cảnh báo bằng Popup Modal lỗi.
 - **Cấu hình Quy trình**:
   - Nút **Lưu** (lưu nháp) và nút **Phát hành** (chuyển sang Hoạt động; mờ đi nếu đã hoạt động).
-  - Dropdown Cơ quan áp dụng: Hỗ trợ "Chọn tất cả", ô tìm kiếm nhanh ghim đầu (sticky), tự động thu gọn `... và +[số lượng]` theo pixel thực tế khi tràn dòng.
+  - Dropdown Cơ quan áp dụng, Nhóm giám sát: Hỗ trợ autocomplete (gõ tìm kiếm nhanh), ghim tìm kiếm sticky đầu. Khi chọn nhiều và vượt quá chiều rộng thực tế của dropdown, text hiển thị sẽ được cắt bằng dấu `...` và thêm badge số lượng dư `+ [số còn lại]` có màu xanh dương nhạt, cỡ chữ nhỏ hơn và font-weight thường. Khi hover chuột hiển thị tooltip bo góc hiển thị danh sách đầy đủ.
 - **Thiết kế Luồng bước (UML)**:
   - Khóa luồng bước không cho sửa khi trạng thái quy trình là "Hoạt động".
-  - Trạng thái bước: 5 trạng thái (Phân công xử lý, Đang xử lý, Đã có báo cáo, Chờ phê duyệt, Đã kết thúc).
-  - Cơ quan xử lý & Người xử lý: Hỗ trợ tìm kiếm nhanh ghim đầu, Chọn tất cả, tự động thu gọn theo pixel. Người xử lý được ánh xạ tự động từ Cơ quan xử lý và khóa chọn.
+  - **Sắp xếp thứ tự bước bằng Kéo thả (Drag & Drop)**: Hỗ trợ kéo thả các bước xử lý không cố định (không phải Start/End) trong danh sách để thay đổi thứ tự. Thứ tự mới sẽ tự động cập nhật liên kết `parentNodeId` và hành động `Chuyển xử lý` trỏ sang bước kế tiếp tương ứng.
+  - **Cấu hình Cơ quan & Người xử lý theo Trạng thái**:
+    - Trạng thái `Bắt đầu` (Khởi tạo chỉ đạo): Mặc định lưu tên người tạo chỉ đạo xuống backend, không hiển thị trên view.
+    - Trạng thái `Chờ phân công`: Cho phép chọn nhiều cơ quan. Người xử lý mặc định là lãnh đạo của các cơ quan đó (không cho sửa). Lưu danh sách cơ quan được phân công.
+    - Trạng thái `Đang xử lý`: Cơ quan mặc định là tất cả các cơ quan trong danh sách cơ quan được phân công (khóa chỉnh sửa). Người xử lý được chọn từ danh sách nhân viên trong các cơ quan đó dưới dạng dropdown nhóm nhân viên theo cơ quan, cho phép tìm kiếm theo cơ quan, theo tên và chọn nhiều người xử lý.
+    - Trạng thái `Đã có báo cáo`: Cơ quan và người xử lý mặc định là danh sách cơ quan được phân công và lãnh đạo của cơ quan tương ứng (khóa chỉnh sửa).
+    - Trạng thái `Đã kết thúc`, `Chờ phê duyệt` (hoặc `Phê duyệt báo cáo`): Cơ quan mặc định là "Tỉnh Gia Lai", người xử lý mặc định là người tạo chỉ đạo đã được lưu dưới backend (khóa chỉnh sửa).
+    - Các trường là mặc định: Khóa tương tác chỉnh sửa (view-only), hiển thị tooltip chi tiết khi hover chuột.
+  - **UML đồng bộ động bằng SVG overlay**: Sử dụng một lớp SVG overlay phủ trên sơ đồ để tính toán tọa độ (x, y) thực tế của các node hình tròn và tự động vẽ các đường mũi tên rẽ nhánh/quay lui hoặc đi thẳng dựa trên cấu hình hành động thực tế của từng bước.
+  - Cấu hình hành động: Bỏ node `Bắt đầu` (Start) và `Kết thúc` (End) khỏi danh sách dropdown lựa chọn "Bước tiếp nhận" của các hành động. Trạng thái "Chờ phê duyệt" có thêm hành động "Trả xử lý" mặc định trỏ về bước liền trước (`parentNodeId`). Mặc định có 1 bước Chuyển xử lý.
   - Mô tả ngắn của bước: Bị khóa chỉnh sửa khi quy trình ở trạng thái Hoạt động.
-  - Cấu hình hành động: Cấu hình trực tiếp hoặc qua Popup riêng. Mặc định có 1 bước Chuyển xử lý. Trạng thái "Chờ phê duyệt" có thêm hành động "Trả xử lý" mặc định trỏ về bước liền trước (`parentNodeId`) thay vì bước start. Nếu có cả Chuyển và Trả xử lý, UML tự động hiển thị hình thoi rẽ nhánh quyết định.
 
 ## 3. Báo cáo thống kê chỉ đạo
 - **Bộ lọc**: Vai trò (Tỉnh/Sở), Khoảng thời gian (Tuần/Tháng/Quý/Năm/Tùy chọn), Đơn vị (Sở hoặc Phòng ban).

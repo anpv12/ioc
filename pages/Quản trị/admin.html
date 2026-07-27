@@ -32,14 +32,8 @@
         <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
       <div class="nav-children" id="navChildren">
-        <div class="nav-item active" id="nav-qldashboard" data-view="qldashboard" data-label="Quản lý dashboard">
-          <span class="dot"></span><span>Quản lý dashboard</span>
-        </div>
-        <div class="nav-item" id="nav-qllayout" data-view="qllayout" data-label="Quản lý layout">
-          <span class="dot"></span><span>Quản lý layout</span>
-        </div>
-        <div class="nav-item" id="nav-loaibieudo" data-view="loaibieudo" data-label="Loại biểu đồ">
-          <span class="dot"></span><span>Loại biểu đồ</span>
+        <div class="nav-item" id="nav-dashboard-giam-sat" onclick="window.location.href='../dashboard/index.html'">
+          <span class="dot"></span><span>Dashboard giám sát</span>
         </div>
       </div>
 
@@ -49,7 +43,7 @@
         <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
       <div class="nav-children" id="adminNavChildren">
-        <div class="nav-item" id="nav-dynamic-process" data-view="dynamic-process" data-label="Quản trị quy trình động">
+        <div class="nav-item active" id="nav-dynamic-process" data-view="dynamic-process" data-label="Quản trị quy trình động">
           <span class="dot"></span><span>Quy trình động</span>
         </div>
         <div class="nav-item" id="nav-statistical-report" data-view="statistical-report" data-label="Báo cáo thống kê">
@@ -117,18 +111,18 @@
       </div>
 
       <div class="breadcrumb-row">
-        <div class="page-title" id="pageTitle">Quản lý dashboard</div>
+        <div class="page-title" id="pageTitle">Quản trị quy trình động</div>
         <div class="breadcrumb">
           Trang chủ
           <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
-          <span class="cur" id="breadcrumbCurrent">Quản lý dashboard</span>
+          <span class="cur" id="breadcrumbCurrent">Quản trị quy trình động</span>
         </div>
       </div>
 
       <div class="content">
 
         <!-- ============ VIEW: Quản lý dashboard ============ -->
-        <div class="view active" id="view-qldashboard">
+        <div class="view" id="view-qldashboard">
           <div class="card">
             <div class="tabs-row">
               <div class="tab active">Dashboard chính</div>
@@ -163,7 +157,7 @@
                     <td>
                       <div class="row-actions">
                         <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
                         <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
                         <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
                         <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
@@ -180,7 +174,7 @@
                     <td>
                       <div class="row-actions">
                         <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
                         <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
                         <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
                         <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
@@ -197,7 +191,7 @@
                     <td>
                       <div class="row-actions">
                         <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
                         <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
                         <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
                         <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
@@ -317,7 +311,7 @@
         </div>
 
         <!-- ============ VIEW: Quy trình động ============ -->
-        <div class="view" id="view-dynamic-process">
+        <div class="view active" id="view-dynamic-process">
           <div class="card" id="processListContainer">
             <!-- THANH CÔNG CỤ TRÊN CÙNG -->
             <div class="top-bar">
@@ -364,34 +358,23 @@
             <div class="filter-panel" id="processFilterPanel">
               <div class="filter-grid">
                 <div class="filter-item">
-                  <label for="filterProcessOrg">Cơ quan</label>
-                  <select id="filterProcessOrg">
-                    <option value="">-- Chọn --</option>
-                  </select>
+                  <label>Cơ quan</label>
+                  <div class="multiselect-container" id="filterProcessOrgContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
+                </div>
+                <div class="filter-item">
+                  <label>Nhóm giám sát</label>
+                  <div class="multiselect-container" id="filterProcessScopeContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
                 </div>
 
                 <div class="filter-item">
-                  <label for="filterProcessScope">Nhóm giám sát</label>
-                  <select id="filterProcessScope">
-                    <option value="">-- Chọn --</option>
-                    <option value="Dân cư">Dân cư</option>
-                    <option value="Phản ánh hiện trường">Phản ánh hiện trường</option>
-                    <option value="Giáo dục">Giáo dục</option>
-                    <option value="Kinh tế xã hội">Kinh tế xã hội</option>
-                    <option value="Cán bộ công chức">Cán bộ công chức</option>
-                    <option value="Văn bản điều hành">Văn bản điều hành</option>
-                    <option value="CSDL quốc gia về tài chính">CSDL quốc gia về tài chính</option>
-                    <option value="Hành chính công">Hành chính công</option>
-                  </select>
-                </div>
-
-                <div class="filter-item">
-                  <label for="filterProcessActive">Trạng thái</label>
-                  <select id="filterProcessActive">
-                    <option value="">-- Chọn --</option>
-                    <option value="draft">Bản nháp</option>
-                    <option value="active">Hoạt động</option>
-                  </select>
+                  <label>Trạng thái</label>
+                  <div class="multiselect-container" id="filterProcessActiveContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
                 </div>
 
                 <div class="filter-item">
@@ -496,10 +479,7 @@
                       </div>
 
                       <div class="form-group">
-                        <label>Cơ quan áp dụng <span class="required">*</span> <span class="sub-label">(Chọn
-                            nhiều)</span></label>
-
-                        <!-- CUSTOM DROPDOWN CHỌN NHIỀU -->
+                        <label>Cơ quan áp dụng <span class="required">*</span></label>
                         <div class="multiselect-container" id="processOrgsContainer">
                           <!-- Render động -->
                         </div>
@@ -908,8 +888,8 @@
   <!-- Custom Confirm Popup -->
   <div id="confirmDialogOverlay" class="custom-confirm-overlay" hidden>
     <div class="custom-confirm-box">
-      <div class="custom-confirm-body">
-        <i class="fa-solid fa-circle-question confirm-icon"></i>
+      <div class="custom-confirm-header">
+        <h3 id="confirmDialogTitle">Xác nhận</h3>
         <p id="confirmDialogMessage">Nội dung thông báo...</p>
       </div>
       <div class="custom-confirm-footer">
@@ -930,6 +910,15 @@
     </div>
   </div>
 
+  <!-- POPUP NOTIFICATION GÓC TRÊN BÊN PHẢI -->
+  <div class="notifications-container">
+    <div id="toast" class="success">
+      <p id="toast-title" class="success-prompt-heading">Thành công</p>
+      <div id="toast-message" class="success-prompt-prompt">
+        Thao tác đã hoàn tất thành công.
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="js/ui.js"></script>
