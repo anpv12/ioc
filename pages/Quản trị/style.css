@@ -6104,3 +6104,25 @@ details.history-card,
   color: #15803d;
   line-height: 1.4;
 }
+
+/* Disabled/Read-only view styling for default fields */
+.select-box.disabled-view {
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed !important;
+  opacity: 0.85 !important;
+  border-color: #cbd5e1 !important;
+}
+.select-box.disabled-view:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+.dropdown-group-header {
+  font-weight: bold;
+  padding: 6px 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e2e8f0;
+  border-top: 1px solid #e2e8f0;
+}

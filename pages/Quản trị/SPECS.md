@@ -15,9 +15,12 @@
   - Khóa luồng bước không cho sửa khi trạng thái quy trình là "Hoạt động".
   - **Sắp xếp thứ tự bước bằng Kéo thả (Drag & Drop)**: Hỗ trợ kéo thả các bước xử lý không cố định (không phải Start/End) trong danh sách để thay đổi thứ tự. Thứ tự mới sẽ tự động cập nhật liên kết `parentNodeId` và hành động `Chuyển xử lý` trỏ sang bước kế tiếp tương ứng.
   - **Cấu hình Cơ quan & Người xử lý theo Trạng thái**:
-    - Trạng thái `Phân công xử lý`: Cho phép chọn nhiều cơ quan và nhiều người xử lý tương ứng (dưới dạng checkbox multiselect).
-    - Trạng thái `Phê duyệt` (hoặc `Phê duyệt báo cáo`): Mặc định gửi lại cho người tạo. Ẩn toàn bộ text hiển thị và khóa chỉnh sửa của hai ô Cơ quan & Người xử lý, giữ nguyên màu nền trắng gốc.
-    - Các trạng thái khác: Chỉ cho phép chọn 1 cơ quan và 1 người xử lý (dưới dạng single select).
+    - Trạng thái `Bắt đầu` (Khởi tạo chỉ đạo): Mặc định lưu tên người tạo chỉ đạo xuống backend, không hiển thị trên view.
+    - Trạng thái `Chờ phân công`: Cho phép chọn nhiều cơ quan. Người xử lý mặc định là lãnh đạo của các cơ quan đó (không cho sửa). Lưu danh sách cơ quan được phân công.
+    - Trạng thái `Đang xử lý`: Cơ quan mặc định là tất cả các cơ quan trong danh sách cơ quan được phân công (khóa chỉnh sửa). Người xử lý được chọn từ danh sách nhân viên trong các cơ quan đó dưới dạng dropdown nhóm nhân viên theo cơ quan, cho phép tìm kiếm theo cơ quan, theo tên và chọn nhiều người xử lý.
+    - Trạng thái `Đã có báo cáo`: Cơ quan và người xử lý mặc định là danh sách cơ quan được phân công và lãnh đạo của cơ quan tương ứng (khóa chỉnh sửa).
+    - Trạng thái `Đã kết thúc`: Cơ quan mặc định là "Tỉnh Gia Lai", người xử lý mặc định là người tạo chỉ đạo đã được lưu dưới backend (khóa chỉnh sửa).
+    - Các trường là mặc định: Khóa tương tác chỉnh sửa (view-only), hiển thị tooltip chi tiết khi hover chuột.
   - **UML đồng bộ động bằng SVG overlay**: Sử dụng một lớp SVG overlay phủ trên sơ đồ để tính toán tọa độ (x, y) thực tế của các node hình tròn và tự động vẽ các đường mũi tên rẽ nhánh/quay lui hoặc đi thẳng dựa trên cấu hình hành động thực tế của từng bước.
   - Cấu hình hành động: Bỏ node `Bắt đầu` (Start) và `Kết thúc` (End) khỏi danh sách dropdown lựa chọn "Bước tiếp nhận" của các hành động. Trạng thái "Chờ phê duyệt" có thêm hành động "Trả xử lý" mặc định trỏ về bước liền trước (`parentNodeId`). Mặc định có 1 bước Chuyển xử lý.
   - Mô tả ngắn của bước: Bị khóa chỉnh sửa khi quy trình ở trạng thái Hoạt động.

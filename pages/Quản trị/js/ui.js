@@ -371,59 +371,7 @@ const userList = [
   'Trưởng phòng Chuyên môn',
   'Chuyên viên Xử lý',
   'Lãnh đạo UBND',
-  'Chuyên viên Tổng hợp',
-  'Nguyễn Văn A',
-  'Nguyễn Văn B',
-  'Nguyễn Văn C',
-  'Nguyễn Văn D',
-  'Nguyễn Văn E',
-  'Nguyễn Văn F',
-  'Nguyễn Văn G',
-  'Nguyễn Văn H',
-  'Nguyễn Văn I',
-  'Nguyễn Văn J',
-  'Nguyễn Văn K',
-  'Nguyễn Văn L',
-  'Nguyễn Văn M',
-  'Nguyễn Văn N',
-  'Nguyễn Văn O',
-  'Nguyễn Văn P',
-  'Nguyễn Văn Q',
-  'Nguyễn Văn R',
-  'Nguyễn Văn S',
-  'Nguyễn Văn T',
-  'Nguyễn Văn U',
-  'Nguyễn Văn V',
-  'Nguyễn Văn W',
-  'Nguyễn Văn X',
-  'Nguyễn Văn Y',
-  'Nguyễn Văn Z',
-  'Phùng Văn A',
-  'Phùng Văn B',
-  'Phùng Văn C',
-  'Phùng Văn D',
-  'Phùng Văn E',
-  'Phùng Văn F',
-  'Phùng Văn G',
-  'Phùng Văn H',
-  'Phùng Văn I',
-  'Phùng Văn J',
-  'Phùng Văn K',
-  'Phùng Văn L',
-  'Phùng Văn M',
-  'Phùng Văn N',
-  'Phùng Văn O',
-  'Phùng Văn P',
-  'Phùng Văn Q',
-  'Phùng Văn R',
-  'Phùng Văn S',
-  'Phùng Văn T',
-  'Phùng Văn U',
-  'Phùng Văn V',
-  'Phùng Văn W',
-  'Phùng Văn X',
-  'Phùng Văn Y',
-  'Phùng Văn Z'
+  'Chuyên viên Tổng hợp'
 ];
 
 const formatStepOrgs = (orgs) => {
@@ -439,13 +387,37 @@ const getOrgsTooltip = (orgs) => {
 
 const ALL_ORGS = ['Sở Thông tin và Truyền thông', 'Sở Y tế', 'UBND Tỉnh Gia Lai', 'Sở Giáo dục và Đào tạo', 'Sở Tài chính', 'Sở Xây dựng', 'Sở Kế hoạch và Đầu tư', 'Sở Giao thông vận tải', 'Sở Công Thương', 'Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh', 'Cục Thống kê tỉnh Gia Lai', 'UBND Thành phố Pleiku'];
 
+const getOrgPersonnel = (orgName) => {
+  const leaders = [
+    'Nguyễn Thế Anh', 'Trần Hữu Bằng', 'Lê Minh Cường', 'Phạm Hồng Dương', 'Vũ Hoàng Hải', 
+    'Đặng Quốc Khánh', 'Bùi Xuân Lâm', 'Ngô Văn Minh', 'Dương Đức Nam', 'Phan Văn Phong', 
+    'Hoàng Quốc Việt', 'Lý Đại Nghĩa', 'Đỗ Tiến Quyết', 'Tạ Minh Tâm', 'Đinh Văn Thắng'
+  ];
+  const staffFirstNames = ['Văn', 'Thị', 'Hữu', 'Đức', 'Xuân', 'Thu', 'Minh', 'Thanh', 'Hồng', 'Tuấn'];
+  const staffLastNames = ['An', 'Bình', 'Chấn', 'Dũng', 'Giang', 'Hải', 'Khánh', 'Linh', 'Nam', 'Phúc', 'Quỳnh', 'Sơn', 'Trang', 'Vinh', 'Yến'];
+  const familyNames = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Vũ', 'Đặng', 'Bùi', 'Hoàng', 'Đỗ', 'Phan'];
+  
+  let hash = 0;
+  for (let i = 0; i < orgName.length; i++) {
+    hash = (hash << 5) - hash + orgName.charCodeAt(i);
+    hash |= 0;
+  }
+  
+  const absHash = Math.abs(hash);
+  const leader = leaders[absHash % leaders.length];
+  
+  const staff = [];
+  for (let i = 1; i <= 5; i++) {
+    const fIdx = (absHash + i * 17) % familyNames.length;
+    const mIdx = (absHash + i * 31) % staffFirstNames.length;
+    const lIdx = (absHash + i * 47) % staffLastNames.length;
+    staff.push(`${familyNames[fIdx]} ${staffFirstNames[mIdx]} ${staffLastNames[lIdx]}`);
+  }
+  return { leader, staff };
+};
+
 const getFakeAssigneeArray = (orgsList) => {
-  const names = ['Nguyễn Văn Anh', 'Trần Thị Bích Vân', 'Lê Văn Cường', 'Phạm Văn Dũng', 'Hoàng Thị Mỹ Linh', 'Vũ Văn Hải', 'Đặng Thị Lan Hương', 'Bùi Văn Hùng'];
-  return orgsList.map(org => {
-    let hash = 0;
-    for (let i = 0; i < org.length; i++) hash += org.charCodeAt(i);
-    return names[hash % names.length];
-  });
+  return orgsList.map(org => getOrgPersonnel(org).leader);
 };
 
 const FULL_STEPS = (orgsList) => [
@@ -1333,64 +1305,180 @@ const processCatalog = [
     return html;
   };
 
+  const getAssignedOrgs = () => {
+    if (!state.draft || !state.draft.nodes) return [];
+    const assignStep = state.draft.nodes.find(n => n.status === 'Chờ phân công');
+    return assignStep ? (assignStep.orgs || []) : [];
+  };
+
+  const getDirectiveCreator = (directiveId) => {
+    const creators = JSON.parse(localStorage.getItem('gialai_directives_creators') || '{}');
+    return creators[directiveId] || 'Lãnh đạo Tỉnh';
+  };
+
   const updateStepAssigneeSummary = (step) => {
     const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
     if (!container) return;
     const selectBox = container.querySelector('.select-box');
     if (!selectBox) return;
 
-    if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
-      selectBox.style.backgroundColor = '#ffffff';
-      selectBox.style.cursor = 'not-allowed';
-      selectBox.style.opacity = '1';
-      selectBox.querySelectorAll('.selected-val-label, .tag-summary-container').forEach(el => el.remove());
-      const placeholder = selectBox.querySelector('.placeholder');
-      if (placeholder) {
-        placeholder.style.display = 'inline';
-        placeholder.style.color = 'transparent';
-      }
-      return;
+    const status = step.status;
+    let selected = [];
+    if (status === 'Chờ phân công') {
+      const orgs = step.orgs || [];
+      selected = orgs.map(org => getOrgPersonnel(org).leader);
+    } else if (status === 'Đang xử lý') {
+      const checked = [...container.querySelectorAll('[data-step-assignee]:checked')];
+      selected = checked.map(input => input.value);
+    } else if (status === 'Đã có báo cáo') {
+      const assignedOrgs = getAssignedOrgs();
+      selected = assignedOrgs.map(org => getOrgPersonnel(org).leader);
+    } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
+      selected = [getDirectiveCreator(state.selectedId)];
+    } else {
+      selected = step.assignees || [];
     }
 
-    selectBox.style.backgroundColor = '#f1f5f9';
-    selectBox.style.cursor = 'not-allowed';
-    selectBox.style.opacity = '0.8';
-
-    const selected = step ? (step.assignees || []) : [];
-    updateDropdownSummary(container, selected, true);
+    step.assignees = selected;
+    
+    const isLocked = (status === 'Chờ phân công' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
+    const showAsMulti = (status === 'Chờ phân công' || status === 'Đang xử lý' || status === 'Đã có báo cáo');
+    updateDropdownSummary(container, selected, showAsMulti);
+    
+    if (isLocked) {
+      selectBox.style.backgroundColor = '#f1f5f9';
+      selectBox.style.cursor = 'not-allowed';
+      selectBox.style.opacity = '0.85';
+      selectBox.classList.add('disabled-view');
+      selectBox.setAttribute('title', selected.join('\n'));
+    } else {
+      selectBox.style.backgroundColor = '#ffffff';
+      selectBox.style.cursor = 'pointer';
+      selectBox.style.opacity = '1';
+      selectBox.classList.remove('disabled-view');
+      selectBox.removeAttribute('title');
+    }
   };
 
   const renderStepAssigneeChoices = step => {
     const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
     if (!container) return;
-    const selectedOrgs = step.orgs || (step.org ? [step.org] : []);
-
-    const getFakeAssignee = (org) => {
-      const names = ['Nguyễn Văn Anh', 'Trần Thị Bích Vân', 'Lê Văn Cường', 'Phạm Văn Dũng', 'Hoàng Thị Mỹ Linh', 'Vũ Văn Hải', 'Đặng Thị Lan Hương', 'Bùi Văn Hùng'];
-      let hash = 0;
-      for (let i = 0; i < org.length; i++) hash += org.charCodeAt(i);
-      return names[hash % names.length];
-    };
-    step.assignees = selectedOrgs.map(getFakeAssignee);
-    const availableAssignees = step.assignees;
-
-    const isApproval = step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo';
-
+    
+    const status = step.status;
+    const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
+    
+    let selectedAssignees = [];
+    let isLocked = false;
+    let availableAssignees = [];
+    let grouped = false;
+    
+    if (status === 'Chờ phân công') {
+      const orgs = step.orgs || [];
+      selectedAssignees = orgs.map(org => getOrgPersonnel(org).leader);
+      isLocked = true;
+    } else if (status === 'Đang xử lý') {
+      const assignedOrgs = getAssignedOrgs();
+      assignedOrgs.forEach(org => {
+        const personnel = getOrgPersonnel(org);
+        personnel.staff.forEach(name => {
+          availableAssignees.push({ name, org });
+        });
+      });
+      selectedAssignees = step.assignees || [];
+      isLocked = false;
+      grouped = true;
+    } else if (status === 'Đã có báo cáo') {
+      const assignedOrgs = getAssignedOrgs();
+      selectedAssignees = assignedOrgs.map(org => getOrgPersonnel(org).leader);
+      isLocked = true;
+    } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
+      selectedAssignees = [getDirectiveCreator(state.selectedId)];
+      isLocked = true;
+    } else {
+      selectedAssignees = step.assignees || [];
+      isLocked = isStepFieldsDisabled;
+    }
+    
+    step.assignees = selectedAssignees;
+    
+    let menuContent = '';
+    if (grouped) {
+      const orgGroups = {};
+      availableAssignees.forEach(item => {
+        if (!orgGroups[item.org]) orgGroups[item.org] = [];
+        orgGroups[item.org].push(item.name);
+      });
+      
+      menuContent = `
+        <label class="dropdown-item select-all-item">
+          <input type="checkbox" id="selectAllAssignees" ${availableAssignees.length > 0 && availableAssignees.every(item => selectedAssignees.includes(item.name)) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
+          <span style="font-weight: bold; color: var(--admin-text);">Chọn tất cả</span>
+        </label>
+      `;
+      
+      for (const org in orgGroups) {
+        menuContent += `
+          <div class="dropdown-group-header" style="font-weight: bold; padding: 6px 12px; background: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
+            ${escapeText(org)}
+          </div>
+        `;
+        orgGroups[org].forEach(name => {
+          menuContent += `
+            <label class="dropdown-item" data-search-text="${escapeText(org)} ${escapeText(name)}">
+              <input type="checkbox" data-step-assignee value="${escapeText(name)}" ${selectedAssignees.includes(name) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
+              <span>${escapeText(name)}</span>
+            </label>
+          `;
+        });
+      }
+    } else {
+      menuContent = selectedAssignees.map(user => `
+        <div class="dropdown-item select-only-item">
+          <span>${escapeText(user)}</span>
+        </div>
+      `).join('');
+    }
+    
     container.innerHTML = `
-      <div class="select-box" style="${isApproval ? 'background-color: #ffffff; cursor: not-allowed; opacity: 1;' : 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;'}">
-        <span class="placeholder" style="${isApproval ? 'color: transparent;' : ''}">Chọn người xử lý...</span>
-        <svg class="arrow-icon" viewBox="0 0 24 24" style="${isApproval ? 'display: none;' : ''}"><path d="M7 10l5 5 5-5z"/></svg>
+      <div class="select-box ${isLocked ? 'disabled-view' : ''}" 
+           style="${isLocked ? 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.85;' : ''}"
+           title="${isLocked ? escapeText(selectedAssignees.join('\n')) : ''}">
+        <span class="placeholder" style="${(isLocked && selectedAssignees.length === 0) ? 'color: transparent;' : ''}">Chọn người xử lý...</span>
+        ${!isLocked ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">' : ''}
+        <svg class="arrow-icon" viewBox="0 0 24 24" style="${isLocked ? 'display: none;' : ''}"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
-      <div class="dropdown-menu" style="${isApproval ? 'display: none !important;' : ''}">
-        ${availableAssignees.map(user => `
-          <label class="dropdown-item" style="cursor: not-allowed; opacity: 0.8;">
-            <input type="checkbox" data-step-assignee value="${escapeText(user)}" checked disabled style="cursor: not-allowed;">
-            <span>${escapeText(user)}</span>
-          </label>
-        `).join('')}
+      <div class="dropdown-menu" style="${isLocked ? 'display: none !important;' : ''}">
+        ${menuContent}
       </div>
     `;
+    
     updateStepAssigneeSummary(step);
+    
+    if (!isLocked) {
+      const searchInput = container.querySelector('.dropdown-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const query = searchInput.value.toLowerCase().trim();
+          const items = container.querySelectorAll('.dropdown-menu .dropdown-item:not(.select-all-item)');
+          items.forEach(item => {
+            const searchText = item.dataset.searchText ? item.dataset.searchText.toLowerCase() : item.textContent.toLowerCase();
+            item.style.display = searchText.includes(query) ? 'flex' : 'none';
+          });
+          const groups = container.querySelectorAll('.dropdown-group-header');
+          groups.forEach(group => {
+            let next = group.nextElementSibling;
+            let hasVisible = false;
+            while (next && !next.classList.contains('dropdown-group-header')) {
+              if (next.style.display !== 'none') {
+                hasVisible = true;
+              }
+              next = next.nextElementSibling;
+            }
+            group.style.display = hasVisible ? 'block' : 'none';
+          });
+        });
+      }
+    }
   };
 
   const updateStepStatusSummary = (step) => {
@@ -1422,18 +1510,23 @@ const processCatalog = [
   };
 
   const checkDefaultAssignee = (step) => {
-    const selectedOrgs = step.orgs || [];
-    if (!selectedOrgs.length) {
-      step.assignees = [];
-      return;
+    const status = step.status;
+    if (status === 'Chờ phân công') {
+      const orgs = step.orgs || [];
+      step.assignees = orgs.map(org => getOrgPersonnel(org).leader);
+    } else if (status === 'Đang xử lý') {
+      const assignedOrgs = getAssignedOrgs();
+      const validStaff = new Set();
+      assignedOrgs.forEach(org => {
+        getOrgPersonnel(org).staff.forEach(name => validStaff.add(name));
+      });
+      step.assignees = (step.assignees || []).filter(name => validStaff.has(name));
+    } else if (status === 'Đã có báo cáo') {
+      const assignedOrgs = getAssignedOrgs();
+      step.assignees = assignedOrgs.map(org => getOrgPersonnel(org).leader);
+    } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
+      step.assignees = [getDirectiveCreator(state.selectedId)];
     }
-    const getFakeAssignee = (org) => {
-      const names = ['Nguyễn Văn A', 'Trần Thị B', 'Lê Văn C', 'Phạm Văn D', 'Hoàng Thị E', 'Vũ Văn F', 'Đặng Thị G', 'Bùi Văn H'];
-      let hash = 0;
-      for (let i = 0; i < org.length; i++) hash += org.charCodeAt(i);
-      return names[hash % names.length];
-    };
-    step.assignees = selectedOrgs.map(getFakeAssignee);
   };
 
   const updateStepOrgSummary = (step) => {
@@ -1442,60 +1535,74 @@ const processCatalog = [
     const selectBox = container.querySelector('.select-box');
     if (!selectBox) return;
 
-    if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
-      selectBox.style.backgroundColor = '#ffffff';
-      selectBox.style.cursor = 'not-allowed';
-      selectBox.style.opacity = '1';
-      selectBox.querySelectorAll('.selected-val-label, .tag-summary-container').forEach(el => el.remove());
-      const placeholder = selectBox.querySelector('.placeholder');
-      if (placeholder) {
-        placeholder.style.display = 'inline';
-        placeholder.style.color = 'transparent';
-      }
-      return;
+    const status = step.status;
+    let selected = [];
+    if (status === 'Chờ phân công') {
+      const checkedCheckboxes = [...container.querySelectorAll('.dropdown-menu input.org-item-checkbox:checked')];
+      selected = checkedCheckboxes.map(input => input.value);
+    } else if (status === 'Đang xử lý' || status === 'Đã có báo cáo') {
+      selected = getAssignedOrgs();
+    } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
+      selected = ['Tỉnh Gia Lai'];
+    } else {
+      selected = step.orgs || [];
     }
-
-    const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
-    selectBox.style.backgroundColor = isStepFieldsDisabled ? '#f1f5f9' : '#ffffff';
-    selectBox.style.cursor = isStepFieldsDisabled ? 'not-allowed' : 'pointer';
-    selectBox.style.opacity = isStepFieldsDisabled ? '0.8' : '1';
-
-    const checkedCheckboxes = [...container.querySelectorAll('.dropdown-menu input.org-item-checkbox:checked')];
-    const selected = step.status === 'Chờ phân công'
-      ? checkedCheckboxes.map(input => input.value)
-      : (step.orgs || []);
 
     step.orgs = selected;
     step.org = selected.join(', ');
 
-    updateDropdownSummary(container, selected, step.status === 'Chờ phân công');
+    const isLocked = (status === 'Đang xử lý' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
+    updateDropdownSummary(container, selected, status === 'Chờ phân công');
+    
+    if (isLocked) {
+      selectBox.style.backgroundColor = '#f1f5f9';
+      selectBox.style.cursor = 'not-allowed';
+      selectBox.style.opacity = '0.85';
+      selectBox.classList.add('disabled-view');
+      selectBox.setAttribute('title', selected.join('\n'));
+    } else {
+      const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
+      selectBox.style.backgroundColor = isStepFieldsDisabled ? '#f1f5f9' : '#ffffff';
+      selectBox.style.cursor = isStepFieldsDisabled ? 'not-allowed' : 'pointer';
+      selectBox.style.opacity = isStepFieldsDisabled ? '0.8' : '1';
+      selectBox.classList.remove('disabled-view');
+      selectBox.removeAttribute('title');
+    }
   };
 
   const renderStepOrgChoices = step => {
     const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
     if (!container) return;
-    const selectedOrgs = step.orgs || (step.org ? [step.org] : []);
+    
+    const status = step.status;
     const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
-
-    const isApproval = step.status === 'Phê duyệt' || step.status === 'Phê duyệt báo cáo';
-    const isMulti = step.status === 'Chờ phân công';
-
-    if (isApproval) {
-      container.innerHTML = `
-        <div class="select-box" style="background-color: #ffffff; cursor: not-allowed; opacity: 1;">
-          <span class="placeholder" style="color: transparent;">Chọn cơ quan...</span>
-          <svg class="arrow-icon" viewBox="0 0 24 24" style="display: none;"><path d="M7 10l5 5 5-5z"/></svg>
-        </div>
-        <div class="dropdown-menu" style="display: none !important;"></div>
-      `;
-      updateStepOrgSummary(step);
-      return;
+    
+    let selectedOrgs = [];
+    let isLocked = false;
+    
+    if (status === 'Chờ phân công') {
+      selectedOrgs = step.orgs || [];
+      isLocked = false;
+    } else if (status === 'Đang xử lý' || status === 'Đã có báo cáo') {
+      selectedOrgs = getAssignedOrgs();
+      isLocked = true;
+    } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
+      selectedOrgs = ['Tỉnh Gia Lai'];
+      isLocked = true;
+    } else {
+      selectedOrgs = step.orgs || [];
+      isLocked = isStepFieldsDisabled;
     }
+    
+    step.orgs = selectedOrgs;
+    step.org = selectedOrgs.join(', ');
+    
+
 
     const isAllSelected = orgList.length > 0 && orgList.every(org => selectedOrgs.includes(org));
-
+    
     let menuContent = '';
-    if (isMulti) {
+    if (status === 'Chờ phân công') {
       menuContent = `
         <label class="dropdown-item select-all-item">
           <input type="checkbox" id="selectAllOrgs" ${isAllSelected ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
@@ -1509,25 +1616,30 @@ const processCatalog = [
         `).join('')}
       `;
     } else {
-      menuContent = orgList.map(org => `
-        <div class="dropdown-item" data-step-org-val="${escapeText(org)}">
+      menuContent = selectedOrgs.map(org => `
+        <div class="dropdown-item select-only-item">
           <span>${escapeText(org)}</span>
         </div>
       `).join('');
     }
-
+    
     container.innerHTML = `
-      <div class="select-box" ${isStepFieldsDisabled ? 'style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;"' : ''}>
-        <span class="placeholder">Chọn cơ quan...</span>
-        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
-        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      <div class="select-box ${isLocked ? 'disabled-view' : ''}" 
+           style="${isLocked ? 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.85;' : ''}"
+           title="${isLocked ? escapeText(selectedOrgs.join('\n')) : ''}">
+        <span class="placeholder" style="${(isLocked && selectedOrgs.length === 0) ? 'color: transparent;' : ''}">Chọn cơ quan...</span>
+        ${!isLocked ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">' : ''}
+        <svg class="arrow-icon" viewBox="0 0 24 24" style="${isLocked ? 'display: none;' : ''}"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
-      <div class="dropdown-menu">
+      <div class="dropdown-menu" style="${isLocked ? 'display: none !important;' : ''}">
         ${menuContent}
       </div>
     `;
+    
     updateStepOrgSummary(step);
-    bindAutoComplete(container);
+    if (!isLocked) {
+      bindAutoComplete(container);
+    }
   };
   const getActionName = (stepId, targetNodeId) => {
     if (targetNodeId === 'end') return 'Chuyển xử lý';
@@ -1604,7 +1716,11 @@ const processCatalog = [
     let isValid = true;
     const step = state.draft?.nodes.find(item => item.id === state.selectedStepId);
     if (!step) return;
-    const assignees = [...elements.nodeForm.querySelectorAll('[data-step-assignee]:checked')].map(input => input.value);
+    const status = step.status;
+    const isAssigneeLocked = (status === 'Chờ phân công' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
+    const assignees = isAssigneeLocked 
+      ? (step.assignees || []) 
+      : [...elements.nodeForm.querySelectorAll('[data-step-assignee]:checked')].map(input => input.value);
     const unitNameInput = elements.nodeForm.querySelector('[data-step-field="unitName"]');
     const statusContainer = elements.nodeForm.querySelector('.process-step-status-dropdown');
     const orgContainer = elements.nodeForm.querySelector('.process-step-org-dropdown');
@@ -2780,6 +2896,22 @@ const directiveState = {
 
 /* ---------------- Xử lý chỉ đạo: UI ---------------- */
 (() => {
+  const syncDirectivesFromStorage = () => {
+    let storageDirectives = JSON.parse(localStorage.getItem('gialai_directives') || '[]');
+    let creators = JSON.parse(localStorage.getItem('gialai_directives_creators') || '{}');
+    let updated = false;
+    storageDirectives.forEach(dir => {
+      if (!creators[dir.id]) {
+        creators[dir.id] = dir.source || 'Lãnh đạo Tỉnh';
+        updated = true;
+      }
+    });
+    if (updated) {
+      localStorage.setItem('gialai_directives_creators', JSON.stringify(creators));
+    }
+  };
+  syncDirectivesFromStorage();
+
   const state = directiveState;
   const elements = {
     role: document.getElementById('roleSelect'), search: document.getElementById('directiveSearch'),
