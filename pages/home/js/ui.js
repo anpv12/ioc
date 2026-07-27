@@ -58,6 +58,7 @@
   }
 
   var defaultRoute = pickDefaultRoute();
+  var defaultLink = null;
   var frag = document.createDocumentFragment();
 
   routes.forEach(function (route) {
@@ -84,11 +85,15 @@
     frag.appendChild(a);
 
     if (defaultRoute && route.folder === defaultRoute.folder) {
-      setActive(route, a);
+      defaultLink = a;
     }
   });
 
   nav.appendChild(frag);
+
+  if (defaultRoute && defaultLink) {
+    setActive(defaultRoute, defaultLink);
+  }
 
   if (collapseBtn) {
     collapseBtn.addEventListener('click', function () {
