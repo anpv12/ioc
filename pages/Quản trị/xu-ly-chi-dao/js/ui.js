@@ -13,6 +13,7 @@
     countActive:   () => document.getElementById('countActive'),
     countDone:     () => document.getElementById('countDone'),
     search:        () => document.getElementById('directiveSearch'),
+    timeConditionFilter: () => document.getElementById('timeConditionFilterSelect'),
     statusFilter:  () => document.getElementById('statusFilterSelect'),
     deadlineRange: () => document.getElementById('deadlineRange'),
     clearDeadline: () => document.getElementById('clearDeadlineRange'),
@@ -141,7 +142,8 @@
       const dl = deadlineDate(item);
       const matchDl = !selDate || (dl && dl.toDateString() === selDate.toDateString());
 
-      const matchTc = !tcF || deadlineCondition(item) === tcF;
+      const cond = deadlineCondition(item);
+      const matchTc = !tcF || (tcF === 'overdue' ? cond === 'overdue' : cond !== 'overdue');
 
       return matchSearch && matchStatus && matchDl && matchTc;
     });
@@ -690,6 +692,13 @@
       render();
     });
 
+    // Time condition filter (Còn hạn / Trễ hạn)
+    el.timeConditionFilter()?.addEventListener('change', () => {
+      state.filters.timeCondition = el.timeConditionFilter().value;
+      state.page = 1;
+      render();
+    });
+
     // Status filter
     el.statusFilter().addEventListener('change', () => {
       state.filters.status = el.statusFilter().value;
@@ -710,6 +719,7 @@
     el.resetFilters().addEventListener('click', () => {
       state.filters = { search: '', status: '', deadlineDate: null, timeCondition: '' };
       el.search().value = '';
+      if (el.timeConditionFilter()) el.timeConditionFilter().value = '';
       el.statusFilter().value = '';
       el.deadlineRange().value = '';
       el.clearDeadline().hidden = true;
