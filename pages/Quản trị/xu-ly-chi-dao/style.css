@@ -147,8 +147,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
-  min-width: 280px;
+  flex: 0 1 auto;
 }
 
 .filter-bar-right {
@@ -162,8 +161,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
-  min-width: 200px;
+  width: 280px;
   height: var(--admin-control-height);
   padding: 0 10px;
   border: 1px solid var(--admin-control-line);
