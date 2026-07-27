@@ -308,12 +308,12 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.col-stt {
+.directive-table .col-stt {
   width: 50px;
   text-align: center;
 }
 
-.col-title {
+.directive-table .col-title {
   width: 39%;
   max-width: 0;
   white-space: nowrap;
@@ -321,31 +321,31 @@
   text-overflow: ellipsis;
 }
 
-.col-groups {
+.directive-table .col-groups {
   width: 12%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.col-date {
+.directive-table .col-date {
   width: 13%;
   text-align: center;
   white-space: nowrap;
 }
 
-.col-deadline {
+.directive-table .col-deadline {
   width: 14%;
   text-align: center;
   white-space: nowrap;
 }
 
-.col-status {
+.directive-table .col-status {
   width: 14%;
   text-align: center;
 }
 
-.col-act {
+.directive-table .col-act {
   width: 70px;
   text-align: center;
 }
