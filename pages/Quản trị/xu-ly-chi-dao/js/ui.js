@@ -752,11 +752,14 @@
     el.closeTime().addEventListener('click', () => { el.timePopover().hidden = true; });
 
     // Close image viewer
-    el.closeImage()?.addEventListener('click', () => { el.imageOverlay().hidden = true; });
+    const closeImgBtn = document.getElementById('closeImageViewer');
+    if (closeImgBtn) closeImgBtn.addEventListener('click', () => { el.imageOverlay().hidden = true; });
+    const imgOverlay = el.imageOverlay();
+    if (imgOverlay) imgOverlay.addEventListener('click', e => { if (e.target === imgOverlay) imgOverlay.hidden = true; });
 
     // Deadline flatpickr
     flatpickr(el.deadlineRange(), {
-      mode: 'range', dateFormat: 'd/m/Y', locale: 'vn',
+      mode: 'range', dateFormat: 'd/m/Y',
       onChange: dates => {
         state.filters.deadlineRange = dates.length === 2
           ? [dates[0], dates[1]] : [];

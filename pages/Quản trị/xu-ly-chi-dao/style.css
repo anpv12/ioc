@@ -3,6 +3,9 @@
    Shared base: admin-base.css
    =================================================================== */
 
+/* Fix: đảm bảo [hidden] luôn ẩn dù có display:flex/grid từ class */
+[hidden] { display: none !important; }
+
 /* ── 1. Header: role bar + tab bar ──────────────────────────────── */
 .xld-header {
   display: flex;
