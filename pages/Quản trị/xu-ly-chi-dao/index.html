@@ -1,6 +1,5 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,8 +16,9 @@
 
 <body>
   <div class="app">
-    <!-- ================= MAIN ================= -->
+    <!-- MAIN — sidebar được inject bởi loadSharedLayout() -->
     <div class="main">
+      <!-- TOPBAR -->
       <div class="topbar">
         <div class="brand">
           <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
@@ -27,20 +27,20 @@
           <div class="logo-box">
             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <clipPath id="logoClip2"><circle cx="50" cy="50" r="43"/></clipPath>
-                <clipPath id="bandClip2"><rect x="0" y="73" width="100" height="27"/></clipPath>
+                <clipPath id="lc"><circle cx="50" cy="50" r="43"/></clipPath>
+                <clipPath id="bc"><rect x="0" y="73" width="100" height="27"/></clipPath>
               </defs>
               <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
               <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4"/>
               <circle cx="50" cy="50" r="43" fill="#ffffff"/>
-              <g clip-path="url(#logoClip2)">
+              <g clip-path="url(#lc)">
                 <polygon points="10,66 34,26 55,66" fill="#1c6031"/>
                 <polygon points="45,66 66,26 92,66" fill="#1c6031"/>
                 <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2"/>
                 <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2"/>
                 <path d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z" fill="#ee522d"/>
                 <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6"/>
-                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip2)"/>
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bc)"/>
                 <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
                 <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
               </g>
@@ -63,6 +63,7 @@
         </div>
       </div>
 
+      <!-- BREADCRUMB -->
       <div class="breadcrumb-row">
         <div class="page-title" id="pageTitle">Xử lý chỉ đạo</div>
         <div class="breadcrumb">
@@ -72,141 +73,128 @@
         </div>
       </div>
 
+      <!-- CONTENT -->
       <div class="content">
 
-        <div class="directive-view-heading">
-          <label class="role-switcher">Đơn vị mô phỏng
-            <select id="roleSelect">
-              <option value="leader">Sở</option>
-              <option value="department">Phòng</option>
-              <option value="individual">Cá nhân</option>
+        <!-- Role selector + Tab bar -->
+        <div class="xld-header">
+          <div class="role-bar">
+            <label class="role-label">Vai trò mô phỏng</label>
+            <select id="roleSelect" class="role-select">
+              <option value="leader">Lãnh đạo Sở</option>
+              <option value="department">Trưởng phòng</option>
+              <option value="individual">Chuyên viên</option>
             </select>
-          </label>
+          </div>
+          <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" id="tabActive" data-tab="active" type="button">
+              <i class="fa-solid fa-spinner"></i>
+              Đang xử lý
+              <span class="tab-count" id="countActive">0</span>
+            </button>
+            <button class="tab-btn" id="tabDone" data-tab="done" type="button">
+              <i class="fa-solid fa-circle-check"></i>
+              Đã xử lý
+              <span class="tab-count" id="countDone">0</span>
+            </button>
+          </div>
         </div>
 
-        <section class="directive-card directive-list-card" aria-label="Danh sách xử lý chỉ đạo">
-          <!-- THANH CÔNG CỤ -->
-          <div class="top-bar">
-            <div class="left-tools">
-              <div class="search-input-wrapper">
-                <svg viewBox="0 0 24 24">
-                  <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-                <input type="text" class="search-input" id="directiveSearch" placeholder="Tìm kiếm chỉ đạo...">
-              </div>
-              <button class="btn-icon btn-filter" id="directiveFilterToggle" type="button" title="Bộ lọc" aria-expanded="false" aria-controls="directiveFilterPanel">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
-              </button>
-              <button class="btn-icon btn-search" id="directiveSearchButton" type="button" title="Tìm kiếm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-              </button>
-              <button class="btn-icon btn-reset" id="resetFilters" type="button" title="Làm mới">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-              </button>
+        <!-- Filter bar -->
+        <div class="filter-bar" id="filterBar">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" id="directiveSearch" placeholder="Tìm kiếm mã, nội dung chỉ đạo...">
+          </div>
+          <select id="statusFilterSelect" class="filter-select">
+            <option value="">-- Tất cả trạng thái --</option>
+            <option value="waitingAssign">Chờ phân công</option>
+            <option value="processing">Đang xử lý</option>
+            <option value="reported">Đã có báo cáo</option>
+            <option value="waitingApproval">Chờ phê duyệt</option>
+            <option value="completed">Đã kết thúc</option>
+          </select>
+          <div class="deadline-wrap">
+            <i class="fa-regular fa-calendar"></i>
+            <input id="deadlineRange" type="text" placeholder="Hạn xử lý..." readonly class="filter-date-input">
+            <button id="clearDeadlineRange" type="button" class="clear-date-btn" hidden aria-label="Xóa hạn">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <button id="resetFilters" type="button" class="btn-reset-filter" title="Làm mới bộ lọc">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+
+        <!-- Table section -->
+        <section class="directive-card" aria-label="Danh sách chỉ đạo">
+          <div class="directive-table-wrap">
+            <table class="directive-table">
+              <thead>
+                <tr>
+                  <th class="center col-stt">STT</th>
+                  <th class="col-id">Mã chỉ đạo</th>
+                  <th class="col-title">Nội dung chỉ đạo</th>
+                  <th class="col-groups">Nhóm dữ liệu</th>
+                  <th class="col-date">Ngày ban hành</th>
+                  <th class="col-deadline">Hạn xử lý</th>
+                  <th class="col-status">Trạng thái</th>
+                  <th class="col-act">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="directiveTableBody"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState" hidden>
+              <i class="fa-regular fa-folder-open"></i>
+              <p>Không có chỉ đạo nào trong tab này</p>
             </div>
           </div>
-
-          <!-- BỘ LỌC -->
-          <div class="filter-panel" id="directiveFilterPanel">
-            <div class="filter-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
-              <div class="filter-item">
-                <label for="statusFilterSelect">Trạng thái</label>
-                <select id="statusFilterSelect">
-                  <option value="">-- Tất cả --</option>
-                  <option value="needsHandling">Cần phân công</option>
-                  <option value="processing">Đang xử lý</option>
-                  <option value="waitingApproval">Chờ duyệt</option>
-                  <option value="needsApproval">Cần duyệt</option>
-                  <option value="completed">Đã hoàn thành</option>
-                </select>
-              </div>
-              <div class="filter-item">
-                <label for="deadlineRange">Hạn xử lý</label>
-                <div class="compact-filter-field" style="border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; height: 38px; display: flex; align-items: center; padding: 0 10px; position: relative;">
-                  <i class="fa-regular fa-calendar" style="color: #64748b; margin-right: 8px;"></i>
-                  <input id="deadlineRange" type="text" placeholder="Chọn khoảng ngày" style="border: none !important; outline: none !important; font-size: 13px; width: 100%; height: 100%; background: transparent; cursor: pointer;" readonly>
-                  <button class="compact-filter-clear" id="clearDeadlineRange" type="button" aria-label="Xóa khoảng hạn xử lý" hidden style="border: none; background: none; color: #94a3b8; cursor: pointer; position: absolute; right: 10px;"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-              </div>
-              <div class="filter-item">
-                <label for="timeCondition">Tình trạng</label>
-                <select id="timeCondition">
-                  <option value="">-- Tất cả --</option>
-                  <option value="available">Còn hạn</option>
-                  <option value="warning">Sắp đến hạn</option>
-                  <option value="overdue">Trễ hạn</option>
-                </select>
-              </div>
+          <div class="pagination-row">
+            <div class="pg-left">
+              <select class="page-size-select" id="directivePageSize">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+              <span class="pg-info" id="directivePageInfo"></span>
             </div>
+            <div class="pg-btns" id="directivePageButtons"></div>
           </div>
-
-          <!-- TABLE VIEW -->
-          <div id="tableView">
-            <div class="directive-table-wrap">
-              <table class="directive-table">
-                <thead>
-                  <tr>
-                    <th class="center" style="width: 50px;">STT</th>
-                    <th>Mã chỉ đạo</th>
-                    <th>Nội dung chỉ đạo</th>
-                    <th>Ngày ban hành</th>
-                    <th>Hạn xử lý</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody id="directiveTableBody"></tbody>
-              </table>
-              <div class="empty-state" id="emptyState" hidden>
-                <i class="fa-regular fa-folder-open"></i>
-                <p>Không tìm thấy chỉ đạo phù hợp</p>
-              </div>
-            </div>
-            <div class="pagination-row">
-              <div class="pg-left">
-                <select class="page-size-select" id="directivePageSize">
-                  <option value="5">5</option>
-                  <option value="10" selected>10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                </select>
-                <span class="pg-info" id="directivePageInfo"></span>
-              </div>
-              <div class="pg-btns" id="directivePageButtons"></div>
-            </div>
-          </div>
-
         </section>
 
-        <!-- Detail Overlay -->
+        <!-- ===================== DETAIL OVERLAY ===================== -->
         <div class="detail-overlay" id="detailOverlay" hidden>
           <section class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+
+            <!-- Detail header -->
             <div class="detail-header">
               <div class="pe-header-left">
-                <span class="eyebrow">Chi tiết chỉ đạo > </span>
-                <i id="detailTitle"></i>
+                <span class="eyebrow">Chi tiết chỉ đạo › </span>
+                <span id="detailTitle" class="detail-title-text"></span>
+                <span id="detailStatusBadge" class="detail-status-badge"></span>
               </div>
-              <div class="pe-header-actions" style="display: flex; align-items: center; gap: 10px;">
+              <div class="pe-header-actions">
                 <button class="pe-btn pe-btn-back" id="closeDetail" type="button">
                   <i class="fa-solid fa-arrow-left"></i> Trở về
                 </button>
-                <div id="detailActions" style="display: inline-flex; gap: 8px;"></div>
               </div>
             </div>
-            <div class="detail-body" id="detailBody"></div>
-          </section>
-        </div>
 
-        <!-- History Event Dialog -->
-        <div class="event-detail-overlay" id="historyEventOverlay" hidden>
-          <section class="event-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="historyEventTitle">
-            <div class="detail-header">
-              <h2 id="historyEventTitle">Chi tiết lịch sử</h2>
-              <button class="directive-icon-button" id="closeHistoryEvent" type="button" aria-label="Đóng chi tiết lịch sử">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <div class="event-detail-body" id="historyEventBody"></div>
+            <!-- Detail body — 2 cột -->
+            <div class="detail-cols" id="detailBody">
+
+              <!-- CỘT TRÁI: thông tin + báo cáo -->
+              <div class="detail-left" id="detailLeft">
+                <!-- render bởi JS -->
+              </div>
+
+              <!-- CỘT PHẢI: UML + assignees + actions -->
+              <div class="detail-right" id="detailRight">
+                <!-- render bởi JS -->
+              </div>
+
+            </div><!-- /.detail-cols -->
           </section>
         </div>
 
@@ -238,7 +226,6 @@
         </div>
       </div>
     </div><!-- /.main -->
-
   </div><!-- /.app -->
 
   <!-- Shared: Confirm Dialog -->
@@ -257,9 +244,9 @@
 
   <!-- Shared: Image Viewer -->
   <div id="imageViewerOverlay" class="custom-confirm-overlay" hidden>
-    <div class="custom-image-box" style="background-color: #ffffff; border-radius: 12px; max-width: 90%; max-height: 90%; padding: 24px; position: relative; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
-      <button type="button" id="closeImageViewer" style="position: absolute; top: -12px; right: -12px; width: 32px; height: 32px; border-radius: 50%; background: #ef4444; color: white; border: none; font-size: 18px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-weight: bold;">&times;</button>
-      <img id="viewerImage" src="" alt="Hình ảnh đính kèm" style="max-width: 100%; max-height: 75vh; border-radius: 6px; object-fit: contain;">
+    <div class="custom-image-box">
+      <button type="button" id="closeImageViewer" class="image-close-btn">&times;</button>
+      <img id="viewerImage" src="" alt="Hình ảnh đính kèm">
     </div>
   </div>
 
@@ -267,7 +254,7 @@
   <div class="notifications-container">
     <div id="toast" class="success">
       <p id="toast-title" class="success-prompt-heading">Thành công</p>
-      <div id="toast-message" class="success-prompt-prompt">Thao tác đã hoàn tất thành công.</div>
+      <div id="toast-message" class="success-prompt-prompt">Thao tác đã hoàn tất.</div>
     </div>
   </div>
 
@@ -277,5 +264,4 @@
   <script src="js/data.js"></script>
   <script src="js/ui.js"></script>
 </body>
-
 </html>
