@@ -435,22 +435,24 @@
 }
 
 /* Deadline cell */
-.deadline-cell {
-  display: flex;
+.deadline-tag {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.deadline-cell .overdue {
-  color: #dc2626;
-  font-weight: 600;
+.deadline-tag i {
+  font-size: 13px;
 }
 
-.deadline-cell .warning,
-.deadline-cell .normal,
-.deadline-cell .available {
+.deadline-tag.in-time {
   color: #16a34a;
-  font-weight: 600;
+}
+
+.deadline-tag.overdue {
+  color: #dc2626;
 }
 
 /* SLA clock button */
