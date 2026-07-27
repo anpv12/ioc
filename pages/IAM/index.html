@@ -33,9 +33,34 @@
         <div class="brand">
           <div class="logo-box">
             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
-              <circle cx="50" cy="50" r="43" fill="#ffffff"/>
-              <text x="50" y="58" text-anchor="middle" fill="#ee522d" font-size="28" font-weight="900" font-family="Arial">IAM</text>
+              <defs>
+                <clipPath id="logoClipIAM">
+                  <circle cx="50" cy="50" r="43" />
+                </clipPath>
+                <clipPath id="bandClipIAM">
+                  <rect x="0" y="73" width="100" height="27" />
+                </clipPath>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2" />
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4" />
+              <circle cx="50" cy="50" r="43" fill="#ffffff" />
+              <g clip-path="url(#logoClipIAM)">
+                <polygon points="10,66 34,26 55,66" fill="#1c6031" />
+                <polygon points="45,66 66,26 92,66" fill="#1c6031" />
+                <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2" />
+                <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2" />
+                <path
+                  d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z"
+                  fill="#ee522d" />
+                <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6" />
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClipIAM)" />
+                <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+                  stroke-linecap="round" />
+                <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+                  stroke-linecap="round" />
+              </g>
+              <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700"
+                letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
             </svg>
           </div>
           <div class="brand-text">
