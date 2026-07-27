@@ -134,12 +134,28 @@
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 16px;
   padding: 14px 16px;
   margin-bottom: 0;
   border-bottom: 1px solid var(--admin-line, #e2e8f0);
   flex-wrap: wrap;
   background: #f8fafc;
+}
+
+.filter-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.filter-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .filter-bar .search-input-wrapper {

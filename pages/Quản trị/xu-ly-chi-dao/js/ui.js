@@ -685,6 +685,12 @@
       render();
     });
 
+    document.getElementById('directiveSearchBtn')?.addEventListener('click', () => {
+      state.filters.search = el.search().value;
+      state.page = 1;
+      render();
+    });
+
     // Status filter
     el.statusFilter().addEventListener('change', () => {
       state.filters.status = el.statusFilter().value;
