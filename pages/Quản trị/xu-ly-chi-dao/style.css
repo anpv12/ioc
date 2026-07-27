@@ -8,12 +8,11 @@
   display: none !important;
 }
 
-/* ── 1. Header: role bar + tab bar ──────────────────────────────── */
+/* ── 1. Header & Connected Tabs ─────────────────────────────────── */
 .xld-header {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 0;
 }
 
 /* Floating Mock Role Switcher at bottom-left corner */
@@ -57,44 +56,47 @@
   border-color: #2563eb;
 }
 
-/* Tab bar — Standard Tab Navigation */
+/* Tab bar — Connected Folder Tabs */
 .tab-bar {
   display: flex;
-  gap: 28px;
+  gap: 4px;
   background: transparent;
   border: none;
   border-radius: 0;
   padding: 0;
-  margin-bottom: -2px;
+  position: relative;
+  z-index: 2;
 }
 
 .tab-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 4px;
-  border: none;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  background: transparent;
+  padding: 9px 20px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: #f1f5f9;
   color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
 }
 
 .tab-btn:hover {
+  background: #e2e8f0;
   color: var(--admin-text);
-  border-bottom-color: #cbd5e1;
 }
 
 .tab-btn.active {
-  background: transparent;
+  background: var(--admin-surface, #ffffff);
   color: var(--admin-primary);
-  border-bottom: 2px solid var(--admin-primary);
-  box-shadow: none;
+  border-color: var(--admin-line, #e2e8f0);
+  border-bottom: 1px solid var(--admin-surface, #ffffff);
+  margin-bottom: -1px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .tab-count {
@@ -105,25 +107,39 @@
   height: 20px;
   padding: 0 6px;
   border-radius: 10px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: #cbd5e1;
+  color: #334155;
   font-size: 11px;
   font-weight: 700;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
 }
 
 .tab-btn.active .tab-count {
-  background: #e0f2fe;
-  color: var(--admin-primary);
+  background: var(--admin-primary);
+  color: #ffffff;
 }
 
-/* ── 2. Filter bar ───────────────────────────────────────────────── */
+/* ── 2. Single Unified Card Frame ────────────────────────────────── */
+.directive-card {
+  background: var(--admin-surface, #ffffff);
+  border: 1px solid var(--admin-line, #e2e8f0);
+  border-radius: 0 8px 8px 8px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Filter bar inside unified card */
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--admin-line, #e2e8f0);
   flex-wrap: wrap;
+  background: #f8fafc;
 }
 
 .filter-bar .search-input-wrapper {
@@ -225,12 +241,7 @@
 }
 
 /* ── 3. Table ────────────────────────────────────────────────────── */
-.directive-card {
-  background: var(--admin-surface);
-  border: 1px solid var(--admin-line);
-  border-radius: var(--admin-radius-lg);
-  overflow: hidden;
-}
+
 
 .directive-table-wrap {
   overflow-x: auto;

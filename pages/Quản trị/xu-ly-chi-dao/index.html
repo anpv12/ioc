@@ -94,34 +94,35 @@
             </div>
           </div>
 
-          <!-- Filter bar -->
-          <div class="filter-bar" id="filterBar">
-            <div class="search-input-wrapper">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" class="search-input" id="directiveSearch" placeholder="Tìm kiếm mã, nội dung chỉ đạo...">
-            </div>
-            <select id="statusFilterSelect" class="filter-select">
-              <option value="">-- Tất cả trạng thái --</option>
-              <option value="waitingAssign">Chờ phân công</option>
-              <option value="processing">Đang xử lý</option>
-              <option value="reported">Đã có báo cáo</option>
-              <option value="waitingApproval">Chờ phê duyệt</option>
-              <option value="completed">Đã kết thúc</option>
-            </select>
-            <div class="deadline-wrap">
-              <i class="fa-regular fa-calendar"></i>
-              <input id="deadlineRange" type="text" placeholder="Hạn xử lý..." readonly class="filter-date-input">
-              <button id="clearDeadlineRange" type="button" class="clear-date-btn" hidden aria-label="Xóa hạn">
-                <i class="fa-solid fa-xmark"></i>
+          <!-- Unified Directive Card Frame (Filter + Table + Pagination) -->
+          <section class="directive-card" aria-label="Danh sách chỉ đạo">
+            <!-- Filter bar inside card -->
+            <div class="filter-bar" id="filterBar">
+              <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="search-input" id="directiveSearch" placeholder="Tìm kiếm mã, nội dung chỉ đạo...">
+              </div>
+              <select id="statusFilterSelect" class="filter-select">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="waitingAssign">Chờ phân công</option>
+                <option value="processing">Đang xử lý</option>
+                <option value="reported">Đã có báo cáo</option>
+                <option value="waitingApproval">Chờ phê duyệt</option>
+                <option value="completed">Đã kết thúc</option>
+              </select>
+              <div class="deadline-wrap">
+                <i class="fa-regular fa-calendar"></i>
+                <input id="deadlineRange" type="text" placeholder="Hạn xử lý..." readonly class="filter-date-input">
+                <button id="clearDeadlineRange" type="button" class="clear-date-btn" hidden aria-label="Xóa hạn">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <button id="resetFilters" type="button" class="btn-reset-filter" title="Làm mới bộ lọc">
+                <i class="fa-solid fa-rotate-left"></i>
               </button>
             </div>
-            <button id="resetFilters" type="button" class="btn-reset-filter" title="Làm mới bộ lọc">
-              <i class="fa-solid fa-rotate-left"></i>
-            </button>
-          </div>
 
-          <!-- Table section -->
-          <section class="directive-card" aria-label="Danh sách chỉ đạo">
+            <!-- Table section -->
             <div class="directive-table-wrap">
               <table class="directive-table">
                 <thead>
@@ -143,6 +144,8 @@
                 <p>Không có chỉ đạo nào trong tab này</p>
               </div>
             </div>
+
+            <!-- Pagination -->
             <div class="pagination-row">
               <div class="pg-left">
                 <select class="page-size-select" id="directivePageSize">
