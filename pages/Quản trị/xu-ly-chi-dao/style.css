@@ -971,7 +971,7 @@
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-.custom-confirm-header h3 { font-size: 16px; font-weight: 700; margin: 0 0 8px; color: var(--admin-text); }
+.custom-confirm-header h3 { font-size: 16px; font-weight: 700; margin: 0 0 8px; color: var(--admin-text); text-align: center; }
 .custom-confirm-header p  { font-size: 13px; color: var(--admin-muted); margin: 0; line-height: 1.5; }
 
 .custom-confirm-footer {
