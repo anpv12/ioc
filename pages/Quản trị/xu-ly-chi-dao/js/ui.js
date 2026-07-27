@@ -285,7 +285,7 @@
     return `
       <!-- Thông tin chỉ đạo -->
       <div class="info-block">
-        <div class="info-block-header"><i class="fa-solid fa-file-lines"></i> Thông tin chỉ đạo</div>
+        <div class="info-block-header">Thông tin chỉ đạo</div>
         <div class="info-block-body">
           <div class="info-row">
             <span class="info-label">Nội dung</span>
@@ -336,7 +336,7 @@
       <!-- Báo cáo từ cấp dưới -->
       ${['leader','department'].includes(state.role) ? `
       <div class="info-block">
-        <div class="info-block-header"><i class="fa-solid fa-file-circle-check"></i> Báo cáo từ cấp dưới</div>
+        <div class="info-block-header">Báo cáo từ cấp dưới</div>
         <div class="info-block-body">
           <div class="sub-reports-list">${subReportsHtml}</div>
         </div>
@@ -345,7 +345,7 @@
       <!-- Ghi chú Sở (option) -->
       ${['leader','department'].includes(state.role) && status !== 'completed' ? `
       <div class="notes-input-block info-block">
-        <div class="info-block-header"><i class="fa-solid fa-note-sticky"></i> Ghi chú thêm của đơn vị (tuỳ chọn)</div>
+        <div class="info-block-header">Ghi chú thêm của đơn vị (tuỳ chọn)</div>
         <div class="info-block-body">
           <textarea id="notesInput" class="action-textarea" placeholder="Nhập ghi chú bổ sung..." rows="3"
           >${escHtml(node?.notes||'')}</textarea>
