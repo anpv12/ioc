@@ -119,6 +119,51 @@
 
   </div>
 
+  <!-- MODAL: Thiết lập cơ quan -->
+  <div class="modal-overlay" id="agencyModalOverlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Thiết lập cơ quan</div>
+        <button class="modal-close" id="agencyModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Tên cơ quan</label>
+          <input type="text" class="form-input" id="agencyNameInput" placeholder="Nhập tên cơ quan">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Địa chỉ</label>
+          <input type="text" class="form-input" id="agencyAddressInput" placeholder="Nhập địa chỉ">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Người phụ trách</label>
+          <div class="combo-select" id="agencyManagerCombo">
+            <input type="text" class="form-input" id="agencyManagerSearch" placeholder="Nhập tên cơ quan và địa chỉ trước" autocomplete="off" disabled>
+            <input type="hidden" id="agencyManagerIdInput">
+            <div class="combo-dropdown" id="agencyManagerDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group form-group-row">
+          <label class="form-label">Hoạt động</label>
+          <label class="switch" style="position:relative;display:inline-block;width:34px;height:18px;margin:0;">
+            <input type="checkbox" id="agencyActiveInput">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-reset" id="agencyCancelBtn">Hủy</button>
+        <button class="btn-primary" id="agencySaveBtn">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST: Thông báo -->
+  <div class="toast" id="appToast">
+    <i class="fa-solid fa-circle-check" id="appToastIcon"></i>
+    <span id="appToastMsg"></span>
+  </div>
+
   <script src="js/ui.js"></script>
 </body>
 
