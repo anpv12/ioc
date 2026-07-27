@@ -1875,11 +1875,12 @@ tbody tr:last-child td {
 .custom-confirm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 400;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(2px);
 }
 .custom-confirm-overlay[hidden] { display: none !important; }
 
@@ -1893,7 +1894,7 @@ tbody tr:last-child td {
 }
 
 .custom-confirm-header h3 {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 8px;
@@ -1910,6 +1911,7 @@ tbody tr:last-child td {
   display: flex;
   justify-content: center;
   gap: 10px;
+  margin-top: 16px;
 }
 
 .confirm-btn-cancel,
