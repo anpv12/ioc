@@ -193,7 +193,6 @@
 
       return `<tr>
         <td class="center col-stt">${start + idx + 1}</td>
-        <td class="col-id">${escHtml(item.id)}</td>
         <td class="col-title">
           <span class="dir-title-main">${escHtml(item.title)}</span>
         </td>
