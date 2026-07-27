@@ -13,7 +13,7 @@ async function loadSharedLayout(activeNavId, pageTitle) {
   if (!app) return;
 
   try {
-    const res = await fetch(new URL('../shared/layout.html', import.meta ? import.meta.url : document.currentScript?.src || location.href).href);
+    const res = await fetch(new URL('../shared/layout.html', location.href).href);
     if (!res.ok) throw new Error('fetch failed');
     const html = await res.text();
 
