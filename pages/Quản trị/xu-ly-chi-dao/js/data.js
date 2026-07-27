@@ -1,4 +1,4 @@
-﻿/* ---------------- Xử lý chỉ đạo: Dữ liệu mẫu (prototype) ----------------
+/* ---------------- Xử lý chỉ đạo: Dữ liệu mẫu (prototype) ----------------
  * File này chứa toàn bộ dữ liệu giả lập (mock data) cho phân hệ Xử lý chỉ đạo.
  * Tách khỏi ui.js để giữ logic sạch. Được load TRƯỚC ui.js trong index.html.
  * --------------------------------------------------------------------- */
@@ -104,28 +104,53 @@ const createPrototypeDirectives = () => [
       ],
       children: [
         {
-          id: 'node-test-02-staff',
-          contextId: 'individual',
+          id: 'node-test-02-dept',
+          contextId: 'department',
           unitName: 'Phòng Tổng hợp — Quy hoạch',
-          accountId: 'acc-cv-01',
-          accountName: 'Nguyễn Văn An',
+          accountId: 'acc-truong-phong-01',
+          accountName: 'Trưởng phòng Tổng hợp',
           parentUnit: 'Sở Kế hoạch và Đầu tư',
           level: 2,
-          canDelegate: false,
-          stage: 'staffProcessing',
+          canDelegate: true,
+          stage: 'processActivated',
           processId: 'process-1',
-          handlingMode: null,
+          handlingMode: 'process',
           report: '',
           reportFile: null,
           reportVersions: [],
           slaStartDate: prototypeDateAtOffset(-9),
-          slaDeadline: prototypeDateAtOffset(8),
+          slaDeadline: prototypeDateAtOffset(9),
           warningDays: 2,
-          timelineNotes: { 3: 'Chuyên viên đang xử lý, cần nộp báo cáo trước hạn' },
+          timelineNotes: { 2: 'Phòng đã nhận việc, đang phân công chuyên viên' },
           history: [
-            { order: 3, time: prototypeHistoryTime(-9, '10:00'), actor: 'Hệ thống', action: 'Phân công chuyên viên', note: 'Nguyễn Văn An được phân công xử lý theo quy trình động.' }
+            { order: 2, time: prototypeHistoryTime(-9, '09:15'), actor: 'Lãnh đạo Sở', action: 'Kích hoạt quy trình', note: 'Phân công Phòng Tổng hợp xử lý.' }
           ],
-          children: []
+          children: [
+            {
+              id: 'node-test-02-staff',
+              contextId: 'individual',
+              unitName: 'Chuyên viên — Phòng Tổng hợp',
+              accountId: 'acc-cv-01',
+              accountName: 'Nguyễn Văn An',
+              parentUnit: 'Phòng Tổng hợp — Quy hoạch',
+              level: 3,
+              canDelegate: false,
+              stage: 'staffProcessing',
+              processId: 'process-1',
+              handlingMode: null,
+              report: '',
+              reportFile: null,
+              reportVersions: [],
+              slaStartDate: prototypeDateAtOffset(-9),
+              slaDeadline: prototypeDateAtOffset(8),
+              warningDays: 2,
+              timelineNotes: { 3: 'Chuyên viên đang xử lý, cần nộp báo cáo trước hạn' },
+              history: [
+                { order: 3, time: prototypeHistoryTime(-9, '10:00'), actor: 'Trưởng phòng', action: 'Phân công chuyên viên', note: 'Nguyễn Văn An được phân công xử lý.' }
+              ],
+              children: []
+            }
+          ]
         }
       ]
     }
@@ -185,25 +210,49 @@ const createPrototypeDirectives = () => [
       ],
       children: [
         {
-          id: 'node-test-03-staff',
-          contextId: 'individual',
+          id: 'node-test-03-dept',
+          contextId: 'department',
           unitName: 'Phòng Kế hoạch — Tài chính',
-          accountId: 'acc-cv-02',
-          accountName: 'Trần Thị Bình',
+          accountId: 'acc-truong-phong-02',
+          accountName: 'Trưởng phòng Kế hoạch',
           parentUnit: 'Sở Nông nghiệp và PTNT',
           level: 2,
-          canDelegate: false,
+          canDelegate: true,
           stage: 'completed',
           processId: 'process-1',
-          report: 'Đã nộp báo cáo đầy đủ.',
+          report: 'Phòng đã hoàn thành và nộp báo cáo.',
           reportFile: { name: 'BaoCao_Final_NNPTNT.pdf', size: 3900000 },
           reportVersions: [],
           slaStartDate: prototypeDateAtOffset(-28),
           slaDeadline: prototypeDateAtOffset(-3),
           warningDays: 2,
           timelineNotes: {},
-          history: [],
-          children: []
+          history: [
+            { order: 2, time: prototypeHistoryTime(-29, '08:30'), actor: 'Lãnh đạo Sở', action: 'Phân công phòng', note: 'Phòng Kế hoạch được phân công xử lý.' }
+          ],
+          children: [
+            {
+              id: 'node-test-03-staff',
+              contextId: 'individual',
+              unitName: 'Chuyên viên — Phòng Kế hoạch',
+              accountId: 'acc-cv-02',
+              accountName: 'Trần Thị Bình',
+              parentUnit: 'Phòng Kế hoạch — Tài chính',
+              level: 3,
+              canDelegate: false,
+              stage: 'completed',
+              processId: 'process-1',
+              report: 'Đã nộp báo cáo đầy đủ.',
+              reportFile: { name: 'BaoCao_Final_NNPTNT.pdf', size: 3900000 },
+              reportVersions: [],
+              slaStartDate: prototypeDateAtOffset(-28),
+              slaDeadline: prototypeDateAtOffset(-3),
+              warningDays: 2,
+              timelineNotes: {},
+              history: [],
+              children: []
+            }
+          ]
         }
       ]
     }

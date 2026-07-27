@@ -1,4 +1,4 @@
-﻿/* ---------------- Xử lý chỉ đạo: UI Logic --------------------------------
+/* ---------------- Xử lý chỉ đạo: UI Logic --------------------------------
  * Yêu cầu: data.js phải được load trước file này.
  * --------------------------------------------------------------------- */
 
@@ -114,29 +114,59 @@
     return `<button class="time-budget-button ${condition}" type="button" data-time-id="${item.id}" aria-label="Xem quỹ thời gian ${item.id}" title="${timeConditionLabel(condition)}"><i class="fa-regular fa-clock"></i></button>`;
   };
   const statusFor = (item, role = state.role) => {
-    const makeStatus = key => ({ key, label: state.statusMeta[key].label });
-    if (item.executionTree) {
-      const node = flattenNodes(item.executionTree).find(entry => entry.contextId === role);
-      if (!node) return null;
-      if (['new', 'accepted'].includes(node.stage)) return makeStatus('needsHandling');
-      if (['directProcessing', 'assignedProcessing', 'processActivated', 'staffProcessing', 'revisionRequired', 'readyForParent', 'readyForProvince'].includes(node.stage)) return makeStatus('processing');
-      if (['internalApproval', 'reportApproved'].includes(node.stage)) {
-        const children = node.children || [];
-        const allChildrenReported = children.length > 0 && children.every(c => c.stage === 'reportSubmitted' || c.stage === 'completed');
-        if (allChildrenReported && node.stage === 'internalApproval') return makeStatus('needsApproval');
-        return makeStatus('processing');
-      }
-      if (node.stage === 'reportSubmitted') return makeStatus('waitingApproval');
-      if (node.stage === 'sentProvince') return makeStatus('waitingApproval');
-      if (node.stage === 'completed') return makeStatus('completed');
+    const makeStatus = key => ({ key, label: state.statusMeta[key]?.label || key });
+
+    if (!item.executionTree) {
+      // Hồ sơ không có executionTree: chỉ leader thấy
+      if (role !== 'leader') return null;
+      if (['new', 'accepted'].includes(item.stage)) return makeStatus('needsHandling');
+      if (['processActivated', 'staffProcessing', 'directProcessing', 'revisionRequired', 'readyForProvince'].includes(item.stage)) return makeStatus('processing');
+      if (['reportSubmitted', 'reportApproved'].includes(item.stage)) return makeStatus('needsApproval');
+      if (item.stage === 'sentProvince') return makeStatus('waitingApproval');
+      if (item.stage === 'completed') return makeStatus('completed');
       return null;
     }
-    if (role !== 'leader') return null;
-    if (['new', 'accepted'].includes(item.stage)) return makeStatus('needsHandling');
-    if (['processActivated', 'staffProcessing', 'directProcessing', 'revisionRequired', 'readyForProvince'].includes(item.stage)) return makeStatus('processing');
-    if (['reportSubmitted', 'reportApproved'].includes(item.stage)) return makeStatus('needsApproval');
-    if (item.stage === 'sentProvince') return makeStatus('waitingApproval');
-    if (item.stage === 'completed') return makeStatus('completed');
+
+    // Tìm node theo contextId của role hiện tại
+    const node = flattenNodes(item.executionTree).find(entry => entry.contextId === role);
+    if (!node) return null;
+
+    const s = node.stage;
+
+    if (role === 'leader') {
+      // Lãnh đạo Sở: thấy trạng thái tổng quan của cả hồ sơ
+      if (['new', 'accepted'].includes(s)) return makeStatus('needsHandling');
+      if (['directProcessing', 'processActivated', 'staffProcessing', 'assignedProcessing', 'revisionRequired'].includes(s)) return makeStatus('processing');
+      if (s === 'internalApproval') {
+        // Cần duyệt nếu tất cả children đã báo cáo
+        const children = node.children || [];
+        const allReported = children.length > 0 && children.every(c => ['reportSubmitted', 'completed'].includes(c.stage));
+        return makeStatus(allReported ? 'needsApproval' : 'processing');
+      }
+      if (['reportApproved', 'readyForProvince'].includes(s)) return makeStatus('needsApproval');
+      if (['sentProvince'].includes(s)) return makeStatus('waitingApproval');
+      if (s === 'completed') return makeStatus('completed');
+      return null;
+    }
+
+    if (role === 'department') {
+      // Trưởng phòng: thấy trạng thái của phòng mình
+      if (['processActivated', 'accepted'].includes(s)) return makeStatus('needsHandling'); // cần phân công chuyên viên
+      if (['staffProcessing', 'revisionRequired'].includes(s)) return makeStatus('processing');
+      if (s === 'reportSubmitted') return makeStatus('waitingApproval'); // chờ lãnh đạo sở duyệt
+      if (s === 'completed') return makeStatus('completed');
+      return null;
+    }
+
+    if (role === 'individual') {
+      // Chuyên viên: thấy việc được phân công cho mình
+      if (s === 'staffProcessing') return makeStatus('processing');
+      if (s === 'revisionRequired') return makeStatus('processing'); // cần làm lại
+      if (s === 'reportSubmitted') return makeStatus('waitingApproval');
+      if (s === 'completed') return makeStatus('completed');
+      return null;
+    }
+
     return null;
   };
   const isVisibleForRole = item => statusFor(item, state.role) !== null;
