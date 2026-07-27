@@ -32,22 +32,28 @@ Giai đoạn hiện tại: **Thiết kế prototype UI** — chưa kết nối b
 
 ## Cấu trúc thư mục
 ```
-Thiết kế/
+ioc/
 ├── CONTEXT.md              ← Đọc trước tiên
 ├── system_design.md        ← Tài liệu BA
-├── shared/css/
-│   ├── tokens.css          ← CSS vars dùng chung mọi trang
-│   └── base.css            ← Base layout dùng chung
+├── index.html              ← Redirect → /pages/home/
+├── tools/
+│   └── generate-routes.js  ← Quét pages/* → shared/js/routes.js
+├── nginx/
+│   ├── gialai.conf         ← Cấu hình deploy nginx
+│   └── README.md
+├── shared/
+│   ├── css/
+│   │   ├── tokens.css
+│   │   └── base.css
+│   └── js/
+│       └── routes.js       ← AUTO-GENERATED (không sửa tay)
 └── pages/
+    ├── home/               ← Danh mục router (navbar trái)
     └── [ten-man-hinh]/
-        ├── SPECS.md        ← Đặc tả màn hình
-        ├── index.html
+        ├── SPECS.md
+        ├── index.html      ← (hoặc admin.html) HTML root
         ├── style.css
         └── js/
-            ├── state.js
-            ├── ui.js
-            ├── charts.js
-            └── map.js
 ```
 
 ---

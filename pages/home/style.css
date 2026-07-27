@@ -1,0 +1,221 @@
+/* Home shell — align admin tokens */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.home-page {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-family);
+  background: var(--admin-page);
+  color: var(--admin-text);
+}
+
+/* ---------- Sidebar ---------- */
+.home-sidebar {
+  width: var(--admin-sidebar-width);
+  flex: 0 0 var(--admin-sidebar-width);
+  display: flex;
+  flex-direction: column;
+  background: var(--admin-surface);
+  border-right: 1px solid var(--admin-line);
+  padding: 10px;
+  transition: width 0.2s ease, flex-basis 0.2s ease, padding 0.2s ease;
+}
+
+.home-page.is-collapsed .home-sidebar {
+  width: 0;
+  flex-basis: 0;
+  padding: 0;
+  border-right: none;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.home-sidebar-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0 10px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--admin-sidebar-line);
+}
+
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.home-logo {
+  width: var(--admin-logo-size);
+  height: var(--admin-logo-size);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--admin-radius-md);
+  background: linear-gradient(145deg, var(--admin-primary), #005bb5);
+  color: #fff;
+  font-size: var(--fs-xl);
+}
+
+.home-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.home-brand-title {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.home-brand-sub {
+  font-size: var(--fs-xs);
+  color: var(--admin-muted);
+  white-space: nowrap;
+}
+
+.home-collapse-btn,
+.home-expand-btn {
+  width: var(--admin-icon-button-size);
+  height: var(--admin-icon-button-size);
+  flex-shrink: 0;
+  border: 1px solid var(--admin-control-line);
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-surface);
+  color: var(--admin-icon-muted);
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+}
+
+.home-collapse-btn:hover,
+.home-expand-btn:hover {
+  background: var(--admin-control-hover);
+  color: var(--admin-primary);
+}
+
+.home-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.home-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--admin-nav-height);
+  padding: 5px 10px;
+  border: none;
+  border-radius: var(--admin-radius-sm);
+  background: transparent;
+  color: var(--admin-text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.home-nav-link:hover {
+  background: var(--admin-submenu-hover);
+}
+
+.home-nav-link.is-active {
+  background: var(--admin-nav-active);
+  color: var(--admin-primary);
+  font-weight: 700;
+}
+
+.home-nav-link i {
+  width: 1.15em;
+  text-align: center;
+  color: var(--admin-icon-muted);
+}
+
+.home-nav-link.is-active i {
+  color: var(--admin-primary);
+}
+
+.home-nav-empty {
+  padding: 5px 10px;
+  font-size: var(--fs-sm);
+  color: var(--admin-muted);
+}
+
+/* ---------- Workspace ---------- */
+.home-workspace {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--admin-page);
+}
+
+.home-toolbar {
+  height: 48px;
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-line);
+}
+
+/* Chỉ hiện khi navbar root đã thu gọn */
+.home-page.is-collapsed .home-toolbar {
+  display: flex;
+}
+
+.home-toolbar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.home-toolbar-label {
+  font-size: 11px;
+  color: var(--admin-muted);
+  line-height: 1.2;
+}
+
+.home-toolbar-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--admin-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: var(--admin-page);
+}

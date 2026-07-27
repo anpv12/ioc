@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home — Dashboard Gia Lai</title>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="home-page">
+  <aside class="home-sidebar" id="home-sidebar" aria-label="Danh sách trang">
+    <div class="home-sidebar-top">
+      <div class="home-brand">
+        <div class="home-logo" aria-hidden="true"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="home-brand-text">
+          <span class="home-brand-title">Gia Lai IOC</span>
+          <span class="home-brand-sub">Điều hướng trang</span>
+        </div>
+      </div>
+      <button type="button" class="home-collapse-btn" id="home-collapse-btn" aria-label="Thu gọn menu" title="Thu gọn">
+        <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+      </button>
+    </div>
+    <nav class="home-nav" id="home-nav"></nav>
+  </aside>
+
+  <div class="home-workspace">
+    <header class="home-toolbar">
+      <button type="button" class="home-expand-btn" id="home-expand-btn" aria-label="Mở menu" title="Mở menu" hidden>
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      </button>
+      <div class="home-toolbar-meta">
+        <span class="home-toolbar-label">Đang mở</span>
+        <strong class="home-toolbar-title" id="home-active-title">—</strong>
+      </div>
+    </header>
+    <iframe class="home-frame" id="home-frame" name="home-frame" title="Nội dung trang" src="../Qu%E1%BA%A3n%20tr%E1%BB%8B/admin.html"></iframe>
+  </div>
+
+  <script src="../../shared/js/routes.js"></script>
+  <script src="./js/ui.js"></script>
+</body>
+</html>
