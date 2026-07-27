@@ -188,10 +188,12 @@
       const dlLabel    = deadlineLabel(item);
       const firstGroup = (item.dataGroups && item.dataGroups.length > 0) ? item.dataGroups[0] : '—';
 
+      const contentText = item.content || item.title || '';
+
       return `<tr>
         <td class="center col-stt">${start + idx + 1}</td>
-        <td class="col-title" title="${escHtml(item.title)}">
-          <span class="dir-title-main" title="${escHtml(item.title)}">${escHtml(item.title)}</span>
+        <td class="col-title" title="${escHtml(contentText)}">
+          <span class="dir-title-main" title="${escHtml(contentText)}">${escHtml(contentText)}</span>
         </td>
         <td class="col-groups">${escHtml(firstGroup)}</td>
         <td class="col-date">${escHtml(item.issuedDate)}</td>

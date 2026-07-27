@@ -326,7 +326,7 @@
 }
 
 .dir-title-main {
-  font-weight: 600;
+  font-weight: normal;
   color: var(--admin-text);
   line-height: 1.3;
   display: block;
