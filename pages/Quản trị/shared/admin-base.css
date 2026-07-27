@@ -1908,7 +1908,7 @@ tbody tr:last-child td {
 
 .custom-confirm-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
 }
 
