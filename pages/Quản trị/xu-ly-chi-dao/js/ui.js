@@ -118,10 +118,7 @@
     if (!statusKey) return '';
     const meta = state.statusMeta[statusKey];
     if (!meta) return '';
-    return `<span class="status-badge ${escHtml(statusKey)}">
-      <i class="fa-solid ${escHtml(meta.icon)}"></i>
-      ${escHtml(meta.label)}
-    </span>`;
+    return `<span class="status-badge ${escHtml(statusKey)}">${escHtml(meta.label)}</span>`;
   };
 
   /* ── Filtering ───────────────────────────────────────────────────── */
@@ -199,13 +196,7 @@
         <td class="col-groups">${escHtml(firstGroup)}</td>
         <td class="col-date">${escHtml(item.issuedDate)}</td>
         <td class="col-deadline">
-          <div class="deadline-cell">
-            <span class="${escHtml(cond)}">${escHtml(dlLabel)}</span>
-            <button class="time-budget-button ${escHtml(cond)}" data-time-id="${escHtml(item.id)}"
-              title="${cond==='overdue'?'Trễ hạn':'Còn hạn'}" type="button">
-              <i class="fa-regular fa-clock"></i>
-            </button>
-          </div>
+          <span class="${escHtml(cond)}">${escHtml(dlLabel)}</span>
         </td>
         <td class="col-status">${statusBadgeHtml(status)}</td>
         <td class="col-act center">
