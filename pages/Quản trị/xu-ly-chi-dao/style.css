@@ -607,7 +607,7 @@
 
 .eyebrow {
   font-size: 18px;
-  color: var(--admin-primary, #2563eb);
+  color: var(--admin-text);
   font-weight: 500;
   white-space: nowrap;
 }
