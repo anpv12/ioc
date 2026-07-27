@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xử lý chỉ đạo – Quản trị | PM Giám sát Gia Lai</title>
+  <meta name="description" content="Quản lý và xử lý chỉ đạo của tỉnh Gia Lai theo quy trình động">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="../shared/admin-base.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <span class="menu-label">Menu</span>
+        <button type="button" class="collapse-btn" id="sidebarCollapseBtn" aria-label="Thu gọn menu" title="Thu gọn">
+          <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="sidebar-search"><input type="text" placeholder="Tìm kiếm..."></div>
+
+      <div class="nav-parent open" id="navParent">
+        <span class="nav-ic"><i class="fa-solid fa-table-columns"></i></span>
+        <span>Dashboard</span>
+        <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-children" id="navChildren">
+        <div class="nav-item" onclick="window.location.href='../../dashboard/index.html'">
+          <span class="dot"></span><span>Dashboard giám sát</span>
+        </div>
+      </div>
+
+      <div class="nav-parent open" id="adminNavParent">
+        <span class="nav-ic"><i class="fa-solid fa-list-check"></i></span>
+        <span>Quản trị</span>
+        <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-children" id="adminNavChildren">
+        <div class="nav-item" onclick="window.location.href='../quy-trinh-dong/'">
+          <span class="dot"></span><span>Quy trình động</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='../bao-cao-thong-ke/'">
+          <span class="dot"></span><span>Báo cáo thống kê</span>
+        </div>
+        <div class="nav-item active" id="nav-xu-ly-chi-dao">
+          <span class="dot"></span><span>Xử lý chỉ đạo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MAIN ================= -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="logo-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="logoClip2"><circle cx="50" cy="50" r="43"/></clipPath>
+                <clipPath id="bandClip2"><rect x="0" y="73" width="100" height="27"/></clipPath>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4"/>
+              <circle cx="50" cy="50" r="43" fill="#ffffff"/>
+              <g clip-path="url(#logoClip2)">
+                <polygon points="10,66 34,26 55,66" fill="#1c6031"/>
+                <polygon points="45,66 66,26 92,66" fill="#1c6031"/>
+                <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2"/>
+                <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2"/>
+                <path d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z" fill="#ee522d"/>
+                <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6"/>
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip2)"/>
+                <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+              </g>
+              <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="bell-wrap"><i class="fa-solid fa-bell"></i><span class="bell-dot"></span></div>
+          <div class="admin-dd">
+            <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+            <span class="name">Quản trị</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <i class="fa-solid fa-circle-info info-ic"></i>
+        </div>
+      </div>
+
+      <div class="breadcrumb-row">
+        <div class="page-title" id="pageTitle">Xử lý chỉ đạo</div>
+        <div class="breadcrumb">
+          Trang chủ
+          <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
+          <span class="cur" id="breadcrumbCurrent">Xử lý chỉ đạo</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <div class="directive-view-heading">
+          <label class="role-switcher">Đơn vị mô phỏng
+            <select id="roleSelect">
+              <option value="leader">Sở</option>
+              <option value="department">Phòng</option>
+              <option value="individual">Cá nhân</option>
+            </select>
+          </label>
+          <div class="view-switcher" role="tablist" aria-label="Chế độ hiển thị">
+            <button class="view-switch-button active" type="button" data-display-mode="table" aria-pressed="true">
+              <i class="fa-solid fa-table-list"></i><span>Danh sách</span>
+            </button>
+            <button class="view-switch-button" type="button" data-display-mode="kanban" aria-pressed="false">
+              <i class="fa-solid fa-table-columns"></i><span>Kanban</span>
+            </button>
+          </div>
+        </div>
+
+        <section class="directive-card directive-list-card" aria-label="Danh sách xử lý chỉ đạo">
+          <!-- THANH CÔNG CỤ -->
+          <div class="top-bar">
+            <div class="left-tools">
+              <div class="search-input-wrapper">
+                <svg viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" class="search-input" id="directiveSearch" placeholder="Tìm kiếm chỉ đạo...">
+              </div>
+              <button class="btn-icon btn-filter" id="directiveFilterToggle" type="button" title="Bộ lọc" aria-expanded="false" aria-controls="directiveFilterPanel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+              </button>
+              <button class="btn-icon btn-search" id="directiveSearchButton" type="button" title="Tìm kiếm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              </button>
+              <button class="btn-icon btn-reset" id="resetFilters" type="button" title="Làm mới">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- BỘ LỌC -->
+          <div class="filter-panel" id="directiveFilterPanel">
+            <div class="filter-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
+              <div class="filter-item">
+                <label for="statusFilterSelect">Trạng thái</label>
+                <select id="statusFilterSelect">
+                  <option value="">-- Tất cả --</option>
+                  <option value="needsHandling">Cần phân công</option>
+                  <option value="processing">Đang xử lý</option>
+                  <option value="waitingApproval">Chờ duyệt</option>
+                  <option value="needsApproval">Cần duyệt</option>
+                  <option value="completed">Đã hoàn thành</option>
+                </select>
+              </div>
+              <div class="filter-item">
+                <label for="deadlineRange">Hạn xử lý</label>
+                <div class="compact-filter-field" style="border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; height: 38px; display: flex; align-items: center; padding: 0 10px; position: relative;">
+                  <i class="fa-regular fa-calendar" style="color: #64748b; margin-right: 8px;"></i>
+                  <input id="deadlineRange" type="text" placeholder="Chọn khoảng ngày" style="border: none !important; outline: none !important; font-size: 13px; width: 100%; height: 100%; background: transparent; cursor: pointer;" readonly>
+                  <button class="compact-filter-clear" id="clearDeadlineRange" type="button" aria-label="Xóa khoảng hạn xử lý" hidden style="border: none; background: none; color: #94a3b8; cursor: pointer; position: absolute; right: 10px;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+              </div>
+              <div class="filter-item">
+                <label for="timeCondition">Tình trạng</label>
+                <select id="timeCondition">
+                  <option value="">-- Tất cả --</option>
+                  <option value="available">Còn hạn</option>
+                  <option value="warning">Sắp đến hạn</option>
+                  <option value="overdue">Trễ hạn</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE VIEW -->
+          <div id="tableView">
+            <div class="directive-table-wrap">
+              <table class="directive-table">
+                <thead>
+                  <tr>
+                    <th class="center" style="width: 50px;">STT</th>
+                    <th>Mã chỉ đạo</th>
+                    <th>Nội dung chỉ đạo</th>
+                    <th>Ngày ban hành</th>
+                    <th>Hạn xử lý</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="directiveTableBody"></tbody>
+              </table>
+              <div class="empty-state" id="emptyState" hidden>
+                <i class="fa-regular fa-folder-open"></i>
+                <p>Không tìm thấy chỉ đạo phù hợp</p>
+              </div>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select" id="directivePageSize">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="pg-info" id="directivePageInfo"></span>
+              </div>
+              <div class="pg-btns" id="directivePageButtons"></div>
+            </div>
+          </div>
+
+          <!-- KANBAN VIEW -->
+          <div class="kanban-board" id="kanbanView" hidden></div>
+        </section>
+
+        <!-- Detail Overlay -->
+        <div class="detail-overlay" id="detailOverlay" hidden>
+          <section class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+            <div class="detail-header">
+              <div class="pe-header-left">
+                <span class="eyebrow">Chi tiết chỉ đạo > </span>
+                <i id="detailTitle"></i>
+              </div>
+              <div class="pe-header-actions" style="display: flex; align-items: center; gap: 10px;">
+                <button class="pe-btn pe-btn-back" id="closeDetail" type="button">
+                  <i class="fa-solid fa-arrow-left"></i> Trở về
+                </button>
+                <div id="detailActions" style="display: inline-flex; gap: 8px;"></div>
+              </div>
+            </div>
+            <div class="detail-body" id="detailBody"></div>
+          </section>
+        </div>
+
+        <!-- History Event Dialog -->
+        <div class="event-detail-overlay" id="historyEventOverlay" hidden>
+          <section class="event-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="historyEventTitle">
+            <div class="detail-header">
+              <h2 id="historyEventTitle">Chi tiết lịch sử</h2>
+              <button class="directive-icon-button" id="closeHistoryEvent" type="button" aria-label="Đóng chi tiết lịch sử">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="event-detail-body" id="historyEventBody"></div>
+          </section>
+        </div>
+
+        <!-- Time Calendar Popover -->
+        <div class="time-calendar-popover" id="timeCalendarPopover" role="dialog" aria-label="Quỹ thời gian xử lý" hidden>
+          <div class="time-calendar-heading">
+            <div><strong id="timeCalendarTitle">Quỹ thời gian</strong><small id="timeCalendarSummary"></small></div>
+            <button class="directive-icon-button" id="closeTimeCalendar" type="button" aria-label="Đóng lịch">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <input id="timeCalendarInput" type="text" aria-hidden="true" tabindex="-1">
+          <div class="time-calendar-legend">
+            <span><i class="legend-issued"></i> Bắt đầu</span>
+            <span><i class="legend-today"></i> Hôm nay</span>
+            <span><i class="legend-deadline"></i> Hạn xử lý</span>
+          </div>
+        </div>
+
+      </div><!-- /.content -->
+
+      <div class="footer">
+        <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div>
+        <div class="support">
+          <span>Hỗ trợ:</span>
+          <span><i class="fa-solid fa-phone fi"></i>(0256) 3815.519</span>
+          <span class="sep2">|</span>
+          <span><i class="fa-solid fa-envelope fi"></i>skhcn@gialai.gov.vn</span>
+        </div>
+      </div>
+    </div><!-- /.main -->
+
+  </div><!-- /.app -->
+
+  <!-- Shared: Confirm Dialog -->
+  <div id="confirmDialogOverlay" class="custom-confirm-overlay" hidden>
+    <div class="custom-confirm-box">
+      <div class="custom-confirm-header">
+        <h3 id="confirmDialogTitle">Xác nhận</h3>
+        <p id="confirmDialogMessage">Nội dung thông báo...</p>
+      </div>
+      <div class="custom-confirm-footer">
+        <button type="button" class="confirm-btn-cancel" id="confirmDialogCancel">Hủy</button>
+        <button type="button" class="confirm-btn-ok" id="confirmDialogOk">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared: Image Viewer -->
+  <div id="imageViewerOverlay" class="custom-confirm-overlay" hidden>
+    <div class="custom-image-box" style="background-color: #ffffff; border-radius: 12px; max-width: 90%; max-height: 90%; padding: 24px; position: relative; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <button type="button" id="closeImageViewer" style="position: absolute; top: -12px; right: -12px; width: 32px; height: 32px; border-radius: 50%; background: #ef4444; color: white; border: none; font-size: 18px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-weight: bold;">&times;</button>
+      <img id="viewerImage" src="" alt="Hình ảnh đính kèm" style="max-width: 100%; max-height: 75vh; border-radius: 6px; object-fit: contain;">
+    </div>
+  </div>
+
+  <!-- Shared: Toast -->
+  <div class="notifications-container">
+    <div id="toast" class="success">
+      <p id="toast-title" class="success-prompt-heading">Thành công</p>
+      <div id="toast-message" class="success-prompt-prompt">Thao tác đã hoàn tất thành công.</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="../shared/admin-shared.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+
+</html>

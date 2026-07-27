@@ -1,0 +1,633 @@
+﻿/* --- Directive Card Style --- */
+.directive-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px !important;
+  margin-bottom: 0 !important;
+}
+
+.directive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.directive-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+}
+
+.directive-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.directive-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.directive-description {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.directive-description strong {
+  color: #0f172a;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.meta-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.meta-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.attachment-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color 0.15s;
+}
+
+.attachment-card:hover {
+  border-color: #cbd5e1;
+}
+
+.attachment-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.file-icon-pdf {
+  width: 30px;
+  height: 30px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.file-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.btn-view-file {
+  font-family: 'Roboto', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-view-file:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+/* Đảm bảo bọc các nút không bị che mất */
+.detail-actions {
+  flex-wrap: wrap !important;
+}
+
+/* ĐỒNG BỘ TUYỆT ĐỐI CÁC NÚT TRONG FOOTER HÀNH ĐỘNG */
+.detail-actions .button,
+.process-detail-actions .button {
+  height: 38px !important;
+  min-width: 130px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+.detail-actions .button-primary,
+.process-detail-actions .button-primary {
+  background: var(--admin-primary) !important;
+  color: #ffffff !important;
+  border: 1px solid transparent !important;
+}
+
+.detail-actions .button-primary:hover,
+.process-detail-actions .button-primary:hover {
+  background: #0072c7 !important;
+}
+
+.detail-actions .button-secondary,
+.process-detail-actions .button-secondary {
+  background: #ffffff !important;
+  color: var(--admin-primary) !important;
+  border: 1px solid var(--admin-primary) !important;
+}
+
+.detail-actions .button-secondary:hover,
+.process-detail-actions .button-secondary:hover {
+  background: var(--admin-control-hover) !important;
+  color: #0072c7 !important;
+  border-color: #0072c7 !important;
+}
+
+/* ĐỒNG BỘ ĐỔ BÓNG VÀ BO GÓC CHO TẤT CẢ CARD CHI TIẾT */
+.directive-card,
+details.history-card,
+.detail-section {
+  border: 1px solid var(--admin-line) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01) !important;
+  /* Đổ bóng mờ nhẹ lại */
+}
+
+/* ĐỒNG BỘ TIÊU ĐỀ CÁC MỤC TO BẰNG NHAU (15PX BOLD) */
+.directive-section-title,
+.history-title,
+.detail-section h3 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ĐỒNG BỘ CỠ CHỮ 14PX VÀ SPACING 8PX CHO NỘI DUNG THÔNG TIN CHỈ ĐẠO */
+.directive-card {
+  gap: 8px !important;
+  /* Spacing 8px đồng bộ */
+}
+
+.directive-card .directive-title {
+  width: auto !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+}
+
+.directive-card .directive-description {
+  font-size: 14px !important;
+  margin: 0 !important;
+}
+
+.directive-card .meta-grid {
+  gap: 8px !important;
+  /* Spacing 8px đồng bộ */
+}
+
+.directive-card .meta-box {
+  gap: 8px !important;
+  /* Spacing 8px đồng bộ */
+}
+
+.directive-card .meta-label,
+.directive-card .meta-value {
+  font-size: 14px !important;
+}
+
+.directive-card .attachment-card {
+  margin-top: 8px !important;
+}
+
+.directive-card .file-name,
+.directive-card .file-size,
+.directive-card .btn-view-file {
+  font-size: 14px !important;
+}
+
+.detail-section {
+  gap: 8px !important;
+  /* Spacing 8px đồng bộ */
+}
+
+/* STATE TRỄ HẠN TRONG LỊCH SỬ (ĐỎ NHẸ ĐỒNG BỘ LOGIC CŨ) */
+.step-item.overdue .step-box {
+  border-color: #fca5a5 !important;
+  background: #fef2f2 !important;
+}
+
+.step-item.overdue .step-name {
+  color: #dc2626 !important;
+}
+
+.step-item.overdue .step-badge {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+.step-item.overdue .step-bottom {
+  color: #b91c1c !important;
+  font-weight: 500 !important;
+}
+
+/* HIỂN THỊ DẤU * ĐỎ BẮT BUỘC NHẬP */
+.form-field:has([required])>span::after {
+  content: " *";
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+}
+
+/* KHI BIỂU MẪU ĐÃ SUBMIT MÀ THIẾU THÔNG TIN */
+.report-form.was-validated input:invalid,
+.report-form.was-validated textarea:invalid,
+.report-form.was-validated select:invalid,
+.form-field.was-validated select:invalid {
+  border-color: #dc2626 !important;
+  background-color: #ffffff !important;
+  /* Giữ nguyên nền trắng */
+}
+
+/* THÔNG BÁO DẤU * ĐỎ DƯỚI Ô CẦN NHẬP */
+.report-form.was-validated .form-field:has(input:invalid, textarea:invalid, select:invalid)::after,
+.form-field.was-validated:has(select:invalid)::after {
+  content: "* Vui lòng nhập thông tin trường bắt buộc này." !important;
+  color: #dc2626 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  margin-top: 2px !important;
+  display: block !important;
+}
+
+/* NÚT LƯU VÀ PHÁT HÀNH TRONG FORM QUY TRÌNH */
+.pe-btn-draft {
+  background-color: #e2f9eb !important;
+  color: #15803d !important;
+}
+
+.pe-btn-draft:hover {
+  background-color: #d1f2dd !important;
+}
+
+.pe-btn-publish {
+  background-color: var(--admin-primary) !important;
+  color: #ffffff !important;
+}
+
+.pe-btn-publish:hover {
+  background-color: #0072c7 !important;
+}
+
+/* BADGE TRẠNG THÁI QUY TRÌNH ĐỘNG */
+.status-badge.draft-proc {
+  background-color: #B0E2FF !important;
+  color: #176799 !important;
+  border: 1px solid #afd3fe !important;
+}
+
+.status-badge.active-proc {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+
+
+/* Custom Confirm Overlay */
+.custom-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.custom-confirm-overlay[hidden] {
+  display: none !important;
+}
+
+.custom-confirm-box {
+  width: 300px;
+  height: 180px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.062);
+  animation: confirmFadeIn 0.2s ease-out;
+}
+
+@keyframes confirmFadeIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.custom-confirm-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#confirmDialogTitle {
+  font-size: 1.1em;
+  font-weight: 800;
+  color: rgb(26, 26, 26);
+  margin: 0;
+}
+
+#confirmDialogMessage {
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: rgb(99, 99, 99);
+  margin: 0;
+  line-height: 1.4;
+}
+
+#confirmDialogMessage a {
+  color: rgb(59, 130, 246);
+}
+
+#confirmDialogMessage a:hover {
+  text-decoration-line: underline;
+}
+
+.custom-confirm-footer {
+  display: flex;
+  gap: 16px;
+  flex-direction: row;
+  margin-top: 2px;
+}
+
+.confirm-btn-cancel {
+  width: 80px;
+  height: 30px;
+  background-color: #dadada;
+  color: rgb(46, 46, 46);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px #bebdbd, 0 2px 4px -1px #bebdbd;
+  transition: all .6s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-btn-cancel:hover {
+  background-color: #ebebeb;
+  box-shadow: 0 10px 15px -3px #bebdbd, 0 4px 6px -2px #bebdbd;
+  transition-duration: .2s;
+}
+
+.confirm-btn-ok {
+  width: 80px;
+  height: 30px;
+  background-color: #2563eb;
+  border: none;
+  color: rgb(241, 241, 241);
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px #60a5fa, 0 2px 4px -1px #60a5fa;
+  transition: all .6s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-btn-ok:hover {
+  background-color: #3b82f6;
+  box-shadow: 0 10px 15px -3px #60a5fa, 0 4px 6px -2px #60a5fa;
+  transition-duration: .2s;
+}
+
+/* Drag and Drop styles cho các bước xử lý */
+.process-flow-node.dragging {
+  opacity: 0.5;
+  border: 2px dashed #0284c7;
+}
+
+.process-flow-node.drag-over {
+  border-top: 3px solid #0284c7;
+  background-color: #f0f9ff;
+}
+
+/* Tooltip custom dropdown hover */
+.custom-dropdown-tooltip {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.select-box:hover .custom-dropdown-tooltip {
+  display: block !important;
+}
+
+/* Ẩn icon khi không cần thiết hoặc xoay mũi tên */
+.multiselect-container.open .arrow-icon {
+  transform: rotate(180deg);
+}
+
+.multiselect-container .arrow-icon {
+  transition: transform 0.2s ease;
+}
+
+/* In-place Search Autocomplete */
+.dropdown-search-input {
+  display: none;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--admin-text);
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.open.is-empty .select-box .dropdown-search-input {
+  display: block !important;
+}
+
+.open.is-empty .select-box .placeholder,
+.open.is-empty .select-box .tag-summary-container,
+.open.is-empty .select-box .selected-val-label {
+  display: none !important;
+}
+
+/* CONTAINER CỐ ĐỊNH GÓC TRÊN BÊN PHẢI */
+.notifications-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 300px;
+  /* Tăng từ 260px lên 300px cho vừa vặn hơn */
+  pointer-events: none;
+}
+
+/* POPUP TO RA 1 XÍU, THOÁNG MẮT */
+.success {
+  pointer-events: auto;
+  padding: 14px 18px;
+  /* Tăng padding giúp card dày dặn hơn */
+  border-radius: 8px;
+  /* Bo góc mềm mại hơn */
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+
+  /* Hiệu ứng trượt nhẹ từ bên phải */
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.success.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.success-prompt-heading {
+  font-size: 0.95rem;
+  /* Tăng kích thước chữ tiêu đề */
+  font-weight: 700;
+  color: #166534;
+  margin: 0;
+}
+
+.success-prompt-prompt {
+  margin-top: 4px;
+  font-size: 0.825rem;
+  /* Tăng kích thước chữ nội dung */
+  color: #15803d;
+  line-height: 1.4;
+}
+
+/* Disabled/Read-only view styling for default fields */
+.select-box.disabled-view {
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed !important;
+  opacity: 0.85 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.select-box.disabled-view:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.dropdown-group-header {
+  font-weight: bold;
+  padding: 6px 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e2e8f0;
+  border-top: 1px solid #e2e8f0;
+}

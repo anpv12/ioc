@@ -1,0 +1,111 @@
+<!--
+  shared/layout.html
+  Fragment sidebar + topbar dùng chung cho tất cả trang Quản trị.
+  Load bằng admin-shared.js: loadSharedLayout(activeNavId)
+-->
+<div class="sidebar">
+  <div class="sidebar-top">
+    <span class="menu-label">Menu</span>
+    <button type="button" class="collapse-btn" id="sidebarCollapseBtn" aria-label="Thu gọn menu" title="Thu gọn">
+      <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="sidebar-search"><input type="text" placeholder="Tìm kiếm..."></div>
+
+  <div class="nav-parent open" id="navParent">
+    <span class="nav-ic"><i class="fa-solid fa-table-columns"></i></span>
+    <span>Dashboard</span>
+    <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+  </div>
+  <div class="nav-children" id="navChildren">
+    <div class="nav-item" id="nav-dashboard-giam-sat" onclick="window.location.href='../../dashboard/index.html'">
+      <span class="dot"></span><span>Dashboard giám sát</span>
+    </div>
+  </div>
+
+  <div class="nav-parent open" id="adminNavParent">
+    <span class="nav-ic"><i class="fa-solid fa-list-check"></i></span>
+    <span>Quản trị</span>
+    <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+  </div>
+  <div class="nav-children" id="adminNavChildren">
+    <div class="nav-item" id="nav-quy-trinh-dong" onclick="window.location.href='../quy-trinh-dong/'">
+      <span class="dot"></span><span>Quy trình động</span>
+    </div>
+    <div class="nav-item" id="nav-bao-cao-thong-ke" onclick="window.location.href='../bao-cao-thong-ke/'">
+      <span class="dot"></span><span>Báo cáo thống kê</span>
+    </div>
+    <div class="nav-item" id="nav-xu-ly-chi-dao" onclick="window.location.href='../xu-ly-chi-dao/'">
+      <span class="dot"></span><span>Xử lý chỉ đạo</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="brand">
+      <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      </button>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="logoClipS"><circle cx="50" cy="50" r="43"/></clipPath>
+            <clipPath id="bandClipS"><rect x="0" y="73" width="100" height="27"/></clipPath>
+          </defs>
+          <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
+          <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4"/>
+          <circle cx="50" cy="50" r="43" fill="#ffffff"/>
+          <g clip-path="url(#logoClipS)">
+            <polygon points="10,66 34,26 55,66" fill="#1c6031"/>
+            <polygon points="45,66 66,26 92,66" fill="#1c6031"/>
+            <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2"/>
+            <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2"/>
+            <path d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z" fill="#ee522d"/>
+            <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6"/>
+            <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClipS)"/>
+            <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+          </g>
+          <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+        <div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="bell-wrap"><i class="fa-solid fa-bell"></i><span class="bell-dot"></span></div>
+      <div class="admin-dd">
+        <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+        <span class="name">Quản trị</span>
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
+      <i class="fa-solid fa-circle-info info-ic"></i>
+    </div>
+  </div>
+
+  <div class="breadcrumb-row">
+    <div class="page-title" id="pageTitle"></div>
+    <div class="breadcrumb">
+      Trang chủ
+      <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
+      <span class="cur" id="breadcrumbCurrent"></span>
+    </div>
+  </div>
+
+  <div class="content" id="pageContent">
+    <!-- Nội dung trang được inject vào đây -->
+  </div>
+
+  <div class="footer">
+    <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div>
+    <div class="support">
+      <span>Hỗ trợ:</span>
+      <span><i class="fa-solid fa-phone fi"></i>(0256) 3815.519</span>
+      <span class="sep2">|</span>
+      <span><i class="fa-solid fa-envelope fi"></i>skhcn@gialai.gov.vn</span>
+    </div>
+  </div>
+</div>
