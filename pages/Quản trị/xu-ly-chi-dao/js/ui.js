@@ -218,13 +218,15 @@
     // Page info
     el.pageInfo().textContent = `Hiển thị ${start+1}–${Math.min(start+pageSize, total)} / ${total} chỉ đạo`;
 
-    // Pagination buttons
+    // Pagination buttons (Matching Quy trình động: First, Prev, Pages, Next, Last)
     const btns = [];
-    btns.push(`<button class="pg-btn pg-prev" data-page="${state.page - 1}" type="button" ${state.page <= 1 ? 'disabled' : ''} title="Trang trước"><i class="fa-solid fa-chevron-left"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="1" ${state.page === 1 ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang đầu"><i class="fa-solid fa-angles-left"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="${Math.max(1, state.page - 1)}" ${state.page === 1 ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang trước"><i class="fa-solid fa-angle-left"></i></button>`);
     for (let p = 1; p <= maxPage; p++) {
-      btns.push(`<button class="pg-btn${p === state.page ? ' active' : ''}" data-page="${p}" type="button">${p}</button>`);
+      btns.push(`<button class="pg-btn${p === state.page ? ' active' : ''}" type="button" data-page="${p}">${p}</button>`);
     }
-    btns.push(`<button class="pg-btn pg-next" data-page="${state.page + 1}" type="button" ${state.page >= maxPage ? 'disabled' : ''} title="Trang sau"><i class="fa-solid fa-chevron-right"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="${Math.min(maxPage, state.page + 1)}" ${state.page === maxPage ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang sau"><i class="fa-solid fa-angle-right"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="${maxPage}" ${state.page === maxPage ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang cuối"><i class="fa-solid fa-angles-right"></i></button>`);
     el.pageButtons().innerHTML = btns.join('');
   };
 

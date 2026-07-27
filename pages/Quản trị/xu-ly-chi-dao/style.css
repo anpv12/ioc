@@ -529,39 +529,41 @@
 
 .pg-btns {
   display: flex;
-  gap: 4px;
+  gap: 6px;
+  align-items: center;
 }
 
 .pg-btn {
-  display: inline-flex;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--admin-control-line);
-  border-radius: var(--admin-radius-sm);
-  background: var(--admin-surface);
-  color: var(--admin-muted);
-  font-size: 12px;
-  cursor: pointer;
+  padding: 0 4px;
   transition: background 0.15s, color 0.15s;
 }
 
-.pg-btn:hover {
-  background: var(--admin-primary);
-  color: #fff;
-  border-color: var(--admin-primary);
+.pg-btn:hover:not(:disabled):not(.active) {
+  background: #f3f5f9;
 }
 
 .pg-btn.active {
-  background: var(--admin-primary);
-  color: #fff;
-  border-color: var(--admin-primary);
+  background: var(--admin-primary, #0072c7);
+  color: #ffffff;
+  border-radius: 6px;
 }
 
 .pg-btn:disabled {
+  color: #d5d8dc;
+  cursor: not-allowed;
+  background: transparent;
   opacity: 0.4;
-  cursor: default;
 }
 
 /* ── 4. Detail Panel (nằm trong .content, không che overlay) ─────── */
