@@ -115,10 +115,6 @@
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
-            <select id="roleSelect" class="filter-select mock-role-select" title="Giả lập vai trò (tạm thời)">
-              <option value="leader">Mô phỏng: Lãnh đạo Sở</option>
-              <option value="individual">Mô phỏng: Chuyên viên</option>
-            </select>
             <button id="resetFilters" type="button" class="btn-reset-filter" title="Làm mới bộ lọc">
               <i class="fa-solid fa-rotate-left"></i>
             </button>
@@ -255,6 +251,16 @@
       <p id="toast-title" class="success-prompt-heading">Thành công</p>
       <div id="toast-message" class="success-prompt-prompt">Thao tác đã hoàn tất.</div>
     </div>
+  </div>
+
+  <!-- Floating Mock Role Switcher (Tạm thời) -->
+  <div class="mock-role-floating" title="Giả lập vai trò (Tính năng tạm thời)">
+    <i class="fa-solid fa-user-gear"></i>
+    <span>Mô phỏng:</span>
+    <select id="roleSelect">
+      <option value="leader">Lãnh đạo Sở</option>
+      <option value="individual">Chuyên viên</option>
+    </select>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
