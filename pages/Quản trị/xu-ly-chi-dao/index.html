@@ -78,16 +78,8 @@
 
         <!-- LIST VIEW CONTAINER -->
         <div id="directiveListContainer">
-          <!-- Role selector + Tab bar -->
+          <!-- Tab bar -->
           <div class="xld-header">
-            <div class="role-bar">
-              <label class="role-label">Vai trò mô phỏng</label>
-              <select id="roleSelect" class="role-select">
-                <option value="leader">Lãnh đạo Sở</option>
-                <option value="department">Trưởng phòng</option>
-                <option value="individual">Chuyên viên</option>
-              </select>
-            </div>
             <div class="tab-bar" id="tabBar">
               <button class="tab-btn active" id="tabActive" data-tab="active" type="button">
                 <i class="fa-solid fa-spinner"></i>
@@ -123,6 +115,10 @@
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
+            <select id="roleSelect" class="filter-select mock-role-select" title="Giả lập vai trò (tạm thời)">
+              <option value="leader">Mô phỏng: Lãnh đạo Sở</option>
+              <option value="individual">Mô phỏng: Chuyên viên</option>
+            </select>
             <button id="resetFilters" type="button" class="btn-reset-filter" title="Làm mới bộ lọc">
               <i class="fa-solid fa-rotate-left"></i>
             </button>

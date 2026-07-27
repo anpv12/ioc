@@ -12,39 +12,19 @@
 .xld-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
   margin-bottom: 12px;
-  flex-wrap: wrap;
 }
 
-.role-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.mock-role-select {
+  border: 1px dashed #93c5fd !important;
+  background: #eff6ff !important;
+  color: #1e40af !important;
+  font-weight: 500 !important;
+  min-width: 170px;
 }
 
-.role-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--admin-muted);
-  white-space: nowrap;
-}
-
-.role-select {
-  height: var(--admin-control-height);
-  padding: 0 10px;
-  border: 1px solid var(--admin-control-line);
-  border-radius: var(--admin-radius-md);
-  color: var(--admin-text);
-  background: var(--admin-surface);
-  font-size: 13px;
-  outline: 0;
-  cursor: pointer;
-}
-
-.role-select:focus {
-  border-color: var(--admin-primary);
+.mock-role-select:focus {
+  border-color: #3b82f6 !important;
 }
 
 /* Tab bar */
