@@ -92,13 +92,36 @@ input[type=number] { -moz-appearance: textfield; }
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 18px; flex-wrap: wrap;
 }
-.search-input {
-  width: 260px; height: 38px; border: 1px solid #E0E0E0;
-  border-radius: 8px; padding: 0 14px; font-size: 14px; font-family: inherit;
+.search-wrap {
+  position: relative; width: 320px; display: flex; align-items: center;
 }
+.search-wrap i {
+  position: absolute; left: 14px; color: #9AA0AC; font-size: 14px; pointer-events: none;
+}
+.search-wrap .search-input {
+  width: 100%; height: 38px; border: 1px solid #D9D9D9;
+  border-radius: 8px; padding: 0 14px 0 38px; font-size: 14px; font-family: inherit;
+  outline: none; transition: border-color 0.2s; background: #fff;
+}
+.search-wrap .search-input:focus { border-color: #0091FF; }
+
+.btn-search {
+  height: 38px; padding: 0 22px; border-radius: 8px; border: none;
+  background: #0091FF; color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: background 0.2s;
+}
+.btn-search:hover { background: #007CE0; }
+
+.btn-reset {
+  height: 38px; padding: 0 22px; border-radius: 8px; border: none;
+  background: #E4F2FF; color: #0091FF; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: background 0.2s;
+}
+.btn-reset:hover { background: #D5EAFF; }
+
 .btn-primary {
   height: 38px; padding: 0 18px; border-radius: 8px; border: none;
-  background: #0091FF; color: #fff; font-size: 14px; font-weight: 500;
+  background: #0091FF; color: #fff; font-size: 14px; font-weight: 600;
   display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: inherit;
 }
 
