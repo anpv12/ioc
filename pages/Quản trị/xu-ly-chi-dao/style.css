@@ -314,7 +314,7 @@
 }
 
 .col-title {
-  width: 35%;
+  width: 39%;
   max-width: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -322,7 +322,7 @@
 }
 
 .col-groups {
-  width: 18%;
+  width: 12%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -330,16 +330,18 @@
 
 .col-date {
   width: 13%;
+  text-align: center;
   white-space: nowrap;
 }
 
 .col-deadline {
   width: 14%;
+  text-align: center;
   white-space: nowrap;
 }
 
 .col-status {
-  width: 13%;
+  width: 14%;
   text-align: center;
 }
 

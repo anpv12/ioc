@@ -197,15 +197,15 @@
           <span class="dir-title-main" title="${escHtml(contentText)}">${escHtml(contentText)}</span>
         </td>
         <td class="col-groups">${escHtml(firstGroup)}</td>
-        <td class="col-date">${escHtml(item.issuedDate)}</td>
-        <td class="col-deadline">
+        <td class="center col-date">${escHtml(item.issuedDate)}</td>
+        <td class="center col-deadline">
           <span class="deadline-tag ${cond === 'overdue' ? 'overdue' : 'in-time'}" title="${cond === 'overdue' ? 'Trễ hạn' : 'Còn hạn'}">
             <span>${escHtml(dlLabel)}</span>
             <i class="fa-regular fa-clock"></i>
           </span>
         </td>
-        <td class="col-status">${statusBadgeHtml(status)}</td>
-        <td class="col-act center">
+        <td class="center col-status">${statusBadgeHtml(status)}</td>
+        <td class="center col-act">
           <div class="row-actions" style="display: flex; justify-content: center;">
             <button class="act-btn act-edit" data-open-id="${escHtml(item.id)}" type="button" title="Xem chi tiết">
               <i class="fa-solid fa-pen"></i>
