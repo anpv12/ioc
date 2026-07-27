@@ -357,16 +357,10 @@
 
             <!-- NỘI DUNG LỌC -->
             <div class="filter-panel" id="processFilterPanel">
-              <div class="filter-grid">
+              <div class="filter-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
                 <div class="filter-item">
                   <label>Cơ quan</label>
                   <div class="multiselect-container" id="filterProcessOrgContainer">
-                    <!-- Render động autocomplete -->
-                  </div>
-                </div>
-                <div class="filter-item">
-                  <label>Nhóm giám sát</label>
-                  <div class="multiselect-container" id="filterProcessScopeContainer">
                     <!-- Render động autocomplete -->
                   </div>
                 </div>
@@ -391,10 +385,8 @@
               <table aria-label="Danh sách mẫu quy trình động">
                 <thead>
                   <tr>
-                    <th>Mã quy trình</th>
                     <th>Tên quy trình</th>
                     <th>Phiên bản</th>
-                    <th>Nhóm giám sát</th>
                     <th>Cơ quan</th>
                     <th class="center">Trạng thái</th>
                     <th>Ngày tạo</th>
@@ -469,16 +461,8 @@
                       </div>
                     </div>
 
-                    <!-- Hàng 2: Nhóm giám sát & Cơ quan áp dụng -->
-                    <div class="form-row row-two-cols">
-                      <div class="form-group">
-                        <label>Nhóm giám sát <span class="required">*</span></label>
-                        <!-- CUSTOM DROPDOWN CHỌN ĐƠN -->
-                        <div class="multiselect-container" id="processScopeContainer">
-                          <!-- Render động -->
-                        </div>
-                      </div>
-
+                    <!-- Hàng 2: Cơ quan áp dụng -->
+                    <div class="form-row row-full">
                       <div class="form-group">
                         <label>Cơ quan áp dụng <span class="required">*</span></label>
                         <div class="multiselect-container" id="processOrgsContainer">
