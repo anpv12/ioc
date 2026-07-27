@@ -606,14 +606,15 @@
 }
 
 .eyebrow {
-  font-size: 12px;
-  color: var(--admin-muted);
+  font-size: 18px;
+  color: var(--admin-primary, #2563eb);
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .detail-title-text {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--admin-text);
   white-space: nowrap;
   overflow: hidden;
