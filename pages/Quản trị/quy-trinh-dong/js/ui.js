@@ -541,11 +541,9 @@ const processCatalog = [
     elements.body.innerHTML = visible.map(row => {
       let statusBadge = '';
       if (row.processStatus === 'draft') {
-        statusBadge = '<span class="status-badge draft-proc"><i class="fa-solid fa-pen-to-square"></i>Bản nháp</span>';
-      } else if (row.processStatus === 'active') {
-        statusBadge = '<span class="status-badge active-proc"><i class="fa-solid fa-circle-check"></i>Hoạt động</span>';
+        statusBadge = '<span class="status-badge draft-proc">Bản nháp</span>';
       } else {
-        statusBadge = '<span class="status-badge inactive-proc"><i class="fa-solid fa-ban"></i>Ngừng hoạt động</span>';
+        statusBadge = '<span class="status-badge active-proc">Hoạt động</span>';
       }
       return `<tr><td title="${escapeText(row.name)}">${escapeText(row.name)}</td><td title="${escapeText(row.version)}">${escapeText(row.version)}</td><td title="${escapeText(row.orgs.join(', '))}">${escapeText(row.orgs.join(', '))}</td><td class="center">${statusBadge}</td><td title="${escapeText(row.createdAt)}">${escapeText(row.createdAt)}</td><td class="center"><div class="row-actions"><button class="act-btn act-edit" type="button" data-process-action="edit" data-process-id="${row.id}" title="Sửa"><i class="fa-solid fa-pen"></i></button><button class="act-btn act-del" type="button" data-process-action="delete" data-process-id="${row.id}" title="Xóa"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
     }).join('');
