@@ -10,11 +10,11 @@
 
 ## 2. Quản trị Quy trình động
 - **Danh sách quy trình**:
-  - Tìm kiếm theo mã/tên. Lọc theo Cơ quan, Nhóm giám sát, Trạng thái (Bản nháp, Hoạt động) và Phiên bản qua các dropdown custom autocomplete.
+  - Tìm kiếm theo mã/tên. Lọc theo Cơ quan, Trạng thái (Bản nháp, Hoạt động) và Phiên bản qua các dropdown custom autocomplete. Cột Mã quy trình và cột Nhóm giám sát không hiển thị trên danh sách.
   - Chặn xóa quy trình đang "Hoạt động" và cảnh báo bằng Popup Modal lỗi.
 - **Cấu hình Quy trình**:
   - Nút **Lưu** (lưu nháp) và nút **Phát hành** (chuyển sang Hoạt động; mờ đi nếu đã hoạt động).
-  - Dropdown Cơ quan áp dụng, Nhóm giám sát: Hỗ trợ autocomplete (gõ tìm kiếm nhanh), ghim tìm kiếm sticky đầu. Khi chọn nhiều và vượt quá chiều rộng thực tế của dropdown, text hiển thị sẽ được cắt bằng dấu `...` và thêm badge số lượng dư `+ [số còn lại]` có màu xanh dương nhạt, cỡ chữ nhỏ hơn và font-weight thường. Khi hover chuột hiển thị tooltip bo góc hiển thị danh sách đầy đủ.
+  - Dropdown Cơ quan áp dụng: Hỗ trợ autocomplete (gõ tìm kiếm nhanh), ghim tìm kiếm sticky đầu. Khi chọn nhiều và vượt quá chiều rộng thực tế của dropdown, text hiển thị sẽ được cắt bằng dấu `...` và thêm badge số lượng dư `+ [số còn lại]` có màu xanh dương nhạt, cỡ chữ nhỏ hơn và font-weight thường. Khi hover chuột hiển thị tooltip bo góc hiển thị danh sách đầy đủ. Cấu hình Cơ quan áp dụng hiển thị rộng thành 1 hàng đầy đủ. Nhóm giám sát được loại bỏ khỏi cấu hình.
 - **Thiết kế Luồng bước (UML)**:
   - Khóa luồng bước không cho sửa khi trạng thái quy trình là "Hoạt động".
   - **Sắp xếp thứ tự bước bằng Kéo thả (Drag & Drop)**: Hỗ trợ kéo thả các bước xử lý không cố định (không phải Start/End) trong danh sách để thay đổi thứ tự. Thứ tự mới sẽ tự động cập nhật liên kết `parentNodeId` và hành động `Chuyển xử lý` trỏ sang bước kế tiếp tương ứng.

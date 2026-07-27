@@ -598,56 +598,47 @@ input[type=number] {
   /* Thu nhỏ padding để tiết kiệm diện tích */
 }
 
-/* ===================================================
-   4. Chia tỉ lệ % cho đúng 8 cột trong HTML của bạn
-   =================================================== */
-.tbl-wrap th:nth-child(1) {
-  width: 10%;
-}
-
-/* Mã quy trình */
-.tbl-wrap th:nth-child(2) {
-  width: 20%;
-}
-
-/* Tên quy trình (Dành nhiều không gian nhất) */
-.tbl-wrap th:nth-child(3) {
-  width: 8%;
+/* --- Tỉ lệ cột & Định dạng hiển thị riêng cho bảng Quy trình động --- */
+#view-dynamic-process .tbl-wrap th:nth-child(1) {
+  width: 25%;
 }
 
 /* Phiên bản */
-.tbl-wrap th:nth-child(4) {
-  width: 14%;
+#view-dynamic-process .tbl-wrap th:nth-child(2) {
+  width: 10%;
+  text-align: center;
 }
 
-/* Nhóm giám sát */
-.tbl-wrap th:nth-child(5) {
-  width: 14%;
+#view-dynamic-process .tbl-wrap td:nth-child(2) {
+  text-align: center;
 }
 
 /* Cơ quan */
-.tbl-wrap th:nth-child(6) {
-  width: 5%;
+#view-dynamic-process .tbl-wrap th:nth-child(3) {
+  width: 25%;
 }
 
-/* Hoạt động */
-.tbl-wrap th:nth-child(7) {
-  width: 10%;
+/* Trạng thái */
+#view-dynamic-process .tbl-wrap th:nth-child(4) {
+  width: 15%;
 }
 
 /* Ngày tạo */
-.tbl-wrap th:nth-child(8) {
-  width: 8%;
+#view-dynamic-process .tbl-wrap th:nth-child(5) {
+  width: 10%;
+  text-align: center;
+}
+
+#view-dynamic-process .tbl-wrap td:nth-child(5) {
+  text-align: center;
 }
 
 /* Xử lý */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 760px;
+#view-dynamic-process .tbl-wrap th:nth-child(6) {
+  width: 8%;
 }
 
-.tbl-wrap td:nth-child(5) {
+#view-dynamic-process .tbl-wrap td:nth-child(3) {
   white-space: nowrap !important;
   /* Bắt buộc không cho xuống dòng */
   overflow: hidden !important;
@@ -656,6 +647,12 @@ table {
   /* Hiện dấu ... ở cuối */
   cursor: pointer;
   /* Đổi con trỏ chuột thành dạng bàn tay khi hover */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
 }
 
 thead th {
@@ -4616,8 +4613,8 @@ td .status-badge {
   font-weight: 500;
 }
 
-.filter-item > select,
-.filter-item > input {
+.filter-item>select,
+.filter-item>input {
   height: 38px;
   padding: 0 12px;
   border: 1px solid #cbd5e1;
@@ -4630,12 +4627,12 @@ td .status-badge {
   font-family: inherit;
 }
 
-.filter-item > input::placeholder {
+.filter-item>input::placeholder {
   color: #94a3b8;
 }
 
-.filter-item > select:focus,
-.filter-item > input:focus {
+.filter-item>select:focus,
+.filter-item>input:focus {
   border-color: var(--admin-primary);
 }
 
@@ -5064,66 +5061,6 @@ label.dropdown-item {
   border-color: #ef4444 !important;
 }
 
-/* 1. Cố định kích thước cột bảng quy trình động (Không co giãn, không cuộn ngang) */
-#view-dynamic-process table {
-  table-layout: fixed;
-  width: 100%;
-  min-width: 100%;
-}
-
-#view-dynamic-process th,
-#view-dynamic-process td {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#view-dynamic-process th:nth-child(1),
-#view-dynamic-process td:nth-child(1) {
-  width: 10%;
-}
-
-/* Mã quy trình */
-#view-dynamic-process th:nth-child(2),
-#view-dynamic-process td:nth-child(2) {
-  width: 23%;
-}
-
-/* Tên quy trình */
-#view-dynamic-process th:nth-child(3),
-#view-dynamic-process td:nth-child(3) {
-  width: 10%;
-}
-
-/* Phiên bản */
-#view-dynamic-process th:nth-child(4),
-#view-dynamic-process td:nth-child(4) {
-  width: 11%;
-}
-
-/* Nhóm giám sát */
-#view-dynamic-process th:nth-child(5),
-#view-dynamic-process td:nth-child(5) {
-  width: 23%;
-}
-
-/* Cơ quan */
-#view-dynamic-process th:nth-child(6),
-#view-dynamic-process td:nth-child(6) {
-  width: 5%;
-}
-
-/* Hoạt động */
-#view-dynamic-process th:nth-child(7),
-#view-dynamic-process td:nth-child(7) {
-  width: 10%;
-}
-
-/* Ngày tạo */
-#view-dynamic-process th:nth-child(8),
-#view-dynamic-process td:nth-child(8) {
-  width: 8%;
-}
 
 /* 2. Zoom & Pan UML Styles */
 .pe-diagram-zoom-wrapper {
@@ -5838,76 +5775,6 @@ details.history-card,
 }
 
 
-/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
-#view-dynamic-process table th:nth-child(1),
-#view-dynamic-process table td:nth-child(1) {
-  max-width: 8% !important;
-  width: 8% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
-
-#view-dynamic-process table th:nth-child(2),
-#view-dynamic-process table td:nth-child(2) {
-  max-width: 18% !important;
-  width: 18% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
-
-/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
-#view-dynamic-process table th:nth-child(3),
-#view-dynamic-process table td:nth-child(3) {
-  max-width: 8% !important;
-  width: 8% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-  text-align: center;
-}
-
-/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
-#view-dynamic-process table th:nth-child(4),
-#view-dynamic-process table td:nth-child(4) {
-  max-width: 10% !important;
-  width: 10% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
-
-#view-dynamic-process table th:nth-child(5),
-#view-dynamic-process table td:nth-child(5) {
-  max-width: 15% !important;
-  width: 15% !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-#view-dynamic-process table th:nth-child(6),
-#view-dynamic-process table td:nth-child(6) {
-  max-width: 10% !important;
-  width: 10% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
-
-/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
-#view-dynamic-process table th:nth-child(7),
-#view-dynamic-process table td:nth-child(7) {
-  max-width: 9% !important;
-  width: 9% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
-
-/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
-#view-dynamic-process table th:nth-child(8),
-#view-dynamic-process table td:nth-child(8) {
-  max-width: 8% !important;
-  width: 8% !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-}
 
 /* Custom Confirm Overlay */
 .custom-confirm-overlay {
@@ -6102,19 +5969,22 @@ details.history-card,
   top: 20px;
   right: 20px;
   z-index: 9999;
-  width: 300px; /* Tăng từ 260px lên 300px cho vừa vặn hơn */
+  width: 300px;
+  /* Tăng từ 260px lên 300px cho vừa vặn hơn */
   pointer-events: none;
 }
 
 /* POPUP TO RA 1 XÍU, THOÁNG MẮT */
 .success {
   pointer-events: auto;
-  padding: 14px 18px; /* Tăng padding giúp card dày dặn hơn */
-  border-radius: 8px; /* Bo góc mềm mại hơn */
+  padding: 14px 18px;
+  /* Tăng padding giúp card dày dặn hơn */
+  border-radius: 8px;
+  /* Bo góc mềm mại hơn */
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-  
+
   /* Hiệu ứng trượt nhẹ từ bên phải */
   transform: translateX(120%);
   opacity: 0;
@@ -6127,7 +5997,8 @@ details.history-card,
 }
 
 .success-prompt-heading {
-  font-size: 0.95rem; /* Tăng kích thước chữ tiêu đề */
+  font-size: 0.95rem;
+  /* Tăng kích thước chữ tiêu đề */
   font-weight: 700;
   color: #166534;
   margin: 0;
@@ -6135,7 +6006,8 @@ details.history-card,
 
 .success-prompt-prompt {
   margin-top: 4px;
-  font-size: 0.825rem; /* Tăng kích thước chữ nội dung */
+  font-size: 0.825rem;
+  /* Tăng kích thước chữ nội dung */
   color: #15803d;
   line-height: 1.4;
 }
@@ -6147,10 +6019,12 @@ details.history-card,
   opacity: 0.85 !important;
   border-color: #cbd5e1 !important;
 }
+
 .select-box.disabled-view:hover {
   border-color: #cbd5e1 !important;
   box-shadow: none !important;
 }
+
 .dropdown-group-header {
   font-weight: bold;
   padding: 6px 12px;

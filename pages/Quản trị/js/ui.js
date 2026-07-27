@@ -458,6 +458,10 @@ const getFakeAssigneeArray = (orgsList) => {
   return orgsList.map(org => getOrgPersonnel(org).leader);
 };
 
+const getFakeStaffArray = (orgsList) => {
+  return orgsList.map(org => getOrgPersonnel(org).staff[0]);
+};
+
 const FULL_STEPS = (orgsList) => [
   {
     id: 'node-x-1',
@@ -465,7 +469,7 @@ const FULL_STEPS = (orgsList) => [
     status: 'Chờ phân công',
     org: orgsList[0] || 'Sở Thông tin và Truyền thông',
     orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Tạ Minh Tâm',
     assignees: getFakeAssigneeArray(orgsList),
     description: 'Lãnh đạo đơn vị tiếp nhận và phân công việc xử lý chỉ đạo cho chuyên viên.',
     persisted: true,
@@ -477,8 +481,8 @@ const FULL_STEPS = (orgsList) => [
     status: 'Đang xử lý',
     org: orgsList[0] || 'Sở Thông tin và Truyền thông',
     orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
-    assignees: getFakeAssigneeArray(orgsList),
+    assignee: getFakeStaffArray(orgsList)[0] || 'Đặng Tuấn An',
+    assignees: getFakeStaffArray(orgsList),
     description: 'Chuyên viên nghiên cứu thực hiện nhiệm vụ được giao.',
     persisted: true,
     actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-3' }]
@@ -489,7 +493,7 @@ const FULL_STEPS = (orgsList) => [
     status: 'Đã có báo cáo',
     org: orgsList[0] || 'Sở Thông tin và Truyền thông',
     orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignee: getFakeAssigneeArray(orgsList)[0] || 'Tạ Minh Tâm',
     assignees: getFakeAssigneeArray(orgsList),
     description: 'Xây dựng dự thảo báo cáo kết quả xử lý.',
     persisted: true,
@@ -499,10 +503,10 @@ const FULL_STEPS = (orgsList) => [
     id: 'node-x-4',
     unitName: 'Trình Lãnh đạo phê duyệt',
     status: 'Chờ phê duyệt',
-    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
-    orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
-    assignees: getFakeAssigneeArray(orgsList),
+    org: 'Tỉnh Gia Lai',
+    orgs: ['Tỉnh Gia Lai'],
+    assignee: 'Lãnh đạo Tỉnh',
+    assignees: ['Lãnh đạo Tỉnh'],
     description: 'Trình lãnh đạo xem xét và ký duyệt báo cáo.',
     persisted: true,
     actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-5' }, { name: 'Trả về', nextNodeId: 'node-x-3' }]
@@ -511,10 +515,10 @@ const FULL_STEPS = (orgsList) => [
     id: 'node-x-5',
     unitName: 'Kết thúc chỉ đạo',
     status: 'Đã kết thúc',
-    org: orgsList[0] || 'Sở Thông tin và Truyền thông',
-    orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
-    assignees: getFakeAssigneeArray(orgsList),
+    org: 'Tỉnh Gia Lai',
+    orgs: ['Tỉnh Gia Lai'],
+    assignee: 'Lãnh đạo Tỉnh',
+    assignees: ['Lãnh đạo Tỉnh'],
     description: 'Lưu trữ hồ sơ xử lý và kết thúc quy trình.',
     persisted: true,
     actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
@@ -540,8 +544,8 @@ const THREE_STEPS = (orgsList) => [
     status: 'Đang xử lý',
     org: orgsList[0] || 'Sở Thông tin và Truyền thông',
     orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
-    assignees: getFakeAssigneeArray(orgsList),
+    assignee: getFakeStaffArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignees: getFakeStaffArray(orgsList),
     description: 'Chuyên viên nghiên cứu thực hiện nhiệm vụ được giao.',
     persisted: true,
     actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-x-3' }]
@@ -746,7 +750,7 @@ const processCatalog = [
     const pad = n => String(n).padStart(2, '0');
     return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
-  const normalizeStep = (step, index, rows) => ({ id: step.id || `step-${Date.now()}-${index}`, order: index + 1, unitName: step.unitName || step.name || `Bước xử lý ${index + 1}`, status: legacyProcessStatusMap[step.status] || step.status || statusList[Math.min(index, statusList.length - 1)], org: step.org || '', assignees: step.assignees?.length ? step.assignees : [step.accountName || userList[0]], description: step.description || '', actions: step.actions?.length ? step.actions : [{ name: 'Chuyển xử lý', nextNodeId: rows[index + 1]?.id || 'end' }], persisted: true, parentNodeId: index ? rows[index - 1]?.id || null : null });
+  const normalizeStep = (step, index, rows) => ({ id: step.id || `step-${Date.now()}-${index}`, order: index + 1, unitName: step.unitName || step.name || `Bước xử lý ${index + 1}`, status: legacyProcessStatusMap[step.status] || step.status || statusList[Math.min(index, statusList.length - 1)], org: step.org || '', orgs: Array.isArray(step.orgs) ? step.orgs : (step.org ? [step.org] : []), assignees: step.assignees?.length ? step.assignees : [step.accountName || userList[0]], description: step.description || '', actions: step.actions?.length ? step.actions : [{ name: 'Chuyển xử lý', nextNodeId: rows[index + 1]?.id || 'end' }], persisted: true, parentNodeId: index ? rows[index - 1]?.id || null : null });
   state.rows.forEach(process => {
     const sourceNodes = process.nodes || [];
     process.version ||= '1.0'; process.scope ||= scopeList[0]; process.orgs = process.orgs || []; process.createdAt ||= process.updatedAt || nowText(); process.deleted ||= false;
@@ -797,7 +801,7 @@ const processCatalog = [
       } else {
         statusBadge = '<span class="status-badge inactive-proc">Ngừng hoạt động</span>';
       }
-      return `<tr><td title="${escapeText(row.code)}">${escapeText(row.code)}</td><td title="${escapeText(row.name)}">${escapeText(row.name)}</td><td title="${escapeText(row.version)}">${escapeText(row.version)}</td><td title="${escapeText(row.scope)}">${escapeText(row.scope)}</td><td title="${escapeText(row.orgs.join(', '))}">${escapeText(row.orgs.join(', '))}</td><td class="center">${statusBadge}</td><td title="${escapeText(row.createdAt)}">${escapeText(row.createdAt)}</td><td class="center"><div class="row-actions"><button class="act-btn act-edit" type="button" data-process-action="edit" data-process-id="${row.id}" title="Sửa"><i class="fa-solid fa-pen"></i></button><button class="act-btn act-del" type="button" data-process-action="delete" data-process-id="${row.id}" title="Xóa"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
+      return `<tr><td title="${escapeText(row.name)}">${escapeText(row.name)}</td><td title="${escapeText(row.version)}">${escapeText(row.version)}</td><td title="${escapeText(row.orgs.join(', '))}">${escapeText(row.orgs.join(', '))}</td><td class="center">${statusBadge}</td><td title="${escapeText(row.createdAt)}">${escapeText(row.createdAt)}</td><td class="center"><div class="row-actions"><button class="act-btn act-edit" type="button" data-process-action="edit" data-process-id="${row.id}" title="Sửa"><i class="fa-solid fa-pen"></i></button><button class="act-btn act-del" type="button" data-process-action="delete" data-process-id="${row.id}" title="Xóa"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
     }).join('');
     elements.empty.hidden = rows.length > 0; elements.pageInfo.textContent = `Hiển thị ${rows.length ? start + 1 : 0}-${Math.min(start + state.pageSize, rows.length)}/${rows.length}`;
 
@@ -847,10 +851,12 @@ const processCatalog = [
     bindAutoComplete(elements.orgs);
   };
   const updateScopeSummary = () => {
+    if (!elements.scopeContainer) return;
     const selectedVal = state.draft ? state.draft.scope : '';
     updateDropdownSummary(elements.scopeContainer, selectedVal ? [selectedVal] : [], false);
   };
   const renderScopeChoices = selected => {
+    if (!elements.scopeContainer) return;
     elements.scopeContainer.innerHTML = `
       <div class="select-box">
         <span class="placeholder">Chọn phạm vi...</span>
@@ -870,6 +876,7 @@ const processCatalog = [
   };
 
   const renderFilterScopeChoices = () => {
+    if (!elements.filterScopeContainer) return;
     elements.filterScopeContainer.innerHTML = `
       <div class="select-box">
         <span class="placeholder">Chọn nhóm...</span>
@@ -1197,26 +1204,27 @@ const processCatalog = [
     const index = draft.nodes.findIndex(n => n.id === stepId);
     if (index === -1) return;
     const stepToDelete = draft.nodes[index];
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa bước "${stepToDelete.unitName}"?`)) return;
 
-    const nextStepId = draft.nodes[index + 1]?.id || 'end';
-    draft.nodes.forEach(node => {
-      if (node.actions) {
-        node.actions.forEach(action => {
-          if (action.nextNodeId === stepId) {
-            action.nextNodeId = nextStepId;
-          }
-        });
+    showCustomConfirm("Bạn có chắc chắn muốn xóa bước này?", () => {
+      const nextStepId = draft.nodes[index + 1]?.id || 'end';
+      draft.nodes.forEach(node => {
+        if (node.actions) {
+          node.actions.forEach(action => {
+            if (action.nextNodeId === stepId) {
+              action.nextNodeId = nextStepId;
+            }
+          });
+        }
+      });
+
+      draft.nodes.splice(index, 1);
+      if (state.selectedStepId === stepId) {
+        state.selectedStepId = draft.nodes[Math.max(0, index - 1)]?.id || null;
       }
+
+      renderSteps();
+      showNotice("Đã xóa bước và tự động nối luồng xử lý.");
     });
-
-    draft.nodes.splice(index, 1);
-    if (state.selectedStepId === stepId) {
-      state.selectedStepId = draft.nodes[Math.max(0, index - 1)]?.id || null;
-    }
-
-    renderSteps();
-    showNotice(`Đã xóa bước "${stepToDelete.unitName}" và tự động nối luồng xử lý.`);
   };
 
   const openEditor = (id, viewOnly = false, copyMode = false) => {
@@ -1343,10 +1351,52 @@ const processCatalog = [
     return html;
   };
 
-  const getAssignedOrgs = () => {
+  const getAssignedOrgs = (step) => {
     if (!state.draft || !state.draft.nodes) return [];
     const assignStep = state.draft.nodes.find(n => n.status === 'Chờ phân công');
-    return assignStep ? (assignStep.orgs || []) : [];
+    if (assignStep) {
+      return assignStep.orgs || [];
+    }
+    return step ? (step.orgs || []) : [];
+  };
+
+  const syncOrgsFromAssignStep = () => {
+    if (!state.draft || !state.draft.nodes) return;
+    const assignStep = state.draft.nodes.find(n => n.status === 'Chờ phân công');
+    if (!assignStep) return;
+
+    const processingNodes = state.draft.nodes.filter(n => n.status === 'Đang xử lý');
+    const reportedNodes = state.draft.nodes.filter(n => n.status === 'Đã có báo cáo');
+
+    const newOrgs = assignStep.orgs || [];
+    const newOrgsStr = JSON.stringify(newOrgs);
+    let isAnyChanged = false;
+
+    processingNodes.forEach(node => {
+      const oldOrgsStr = JSON.stringify(node.orgs || []);
+      if (oldOrgsStr !== newOrgsStr) {
+        node.orgs = [...newOrgs];
+        node.org = newOrgs.join(', ');
+        node.assignees = newOrgs.map(org => getOrgPersonnel(org).leader);
+        node.persisted = true;
+        isAnyChanged = true;
+      }
+    });
+
+    reportedNodes.forEach(node => {
+      const oldOrgsStr = JSON.stringify(node.orgs || []);
+      if (oldOrgsStr !== newOrgsStr) {
+        node.orgs = [...newOrgs];
+        node.org = newOrgs.join(', ');
+        node.assignees = newOrgs.map(org => getOrgPersonnel(org).leader);
+        node.persisted = true;
+        isAnyChanged = true;
+      }
+    });
+
+    if (isAnyChanged) {
+      renderSteps();
+    }
   };
 
   const getDirectiveCreator = (directiveId) => {
@@ -1369,7 +1419,7 @@ const processCatalog = [
       const checked = [...container.querySelectorAll('[data-step-assignee]:checked')];
       selected = checked.map(input => input.value);
     } else if (status === 'Đã có báo cáo') {
-      const assignedOrgs = getAssignedOrgs();
+      const assignedOrgs = getAssignedOrgs(step);
       selected = assignedOrgs.map(org => getOrgPersonnel(org).leader);
     } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
       selected = [getDirectiveCreator(state.selectedId)];
@@ -1415,7 +1465,7 @@ const processCatalog = [
       selectedAssignees = orgs.map(org => getOrgPersonnel(org).leader);
       isLocked = true;
     } else if (status === 'Đang xử lý') {
-      const assignedOrgs = getAssignedOrgs();
+      const assignedOrgs = getAssignedOrgs(step);
       assignedOrgs.forEach(org => {
         const personnel = getOrgPersonnel(org);
         personnel.staff.forEach(name => {
@@ -1426,7 +1476,7 @@ const processCatalog = [
       isLocked = false;
       grouped = true;
     } else if (status === 'Đã có báo cáo') {
-      const assignedOrgs = getAssignedOrgs();
+      const assignedOrgs = getAssignedOrgs(step);
       selectedAssignees = assignedOrgs.map(org => getOrgPersonnel(org).leader);
       isLocked = true;
     } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
@@ -1553,14 +1603,14 @@ const processCatalog = [
       const orgs = step.orgs || [];
       step.assignees = orgs.map(org => getOrgPersonnel(org).leader);
     } else if (status === 'Đang xử lý') {
-      const assignedOrgs = getAssignedOrgs();
+      const assignedOrgs = getAssignedOrgs(step);
       const validStaff = new Set();
       assignedOrgs.forEach(org => {
         getOrgPersonnel(org).staff.forEach(name => validStaff.add(name));
       });
       step.assignees = (step.assignees || []).filter(name => validStaff.has(name));
     } else if (status === 'Đã có báo cáo') {
-      const assignedOrgs = getAssignedOrgs();
+      const assignedOrgs = getAssignedOrgs(step);
       step.assignees = assignedOrgs.map(org => getOrgPersonnel(org).leader);
     } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
       step.assignees = [getDirectiveCreator(state.selectedId)];
@@ -1579,7 +1629,7 @@ const processCatalog = [
       const checkedCheckboxes = [...container.querySelectorAll('.dropdown-menu input.org-item-checkbox:checked')];
       selected = checkedCheckboxes.map(input => input.value);
     } else if (status === 'Đang xử lý' || status === 'Đã có báo cáo') {
-      selected = getAssignedOrgs();
+      selected = getAssignedOrgs(step);
     } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
       selected = ['Tỉnh Gia Lai'];
     } else {
@@ -1588,9 +1638,13 @@ const processCatalog = [
 
     step.orgs = selected;
     step.org = selected.join(', ');
+    if (status === 'Chờ phân công') {
+      syncOrgsFromAssignStep();
+    }
 
     const isLocked = (status === 'Đang xử lý' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
-    updateDropdownSummary(container, selected, status === 'Chờ phân công');
+    const showOrgsAsMulti = (status === 'Chờ phân công' || status === 'Đang xử lý' || status === 'Đã có báo cáo');
+    updateDropdownSummary(container, selected, showOrgsAsMulti);
 
     if (isLocked) {
       selectBox.style.backgroundColor = '#f1f5f9';
@@ -1622,7 +1676,7 @@ const processCatalog = [
       selectedOrgs = step.orgs || [];
       isLocked = false;
     } else if (status === 'Đang xử lý' || status === 'Đã có báo cáo') {
-      selectedOrgs = getAssignedOrgs();
+      selectedOrgs = getAssignedOrgs(step);
       isLocked = true;
     } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
       selectedOrgs = ['Tỉnh Gia Lai'];
@@ -1788,6 +1842,9 @@ const processCatalog = [
     step.assignees = assignees;
     step.persisted = true;
     if (!step.actions.length) step.actions.push({ name: 'Chuyển xử lý', nextNodeId: 'end' });
+    if (step.status === 'Chờ phân công') {
+      syncOrgsFromAssignStep();
+    }
     elements.nodeOverlay.hidden = true;
     showError('');
     renderSteps();
@@ -1864,10 +1921,7 @@ const processCatalog = [
       showFieldError(elements.versionInput, 'Phiên bản không được để trống.');
       isValid = false;
     }
-    if (!draft.scope) {
-      showFieldError(elements.scopeContainer, 'Vui lòng chọn phạm vi.');
-      isValid = false;
-    }
+
     if (!draft.orgs.length) {
       showFieldError(elements.orgs, 'Vui lòng chọn ít nhất một cơ quan áp dụng.');
       isValid = false;
@@ -1914,7 +1968,7 @@ const processCatalog = [
     closeEditor();
     state.page = 1;
     renderList();
-    showNotice(`Đã ${isPublish ? 'phát hành' : 'lưu'} quy trình "${draft.name}".`);
+    showNotice(`Đã ${isPublish ? 'phát hành' : 'lưu'} quy trình.`);
   };
   const closeFilterPanel = () => { elements.filterPanel.classList.remove('show'); elements.filterToggle.classList.remove('active'); };
   const applyProcessFilters = () => {
@@ -1925,6 +1979,9 @@ const processCatalog = [
   };
   elements.searchButton.addEventListener('click', applyProcessFilters);
   elements.search.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyProcessFilters(); } });
+  if (elements.version) {
+    elements.version.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyProcessFilters(); } });
+  }
   elements.filterToggle.addEventListener('click', () => { elements.filterPanel.classList.toggle('show'); elements.filterToggle.classList.toggle('active'); });
   elements.refresh.addEventListener('click', () => {
     state.search = state.active = state.scope = state.org = state.version = '';
@@ -1940,13 +1997,13 @@ const processCatalog = [
   elements.body.addEventListener('click', event => {
     const toggle = event.target.closest('[data-process-toggle]'); if (toggle) { const row = state.rows.find(item => item.id === toggle.dataset.processToggle); row.active = !row.active; renderList(); return; } const menuButton = event.target.closest('[data-process-menu]'); if (menuButton) { const panel = elements.body.querySelector(`[data-process-menu-panel="${menuButton.dataset.processMenu}"]`); const wasHidden = panel.hidden; closeMenus(); panel.hidden = !wasHidden; return; } const action = event.target.closest('[data-process-action]'); if (!action) return; const row = state.rows.find(item => item.id === action.dataset.processId); closeMenus(); if (action.dataset.processAction === 'view') openEditor(row.id, true); if (action.dataset.processAction === 'edit') openEditor(row.id); if (action.dataset.processAction === 'clone') openEditor(row.id, false, true); if (action.dataset.processAction === 'delete') {
       if (row.processStatus === 'active') {
-        showCustomAlert(`Quy trình "${row.name}" đang hoạt động, không được phép xóa!`);
+        showCustomAlert("Quy trình đang hoạt động, không được phép xóa!");
       } else {
-        showCustomConfirm(`Bạn có chắc chắn muốn xóa quy trình "${row.name}"?`, () => {
+        showCustomConfirm("Bạn có chắc chắn muốn xóa quy trình này?", () => {
           row.deleted = true;
           row.active = false;
           renderList();
-          showNotice(`Đã xóa quy trình "${row.name}".`);
+          showNotice("Đã xóa quy trình.");
         });
       }
     }
@@ -1954,9 +2011,9 @@ const processCatalog = [
   document.addEventListener('click', event => {
     if (!event.target.closest('.process-more')) closeMenus();
     if (!event.target.closest('#processOrgsContainer')) { elements.orgs.classList.remove('open'); }
-    if (!event.target.closest('#processScopeContainer')) { elements.scopeContainer.classList.remove('open'); }
+    if (elements.scopeContainer && !event.target.closest('#processScopeContainer')) { elements.scopeContainer.classList.remove('open'); }
     if (!event.target.closest('#filterProcessOrgContainer')) { elements.filterOrgContainer.classList.remove('open'); }
-    if (!event.target.closest('#filterProcessScopeContainer')) { elements.filterScopeContainer.classList.remove('open'); }
+    if (elements.filterScopeContainer && !event.target.closest('#filterProcessScopeContainer')) { elements.filterScopeContainer.classList.remove('open'); }
     if (elements.activeContainer && !event.target.closest('#filterProcessActiveContainer')) { elements.activeContainer.classList.remove('open'); }
     if (!event.target.closest('.process-assignee-multiselect')) {
       const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
@@ -2017,63 +2074,67 @@ const processCatalog = [
     updateOrganizationSummary();
   });
 
-  elements.scopeContainer.addEventListener('click', event => {
-    if (state.viewOnly) return;
-    const selectBox = event.target.closest('.select-box');
-    if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
-      elements.scopeContainer.classList.toggle('open');
-      if (elements.scopeContainer.classList.contains('open')) {
-        const searchInput = elements.scopeContainer.querySelector('.dropdown-search-input');
-        if (searchInput) {
-          searchInput.value = '';
-          elements.scopeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
-          setTimeout(() => searchInput.focus(), 50);
+  if (elements.scopeContainer) {
+    elements.scopeContainer.addEventListener('click', event => {
+      if (state.viewOnly) return;
+      const selectBox = event.target.closest('.select-box');
+      if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
+        elements.scopeContainer.classList.toggle('open');
+        if (elements.scopeContainer.classList.contains('open')) {
+          const searchInput = elements.scopeContainer.querySelector('.dropdown-search-input');
+          if (searchInput) {
+            searchInput.value = '';
+            elements.scopeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
+            setTimeout(() => searchInput.focus(), 50);
+          }
         }
+        return;
       }
-      return;
-    }
-    const item = event.target.closest('[data-scope-val]');
-    if (item) {
-      state.draft.scope = item.dataset.scopeVal;
-      updateScopeSummary();
-      elements.scopeContainer.classList.remove('open');
-    }
-  });
+      const item = event.target.closest('[data-scope-val]');
+      if (item) {
+        state.draft.scope = item.dataset.scopeVal;
+        updateScopeSummary();
+        elements.scopeContainer.classList.remove('open');
+      }
+    });
 
-  elements.scopeContainer.addEventListener('input', event => {
-    if (event.target.classList.contains('dropdown-search-input')) {
-      const query = event.target.value.toLowerCase().trim();
-      const items = elements.scopeContainer.querySelectorAll('.dropdown-item');
-      items.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(query) ? 'flex' : 'none';
-      });
-    }
-  });
+    elements.scopeContainer.addEventListener('input', event => {
+      if (event.target.classList.contains('dropdown-search-input')) {
+        const query = event.target.value.toLowerCase().trim();
+        const items = elements.scopeContainer.querySelectorAll('.dropdown-item');
+        items.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(query) ? 'flex' : 'none';
+        });
+      }
+    });
+  }
 
   // Filter Nhóm giám sát
-  elements.filterScopeContainer.addEventListener('click', event => {
-    const selectBox = event.target.closest('.select-box');
-    if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
-      elements.filterScopeContainer.classList.toggle('open');
-      if (elements.filterScopeContainer.classList.contains('open')) {
-        const searchInput = elements.filterScopeContainer.querySelector('.dropdown-search-input');
-        if (searchInput) {
-          searchInput.value = '';
-          elements.filterScopeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
-          setTimeout(() => searchInput.focus(), 50);
+  if (elements.filterScopeContainer) {
+    elements.filterScopeContainer.addEventListener('click', event => {
+      const selectBox = event.target.closest('.select-box');
+      if (selectBox && !event.target.classList.contains('dropdown-search-input')) {
+        elements.filterScopeContainer.classList.toggle('open');
+        if (elements.filterScopeContainer.classList.contains('open')) {
+          const searchInput = elements.filterScopeContainer.querySelector('.dropdown-search-input');
+          if (searchInput) {
+            searchInput.value = '';
+            elements.filterScopeContainer.querySelectorAll('.dropdown-item').forEach(item => item.style.display = 'flex');
+            setTimeout(() => searchInput.focus(), 50);
+          }
         }
+        return;
       }
-      return;
-    }
-    const item = event.target.closest('[data-filter-scope-val]');
-    if (item) {
-      state.scope = item.dataset.filterScopeVal;
-      updateDropdownSummary(elements.filterScopeContainer, state.scope ? [state.scope] : [], false);
-      elements.filterScopeContainer.classList.remove('open');
-      applyProcessFilters();
-    }
-  });
+      const item = event.target.closest('[data-filter-scope-val]');
+      if (item) {
+        state.scope = item.dataset.filterScopeVal;
+        updateDropdownSummary(elements.filterScopeContainer, state.scope ? [state.scope] : [], false);
+        elements.filterScopeContainer.classList.remove('open');
+        applyProcessFilters();
+      }
+    });
+  }
 
   // Filter Cơ quan
   elements.filterOrgContainer.addEventListener('click', event => {
@@ -2630,11 +2691,12 @@ const processCatalog = [
       const step = state.draft?.nodes.find(n => n.id === currentActionsStepId);
       if (step) {
         step.actions = clone(currentActionsDraft);
+        syncOrgsFromAssignStep();
         if (state.selectedStepId === currentActionsStepId && !elements.nodeOverlay.hidden) {
           renderStepForm(step);
         }
         renderSteps();
-        showNotice(`Đã lưu cấu hình hành động cho bước "${step.unitName}".`);
+        showNotice("Đã lưu cấu hình hành động cho bước này.");
       }
       elements.actionsOverlay.hidden = true;
     });
