@@ -1,15 +1,58 @@
 /* ============================================================
-   admin-shared.js — Shared logic for all Quản trị subpages
-   Includes: layout loader, sidebar collapse, toast, confirm dialog
+   SIDEBAR HTML TEMPLATE — nguồn duy nhất (single source of truth)
+   Mỗi module HTML không cần chứa sidebar, loadSharedLayout sẽ inject.
    ============================================================ */
+const ADMIN_SIDEBAR_HTML = `
+<div class="sidebar">
+  <div class="sidebar-top">
+    <span class="menu-label">Menu</span>
+    <button type="button" class="collapse-btn" id="sidebarCollapseBtn" aria-label="Thu gọn menu" title="Thu gọn">
+      <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="sidebar-search"><input type="text" placeholder="Tìm kiếm..."></div>
+
+  <div class="nav-parent open" id="navParent">
+    <span class="nav-ic"><i class="fa-solid fa-table-columns"></i></span>
+    <span>Dashboard</span>
+    <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+  </div>
+  <div class="nav-children" id="navChildren">
+    <div class="nav-item" id="nav-dashboard-giam-sat" onclick="window.location.href='../../dashboard/index.html'">
+      <span class="dot"></span><span>Dashboard giám sát</span>
+    </div>
+  </div>
+
+  <div class="nav-parent open" id="adminNavParent">
+    <span class="nav-ic"><i class="fa-solid fa-list-check"></i></span>
+    <span>Quản trị</span>
+    <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+  </div>
+  <div class="nav-children" id="adminNavChildren">
+    <div class="nav-item" id="nav-quy-trinh-dong" onclick="window.location.href='../quy-trinh-dong/index.html'">
+      <span class="dot"></span><span>Quy trình động</span>
+    </div>
+    <div class="nav-item" id="nav-bao-cao-thong-ke" onclick="window.location.href='../bao-cao-thong-ke/index.html'">
+      <span class="dot"></span><span>Báo cáo thống kê</span>
+    </div>
+    <div class="nav-item" id="nav-xu-ly-chi-dao" onclick="window.location.href='../xu-ly-chi-dao/index.html'">
+      <span class="dot"></span><span>Xử lý chỉ đạo</span>
+    </div>
+  </div>
+</div>`;
 
 /**
- * Load sidebar + topbar từ shared/layout.html vào .app
- * @param {string} activeNavId  - id của nav-item cần active, vd: 'nav-quy-trinh-dong'
- * @param {string} pageTitle    - Tiêu đề hiển thị ở breadcrumb và pageTitle
+ * Inject sidebar vào .app và đánh dấu nav-item active.
+ * Gọi ngay trong <script> cuối <body> của mỗi trang.
+ * @param {string} activeNavId  - id của nav-item cần active
+ * @param {string} pageTitle    - Tiêu đề trang (breadcrumb)
  */
 function loadSharedLayout(activeNavId, pageTitle) {
-  // Layout đã inline trong từng trang — không fetch layout.html (file:// không cho phép cross-origin)
+  const app = document.querySelector('.app');
+  if (app && !app.querySelector('.sidebar')) {
+    // Inject sidebar nếu chưa có (tránh inject 2 lần)
+    app.insertAdjacentHTML('afterbegin', ADMIN_SIDEBAR_HTML);
+  }
 
   // Đánh dấu nav-item active
   if (activeNavId) {
