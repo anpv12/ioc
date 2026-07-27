@@ -200,8 +200,8 @@
         <td class="col-date">${escHtml(item.issuedDate)}</td>
         <td class="col-deadline">
           <span class="deadline-tag ${cond === 'overdue' ? 'overdue' : 'in-time'}">
-            <i class="fa-regular fa-clock"></i>
             <span>${escHtml(dlLabel)}</span>
+            <i class="fa-regular fa-clock"></i>
           </span>
         </td>
         <td class="col-status">${statusBadgeHtml(status)}</td>

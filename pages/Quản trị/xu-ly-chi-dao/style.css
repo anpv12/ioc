@@ -440,18 +440,19 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
+  color: var(--admin-text);
 }
 
 .deadline-tag i {
   font-size: 13px;
 }
 
-.deadline-tag.in-time {
+.deadline-tag.in-time i {
   color: #16a34a;
 }
 
-.deadline-tag.overdue {
+.deadline-tag.overdue i {
   color: #dc2626;
 }
 
