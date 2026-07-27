@@ -48,6 +48,44 @@ document.querySelectorAll('.nav-item[data-view]').forEach(item => {
   item.addEventListener('click', () => switchView(item.dataset.view, item.dataset.label));
 });
 
+/* ---------------- Sidebar collapse / expand ---------------- */
+(function bindSidebarCollapse() {
+  const STORAGE_KEY = 'gialai_admin_sidebar_collapsed';
+  const app = document.querySelector('.app');
+  const collapseBtn = document.getElementById('sidebarCollapseBtn');
+  const expandBtn = document.getElementById('sidebarExpandBtn');
+  if (!app || !collapseBtn) return;
+
+  function setCollapsed(collapsed) {
+    app.classList.toggle('is-sidebar-collapsed', collapsed);
+    if (expandBtn) expandBtn.hidden = !collapsed;
+    collapseBtn.setAttribute('aria-label', collapsed ? 'Mở menu' : 'Thu gọn menu');
+    collapseBtn.title = collapsed ? 'Mở menu' : 'Thu gọn';
+    try {
+      localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+    } catch (e) { /* ignore */ }
+  }
+
+  collapseBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCollapsed(true);
+  });
+  if (expandBtn) {
+    expandBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      setCollapsed(false);
+    });
+  }
+
+  var saved = false;
+  try {
+    saved = localStorage.getItem(STORAGE_KEY) === '1';
+  } catch (e) { /* ignore */ }
+  setCollapsed(saved);
+})();
+
 /* ---------------- Quản lý layout (static 10 rows) ---------------- */
 const qlLayoutRows = [
   ["Dev_FixYC", "6", "13"],

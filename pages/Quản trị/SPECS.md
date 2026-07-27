@@ -1,5 +1,9 @@
 # Đặc tả kỹ thuật (SPECS) — Phân hệ Quản trị
 
+## 0. Shell / Sidebar
+- Sidebar trái có nút **Thu gọn** (angles-left). Khi thu gọn: sidebar ẩn, hiện nút **Mở menu** (bars) trên topbar.
+- Trạng thái đóng/mở được nhớ trong `localStorage` (`gialai_admin_sidebar_collapsed`).
+
 ## 1. Quản trị Dashboard & Layout & Biểu đồ
 - **Dashboard & Layout**: Cho phép Thêm, Sửa, Xóa, Chia sẻ, cấu hình layout dạng prototype UI.
 - **Loại biểu đồ**: Hiển thị danh sách 62 mẫu biểu đồ dạng phân trang (cỡ trang 10/20/50).
