@@ -359,34 +359,24 @@
             <div class="filter-panel" id="processFilterPanel">
               <div class="filter-grid">
                 <div class="filter-item">
-                  <label for="filterProcessOrg">Cơ quan</label>
-                  <select id="filterProcessOrg">
-                    <option value="">-- Chọn --</option>
-                  </select>
+                  <label>Cơ quan</label>
+                  <div class="multiselect-container" id="filterProcessOrgContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
                 </div>
 
                 <div class="filter-item">
-                  <label for="filterProcessScope">Nhóm giám sát</label>
-                  <select id="filterProcessScope">
-                    <option value="">-- Chọn --</option>
-                    <option value="Dân cư">Dân cư</option>
-                    <option value="Phản ánh hiện trường">Phản ánh hiện trường</option>
-                    <option value="Giáo dục">Giáo dục</option>
-                    <option value="Kinh tế xã hội">Kinh tế xã hội</option>
-                    <option value="Cán bộ công chức">Cán bộ công chức</option>
-                    <option value="Văn bản điều hành">Văn bản điều hành</option>
-                    <option value="CSDL quốc gia về tài chính">CSDL quốc gia về tài chính</option>
-                    <option value="Hành chính công">Hành chính công</option>
-                  </select>
+                  <label>Nhóm giám sát</label>
+                  <div class="multiselect-container" id="filterProcessScopeContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
                 </div>
 
                 <div class="filter-item">
-                  <label for="filterProcessActive">Trạng thái</label>
-                  <select id="filterProcessActive">
-                    <option value="">-- Chọn --</option>
-                    <option value="draft">Bản nháp</option>
-                    <option value="active">Hoạt động</option>
-                  </select>
+                  <label>Trạng thái</label>
+                  <div class="multiselect-container" id="filterProcessActiveContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
                 </div>
 
                 <div class="filter-item">
@@ -491,10 +481,7 @@
                       </div>
 
                       <div class="form-group">
-                        <label>Cơ quan áp dụng <span class="required">*</span> <span class="sub-label">(Chọn
-                            nhiều)</span></label>
-
-                        <!-- CUSTOM DROPDOWN CHỌN NHIỀU -->
+                        <label>Cơ quan áp dụng <span class="required">*</span></label>
                         <div class="multiselect-container" id="processOrgsContainer">
                           <!-- Render động -->
                         </div>
@@ -903,8 +890,8 @@
   <!-- Custom Confirm Popup -->
   <div id="confirmDialogOverlay" class="custom-confirm-overlay" hidden>
     <div class="custom-confirm-box">
-      <div class="custom-confirm-body">
-        <i class="fa-solid fa-circle-question confirm-icon"></i>
+      <div class="custom-confirm-header">
+        <h3 id="confirmDialogTitle">Xác nhận</h3>
         <p id="confirmDialogMessage">Nội dung thông báo...</p>
       </div>
       <div class="custom-confirm-footer">
@@ -925,6 +912,15 @@
     </div>
   </div>
 
+  <!-- POPUP NOTIFICATION GÓC TRÊN BÊN PHẢI -->
+  <div class="notifications-container">
+    <div id="toast" class="success">
+      <p id="toast-title" class="success-prompt-heading">Thành công</p>
+      <div id="toast-message" class="success-prompt-prompt">
+        Thao tác đã hoàn tất thành công.
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="js/ui.js"></script>
