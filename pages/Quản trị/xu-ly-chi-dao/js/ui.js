@@ -333,25 +333,27 @@
         </div>
       </div>
 
-      <!-- Ghi chú Sở (option) -->
-      ${['leader','department'].includes(state.role) && status !== 'completed' ? `
-      <div class="notes-input-block info-block">
-        <div class="info-block-header"><i class="fa-solid fa-note-sticky"></i> Ghi chú thêm của đơn vị (tuỳ chọn)</div>
-        <textarea id="notesInput" class="action-textarea" placeholder="Nhập ghi chú bổ sung..." rows="3"
-        >${escHtml(node?.notes||'')}</textarea>
-        <div class="notes-file-row">
-          <label for="notesFileInput"><i class="fa-solid fa-paperclip"></i> Đính kèm file</label>
-          <input type="file" id="notesFileInput">
-          <span id="notesFileName" class="notes-file-name">${node?.notesFile ? escHtml(node.notesFile.name) : ''}</span>
-        </div>
-      </div>` : ''}
-
       <!-- Báo cáo từ cấp dưới -->
       ${['leader','department'].includes(state.role) ? `
       <div class="info-block">
         <div class="info-block-header"><i class="fa-solid fa-file-circle-check"></i> Báo cáo từ cấp dưới</div>
         <div class="info-block-body">
           <div class="sub-reports-list">${subReportsHtml}</div>
+        </div>
+      </div>` : ''}
+
+      <!-- Ghi chú Sở (option) -->
+      ${['leader','department'].includes(state.role) && status !== 'completed' ? `
+      <div class="notes-input-block info-block">
+        <div class="info-block-header"><i class="fa-solid fa-note-sticky"></i> Ghi chú thêm của đơn vị (tuỳ chọn)</div>
+        <div class="info-block-body">
+          <textarea id="notesInput" class="action-textarea" placeholder="Nhập ghi chú bổ sung..." rows="3"
+          >${escHtml(node?.notes||'')}</textarea>
+          <div class="notes-file-row">
+            <label for="notesFileInput"><i class="fa-solid fa-paperclip"></i> Đính kèm file</label>
+            <input type="file" id="notesFileInput">
+            <span id="notesFileName" class="notes-file-name">${node?.notesFile ? escHtml(node.notesFile.name) : ''}</span>
+          </div>
         </div>
       </div>` : ''}
     `;
