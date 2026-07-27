@@ -318,8 +318,8 @@
           <div class="info-row">
             <span class="info-label">Hình ảnh</span>
             <span class="info-value">
-              <a href="javascript:void(0)" class="dashboard-link" data-view-img="${escHtml(item.previewImage || '../../assets/images/sample-doc.png')}" style="color:var(--admin-primary);font-weight:600;cursor:pointer;">
-                <i class="fa-regular fa-image"></i> Xem hình ảnh (${escHtml(item.attachment || 'CD_HinhAnh.png')})
+              <a href="javascript:void(0)" class="dashboard-link" data-view-img="${escHtml(item.previewImage || '../dashboard_mockup.png')}" style="color:var(--admin-primary);font-weight:600;cursor:pointer;">
+                <i class="fa-regular fa-image"></i> Xem hình ảnh (${escHtml(item.attachment || 'dashboard_mockup.png')})
               </a>
             </span>
           </div>

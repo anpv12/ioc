@@ -44,9 +44,9 @@ const createPrototypeDirectives = () => [
     deadlineType:  'normal',
     content:       'Tỉnh chỉ đạo Sở Tài nguyên và Môi trường triển khai kế hoạch kiểm soát ô nhiễm tại các khu công nghiệp trên địa bàn tỉnh Gia Lai trong quý III/2026. Yêu cầu hoàn thành báo cáo hiện trạng và kế hoạch hành động trước hạn.',
     dashboardLink: '../../dashboard/index.html',
-    attachment:    'CD_KiemSoatONhiem_KCN_2026.pdf',
+    attachment:    'dashboard_mockup.png',
     attachmentSize:'1.4 MB',
-    previewImage:  null,
+    previewImage:  '../dashboard_mockup.png',
     processId:     null,
     executionTree: {
       id: 'node-01-leader', contextId: 'leader',
