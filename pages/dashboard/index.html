@@ -38,21 +38,11 @@
       <button title="Cài đặt" onclick="window.location.href='../Quản trị/admin.html'"><i
           class="fa-solid fa-gear"></i></button>
 
-      <!-- Toggle Cảnh Báo -->
-      <div class="warning-toggle-wrap" title="Bật/Tắt hiệu ứng nhấp nháy cảnh báo chỉ đạo" style="display:flex; align-items:center; gap:6px; background:#fff; padding:4px 10px; border-radius:20px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-        <span style="font-size:11px; font-weight:700; color:#334155;"><i class="fa-solid fa-bell" style="color:var(--pink);"></i> Cảnh báo</span>
-        <label class="switch" style="position:relative; display:inline-block; width:34px; height:18px; margin:0;">
-          <input type="checkbox" id="toggleWarningAlert" checked onchange="handleWarningToggleChange(this)">
-          <span class="slider round"></span>
-        </label>
-      </div>
 
       <button id="btnToggleDrawer" title="Bảng chỉ đạo" style="position:relative;">
         <i class="fa-solid fa-bullhorn"></i>
-        <span id="drawerBadge" style="position:absolute;
-      top:-8px;right:-11px;background:red;
-      color:#fff;border-radius:40%;font-size:10px;display:none;
-      align-items:center;justify-content:center; padding:3px">0</span>
+        <span id="drawerBadge"
+          style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:10px; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1; box-shadow:0 1px 3px rgba(0,0,0,0.3);">0</span>
       </button>
     </div>
 
@@ -230,35 +220,38 @@
     <!-- Event Panel Drawer (position: fixed via CSS) -->
     <div class="event-drawer" id="eventDrawer">
       <div class="drawer-header">
-        <span><i class="fa-solid fa-bullhorn"></i> Bảng chỉ đạo điều hành</span>
+        <span>Bảng chỉ đạo điều hành</span>
         <button class="drawer-close" onclick="toggleDrawer()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="drawer-content" id="drawerContent">
 
+        <!-- Toggle Cảnh Báo (di chuyển vào bên trong Drawer) -->
+        <div class="drawer-warning-toggle-bar" id="drawerWarningToggleBar">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-bell" style="color:var(--pink); font-size:13px;"></i>
+            <span style="font-size:12px; font-weight:700; color:#334155;">Hiển thị cảnh báo chỉ đạo</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleWarningAlert" checked onchange="handleWarningToggleChange(this)">
+            <span class="slider round"></span>
+          </label>
+        </div>
 
-        <!-- Tiêu đề + Alert Deadline Banner + Nút chọn tất cả & đôn đốc -->
+        <!-- Tab Bar 2 Tab (Bỏ icon) -->
         <div class="directive-list-header" style="flex-wrap:wrap; gap:8px;">
           <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-            <span class="drawer-section-title" style="margin:0;border:none;padding:0; font-size:14px;">
-              <i class="fa-solid fa-list-check"></i> Danh sách chỉ đạo
-            </span>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <label
-                style="font-size:13px; font-weight:700; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; gap:4px;">
-                <input type="checkbox" id="selectAllDirectives" onchange="toggleSelectAllDirectives(this)"
-                  style="cursor:pointer; accent-color:var(--pink);">
-                <span>Chọn tất cả</span>
-              </label>
-              <button class="btn-urge-inline" onclick="submitBatchUrgeDirectives()"
-                style="padding:6px 12px; background:linear-gradient(100deg, var(--pink), var(--pink-light)); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                <i class="fa-solid fa-bullhorn"></i> Đôn đốc <span id="selectedUrgeInlineCount"></span>
+            <div class="drawer-tab-bar">
+              <button class="drawer-tab active" id="tabInProgress" onclick="switchDirectiveTab('inprogress')">
+                Đang thực hiện
               </button>
-              <button class="btn-create-inline" id="btnShowCreateForm" onclick="openDirectiveFormModal()"
-                style="padding:6px 12px; background:linear-gradient(100deg, #10b981, #34d399); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                <i class="fa-solid fa-plus"></i> Thêm mới
+              <button class="drawer-tab" id="tabDone" onclick="switchDirectiveTab('done')">
+                Đã xử lý
               </button>
-              
             </div>
+            <button class="btn-create-inline" id="btnShowCreateForm" onclick="openDirectiveFormModal()"
+              style="padding:6px 12px; background:linear-gradient(100deg, #10b981, #34d399); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+              <i class="fa-solid fa-plus"></i> Thêm mới
+            </button>
           </div>
         </div>
 
@@ -267,46 +260,81 @@
 
         <div class="directives-container" style="display: flex; flex-direction: column; gap: 8px;">
           <!-- Search & Filter Controls -->
-          <div class="directive-filters" style="flex-wrap: wrap;">
-            <div class="directive-search-wrap" style="flex: 1 1 100%;">
-              <input type="text" id="directiveSearch" placeholder="Tìm nội dung, chỉ số, cơ quan...">
-              <i class="fa-solid fa-magnifying-glass"></i>
+          <div class="directive-filters" style="flex-wrap: wrap; gap: 6px;">
+            <!-- Hàng 1: ô tìm kiếm + nút -->
+            <div style="flex: 1 1 100%; display:flex; gap:6px; align-items:center;">
+              <div class="directive-search-wrap" style="flex:1;">
+                <input type="text" id="directiveSearch" placeholder="Tìm nội dung, nhóm dữ liệu, cơ quan...">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+              <button class="filter-action-btn btn-search" onclick="applyDirectiveFilters()">
+                <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
+              </button>
+              <button class="filter-action-btn btn-reset" onclick="resetDirectiveFilters()" title="Làm mới bộ lọc">
+                <i class="fa-solid fa-rotate-left"></i> Làm mới
+              </button>
             </div>
-            <select id="directiveFilterOrganzation" class="directive-filter-select" onchange="onAgencyFilterChange()">
-              <option value="Tất cả">Tất cả đơn vị</option>
-              <option value="Sở Nội vụ">Sở Nội vụ</option>
-              <option value="Sở Thông tin và Truyền thông">Sở Thông tin và Truyền thông</option>
-              <option value="Sở Tư pháp">Sở Tư pháp</option>
-              <option value="Sở Lao động - Thương binh và Xã hội">Sở Lao động - Thương binh và Xã hội</option>
-              <option value="Sở Y tế">Sở Y tế</option>
-              <option value="Sở Giáo dục và Đào tạo">Sở Giáo dục và Đào tạo</option>
-              <option value="Sở Kế hoạch và Đầu tư">Sở Kế hoạch và Đầu tư</option>
-              <option value="Sở Tài chính">Sở Tài chính</option>
-              <option value="UBND Huyện Pleiku">UBND Huyện Pleiku</option>
-              <option value="UBND Huyện Ia Grai">UBND Huyện Ia Grai</option>
-              <option value="UBND Huyện Chư Sê">UBND Huyện Chư Sê</option>
-              <option value="UBND Huyện Đăk Đoa">UBND Huyện Đăk Đoa</option>
-              <option value="Cục Thống kê Gia Lai">Cục Thống kê Gia Lai</option>
-              <option value="Công an Tỉnh Gia Lai">Công an Tỉnh Gia Lai</option>
-            </select>
-            <select id="directiveFilterStatus" class="directive-filter-select">
-              <option value="Tất cả">Tất cả trạng thái</option>
-              <option value="Đã chỉ đạo">Đã chỉ đạo</option>
-              <option value="Chờ phân công">Chờ phân công</option>
-              <option value="Đang xử lý">Đang xử lý</option>
-              <option value="Đã có báo cáo">Đã có báo cáo</option>
-              <option value="Hoàn thành">Hoàn thành</option>
-              <option value="Bị từ chối">Bị từ chối</option>
-            </select>
-            <select id="directiveFilterDeadline" class="directive-filter-select">
+            <!-- Hàng 2: Multiselect -->
+            <div class="filter-multiselect-wrap" id="filterOrgWrap" style="flex: 1 1 calc(50% - 3px); min-width:140px;"
+              onclick="toggleFilterDropdown('org')">
+              <div class="filter-multiselect-display" id="filterOrgDisplay">
+                <span class="fms-placeholder" id="filterOrgLabel">Tất cả đơn vị</span>
+                <i class="fa-solid fa-chevron-down filter-multiselect-chevron"></i>
+              </div>
+              <div class="filter-multiselect-dropdown" id="filterOrgDropdown" onclick="event.stopPropagation()">
+                <label><input type="checkbox" value="Sở Nội vụ" onchange="onMultiFilterChange('org')"> Sở Nội vụ</label>
+                <label><input type="checkbox" value="Sở Thông tin và Truyền thông"
+                    onchange="onMultiFilterChange('org')"> Sở Thông tin và Truyền thông</label>
+                <label><input type="checkbox" value="Sở Tư pháp" onchange="onMultiFilterChange('org')"> Sở Tư
+                  pháp</label>
+                <label><input type="checkbox" value="Sở Lao động - Thương binh và Xã hội"
+                    onchange="onMultiFilterChange('org')"> Sở Lao động - Thương binh và Xã hội</label>
+                <label><input type="checkbox" value="Sở Y tế" onchange="onMultiFilterChange('org')"> Sở Y tế</label>
+                <label><input type="checkbox" value="Sở Giáo dục và Đào tạo" onchange="onMultiFilterChange('org')"> Sở
+                  Giáo dục và Đào tạo</label>
+                <label><input type="checkbox" value="Sở Kế hoạch và Đầu tư" onchange="onMultiFilterChange('org')"> Sở Kế
+                  hoạch và Đầu tư</label>
+                <label><input type="checkbox" value="Sở Tài chính" onchange="onMultiFilterChange('org')"> Sở Tài
+                  chính</label>
+                <label><input type="checkbox" value="UBND Phường Pleiku" onchange="onMultiFilterChange('org')"> UBND
+                  Phường Pleiku</label>
+                <label><input type="checkbox" value="UBND Phường Ia Grai" onchange="onMultiFilterChange('org')"> UBND
+                  Phường Ia Grai</label>
+                <label><input type="checkbox" value="UBND Phường Chư Sê" onchange="onMultiFilterChange('org')"> UBND
+                  Phường Chư Sê</label>
+                <label><input type="checkbox" value="UBND Phường Đăk Đoa" onchange="onMultiFilterChange('org')"> UBND
+                  Phường Đăk Đoa</label>
+                <label><input type="checkbox" value="Cục Thống kê Gia Lai" onchange="onMultiFilterChange('org')"> Cục
+                  Thống kê Gia Lai</label>
+                <label><input type="checkbox" value="Công an Tỉnh Gia Lai" onchange="onMultiFilterChange('org')"> Công
+                  an Tỉnh Gia Lai</label>
+              </div>
+            </div>
+            <div class="filter-multiselect-wrap" id="filterStatusWrap"
+              style="flex: 1 1 calc(50% - 3px); min-width:140px;" onclick="toggleFilterDropdown('status')">
+              <div class="filter-multiselect-display" id="filterStatusDisplay">
+                <span class="fms-placeholder" id="filterStatusLabel">Tất cả trạng thái</span>
+                <i class="fa-solid fa-chevron-down filter-multiselect-chevron"></i>
+              </div>
+              <div class="filter-multiselect-dropdown" id="filterStatusDropdown" onclick="event.stopPropagation()">
+                <label><input type="checkbox" value="Đã chỉ đạo" onchange="onMultiFilterChange('status')"> Đã chỉ đạo</label>
+                <label><input type="checkbox" value="Chờ phân công" onchange="onMultiFilterChange('status')"> Chờ phân công</label>
+                <label><input type="checkbox" value="Đang xử lý" onchange="onMultiFilterChange('status')"> Đang xử lý</label>
+                <label><input type="checkbox" value="Đã có báo cáo" onchange="onMultiFilterChange('status')"> Đã có báo cáo</label>
+                <label><input type="checkbox" value="Bị từ chối" onchange="onMultiFilterChange('status')"> Bị từ chối</label>
+              </div>
+            </div>
+            <!-- Bộ lọc Tình trạng ddl: Trong hạn, Quá hạn -->
+            <select id="directiveFilterDeadline" class="directive-filter-select" style="flex: 1 1 100%; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; color:#334155; outline:none; background:#fff; cursor:pointer;" onchange="applyDirectiveFilters()">
               <option value="Tất cả">Tất cả tình trạng</option>
               <option value="Trong hạn">Trong hạn</option>
               <option value="Quá hạn">Quá hạn</option>
             </select>
-            <div class="directive-date-filter">
-              <input type="text" id="filterDateFrom" class="directive-filter-date" placeholder="Từ ngày" readonly>
+            <!-- Hàng 3: Lọc thời gian -->
+            <div class="directive-date-filter" style="flex: 1 1 100%;">
+              <input type="text" id="filterDateFrom" class="directive-filter-date" placeholder="Tạo từ ngày" readonly>
               <span style="color:var(--text-muted); font-size:10px;">—</span>
-              <input type="text" id="filterDateTo" class="directive-filter-date" placeholder="Đến ngày" readonly>
+              <input type="text" id="filterDateTo" class="directive-filter-date" placeholder="Tạo đến ngày" readonly>
             </div>
           </div>
 
@@ -342,94 +370,172 @@
           </div>
           <div class="modal-body"
             style="padding: 18px; display: flex; flex-direction: column; gap: 12px; max-height: 75vh; overflow-y: auto;">
-            <div class="form-group">
-              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Ngày tạo</label>
-              <input type="text" id="formCreatedAt" disabled
-                style="background:#f8fafc; color: var(--text-muted); padding:8px; border:1px solid #cbd5e1; border-radius:6px;"
-                placeholder="DD/MM/YYYY HH:mm:ss">
-            </div>
-            <div class="form-group">
-              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Chỉ số cần chỉ đạo <span
+
+            <!-- 1. Nhóm dữ liệu (Ẩn theo yêu cầu) -->
+            <div class="form-group" style="display:none;">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Nhóm dữ liệu <span
                   class="required-star">(*)</span></label>
-              <div class="multiselect-wrap" id="formMetricMultiWrap">
-                <div class="multiselect-display" id="formMetricDisplay" onclick="toggleMultiselect()" style="position:relative; padding-right:30px;">
-                  <span id="formMetricPlaceholder" style="color:var(--text-muted);">-- Chọn chỉ số --</span>
-                  <i class="fa-solid fa-chevron-down" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:11px; color:#64748b; pointer-events:none;"></i>
+              <input type="hidden" id="formLayoutGroup" onchange="onLayoutGroupChange()">
+              <div class="multiselect-wrap" id="formLayoutGroupWrap" style="position:relative;">
+                <div class="multiselect-display" id="formLayoutGroupDisplay" onclick="toggleLayoutGroupDropdown()"
+                  style="position:relative; padding-right:32px;">
+                  <span id="formLayoutGroupPlaceholder" style="color:var(--text-muted);">-- Chọn nhóm dữ liệu --</span>
                 </div>
-                <div class="multiselect-dropdown" id="formMetricDropdown">
-                  <label class="ms-opt"><input type="checkbox" value="metric-tong-nhan-khau"> Tổng nhân khẩu</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-dien-tich"> Diện tích (Km²)</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-mat-do"> Mật độ dân số</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-tre-em"> Trẻ em (0-14t)</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-lao-dong"> Người lao động (15-64t)</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-nguoi-lon-tuoi"> Người lớn tuổi (Trên 65t)</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-chart-high"> Top 5 nhân khẩu cao nhất</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-chart-low"> Top 5 nhân khẩu thấp nhất</label>
-                  <label class="ms-opt"><input type="checkbox" value="metric-map"> Bản đồ phân bố dân cư</label>
+                <i class="fa-solid fa-chevron-down multiselect-arrow-icon" onclick="toggleLayoutGroupDropdown()"></i>
+                <div class="multiselect-dropdown" id="formLayoutGroupDropdown">
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="giao-duc"
+                      data-name="Giáo dục" onchange="selectLayoutGroup(this)"> <span>Giáo dục</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="quan-ly-van-ban"
+                      data-name="Quản lý văn bản" onchange="selectLayoutGroup(this)"> <span>Quản lý văn
+                      bản</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="y-te" data-name="Y tế"
+                      onchange="selectLayoutGroup(this)"> <span>Y tế</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="doanh-nghiep"
+                      data-name="Doanh nghiệp" onchange="selectLayoutGroup(this)"> <span>Doanh nghiệp</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="kinh-te-xa-hoi"
+                      data-name="Kinh tế - Xã hội" onchange="selectLayoutGroup(this)"> <span>Kinh tế - Xã
+                      hội</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="dich-vu-cong"
+                      data-name="Dịch vụ công" onchange="selectLayoutGroup(this)"> <span>Dịch vụ công</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="dau-tu-cong"
+                      data-name="Đầu tư công" onchange="selectLayoutGroup(this)"> <span>Đầu tư công</span></label>
+                  <label class="ms-opt"><input type="radio" name="layoutGroupRadio" value="du-lieu-khac"
+                      data-name="Dữ liệu khác / Dân cư" onchange="selectLayoutGroup(this)"> <span>Dữ liệu khác / Dân
+                      cư</span></label>
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <label for="formAgency" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Cơ quan
-                tiếp nhận chỉ đạo <span class="required-star">(*)</span></label>
-              <select id="formAgency" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
-                <option value="">-- Chọn cơ quan --</option>
-                <option>Sở Nội vụ</option>
-                <option>Sở Thông tin và Truyền thông</option>
-                <option>Sở Tư pháp</option>
-                <option>Sở Lao động - Thương binh và Xã hội</option>
-                <option>Sở Y tế</option>
-                <option>Sở Giáo dục và Đào tạo</option>
-                <option>Sở Kế hoạch và Đầu tư</option>
-                <option>Sở Tài chính</option>
-                <option>UBND Huyện Pleiku</option>
-                <option>UBND Huyện Ia Grai</option>
-                <option>UBND Huyện Chư Sê</option>
-                <option>UBND Huyện Đăk Đoa</option>
-                <option>Cục Thống kê Gia Lai</option>
-                <option>Công an Tỉnh Gia Lai</option>
-              </select>
+
+            <!-- 2. Trang dữ liệu (sinh ra theo Nhóm dữ liệu) -->
+            <div class="form-group" id="formDataPageGroup" style="display:none;">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Trang dữ liệu <span
+                  class="required-star">(*)</span></label>
+              <div class="multiselect-wrap" id="formDataPageMultiWrap" style="position:relative;">
+                <div class="multiselect-display" id="formDataPageDisplay" onclick="toggleDataPageMultiselect()"
+                  style="position:relative; padding-right:32px;">
+                  <span id="formDataPagePlaceholder" style="color:var(--text-muted);">-- Chọn trang dữ liệu --</span>
+                </div>
+                <i class="fa-solid fa-chevron-down multiselect-arrow-icon" onclick="toggleDataPageMultiselect()"></i>
+                <div class="multiselect-dropdown" id="formDataPageDropdown">
+                  <!-- Generated by JS -->
+                </div>
+              </div>
             </div>
+
+            <!-- 3. Nguồn dữ liệu (tự sinh hyperlink) -->
+            <div class="form-group" id="formDataSourceGroup">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Nguồn dữ liệu</label>
+              <div id="formDataSourceLinks"
+                style="display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; min-height:36px; align-items:center;">
+                <!-- Link JS sinh -->
+              </div>
+            </div>
+
+            <!-- Hình ảnh chỉ đạo -->
+            <div class="form-group" id="formScreenshotGroup">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Hình ảnh chỉ đạo</label>
+              <div id="formScreenshotPreview" style="margin-top: 4px;">
+                <div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
+                  <img src="image/IOC_TinhHinhDanCuTheoGioiTinh.png"
+                    onerror="this.src='https://via.placeholder.com/600x300?text=Dashboard+Screenshot'"
+                    alt="Dashboard Screenshot"
+                    style="width:100%; max-height:220px; object-fit:cover; display:block; object-position: top;">
+                  <div
+                    style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
+                    <i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Đơn vị xử lý -->
+            <div class="form-group">
+              <label for="formAgency" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đơn vị xử
+                lý <span class="required-star">(*)</span></label>
+              <input type="hidden" id="formAgency">
+              <div class="multiselect-wrap" id="formAgencyWrap" style="position:relative;">
+                <div class="multiselect-display" id="formAgencyDisplay" onclick="toggleAgencyDropdown()"
+                  style="position:relative; padding-right:32px;">
+                  <span id="formAgencyPlaceholder" style="color:var(--text-muted);">-- Chọn đơn vị xử lý --</span>
+                </div>
+                <i class="fa-solid fa-chevron-down multiselect-arrow-icon" onclick="toggleAgencyDropdown()"></i>
+                <div class="multiselect-dropdown" id="formAgencyDropdown">
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Nội vụ"
+                      onchange="selectAgencyMulti()"> <span>Sở Nội vụ</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Thông tin và Truyền thông"
+                      onchange="selectAgencyMulti()"> <span>Sở Thông tin và Truyền thông</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Tư pháp"
+                      onchange="selectAgencyMulti()"> <span>Sở Tư pháp</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb"
+                      value="Sở Lao động - Thương binh và Xã hội" onchange="selectAgencyMulti()"> <span>Sở Lao động -
+                      Thương binh và Xã hội</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Y tế"
+                      onchange="selectAgencyMulti()"> <span>Sở Y tế</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Giáo dục và Đào tạo"
+                      onchange="selectAgencyMulti()"> <span>Sở Giáo dục và Đào tạo</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Kế hoạch và Đầu tư"
+                      onchange="selectAgencyMulti()"> <span>Sở Kế hoạch và Đầu tư</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Tài chính"
+                      onchange="selectAgencyMulti()"> <span>Sở Tài chính</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Pleiku"
+                      onchange="selectAgencyMulti()"> <span>UBND Phường Pleiku</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Ia Grai"
+                      onchange="selectAgencyMulti()"> <span>UBND Phường Ia Grai</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Chư Sê"
+                      onchange="selectAgencyMulti()"> <span>UBND Phường Chư Sê</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Đăk Đoa"
+                      onchange="selectAgencyMulti()"> <span>UBND Phường Đăk Đoa</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Cục Thống kê Gia Lai"
+                      onchange="selectAgencyMulti()"> <span>Cục Thống kê Gia Lai</span></label>
+                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Công an Tỉnh Gia Lai"
+                      onchange="selectAgencyMulti()"> <span>Công an Tỉnh Gia Lai</span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. Nội dung chỉ đạo -->
             <div class="form-group">
               <label for="formContent" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Nội dung
                 chỉ đạo <span class="required-star">(*)</span></label>
               <textarea id="formContent" rows="3" placeholder="Nhập nội dung chỉ đạo..."
                 style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-family:var(--font-family); font-size:var(--fs-sm);"></textarea>
             </div>
-            <div class="form-group">
-              <label for="formDueDate" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Hạn xử
-                lý</label>
-              <input type="text" id="formDueDate" placeholder="Chọn ngày" readonly
-                style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer;">
-            </div>
-            <div class="form-group">
-              <label for="formDirector" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Người
-                chỉ đạo <span class="required-star">(*)</span></label>
-              <select id="formDirector" disabled style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#f1f5f9; cursor:not-allowed; color:#475569; font-weight:600;">
-                <option value="Chủ tịch UBND Tỉnh" selected>Chủ tịch UBND Tỉnh</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đính kèm file, hình ảnh</label>
-              <div class="file-attach-wrap" style="display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                  <label class="btn-file-attach" for="formAttach" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
-                    <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Chọn file / Ảnh
-                  </label>
-                  <input type="file" id="formAttach" multiple style="display:none;" onchange="handleFileAttach(this)">
-                  <div style="position:relative; display:inline-block;">
-                    <button type="button" onclick="toggleCaptureMenu(event)" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
-                      <i class="fa-solid fa-camera" style="color:#2563eb;"></i> Chụp màn hình <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
-                    </button>
-                    <div id="captureMenuDropdown" style="display:none; position:absolute; top:100%; left:0; margin-top:4px; background:#fff; border:1px solid #cbd5e1; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:100; min-width:170px; overflow:hidden;">
-                      <button type="button" onclick="executeScreenCapture('full')" style="width:100%; text-align:left; padding:8px 12px; background:none; border:none; font-size:12px; cursor:pointer; color:#334155;"><i class="fa-solid fa-desktop" style="margin-right:6px; color:#2563eb;"></i> Chụp toàn trang</button>
-                      <button type="button" onclick="executeScreenCapture('single')" style="width:100%; text-align:left; padding:8px 12px; background:none; border:none; font-size:12px; cursor:pointer; color:#334155;"><i class="fa-chart-pie fa-solid" style="margin-right:6px; color:#16a34a;"></i> Chụp 1 biểu đồ</button>
-                      <button type="button" onclick="executeScreenCapture('multi')" style="width:100%; text-align:left; padding:8px 12px; background:none; border:none; font-size:12px; cursor:pointer; color:#334155;"><i class="fa-solid fa-chart-column" style="margin-right:6px; color:#d97706;"></i> Chụp nhiều biểu đồ</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="file-attach-list" id="formAttachList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;"></div>
+
+            <!-- 6. Hạn xử lý, 7. Người chỉ đạo & 8. Ngày tạo (Cùng 1 hàng 3 cột) -->
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <div class="form-group" style="flex:1; min-width:130px;">
+                <label for="formDueDate" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Hạn xử lý</label>
+                <input type="text" id="formDueDate" placeholder="Chọn ngày" readonly
+                  style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer; font-weight:400;">
               </div>
+              <div class="form-group" style="flex:1; min-width:130px;">
+                <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Người chỉ đạo</label>
+                <input type="text" id="formDirector" value="Chủ tịch UBND Tỉnh" disabled
+                  style="background:#f1f5f9; color: #475569; padding:8px; border:1px solid #cbd5e1; border-radius:6px; cursor:not-allowed; width:100%; font-weight:400; opacity: 0.85;">
+              </div>
+              <div class="form-group" style="flex:1; min-width:130px;">
+                <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Ngày tạo</label>
+                <input type="text" id="formCreatedAt" disabled
+                  style="background:#f1f5f9; color: #475569; padding:8px; border:1px solid #cbd5e1; border-radius:6px; cursor:not-allowed; width:100%; font-weight:400; opacity: 0.85;"
+                  placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+
+            <!-- 9. Đính kèm file ảnh -->
+            <div class="form-group">
+              <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tài liệu đính kèm</label>
+              <div class="file-drop-zone"
+                style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 16px; text-align: center; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+
+                <label for="formAttach"
+                  style="cursor: pointer; display: inline-block; padding: 8px 16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 600; color: #475569; margin: 4px 0;">
+                  Chọn file
+                </label>
+                <input type="file" id="formAttach" multiple style="display:none;" onchange="handleFileAttach(this)">
+                <p style="margin: 0; font-size: 12px; color: #94a3b8; margin-top: 8px;">Kích thước tối đa: 50MB mỗi
+                  file. Hỗ trợ: .jpg, .jpeg, .png, .pdf, .doc, .docx. Tối đa 5 files</p>
+              </div>
+              <div class="file-attach-list" id="formAttachList"
+                style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;"></div>
             </div>
           </div>
           <div class="modal-footer"
@@ -444,7 +550,6 @@
           </div>
         </div>
       </div>
-      </div> <!-- /drawer-content -->
     </div> <!-- /event-drawer -->
     <!-- Modal Xem Chi Tiết Chỉ Đạo -->
     <div class="modal-overlay" id="detailModal">
@@ -486,18 +591,26 @@
           <span><i class="fa-solid fa-circle-check"></i> Xác nhận phê duyệt báo cáo</span>
           <button class="modal-close" onclick="closeConfirmApproveModal()">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-          <div style="width: 52px; height: 52px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+        <div class="modal-body"
+          style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div
+            style="width: 52px; height: 52px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 24px;">
             <i class="fa-solid fa-check"></i>
           </div>
           <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
             Phê duyệt báo cáo kết quả và đánh dấu Hoàn thành chỉ đạo này?
           </p>
-          <span style="font-size: 12px; color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Hoàn thành và lưu vào hệ thống.</span>
+          <span style="font-size: 12px; color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Hoàn thành và lưu vào hệ
+            thống.</span>
         </div>
-        <div class="modal-footer" style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
-          <button class="btn-close-modal" onclick="closeConfirmApproveModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Hủy bỏ</button>
-          <button id="btnConfirmApproveSubmit" onclick="executeConfirmApprove()" style="padding: 8px 22px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Phê duyệt</button>
+        <div class="modal-footer"
+          style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn-close-modal" onclick="closeConfirmApproveModal()"
+            style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Hủy
+            bỏ</button>
+          <button id="btnConfirmApproveSubmit" onclick="executeConfirmApprove()"
+            style="padding: 8px 22px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Phê
+            duyệt</button>
         </div>
       </div>
     </div>
@@ -523,17 +636,18 @@
               style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:10px; font-family:var(--font-family); font-size:var(--fs-sm); outline:none;"></textarea>
           </div>
           <div class="form-group">
-            <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tải file, Tải ảnh & Chụp màn hình đính kèm</label>
+            <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tải file / Ảnh đính
+              kèm</label>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
-              <label for="rejectAttachInput" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
+              <label for="rejectAttachInput"
+                style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
                 <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Tải file / Ảnh
               </label>
-              <input type="file" id="rejectAttachInput" multiple style="display:none;" onchange="handleRejectFileAttach(this)">
-              <button type="button" onclick="captureRejectScreenAttachment()" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
-                <i class="fa-solid fa-camera" style="color:#2563eb;"></i> Chụp màn hình
-              </button>
+              <input type="file" id="rejectAttachInput" multiple style="display:none;"
+                onchange="handleRejectFileAttach(this)">
             </div>
-            <div class="file-attach-list" id="rejectAttachList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
+            <div class="file-attach-list" id="rejectAttachList"
+              style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
           </div>
         </div>
         <div class="modal-footer"
@@ -542,34 +656,51 @@
             style="padding: 8px 16px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Hủy
             bỏ</button>
           <button class="btn-submit-reject" onclick="submitRejectDirective()"
-            style="padding: 8px 20px; background: #d32f2f; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Từ chối</button>
+            style="padding: 8px 20px; background: #d32f2f; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Từ
+            chối</button>
         </div>
       </div>
     </div>
 
     <!-- Modal Xem Trước File Đính Kèm -->
     <div class="modal-overlay" id="filePreviewModal">
-      <div class="modal-card" style="width: 720px; max-width: 92vw;">
+      <div class="modal-card" style="width: 760px; max-width: 95vw;">
         <div class="modal-header">
-          <span id="filePreviewTitle"><i class="fa-solid fa-file"></i> Xem trước tài liệu đính kèm</span>
+          <span id="filePreviewTitle">Xem trước tài liệu</span>
           <button class="modal-close" onclick="closeFilePreviewModal()">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 280px; background: #f8fafc;">
-          <i class="fa-solid fa-file-pdf" style="font-size: 64px; color: var(--pink);"></i>
-          <div style="text-align: center;">
-            <h4 id="filePreviewName" style="margin: 0 0 6px; font-size: 15px; color: var(--text-dark);">Tập tin đính kèm</h4>
-            <p style="margin: 0; font-size: 12px; color: var(--text-muted);">Bản xem trước dữ liệu tài liệu trực tuyến (Nguồn: C06 / Văn phòng UBND Tỉnh)</p>
-          </div>
-          <div style="width: 100%; height: 160px; background: #fff; border: 1px dashed #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px;">
-            <i class="fa-solid fa-eye" style="color: #64748b; font-size: 20px;"></i>
-            <span style="font-size: 12px; color: #475569; font-weight: 500;">Hệ thống đang hiển thị nội dung tài liệu trích xuất tự động</span>
+        <div class="modal-body"
+          style="padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 280px; background: #f8fafc;">
+          <!-- File list & selection controls (generated by JS) -->
+          <div id="filePreviewContent" class="file-preview-grid">
+            <!-- JS sẽ render nội dung tại đây -->
           </div>
         </div>
-        <div class="modal-footer" style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px;">
-          <button class="btn-close-modal" onclick="closeFilePreviewModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Đóng</button>
-          <button id="btnDownloadFromPreview" onclick="downloadCurrentPreviewFile()" style="padding: 8px 20px; background: var(--pink); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
-            <i class="fa-solid fa-download"></i> Tải về
-          </button>
+        <div class="modal-footer"
+          style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #eee; display: flex; justify-content: flex-end;">
+          <button class="btn-close-modal" onclick="closeFilePreviewModal()"
+            style="padding: 8px 22px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Zoom Hình Ảnh Chỉ Đạo -->
+    <div class="modal-overlay" id="imageZoomModal">
+      <div class="modal-card" style="width: 90vw; max-width: 1200px; background: #000;">
+        <div class="modal-header" style="background: #111; color: #fff; border-bottom: 1px solid #333;">
+          <span id="imageZoomTitle" style="color:#fff; font-weight:700;"><i class="fa-regular fa-image"></i> Hình ảnh
+            chỉ đạo</span>
+          <button class="modal-close" onclick="closeImageZoomModal()" style="color:#fff;">&times;</button>
+        </div>
+        <div class="modal-body"
+          style="padding: 16px; display: flex; justify-content: center; align-items: center; background: #0a0a0a; min-height: 70vh; max-height: 82vh; overflow: auto;">
+          <img id="imageZoomSrc" src="" alt="Zoom Image"
+            style="max-width: 100%; max-height: 78vh; object-fit: contain; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+        </div>
+        <div class="modal-footer"
+          style="padding: 10px 18px; background: #111; border-top: 1px solid #333; display: flex; justify-content: flex-end;">
+          <button class="btn-close-modal" onclick="closeImageZoomModal()"
+            style="padding: 6px 18px; background: #333; color: #fff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">Đóng</button>
         </div>
       </div>
     </div>
@@ -581,8 +712,10 @@
           <span><i class="fa-solid fa-triangle-exclamation"></i> Xác nhận xóa chỉ đạo</span>
           <button class="modal-close" onclick="closeConfirmDeleteModal()">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-          <div style="width: 52px; height: 52px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+        <div class="modal-body"
+          style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div
+            style="width: 52px; height: 52px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 24px;">
             <i class="fa-solid fa-trash-can"></i>
           </div>
           <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
@@ -590,9 +723,13 @@
           </p>
           <span style="font-size: 12px; color: #64748b;">Hành động này không thể hoàn tác sau khi thực hiện.</span>
         </div>
-        <div class="modal-footer" style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
-          <button class="btn-close-modal" onclick="closeConfirmDeleteModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Hủy</button>
-          <button id="btnConfirmDeleteSubmit" onclick="executeConfirmDelete()" style="padding: 8px 22px; background: #dc2626; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Đồng ý</button>
+        <div class="modal-footer"
+          style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn-close-modal" onclick="closeConfirmDeleteModal()"
+            style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Hủy</button>
+          <button id="btnConfirmDeleteSubmit" onclick="executeConfirmDelete()"
+            style="padding: 8px 22px; background: #dc2626; color: #fff; border: none; border-radius: 8px; font-family: var(--font-family); font-size: var(--fs-sm); font-weight: 700; cursor: pointer;">Đồng
+            ý</button>
         </div>
       </div>
     </div>

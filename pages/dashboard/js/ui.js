@@ -23,9 +23,9 @@ const paginationInfo = document.getElementById('paginationInfo');
 const btnPrevPage = document.getElementById('btnPrevPage');
 const btnNextPage = document.getElementById('btnNextPage');
 const directiveSearch = document.getElementById('directiveSearch');
-const directiveFilterStatus = document.getElementById('directiveFilterStatus');
-const directiveFilterDeadline = document.getElementById('directiveFilterDeadline');
+// NOTE: directiveFilterStatus and directiveFilterDeadline removed (replaced by multiselect)
 
+let currentDirectiveTab = 'inprogress'; // 'inprogress' | 'done'
 let currentPage = 1;
 
 // ----- Flatpickr (Rule 8) -----
@@ -52,9 +52,7 @@ flatpickr(document.getElementById('filterDateTo'), {
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yyyy = now.getFullYear();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mi = String(now.getMinutes()).padStart(2, '0');
-    el.value = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi;
+    el.value = dd + '/' + mm + '/' + yyyy;
   }
 })();
 
@@ -97,17 +95,14 @@ function updateFormsVisibility() {
     if (formOpen) {
       btnCreate.classList.add('active');
 
-      // Cập nhật ngày tạo mỗi lần mở (gồm cả giây)
+      // Cập nhật ngày tạo mỗi lần mở (chỉ ngày)
       const now = new Date();
       const createdAtEl = document.getElementById('formCreatedAt');
       if (createdAtEl) {
         const dd = String(now.getDate()).padStart(2, '0');
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         const yyyy = now.getFullYear();
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mi = String(now.getMinutes()).padStart(2, '0');
-        const ss = String(now.getSeconds()).padStart(2, '0');
-        createdAtEl.value = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi + ':' + ss;
+        createdAtEl.value = dd + '/' + mm + '/' + yyyy;
       }
 
       // Mặc định chọn Người chỉ đạo theo tên account đăng nhập
@@ -135,9 +130,37 @@ window.toggleMultiselect = function () {
 };
 
 document.addEventListener('click', function (e) {
-  const wrap = document.getElementById('formMetricMultiWrap');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('formMetricDropdown').classList.remove('open');
+  // 1. Metric Multiselect
+  const metricWrap = document.getElementById('formMetricMultiWrap');
+  if (metricWrap && !metricWrap.contains(e.target)) {
+    const drop = document.getElementById('formMetricDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 2. Agency Multiselect
+  const agencyWrap = document.getElementById('formAgencyWrap');
+  if (agencyWrap && !agencyWrap.contains(e.target)) {
+    const drop = document.getElementById('formAgencyDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 3. Layout Group Radio Dropdown
+  const groupWrap = document.getElementById('formLayoutGroupWrap');
+  if (groupWrap && !groupWrap.contains(e.target)) {
+    const drop = document.getElementById('formLayoutGroupDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 4. Data Page Multiselect
+  const pageWrap = document.getElementById('formDataPageMultiWrap');
+  if (pageWrap && !pageWrap.contains(e.target)) {
+    const drop = document.getElementById('formDataPageDropdown');
+    if (drop) drop.classList.remove('open');
+  }
+
+  // 5. Directive Action 3-dots Dropdowns
+  if (!e.target.closest('.directive-actions-menu-wrap')) {
+    document.querySelectorAll('.directive-actions-dropdown.open').forEach(el => el.classList.remove('open'));
   }
 });
 
@@ -357,54 +380,41 @@ function getDeadlineIconHtml(dir) {
 }
 
 function updateAllCountdowns() {
-  const now = new Date();
-
-  // Update tooltip for each clock icon in the directive list
+  // Update tooltip for each clock icon in the directive list (Chỉ lấy ngày dd/mm/yyyy)
   document.querySelectorAll('.deadline-clock-icon').forEach(el => {
     const dueDateStr = el.getAttribute('data-due');
     const tooltip = el.querySelector('.deadline-tooltip');
     if (!dueDateStr || !tooltip) return;
 
     const targetDate = parseDDMMYYYY(dueDateStr);
-    if (!targetDate) return;
-    targetDate.setHours(23, 59, 59, 999);
+    if (!targetDate) {
+      tooltip.textContent = 'Hạn: ' + dueDateStr;
+      return;
+    }
 
-    const diffMs = targetDate.getTime() - now.getTime();
-    const isOverdue = diffMs < 0;
-    const absDiff = Math.abs(diffMs);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const target = new Date(targetDate);
+    target.setHours(0, 0, 0, 0);
 
-    const secs = Math.floor((absDiff / 1000) % 60);
-    const mins = Math.floor((absDiff / (1000 * 60)) % 60);
-    const hours = Math.floor((absDiff / (1000 * 60 * 60)) % 24);
-    const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
-
-    const timeStr = days + ' ngày ' + hours + ' giờ ' + mins + ' phút ' + secs + ' giây';
-    tooltip.textContent = isOverdue ? 'Quá hạn ' + timeStr : 'Còn ' + timeStr;
+    const diffDays = Math.round((target.getTime() - now.getTime()) / 86400000);
+    if (diffDays < 0) {
+      tooltip.textContent = 'Quá hạn ' + Math.abs(diffDays) + ' ngày (Hạn: ' + dueDateStr.split(' ')[0] + ')';
+    } else if (diffDays === 0) {
+      tooltip.textContent = 'Hôm nay là hạn xử lý (' + dueDateStr.split(' ')[0] + ')';
+    } else {
+      tooltip.textContent = 'Còn ' + diffDays + ' ngày (Hạn: ' + dueDateStr.split(' ')[0] + ')';
+    }
   });
 
-  // Update modal countdown if open
+  // Update modal countdown if open (Chỉ hiển thị ngày)
   if (activeDetailDirectiveId) {
     const modalEl = document.getElementById('modalCountdownText');
     if (modalEl) {
       const dir = directives.find(d => d.id === activeDetailDirectiveId);
       if (dir && dir.status !== 'Hoàn thành' && dir.dueDate) {
-        const targetDate = parseDDMMYYYY(dir.dueDate);
-        if (targetDate) {
-          targetDate.setHours(23, 59, 59, 999);
-          const diffMs = targetDate.getTime() - now.getTime();
-          const isOverdue = diffMs < 0;
-          const absDiff = Math.abs(diffMs);
-
-          const secs = Math.floor((absDiff / 1000) % 60);
-          const mins = Math.floor((absDiff / (1000 * 60)) % 60);
-          const hours = Math.floor((absDiff / (1000 * 60 * 60)) % 24);
-          const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
-
-          const timeStr = days + ' ngày ' + hours + ' giờ ' + mins + ' phút ' + secs + ' giây';
-          modalEl.innerHTML = isOverdue
-            ? '<span style="color:#d32f2f; font-weight:bold; font-size:11px;">(Quá hạn ' + timeStr + ')</span>'
-            : '<span style="color:#2e7d32; font-weight:bold; font-size:11px;">(Còn ' + timeStr + ')</span>';
-        }
+        const dueDateClean = dir.dueDate.split(' ')[0];
+        modalEl.innerHTML = '<span style="color:#2e7d32; font-weight:bold; font-size:11px;">(Hạn xử lý: ' + dueDateClean + ')</span>';
       } else {
         modalEl.innerHTML = '';
       }
@@ -566,13 +576,37 @@ window.openDirectiveFormModal = function (editId = null) {
     const createdAtEl = document.getElementById('formCreatedAt');
     if (createdAtEl) createdAtEl.value = dir.createdAt ? dir.createdAt.split(' ')[0] : '';
 
-    const ids = dir.metricIds && dir.metricIds.length ? dir.metricIds : (dir.metricId ? [dir.metricId] : []);
-    document.querySelectorAll('#formMetricDropdown input[type=checkbox]').forEach(cb => {
-      cb.checked = ids.includes(cb.value);
-    });
-    updateMultiselectDisplay();
+    // Nguồn dữ liệu & Hình ảnh (Mặc định Dashboard theo UI mới)
+    const pageGroup = document.getElementById('formDataPageGroup');
+    const sourceGroup = document.getElementById('formDataSourceGroup');
+    const sourceLinks = document.getElementById('formDataSourceLinks');
+    const screenshotPreview = document.getElementById('formScreenshotPreview');
 
-    if (dir.agency) document.getElementById('formAgency').value = dir.agency;
+    if (pageGroup) pageGroup.style.display = 'none';
+    if (sourceGroup) sourceGroup.style.display = 'block';
+
+    if (sourceLinks) {
+      sourceLinks.innerHTML = `<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> Tình hình dân cư theo giới tính</a>`;
+    }
+
+    if (screenshotPreview) {
+      screenshotPreview.innerHTML = `<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
+        <img src="image/IOC_TinhHinhDanCuTheoGioiTinh.png" onerror="this.src='https://via.placeholder.com/600x300?text=Dashboard+Screenshot'" alt="Dashboard Screenshot" style="width:100%; max-height:220px; object-fit:cover; display:block; object-position: top;">
+        <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
+      </div>`;
+    }
+
+    // Khôi phục Đơn vị xử lý (Checkbox Multi-select)
+    if (dir.agency) {
+      const agencies = dir.agency.split(',').map(s => s.trim());
+      document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => {
+        cb.checked = agencies.includes(cb.value);
+      });
+      if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
+    } else {
+      document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
+      if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
+    }
     if (dir.content) document.getElementById('formContent').value = dir.content;
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
@@ -596,9 +630,33 @@ window.openDirectiveFormModal = function (editId = null) {
     }
 
     // Reset form
-    document.querySelectorAll('#formMetricDropdown input[type=checkbox]').forEach(cb => { cb.checked = false; });
-    updateMultiselectDisplay();
+    const groupSelect = document.getElementById('formLayoutGroup');
+    if (groupSelect) groupSelect.value = '';
+    const pageGroup = document.getElementById('formDataPageGroup');
+    const sourceGroup = document.getElementById('formDataSourceGroup');
+    const sourceLinks = document.getElementById('formDataSourceLinks');
+    const screenshotPreview = document.getElementById('formScreenshotPreview');
+
+    if (pageGroup) pageGroup.style.display = 'none';
+    if (sourceGroup) sourceGroup.style.display = 'block';
+
+    // Sinh link page hiện tại
+    if (sourceLinks) {
+      sourceLinks.innerHTML = `<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> Tình hình dân cư theo giới tính</a>`;
+    }
+
+    // Sinh ảnh page hiện tại
+    if (screenshotPreview) {
+      screenshotPreview.innerHTML = `<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
+        <img src="image/IOC_TinhHinhDanCuTheoGioiTinh.png" onerror="this.src='https://via.placeholder.com/600x300?text=Dashboard+Screenshot'" alt="Dashboard Screenshot" style="width:100%; max-height:220px; object-fit:cover; display:block; object-position: top;">
+        <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
+      </div>`;
+    }
+
     document.getElementById('formAgency').value = '';
+    document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
+    if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
+
     document.getElementById('formContent').value = '';
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
@@ -616,13 +674,18 @@ window.closeDirectiveFormModal = function () {
 };
 
 window.saveDirectiveFromModal = function () {
-  const metricIds = getSelectedMetricIds();
+  const layoutGroup = document.getElementById('formLayoutGroup').value;
+  const checkedPages = Array.from(document.querySelectorAll('.data-page-cb:checked'));
+  const dataPageIds = checkedPages.map(cb => cb.value);
+  const dataPageNames = checkedPages.map(cb => cb.getAttribute('data-name'));
+  const dataSourceUrls = checkedPages.map(cb => ({ name: cb.getAttribute('data-name'), url: cb.getAttribute('data-url') }));
+
   const agency = document.getElementById('formAgency').value;
   const content = document.getElementById('formContent').value.trim();
   const dueDate = document.getElementById('formDueDate').value;
   const director = 'Chủ tịch UBND Tỉnh';
 
-  if (!metricIds.length || !agency || !content) {
+  if (!agency || !content) {
     showToast('Vui lòng nhập đầy đủ các thông tin bắt buộc (*)', 'error');
     return;
   }
@@ -634,8 +697,10 @@ window.saveDirectiveFromModal = function () {
   if (editingDirectiveId) {
     const dir = directives.find(d => d.id === editingDirectiveId);
     if (dir) {
-      dir.metricIds = metricIds;
-      dir.metricId = metricIds[0];
+      dir.layoutGroup = layoutGroup;
+      dir.dataPageIds = dataPageIds;
+      dir.dataPageNames = dataPageNames;
+      dir.dataSourceUrls = dataSourceUrls;
       dir.agency = agency;
       dir.content = content;
       dir.dueDate = dueDate;
@@ -647,8 +712,12 @@ window.saveDirectiveFromModal = function () {
   } else {
     directives.push({
       id: 'dir_' + Date.now(),
-      metricIds,
-      metricId: metricIds[0],
+      layoutGroup,
+      dataPageIds,
+      dataPageNames,
+      dataSourceUrls,
+      metricIds: dataPageIds,
+      metricId: dataPageIds[0],
       agency,
       director,
       creator: director,
@@ -656,7 +725,7 @@ window.saveDirectiveFromModal = function () {
       dueDate,
       reportDueDate: '',
       attachments,
-      status: 'Đã chỉ đạo',
+      status: 'Chờ phân công',
       report: '',
       createdAt
     });
@@ -669,26 +738,21 @@ window.saveDirectiveFromModal = function () {
   populateUI();
 };
 
-// ----- Flow Đôn Đốc Trực Tiếp kèm Validation 2 Cấp -----
+// ----- Flow Đôn Đốc Trực Tiếp kèm Validation -----
 window.submitBatchUrgeDirectives = function () {
   const organSelect = document.getElementById('directiveFilterOrganzation');
   const selectedAgency = organSelect ? organSelect.value : 'Tất cả';
 
-  // Validation Cấp 1: Chưa chọn Đơn vị tiếp nhận (vẫn là "Tất cả")
-  if (!selectedAgency || selectedAgency === 'Tất cả') {
-    showToast('⚠️ Vui lòng chọn ít nhất một đơn vị để đôn đốc.');
-    return;
-  }
-
-  // Validation Cấp 2: Đã chọn Đơn vị nhưng chưa tích chọn chỉ đạo nào thuộc đơn vị đó
+  // Kiểm tra đã chọn chỉ đạo nào để đôn đốc chưa
   const checkedCbs = document.querySelectorAll('.directive-item-cb:checked');
   if (checkedCbs.length === 0) {
-    showToast('⚠️ Vui lòng chọn ít nhất một chỉ đạo để đôn đốc.');
+    showToast('Vui lòng chọn ít nhất một chỉ đạo để đôn đốc.', 'error');
     return;
   }
 
   // Gửi đôn đốc thành công
-  showToast('📢 Đã gửi đôn đốc ' + checkedCbs.length + ' chỉ đạo tới ' + selectedAgency + ' thành công!');
+  const targetText = selectedAgency && selectedAgency !== 'Tất cả' ? (' tới ' + selectedAgency) : '';
+  showToast('📢 Đã gửi đôn đốc ' + checkedCbs.length + ' chỉ đạo' + targetText + ' thành công!');
 
   // Reset checkboxes
   checkedCbs.forEach(cb => { cb.checked = false; });
@@ -726,22 +790,32 @@ function populateUI() {
   listEl.innerHTML = '';
 
   const keyword = directiveSearch ? directiveSearch.value.trim().toLowerCase() : '';
-  const filterOrg = document.getElementById('directiveFilterOrganzation') ? document.getElementById('directiveFilterOrganzation').value : 'Tất cả';
-  const filterStatus = directiveFilterStatus ? directiveFilterStatus.value : 'Tất cả';
-  const filterDL = directiveFilterDeadline ? directiveFilterDeadline.value : 'Tất cả';
+  const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked')).map(cb => cb.value);
+  const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked')).map(cb => cb.value);
   const fromDateStr = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
   const toDateStr = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
   const fromDate = fromDateStr ? parseDDMMYYYY(fromDateStr) : null;
   const toDate = toDateStr ? parseDDMMYYYY(toDateStr) : null;
+
+  // Tab filter groups
+  const TAB_STATUSES = {
+    inprogress: ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối'],
+    done: ['Chờ phê duyệt', 'Kết thúc']
+  };
+  const tabStatuses = TAB_STATUSES[currentDirectiveTab] || TAB_STATUSES.inprogress;
+
+  const deadlineFilterEl = document.getElementById('directiveFilterDeadline');
+  const deadlineFilterVal = deadlineFilterEl ? deadlineFilterEl.value : 'Tất cả';
 
   const filteredDirectives = directives.filter(dir => {
     const metricLabel = (dir.metricIds || []).map(id => METRIC_LABELS[id] || id).join(' ');
     const matchKW = dir.content.toLowerCase().includes(keyword) ||
       metricLabel.toLowerCase().includes(keyword) ||
       (dir.agency || '').toLowerCase().includes(keyword);
-    const matchOrg = filterOrg === 'Tất cả' || dir.agency === filterOrg;
-    const matchStatus = filterStatus === 'Tất cả' || dir.status === filterStatus;
-    const matchDL = isMatchDeadlineFilter(dir, filterDL);
+    const matchOrg = filterOrgValues.length === 0 || filterOrgValues.includes(dir.agency);
+    const matchStatus = filterStatusValues.length === 0 || filterStatusValues.includes(dir.status);
+    const matchTab = tabStatuses.includes(dir.status);
+    const matchDL = deadlineFilterVal === 'Tất cả' || isMatchDeadlineFilter(dir, deadlineFilterVal);
 
     let matchDate = true;
     if (fromDate || toDate) {
@@ -752,11 +826,11 @@ function populateUI() {
       }
     }
 
-    return matchKW && matchOrg && matchStatus && matchDL && matchDate;
+    return matchKW && matchOrg && matchStatus && matchTab && matchDL && matchDate;
   });
 
-  // Badge count
-  const activeCount = directives.filter(d => d.status !== 'Đã hoàn thành').length;
+  // Badge count — only count non-Kết thúc
+  const activeCount = directives.filter(d => d.status !== 'Kết thúc').length;
   drawerBadge.textContent = activeCount;
   drawerBadge.style.display = activeCount > 0 ? 'flex' : 'none';
 
@@ -794,11 +868,13 @@ function populateUI() {
       if (dir.status === 'Chờ phân công') { statusClass = 'status-assigned'; }
       if (dir.status === 'Đang xử lý') { statusClass = 'status-processing'; }
       if (dir.status === 'Đã có báo cáo') { statusClass = 'status-reported'; }
-      if (dir.status === 'Hoàn thành') { statusClass = 'status-completed'; }
+      if (dir.status === 'Kết thúc') { statusClass = 'status-completed'; }
       if (dir.status === 'Bị từ chối') { statusClass = 'status-rejected'; }
+      if (dir.status === 'Chờ phê duyệt') { statusClass = 'status-waiting-approve'; }
 
       // Lý do từ chối hiển thị mặc định màu đỏ nổi bật
-      const reportHtml = (dir.report && (dir.status === 'Đã có báo cáo' || dir.status === 'Hoàn thành' || dir.status === 'Bị từ chối'))
+      // Báo cáo / Lý do từ chối
+      const reportHtml = (dir.report && (dir.status === 'Đã có báo cáo' || dir.status === 'Kết thúc' || dir.status === 'Chờ phê duyệt' || dir.status === 'Bị từ chối'))
         ? (dir.status === 'Bị từ chối'
           ? '<div class="rejection-reason-box" style="margin-top:6px;"><div class="rejection-reason-lbl"><i class="fa-solid fa-triangle-exclamation"></i> Lý do từ chối:</div>' + dir.report + '</div>'
           : '<div class="directive-report"><span class="directive-report-lbl"><i class="fa-solid fa-reply"></i> Báo cáo kết quả:</span> ' + dir.report + '</div>')
@@ -806,10 +882,9 @@ function populateUI() {
 
       const deadlineIcon = getDeadlineIconHtml(dir);
 
-      const canEdit = dir.status === 'Đã chỉ đạo';
+      const canEdit = dir.status === 'Chờ phân công' || dir.status === 'Đã chỉ đạo';
       const canDelete = dir.status === 'Đã chỉ đạo';
-      const canApproveReject = dir.status === 'Đã có báo cáo';
-      const canUrge = dir.status !== 'Hoàn thành';
+      const canApproveReject = dir.status === 'Đã có báo cáo' || dir.status === 'Chờ phê duyệt';
 
       const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source);
       const agencyFiles = (dir.attachments || []).filter(f => f.source === 'agency');
@@ -845,7 +920,6 @@ function populateUI() {
       item.innerHTML =
         '<div class="directive-item-header">' +
         '<div class="directive-loc" style="flex: 1; min-width: 0;">' +
-        '<input type="checkbox" class="directive-item-cb" value="' + dir.id + '" onchange="updateUrgeSelectedCounts()" style="cursor:pointer; accent-color:var(--pink); margin-right:6px; flex-shrink: 0;" title="Tích chọn đôn đốc">' +
         '<div class="metric-tooltip-wrap" style="flex: 1; min-width: 0; padding-right: 8px;">' +
         '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
         '<i class="fa-solid fa-chart-bar"></i> ' + metricLabels +
@@ -861,12 +935,11 @@ function populateUI() {
         '<i class="fa-solid fa-ellipsis-vertical"></i>' +
         '</button>' +
         '<div class="directive-actions-dropdown" id="dropdown-' + dir.id + '">' +
-        '<button onclick="viewDirectiveDetail(\'' + dir.id + '\')"><i class="fa-regular fa-eye"></i> Xem</button>' +
+        '<button onclick="viewDirectiveDetail(\'' + dir.id + '\')" ><i class="fa-regular fa-eye"></i> Xem</button>' +
         (canEdit ? '<button onclick="openDirectiveFormModal(\'' + dir.id + '\')"><i class="fa-regular fa-pen-to-square"></i> Sửa</button>' : '') +
-        '<button onclick="deleteDirective(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' +
+        (canDelete ? '<button onclick="deleteDirective(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' : '') +
         (canApproveReject ? '<button onclick="approveDirective(\'' + dir.id + '\', event)" style="color:#2e7d32;"><i class="fa-regular fa-circle-check"></i> Phê duyệt</button>' : '') +
         (canApproveReject ? '<button onclick="openRejectModal(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-circle-xmark"></i> Từ chối</button>' : '') +
-        (canUrge ? '<button onclick="urgeDirective(\'' + dir.id + '\', event)"><i class="fa-solid fa-bullhorn"></i> Đôn đốc</button>' : '') +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -876,7 +949,7 @@ function populateUI() {
         leaderAttachHtml +
         reportHtml +
         agencyAttachHtml +
-        '<div class="directive-date" style="margin-top:6px;"><i class="fa-regular fa-clock"></i> Hạn: ' + (dir.dueDate || 'N/A') + ' | Tạo: ' + dir.createdAt + '</div>';
+        '<div class="directive-date" style="margin-top:6px;"><i class="fa-regular fa-clock"></i> Hạn: ' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'N/A') + ' | Tạo: ' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</div>';
 
       fragment.appendChild(item);
     });
@@ -886,6 +959,124 @@ function populateUI() {
   updateUrgeSelectedCounts();
   applyDirectiveIndicators();
 }
+
+// ----- Tab switching -----
+window.switchDirectiveTab = function (tab) {
+  currentDirectiveTab = tab;
+  document.querySelectorAll('.drawer-tab').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(tab === 'inprogress' ? 'tabInProgress' : 'tabDone');
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Cập nhật các lựa chọn trạng thái theo từng tab
+  const statusDropdown = document.getElementById('filterStatusDropdown');
+  if (statusDropdown) {
+    const statuses = tab === 'inprogress'
+      ? ['Đã chỉ đạo', 'Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối']
+      : ['Hoàn thành', 'Kết thúc'];
+    
+    statusDropdown.innerHTML = statuses.map(s =>
+      '<label class="ms-opt"><input type="checkbox" value="' + s + '" onchange="onMultiFilterChange(\'status\')"> <span>' + s + '</span></label>'
+    ).join('');
+  }
+
+  updateFilterLabel('status');
+  currentPage = 1;
+  populateUI();
+};
+
+// ----- Filter multiselect helpers -----
+window.toggleFilterDropdown = function (type) {
+  const wrapId = type === 'org' ? 'filterOrgWrap' : 'filterStatusWrap';
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  const isOpen = wrap.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.filter-multiselect-wrap.open').forEach(w => w.classList.remove('open'));
+  if (!isOpen) wrap.classList.add('open');
+};
+
+window.onMultiFilterChange = function (type) {
+  updateFilterLabel(type);
+};
+
+function updateFilterLabel(type) {
+  const dropId = type === 'org' ? 'filterOrgDropdown' : 'filterStatusDropdown';
+  const labelId = type === 'org' ? 'filterOrgLabel' : 'filterStatusLabel';
+  const wrapId = type === 'org' ? 'filterOrgWrap' : 'filterStatusWrap';
+  const displayId = type === 'org' ? 'filterOrgDisplay' : 'filterStatusDisplay';
+
+  const checked = Array.from(document.querySelectorAll('#' + dropId + ' input[type=checkbox]:checked'));
+  const display = document.getElementById(displayId);
+  const label = document.getElementById(labelId);
+
+  if (!display || !label) return;
+
+  if (checked.length === 0) {
+    label.style.display = 'inline';
+    label.textContent = type === 'org' ? 'Tất cả đơn vị' : 'Tất cả trạng thái';
+    label.className = 'fms-placeholder';
+    display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
+  } else {
+    label.style.display = 'none';
+    display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
+    const chevron = display.querySelector('.filter-multiselect-chevron');
+
+    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
+    const visibleItems = checked.slice(0, 2);
+    visibleItems.forEach(cb => {
+      const tag = document.createElement('span');
+      tag.className = 'fms-tag';
+      tag.textContent = cb.value; // Giữ đầy đủ tên đơn vị
+      tag.title = cb.value;
+      if (chevron) display.insertBefore(tag, chevron);
+      else display.appendChild(tag);
+    });
+
+    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị đã chọn
+    if (checked.length > 2) {
+      const remainingCount = checked.length - 2;
+      const badge = document.createElement('span');
+      badge.className = 'fms-count-badge';
+      badge.textContent = '+' + remainingCount;
+      badge.title = 'Đã chọn tổng cộng ' + checked.length + ' mục';
+      if (chevron) display.insertBefore(badge, chevron);
+      else display.appendChild(badge);
+    }
+  }
+}
+
+window.applyDirectiveFilters = function () {
+  currentPage = 1;
+  populateUI();
+};
+
+window.resetDirectiveFilters = function () {
+  // Uncheck all multiselect
+  document.querySelectorAll('#filterOrgDropdown input[type=checkbox], #filterStatusDropdown input[type=checkbox]').forEach(cb => {
+    cb.checked = false;
+  });
+  updateFilterLabel('org');
+  updateFilterLabel('status');
+  // Clear search
+  const search = document.getElementById('directiveSearch');
+  if (search) search.value = '';
+  // Clear dates via flatpickr
+  const fpFrom = document.getElementById('filterDateFrom');
+  const fpTo = document.getElementById('filterDateTo');
+  if (fpFrom && fpFrom._flatpickr) fpFrom._flatpickr.clear();
+  else if (fpFrom) fpFrom.value = '';
+  if (fpTo && fpTo._flatpickr) fpTo._flatpickr.clear();
+  else if (fpTo) fpTo.value = '';
+  currentPage = 1;
+  populateUI();
+};
+
+// ----- Close filter dropdown on outside click -----
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.filter-multiselect-wrap')) {
+    document.querySelectorAll('.filter-multiselect-wrap.open').forEach(w => w.classList.remove('open'));
+  }
+});
 
 // ----- Interactive Directive Functions -----
 window.toggleDirectiveActionsMenu = function (id, event) {
@@ -930,13 +1121,37 @@ window.viewDirectiveDetail = function (id) {
   if (dir.status === 'Chờ phân công') statusClass = 'status-assigned';
   if (dir.status === 'Đang xử lý') statusClass = 'status-processing';
   if (dir.status === 'Đã có báo cáo') statusClass = 'status-reported';
-  if (dir.status === 'Hoàn thành') statusClass = 'status-completed';
+  if (dir.status === 'Kết thúc') statusClass = 'status-completed';
   if (dir.status === 'Bị từ chối') statusClass = 'status-rejected';
+  if (dir.status === 'Chờ phê duyệt') statusClass = 'status-waiting-approve';
 
   let deadlineNote = '';
-  if (dir.status !== 'Hoàn thành' && dir.dueDate) {
+  if (dir.status !== 'Kết thúc' && dir.dueDate) {
     deadlineNote = '<span id="modalCountdownText"></span>';
   }
+
+  // Build Nhóm dữ liệu, Trang dữ liệu, Nguồn dữ liệu HTML
+  const groupNameMap = {
+    'giao-duc': 'Giáo dục',
+    'quan-ly-van-ban': 'Quản lý văn bản',
+    'y-te': 'Y tế',
+    'doanh-nghiep': 'Doanh nghiệp',
+    'kinh-te-xa-hoi': 'Kinh tế - Xã hội',
+    'dich-vu-cong': 'Dịch vụ công',
+    'dau-tu-cong': 'Đầu tư công',
+    'du-lieu-khac': 'Dữ liệu khác / Dân cư'
+  };
+  const layoutGroupName = groupNameMap[dir.layoutGroup] || dir.layoutGroup || 'Giám sát Dân cư';
+
+  const dataPagesHtml = (dir.dataPageNames && dir.dataPageNames.length)
+    ? dir.dataPageNames.map(p => '<span class="ms-tag-chip" style="font-size:10px;"><i class="fa-solid fa-file-lines"></i> ' + p + '</span>').join(' ')
+    : metricTagsHtml;
+
+  const sourceLinksHtml = (dir.dataSourceUrls && dir.dataSourceUrls.length)
+    ? dir.dataSourceUrls.map(u => '<a href="' + u.url + '" target="_blank" class="ds-link" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> ' + u.name + '</a>').join(' ')
+    : '<a href="index.html" class="ds-link" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#0284c7; text-decoration:none; padding:4px 8px; background:#e0f2fe; border-radius:4px; border:1px solid #bae6fd; align-self:flex-start;"><i class="fa-solid fa-link"></i> Tình hình dân cư theo giới tính</a>';
+
+  const imageSrc = 'image/IOC_TinhHinhDanCuTheoGioiTinh.png';
 
   const tabInfoHtml =
     // Nội dung chỉ đạo
@@ -945,21 +1160,20 @@ window.viewDirectiveDetail = function (id) {
     '<p style="margin:0; font-size:13px; line-height:1.7; color:var(--text-dark);">' + dir.content + '</p>' +
     '</div>' +
 
-    // Metadata với Căn trái-trên cùng cho Chỉ số và Cơ quan
+    // Metadata
     '<div class="detail-info-grid" style="margin-top:12px; padding:10px 12px; background:#fafafa; border-radius:8px; border:1px solid #f0f0f0;">' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Chỉ số</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left;">' + metricTagsHtml + '</div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Cơ quan</strong><span style="text-align:left;">' + (dir.agency || 'N/A') + '</span>' +
-    '<strong>Người chỉ đạo</strong><span>' + (dir.creator || dir.director || 'N/A') + '</span>' +
-    '<strong>Ngày tạo</strong><span>' + dir.createdAt + '</span>' +
-    '<strong>Thời hạn xử lý</strong><span>' + (dir.dueDate || 'Không giới hạn') + ' ' + (deadlineNote || '') + '</span>' +
-    '<strong>Hạn gửi báo cáo</strong><span>' + (dir.reportDueDate || 'Không có') + '</span>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Nguồn dữ liệu</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left; align-items:flex-start;">' + sourceLinksHtml + '</div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Hình ảnh chỉ đạo</strong><div style="text-align:left;"><div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal(\'' + imageSrc + '\')"><img src="' + imageSrc + '" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:160px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal(\'' + imageSrc + '\')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div></div></div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Đơn vị xử lý</strong><span style="text-align:left; font-weight:400;">' + (dir.agency || 'N/A') + '</span>' +
+    '<strong>Người chỉ đạo</strong><span style="font-weight:400;">' + (dir.creator || dir.director || 'N/A') + '</span>' +
+    '<strong>Ngày tạo</strong><span style="font-weight:400;">' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</span>' +
+    '<strong>Thời hạn xử lý</strong><span style="font-weight:400;">' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</span>' +
     '</div>' +
 
     // Trạng thái
     '<div style="margin-top:12px; display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:#fafafa; border:1px solid #f0f0f0;">' +
     '<span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px;">Trạng thái:</span>' +
     '<span class="directive-status ' + statusClass + '" style="font-size:12px;">' + dir.status + '</span>' +
-    (deadlineNote ? '<span style="margin-left:6px;">' + deadlineNote + '</span>' : '') +
     '</div>' +
 
     // Khối hiển thị Lý do từ chối nếu bị từ chối
@@ -982,7 +1196,7 @@ window.viewDirectiveDetail = function (id) {
 
     '<div class="tab-info-col">' +
     '<div class="tab-info-col-label agency-label">Đơn vị thực hiện</div>' +
-    ((dir.report && (dir.status === 'Đã có báo cáo' || dir.status === 'Hoàn thành')) ?
+    ((dir.report && (dir.status === 'Đã có báo cáo' || dir.status === 'Kết thúc' || dir.status === 'Chờ phê duyệt')) ?
       '<div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Báo cáo kết quả</div>' +
       '<p style="margin:0 0 8px; background:#f0fdf4; padding:8px 12px; border-radius:6px; border-left:3px solid #2e7d32; color:#1b5e20; font-size:12px; line-height:1.6;">' + dir.report + '</p>'
       : '') +
@@ -1000,10 +1214,12 @@ window.viewDirectiveDetail = function (id) {
 
   const statusBadge = function (s) {
     let c = 'status-pending';
-    if (s === 'Đang xử lý') c = 'status-processing';
+    if (s === 'Chờ phân công') c = 'status-assigned';
+    else if (s === 'Đang xử lý') c = 'status-processing';
     else if (s === 'Đã có báo cáo') c = 'status-reported';
-    else if (s === 'Hoàn thành' || s === 'Đã phê duyệt') c = 'status-completed';
+    else if (s === 'Kết thúc') c = 'status-completed';
     else if (s === 'Bị từ chối') c = 'status-rejected';
+    else if (s === 'Chờ phê duyệt') c = 'status-waiting-approve';
     return '<span class="directive-status ' + c + '" style="font-size:10px; white-space:nowrap;">' + s + '</span>';
   };
 
@@ -1017,20 +1233,20 @@ window.viewDirectiveDetail = function (id) {
   if (historyList.length > 0) {
     historyRowsHtml = historyList.map(function (h) {
       const agencyAttachHtml = (h.agencyAttach && h.agencyAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:9px; padding:2px 6px;" onclick="previewFile(\'' + h.agencyAttach + '\')"><i class="fa-solid fa-file"></i> ' + h.agencyAttach + ' <i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + h.agencyAttach + '\')" title="Tải về"></i></span></div>'
+        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.agencyAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.agencyAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
         : '';
 
       const leaderAttachHtml = (h.leaderAttach && h.leaderAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:9px; padding:2px 6px;" onclick="previewFile(\'' + h.leaderAttach + '\')"><i class="fa-solid fa-file"></i> ' + h.leaderAttach + ' <i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + h.leaderAttach + '\')" title="Tải về"></i></span></div>'
+        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.leaderAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.leaderAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
         : '';
 
       return '<tr>' +
         '<td><strong>' + (h.agency || '-') + '</strong></td>' +
-        '<td style="white-space:nowrap;">' + (h.createdAt || '-') + '</td>' +
+        '<td style="white-space:nowrap;">' + (h.createdAt ? h.createdAt.split(' ')[0] : '-') + '</td>' +
         '<td>' + statusBadge(h.status) + '</td>' +
         '<td>' + overdueBadge(h.overdue) + '</td>' +
         '<td>' + (h.approver || '-') + '</td>' +
-        '<td style="white-space:nowrap;">' + (h.approvalDate || '-') + '</td>' +
+        '<td style="white-space:nowrap;">' + (h.approvalDate && h.approvalDate !== '-' ? h.approvalDate.split(' ')[0] : '-') + '</td>' +
         '<td><div>' + (h.agencyNote || '-') + '</div>' + agencyAttachHtml + '</td>' +
         '<td><div>' + (h.leaderNote || '-') + '</div>' + leaderAttachHtml + '</td>' +
         '</tr>';
@@ -1296,8 +1512,7 @@ document.addEventListener('click', () => {
 });
 
 directiveSearch.addEventListener('input', () => { currentPage = 1; populateUI(); });
-directiveFilterStatus.addEventListener('change', () => { currentPage = 1; populateUI(); });
-directiveFilterDeadline.addEventListener('change', () => { currentPage = 1; populateUI(); });
+// directiveFilterStatus and directiveFilterDeadline removed — now using multiselect
 
 paginationLimit.addEventListener('change', () => { currentPage = 1; populateUI(); });
 
@@ -1305,14 +1520,17 @@ btnPrevPage.addEventListener('click', () => { if (currentPage > 1) { currentPage
 
 btnNextPage.addEventListener('click', () => {
   const keyword = directiveSearch ? directiveSearch.value.trim().toLowerCase() : '';
-  const filterStatus = directiveFilterStatus ? directiveFilterStatus.value : 'Tất cả';
-  const filterDL = directiveFilterDeadline ? directiveFilterDeadline.value : 'Tất cả';
+  const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked')).map(cb => cb.value);
+  const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked')).map(cb => cb.value);
+  const TAB_STATUSES = { inprogress: ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối'], done: ['Chờ phê duyệt', 'Kết thúc'] };
+  const tabStatuses = TAB_STATUSES[currentDirectiveTab] || TAB_STATUSES.inprogress;
   const filteredLen = directives.filter(dir => {
     const metricLabel = (dir.metricIds || []).map(id => METRIC_LABELS[id] || id).join(' ');
     const matchKW = dir.content.toLowerCase().includes(keyword) || metricLabel.toLowerCase().includes(keyword) || (dir.agency || '').toLowerCase().includes(keyword);
-    const matchStatus = filterStatus === 'Tất cả' || dir.status === filterStatus;
-    const matchDL = isMatchDeadlineFilter(dir, filterDL);
-    return matchKW && matchStatus && matchDL;
+    const matchOrg = filterOrgValues.length === 0 || filterOrgValues.includes(dir.agency);
+    const matchStatus = filterStatusValues.length === 0 || filterStatusValues.includes(dir.status);
+    const matchTab = tabStatuses.includes(dir.status);
+    return matchKW && matchOrg && matchStatus && matchTab;
   }).length;
 
   const rowsPerPage = parseInt(paginationLimit.value) || 5;
@@ -1346,7 +1564,7 @@ class DirectiveRibbon extends HTMLElement {
   connectedCallback() {
     this.metricId = this.getAttribute('metric-id') || '';
     this.update();
-    
+
     // Đóng popover khi click ra ngoài
     this._outsideClickListener = (e) => {
       if (this.isPopoverOpen && !this.contains(e.target)) {
@@ -1375,7 +1593,7 @@ class DirectiveRibbon extends HTMLElement {
       this.activeDirectives = [];
     }
 
-    if (this.activeDirectives.length === 0) {
+    if (this.activeDirectives.length === 0 || !isWarningAlertEnabled) {
       this.style.display = 'none';
       // Đảm bảo card cha không bị dính class open
       const parent = this.closest('.metric-block');
@@ -1435,8 +1653,8 @@ class DirectiveRibbon extends HTMLElement {
           itemIcon = clockSvg;
         }
 
-        const shortTitle = d.content && d.content.length > 35 
-          ? d.content.substring(0, 35) + '...' 
+        const shortTitle = d.content && d.content.length > 35
+          ? d.content.substring(0, 35) + '...'
           : (d.content || '');
 
         return `
@@ -1466,10 +1684,10 @@ class DirectiveRibbon extends HTMLElement {
     // Gắn click handler
     const triangle = this.querySelector('.directive-ribbon-triangle');
     const centerEl = this.querySelector('.directive-ribbon-icon, .directive-ribbon-number');
-    
+
     const handleClick = (e) => {
       e.stopPropagation();
-      
+
       // Đóng các popover khác đang mở
       document.querySelectorAll('directive-ribbon').forEach(rb => {
         if (rb !== this) rb.closePopover();
@@ -1540,19 +1758,448 @@ window.handleWarningToggleChange = function (input) {
       b.style.animation = '';
     }
   });
-  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị hiệu ứng nhấp nháy cảnh báo!' : '🔕 Đã TẮT hiển thị hiệu ứng nhấp nháy cảnh báo!');
+
+  const ribbons = document.querySelectorAll('directive-ribbon');
+  ribbons.forEach(r => {
+    r.style.display = isWarningAlertEnabled ? 'block' : 'none';
+  });
+
+  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị cảnh báo chỉ đạo!' : '🔕 Đã TẮT hiển thị cảnh báo chỉ đạo!');
 };
 
+// ============================================================
+// LOGIC FORM THÊM MỚI: 8 NHÓM DỮ LIỆU / TRANG DỮ LIỆU & TỰ SINH FILE/LINK
+// ============================================================
+const MONITORING_LAYOUT_GROUPS = {
+  'giao-duc': {
+    name: 'Giáo dục',
+    pages: [
+      { id: 'gd-1', name: 'Trang Giám sát Mạng lưới Trường học', url: 'https://gialai.gov.vn/giam-sat/giao-duc/mang-luoi-truong-hoc' },
+      { id: 'gd-2', name: 'Trang Thống kê Học sinh - Giáo viên', url: 'https://gialai.gov.vn/giam-sat/giao-duc/thong-ke-hoc-sinh-giao-vien' },
+      { id: 'gd-3', name: 'Trang Phân bổ Ngân sách Giáo dục', url: 'https://gialai.gov.vn/giam-sat/giao-duc/ngan-sach-giao-duc' }
+    ]
+  },
+  'quan-ly-van-ban': {
+    name: 'Quản lý văn bản',
+    pages: [
+      { id: 'vb-1', name: 'Trang Tiến độ Xử lý Văn bản Đi/Đến', url: 'https://gialai.gov.vn/giam-sat/van-ban/tien-do-xu-ly' },
+      { id: 'vb-2', name: 'Trang Thống kê Văn bản Quá hạn', url: 'https://gialai.gov.vn/giam-sat/van-ban/van-ban-qua-han' },
+      { id: 'vb-3', name: 'Trang Theo dõi Chỉ đạo Điều hành', url: 'https://gialai.gov.vn/giam-sat/van-ban/theo-doi-chi-dao' }
+    ]
+  },
+  'y-te': {
+    name: 'Y tế',
+    pages: [
+      { id: 'yt-1', name: 'Trang Công suất Giường bệnh & Cơ sở Y tế', url: 'https://gialai.gov.vn/giam-sat/y-te/co-so-y-te' },
+      { id: 'yt-2', name: 'Trang Thống kê Khám chữa bệnh BHYT', url: 'https://gialai.gov.vn/giam-sat/y-te/kham-chua-benh-bhyt' },
+      { id: 'yt-3', name: 'Trang Giám sát Dịch bệnh Tỉnh', url: 'https://gialai.gov.vn/giam-sat/y-te/giam-sat-dich-benh' }
+    ]
+  },
+  'doanh-nghiep': {
+    name: 'Doanh nghiệp',
+    pages: [
+      { id: 'dn-1', name: 'Trang Phát triển Doanh nghiệp Mới thành lập', url: 'https://gialai.gov.vn/giam-sat/doanh-nghiep/phat-trien-moi' },
+      { id: 'dn-2', name: 'Trang Thống kê Tình hình Thuế & Ngân sách DN', url: 'https://gialai.gov.vn/giam-sat/doanh-nghiep/thue-ngan-sach' },
+      { id: 'dn-3', name: 'Trang Giám sát Giải thể & Tạm ngừng', url: 'https://gialai.gov.vn/giam-sat/doanh-nghiep/giai-the-tam-ngung' }
+    ]
+  },
+  'kinh-te-xa-hoi': {
+    name: 'Kinh tế - Xã hội',
+    pages: [
+      { id: 'kt-1', name: 'Trang Chỉ số Tăng trưởng GRDP', url: 'https://gialai.gov.vn/giam-sat/kinh-te/tang-truong-grdp' },
+      { id: 'kt-2', name: 'Trang Chỉ số Thu hút Đầu tư FDI', url: 'https://gialai.gov.vn/giam-sat/kinh-te/dau-tu-fdi' },
+      { id: 'kt-3', name: 'Trang Thống kê Lao động & Việc làm', url: 'https://gialai.gov.vn/giam-sat/kinh-te/lao-dong-viec-lam' }
+    ]
+  },
+  'dich-vu-cong': {
+    name: 'Dịch vụ công',
+    pages: [
+      { id: 'dvc-1', name: 'Trang Tỷ lệ Hồ sơ Đúng hạn & Quá hạn', url: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/ty-le-ho-so' },
+      { id: 'dvc-2', name: 'Trang Thanh toán Trực tuyến Dịch vụ công', url: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/thanh-toan-truc-tuyen' },
+      { id: 'dvc-3', name: 'Trang Mức độ Hài lòng của Người dân', url: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/hai-long-nguoi-dan' }
+    ]
+  },
+  'dau-tu-cong': {
+    name: 'Đầu tư công',
+    pages: [
+      { id: 'dtc-1', name: 'Trang Giải ngân Vốn Đầu tư công', url: 'https://gialai.gov.vn/giam-sat/dau-tu-cong/giai-ngan-von' },
+      { id: 'dtc-2', name: 'Trang Tiến độ Dự án Trọng điểm', url: 'https://gialai.gov.vn/giam-sat/dau-tu-cong/du-an-trong-diem' },
+      { id: 'dtc-3', name: 'Trang Giám sát Năng lực Nhà thầu', url: 'https://gialai.gov.vn/giam-sat/dau-tu-cong/nha-thau' }
+    ]
+  },
+  'du-lieu-khac': {
+    name: 'Dữ liệu khác / Dân cư',
+    pages: [
+      { id: 'dlk-1', name: 'Trang Phân bố Dân cư theo Giới tính', url: 'https://gialai.gov.vn/giam-sat/dan-cu/gioi-tinh' },
+      { id: 'dlk-2', name: 'Trang Phân bố Dân cư theo Độ tuổi', url: 'https://gialai.gov.vn/giam-sat/dan-cu/do-tuoi' },
+      { id: 'dlk-3', name: 'Trang Thống kê Bảo hiểm Xã hội', url: 'https://gialai.gov.vn/giam-sat/dan-cu/bao-hiem' }
+    ]
+  }
+};
+
+window.toggleLayoutGroupDropdown = function () {
+  const dropdown = document.getElementById('formLayoutGroupDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
+};
+
+window.selectLayoutGroup = function (radio) {
+  const hiddenInput = document.getElementById('formLayoutGroup');
+  hiddenInput.value = radio.value;
+
+  // Update display
+  const placeholder = document.getElementById('formLayoutGroupPlaceholder');
+  const display = document.getElementById('formLayoutGroupDisplay');
+  const name = radio.getAttribute('data-name');
+
+  display.querySelectorAll('.ms-tag-chip').forEach(el => el.remove());
+  if (placeholder) placeholder.style.display = 'none';
+
+  const chip = document.createElement('span');
+  chip.className = 'ms-tag-chip';
+  chip.innerHTML = name;
+  const chevron = display.querySelector('.multiselect-arrow-icon');
+  if (chevron) display.insertBefore(chip, chevron);
+  else display.appendChild(chip);
+
+  // Close dropdown
+  const dropdown = document.getElementById('formLayoutGroupDropdown');
+  if (dropdown) dropdown.classList.remove('open');
+
+  // Trigger original logic
+  onLayoutGroupChange();
+};
+
+window.toggleAgencyDropdown = function () {
+  const dropdown = document.getElementById('formAgencyDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
+};
+
+window.selectAgencyMulti = function () {
+  const checked = Array.from(document.querySelectorAll('#formAgencyDropdown input[type=checkbox]:checked'));
+  const hiddenInput = document.getElementById('formAgency');
+  hiddenInput.value = checked.map(cb => cb.value).join(', ');
+
+  const placeholder = document.getElementById('formAgencyPlaceholder');
+  const display = document.getElementById('formAgencyDisplay');
+
+  display.querySelectorAll('.ms-tag-chip, .fms-count-badge').forEach(el => el.remove());
+
+  if (checked.length === 0) {
+    if (placeholder) placeholder.style.display = 'inline';
+  } else {
+    if (placeholder) placeholder.style.display = 'none';
+    const chevron = display.querySelector('.multiselect-arrow-icon');
+
+    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
+    const visibleItems = checked.slice(0, 2);
+    visibleItems.forEach(cb => {
+      const chip = document.createElement('span');
+      chip.className = 'ms-tag-chip';
+      chip.innerHTML = cb.value + ' <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckAgencyChip(\'' + cb.value.replace(/'/g, "\\'") + '\', event)"></i>';
+      if (chevron) display.insertBefore(chip, chevron);
+      else display.appendChild(chip);
+    });
+
+    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị trước
+    if (checked.length > 2) {
+      const remainingCount = checked.length - 2;
+      const badge = document.createElement('span');
+      badge.className = 'fms-count-badge';
+      badge.style.padding = '3px 8px';
+      badge.style.borderRadius = '6px';
+      badge.style.background = 'var(--pink)';
+      badge.style.color = '#fff';
+      badge.style.fontSize = '11px';
+      badge.style.fontWeight = '700';
+      badge.textContent = '+' + remainingCount;
+      badge.title = 'Đã chọn tổng cộng ' + checked.length + ' đơn vị';
+      if (chevron) display.insertBefore(badge, chevron);
+      else display.appendChild(badge);
+    }
+  }
+};
+
+window.uncheckAgencyChip = function (agencyVal, event) {
+  if (event) event.stopPropagation();
+  const cb = Array.from(document.querySelectorAll('#formAgencyDropdown input[type=checkbox]')).find(c => c.value === agencyVal);
+  if (cb) {
+    cb.checked = false;
+    selectAgencyMulti();
+  }
+};
+
+window.onLayoutGroupChange = function () {
+  const groupKey = document.getElementById('formLayoutGroup').value;
+  const pageGroup = document.getElementById('formDataPageGroup');
+  const dropdown = document.getElementById('formDataPageDropdown');
+  const sourceGroup = document.getElementById('formDataSourceGroup');
+  const sourceLinks = document.getElementById('formDataSourceLinks');
+
+  if (!groupKey || !MONITORING_LAYOUT_GROUPS[groupKey]) {
+    pageGroup.style.display = 'none';
+    sourceGroup.style.display = 'none';
+    return;
+  }
+
+  const groupData = MONITORING_LAYOUT_GROUPS[groupKey];
+  pageGroup.style.display = 'block';
+  sourceGroup.style.display = 'block';
+
+  // Build dropdown items with Select All option
+  let html = `
+    <label class="ms-opt" style="font-weight:700; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
+      <input type="checkbox" id="selectAllDataPages" onchange="toggleSelectAllDataPages(this)"> 
+      <span>Chọn tất cả (${groupData.pages.length} trang)</span>
+    </label>
+  `;
+
+  groupData.pages.forEach(p => {
+    html += `
+      <label class="ms-opt">
+        <input type="checkbox" class="data-page-cb" value="${p.id}" data-name="${p.name}" data-url="${p.url}" onchange="onDataPageSelectionChange()">
+        <span>${p.name}</span>
+      </label>
+    `;
+  });
+
+  dropdown.innerHTML = html;
+  updateDataPageDisplay();
+};
+
+window.toggleDataPageMultiselect = function () {
+  const dropdown = document.getElementById('formDataPageDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
+};
+
+window.toggleSelectAllDataPages = function (selectAllCb) {
+  document.querySelectorAll('.data-page-cb').forEach(cb => {
+    cb.checked = selectAllCb.checked;
+  });
+  onDataPageSelectionChange();
+};
+
+window.onDataPageSelectionChange = function () {
+  updateDataPageDisplay();
+  autoGenerateSourceLinksAndAttachments();
+};
+
+function updateDataPageDisplay() {
+  const checked = Array.from(document.querySelectorAll('.data-page-cb:checked'));
+  const display = document.getElementById('formDataPageDisplay');
+  const placeholder = document.getElementById('formDataPagePlaceholder');
+
+  if (!display) return;
+
+  display.querySelectorAll('.ms-tag-chip').forEach(el => el.remove());
+
+  if (checked.length === 0) {
+    if (placeholder) placeholder.style.display = 'inline';
+  } else {
+    if (placeholder) placeholder.style.display = 'none';
+    const chevron = display.querySelector('.multiselect-arrow-icon');
+    checked.forEach(cb => {
+      const pageName = cb.getAttribute('data-name');
+      const chip = document.createElement('span');
+      chip.className = 'ms-tag-chip';
+      chip.innerHTML = `<i class="fa-solid fa-file-lines"></i> ${pageName} <i class="fa-solid fa-xmark btn-remove-chip" onclick="event.stopPropagation(); uncheckDataPage('${cb.value}')"></i>`;
+      if (chevron) display.insertBefore(chip, chevron);
+      else display.appendChild(chip);
+    });
+  }
+}
+
+window.uncheckDataPage = function (pageId) {
+  const cb = document.querySelector(`.data-page-cb[value="${pageId}"]`);
+  if (cb) {
+    cb.checked = false;
+    const selectAll = document.getElementById('selectAllDataPages');
+    if (selectAll) selectAll.checked = false;
+    onDataPageSelectionChange();
+  }
+};
+
+function autoGenerateSourceLinksAndAttachments() {
+  const checked = Array.from(document.querySelectorAll('.data-page-cb:checked'));
+  const sourceLinks = document.getElementById('formDataSourceLinks');
+
+  if (!sourceLinks) return;
+
+  const groupKey = document.getElementById('formLayoutGroup').value;
+  const groupData = MONITORING_LAYOUT_GROUPS[groupKey];
+
+  if (groupData) {
+    const allPossibleScreenshots = groupData.pages.map(p => `Screenshot_${p.name.replace(/ /g, '_')}.png`);
+    const checkedScreenshots = checked.map(cb => `Screenshot_${cb.getAttribute('data-name').replace(/ /g, '_')}.png`);
+
+    // Remove screenshots that are in allPossible but NOT in checked (to clean up when unchecked)
+    selectedFormFiles = selectedFormFiles.filter(f => {
+      if (f.type === 'screenshot' && allPossibleScreenshots.includes(f.name) && !checkedScreenshots.includes(f.name)) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  if (checked.length === 0) {
+    sourceLinks.innerHTML = '<span style="color:var(--text-muted); font-size:11px;">Chọn trang dữ liệu để tự sinh link</span>';
+  } else {
+    sourceLinks.innerHTML = checked.map(cb => {
+      const pageName = cb.getAttribute('data-name');
+      const pageUrl = cb.getAttribute('data-url');
+      return `<a href="${pageUrl}" target="_blank" class="data-source-link-chip" onclick="event.stopPropagation(); previewFile('${pageUrl}')"><i class="fa-solid fa-link"></i> ${pageName}</a>`;
+    }).join(' ');
+
+    // Add generated screenshots for checked pages
+    checked.forEach(cb => {
+      const pageName = cb.getAttribute('data-name');
+      const screenshotName = `Screenshot_${pageName.replace(/ /g, '_')}.png`;
+      if (!selectedFormFiles.some(f => f.name === screenshotName)) {
+        selectedFormFiles.push({ name: screenshotName, source: 'leader', type: 'screenshot' });
+      }
+    });
+  }
+  renderAttachFileList();
+}
+
+// ----- Image Zoom Modal Handlers -----
+window.openImageZoomModal = function (imgSrc) {
+  const modal = document.getElementById('imageZoomModal');
+  const imgEl = document.getElementById('imageZoomSrc');
+  if (modal && imgEl) {
+    imgEl.src = imgSrc || 'image/IOC_TinhHinhDanCuTheoGioiTinh.png';
+    modal.classList.add('open');
+  }
+};
+
+window.closeImageZoomModal = function () {
+  const modal = document.getElementById('imageZoomModal');
+  if (modal) modal.classList.remove('open');
+};
+
+// ----- Rich File Preview Modal (Hiển thị chọn 1/tất cả file đính kèm để tải hoặc xem trước) -----
 let currentPreviewFileName = '';
 window.previewFile = function (fileName) {
   currentPreviewFileName = fileName;
   const titleEl = document.getElementById('filePreviewTitle');
-  const nameEl = document.getElementById('filePreviewName');
-  if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-file"></i> Xem trước tài liệu: ' + fileName;
-  if (nameEl) nameEl.textContent = fileName;
+  if (titleEl) titleEl.textContent = 'Xem trước tài liệu';
+
+  const contentEl = document.getElementById('filePreviewContent');
+  if (!contentEl) {
+    const modal = document.getElementById('filePreviewModal');
+    if (modal) modal.classList.add('open');
+    return;
+  }
+
+  const lower = fileName.toLowerCase();
+  const isImage = /\.(png|jpg|jpeg|gif|webp|bmp)$/i.test(lower) || lower.includes('screenshot') || lower.includes('image');
+  const isPdf = lower.endsWith('.pdf');
+  const isWord = lower.endsWith('.docx') || lower.endsWith('.doc');
+
+  const sampleFiles = [
+    { id: 'f1', name: fileName, type: isImage ? 'image' : isPdf ? 'pdf' : isWord ? 'word' : 'pdf', source: 'Hình ảnh chụp hệ thống', url: fileName },
+    { id: 'f2', name: 'Cong_van_huong_dan_thuc_hien_GiaLai.pdf', type: 'pdf', source: 'Lãnh đạo (Chủ tịch UBND Tỉnh) đính kèm', url: 'Cong_van_huong_dan_thuc_hien_GiaLai.pdf' },
+    { id: 'f3', name: 'IOC_TinhHinhDanCuTheoGioiTinh.png', type: 'image', source: 'Hình ảnh chụp hệ thống', url: 'image/IOC_TinhHinhDanCuTheoGioiTinh.png' },
+    { id: 'f4', name: 'Ke_hoach_trien_khai_chi_tiet_2026.docx', type: 'word', source: 'Đơn vị (Sở Thông tin và Truyền thông) đính kèm', url: 'Ke_hoach_trien_khai_chi_tiet_2026.docx' }
+  ];
+
+  const iconMap = {
+    pdf: '<i class="fa-solid fa-file-pdf" style="color:#ef4444; font-size:22px;"></i>',
+    word: '<i class="fa-solid fa-file-word" style="color:#2563eb; font-size:22px;"></i>',
+    image: '<i class="fa-solid fa-file-image" style="color:#db2777; font-size:22px;"></i>'
+  };
+
+  const fileRowsHtml = sampleFiles.map((f, idx) => {
+    const iconHtml = iconMap[f.type] || iconMap.pdf;
+    const isImg = f.type === 'image';
+    const activeBorder = (f.name === fileName) ? 'border-color:var(--pink); background:#fff0f5;' : 'border-color:#e2e8f0; background:#fff;';
+
+    const imgPreviewBlock = isImg ? `
+      <div style="margin-top:6px; position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('${f.url}')">
+        <img src="${f.url}" onerror="this.src='image/IOC_TinhHinhDanCuTheoGioiTinh.png'" alt="Preview" style="width:100%; max-height:120px; object-fit:cover; display:block;">
+        <div style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.75); color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;" onclick="event.stopPropagation(); openImageZoomModal('${f.url}')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
+      </div>
+    ` : '';
+
+    return `
+      <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; ${activeBorder} transition:all 0.2s;">
+        <input type="checkbox" class="preview-file-cb" value="${f.name}" onchange="updatePreviewSelectCount()" style="margin-top:4px; cursor:pointer; accent-color:var(--pink);">
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            ${iconHtml}
+            <span style="font-size:12px; font-weight:700; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" onclick="previewSingleFile('${f.name}', '${f.type}', '${f.url}')">${f.name}</span>
+          </div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">Nguồn: ${f.source}</div>
+          ${imgPreviewBlock}
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button type="button" onclick="previewSingleFile('${f.name}', '${f.type}', '${f.url}')" style="padding:4px 10px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; font-weight:700; color:#334155; cursor:pointer;"><i class="fa-regular fa-eye"></i> Xem</button>
+          <button type="button" onclick="downloadFile('${f.name}')" style="padding:4px 10px; background:var(--pink); border:none; border-radius:6px; font-size:11px; font-weight:700; color:#fff; cursor:pointer;"><i class="fa-solid fa-download"></i> Tải</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  contentEl.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:8px; border-bottom:1px solid #e2e8f0; margin-bottom:10px;">
+      <label style="font-size:12px; font-weight:700; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="selectAllPreviewFiles" onchange="toggleSelectAllPreviewFiles(this)" style="cursor:pointer; accent-color:var(--pink);">
+        <span id="previewSelectAllLabel">Chọn tất cả</span>
+      </label>
+      <button type="button" id="btnDownloadSelectedFiles" onclick="downloadSelectedPreviewFiles()" style="display:none; padding:5px 12px; background:#10b981; color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; align-items:center; gap:4px;">
+        <i class="fa-solid fa-download"></i> Tải các file đã chọn
+      </button>
+    </div>
+    <div style="max-height:360px; overflow-y:auto; padding-right:4px;">
+      ${fileRowsHtml}
+    </div>
+  `;
+
   const modal = document.getElementById('filePreviewModal');
   if (modal) modal.classList.add('open');
+  updatePreviewSelectCount();
 };
+
+window.previewSingleFile = function (fileName, type, url) {
+  if (type === 'image') {
+    openImageZoomModal(url);
+  } else {
+    showToast('📄 Đang mở bản xem trước file: ' + fileName);
+  }
+};
+
+window.updatePreviewSelectCount = function () {
+  const checked = document.querySelectorAll('.preview-file-cb:checked').length;
+  const selectAllCb = document.getElementById('selectAllPreviewFiles');
+  const total = document.querySelectorAll('.preview-file-cb').length;
+  if (selectAllCb) selectAllCb.checked = (checked === total && total > 0);
+
+  const labelEl = document.getElementById('previewSelectAllLabel');
+  if (labelEl) {
+    labelEl.textContent = checked > 0 ? ('Chọn tất cả (' + checked + ')') : 'Chọn tất cả';
+  }
+
+  const btnDl = document.getElementById('btnDownloadSelectedFiles');
+  if (btnDl) {
+    btnDl.style.display = checked > 0 ? 'inline-flex' : 'none';
+  }
+};
+
+window.toggleSelectAllPreviewFiles = function (cb) {
+  document.querySelectorAll('.preview-file-cb').forEach(itemCb => {
+    itemCb.checked = cb.checked;
+  });
+  updatePreviewSelectCount();
+};
+
+window.downloadSelectedPreviewFiles = function () {
+  const selected = Array.from(document.querySelectorAll('.preview-file-cb:checked')).map(cb => cb.value);
+  if (!selected.length) {
+    showToast('Vui lòng chọn ít nhất 1 file để tải xuống', 'error');
+    return;
+  }
+  showToast('📥 Đang tải xuống ' + selected.length + ' file đính kèm đã chọn!');
+};
+
 
 window.closeFilePreviewModal = function () {
   const modal = document.getElementById('filePreviewModal');
@@ -1587,9 +2234,9 @@ window.executeConfirmApprove = function () {
   if (approveTargetDirectiveId) {
     const dir = directives.find(d => d.id === approveTargetDirectiveId);
     if (dir) {
-      dir.status = 'Hoàn thành';
+      dir.status = 'Kết thúc';
       saveDirectives();
-      showToast('Đã phê duyệt báo cáo và đánh dấu Hoàn thành chỉ đạo!');
+      showToast('✅ Đã phê duyệt và kết thúc chỉ đạo!');
       closeConfirmApproveModal();
       populateUI();
     }
