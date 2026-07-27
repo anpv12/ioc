@@ -30,14 +30,8 @@
         <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
       <div class="nav-children" id="navChildren">
-        <div class="nav-item active" id="nav-qldashboard" data-view="qldashboard" data-label="Quản lý dashboard">
-          <span class="dot"></span><span>Quản lý dashboard</span>
-        </div>
-        <div class="nav-item" id="nav-qllayout" data-view="qllayout" data-label="Quản lý layout">
-          <span class="dot"></span><span>Quản lý layout</span>
-        </div>
-        <div class="nav-item" id="nav-loaibieudo" data-view="loaibieudo" data-label="Loại biểu đồ">
-          <span class="dot"></span><span>Loại biểu đồ</span>
+        <div class="nav-item" id="nav-dashboard-giam-sat" onclick="window.location.href='../dashboard/index.html'">
+          <span class="dot"></span><span>Dashboard giám sát</span>
         </div>
       </div>
 
@@ -47,7 +41,7 @@
         <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
       <div class="nav-children" id="adminNavChildren">
-        <div class="nav-item" id="nav-dynamic-process" data-view="dynamic-process" data-label="Quản trị quy trình động">
+        <div class="nav-item active" id="nav-dynamic-process" data-view="dynamic-process" data-label="Quản trị quy trình động">
           <span class="dot"></span><span>Quy trình động</span>
         </div>
         <div class="nav-item" id="nav-statistical-report" data-view="statistical-report" data-label="Báo cáo thống kê">
@@ -112,18 +106,18 @@
       </div>
 
       <div class="breadcrumb-row">
-        <div class="page-title" id="pageTitle">Quản lý dashboard</div>
+        <div class="page-title" id="pageTitle">Quản trị quy trình động</div>
         <div class="breadcrumb">
           Trang chủ
           <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
-          <span class="cur" id="breadcrumbCurrent">Quản lý dashboard</span>
+          <span class="cur" id="breadcrumbCurrent">Quản trị quy trình động</span>
         </div>
       </div>
 
       <div class="content">
 
         <!-- ============ VIEW: Quản lý dashboard ============ -->
-        <div class="view active" id="view-qldashboard">
+        <div class="view" id="view-qldashboard">
           <div class="card">
             <div class="tabs-row">
               <div class="tab active">Dashboard chính</div>
@@ -312,7 +306,7 @@
         </div>
 
         <!-- ============ VIEW: Quy trình động ============ -->
-        <div class="view" id="view-dynamic-process">
+        <div class="view active" id="view-dynamic-process">
           <div class="card" id="processListContainer">
             <!-- THANH CÔNG CỤ TRÊN CÙNG -->
             <div class="top-bar">
