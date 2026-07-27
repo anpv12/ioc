@@ -702,11 +702,10 @@
   padding: 0 0 10px 0;
   background: transparent;
   border-bottom: 1px solid var(--admin-line);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: #334155;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #0f172a;
+  text-transform: none;
   margin-bottom: 14px;
 }
 

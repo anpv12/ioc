@@ -315,21 +315,14 @@
               </a>
             </span>
           </div>
-          ${item.attachment ? `<div class="info-row">
-            <span class="info-label">Tài liệu đính kèm</span>
-            <span class="info-value" style="color:var(--admin-primary);font-weight:600">
-              <i class="fa-solid fa-paperclip"></i> ${escHtml(item.attachment)}
-              <span style="color:var(--admin-muted);font-weight:400">(${escHtml(item.attachmentSize||'')})</span>
-            </span>
-          </div>` : ''}
-          ${item.previewImage ? `<div class="info-row">
+          <div class="info-row">
             <span class="info-label">Hình ảnh</span>
             <span class="info-value">
-              <div class="preview-image-wrap">
-                <img src="${escHtml(item.previewImage)}" alt="Ảnh chỉ đạo" data-img-view="${escHtml(item.previewImage)}">
-              </div>
+              <a href="javascript:void(0)" class="dashboard-link" data-view-img="${escHtml(item.previewImage || '../../assets/images/sample-doc.png')}" style="color:var(--admin-primary);font-weight:600;cursor:pointer;">
+                <i class="fa-regular fa-image"></i> Xem hình ảnh (${escHtml(item.attachment || 'CD_HinhAnh.png')})
+              </a>
             </span>
-          </div>` : ''}
+          </div>
         </div>
       </div>
 
@@ -771,6 +764,16 @@
     if (closeImgBtn) closeImgBtn.addEventListener('click', () => { el.imageOverlay().hidden = true; });
     const imgOverlay = el.imageOverlay();
     if (imgOverlay) imgOverlay.addEventListener('click', e => { if (e.target === imgOverlay) imgOverlay.hidden = true; });
+
+    // Click to view image modal
+    document.addEventListener('click', e => {
+      const imgTarget = e.target.closest('[data-view-img]');
+      if (imgTarget) {
+        const src = imgTarget.dataset.viewImg;
+        if (el.viewerImage()) el.viewerImage().src = src;
+        if (el.imageOverlay()) el.imageOverlay().hidden = false;
+      }
+    });
 
     // Deadline flatpickr (single date selection)
     flatpickr(el.deadlineRange(), {
