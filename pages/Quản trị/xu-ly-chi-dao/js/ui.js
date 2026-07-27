@@ -356,14 +356,16 @@
           <div class="sub-reports-list">${subReportsHtml}</div>
         </div>
       </div>` : ''}
+
+      <!-- Assignee + Action form -->
+      ${renderAssigneePanel(item, node, status)}
+      ${renderActionPanel(item, node, status)}
     `;
   };
 
   const renderDetailRight = (item, node, status) => {
     return `
       ${renderUML(item, status)}
-      ${renderAssigneePanel(item, node, status)}
-      ${renderActionPanel(item, node, status)}
     `;
   };
 
