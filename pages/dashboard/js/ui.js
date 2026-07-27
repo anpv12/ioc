@@ -337,7 +337,7 @@ function getDaysRemaining(dueDateStr) {
 
 // Returns: 'overdue' | 'due-today' | 'soon' | 'normal' | null (completed / no date)
 function getDeadlineStatus(dir) {
-  if (dir.status === 'Hoàn thành') return null;
+  if (dir.status === 'Kết thúc') return null;
   if (!dir.dueDate) return null;
   const days = getDaysRemaining(dir.dueDate);
   if (days === null) return null;
@@ -362,7 +362,7 @@ function isMatchDeadlineFilter(dir, filterValue) {
 let activeDetailDirectiveId = null;
 
 function getDeadlineIconHtml(dir) {
-  if (dir.status === 'Hoàn thành') return '';
+  if (dir.status === 'Kết thúc') return '';
   if (!dir.dueDate) return '';
 
   const status = getDeadlineStatus(dir);
@@ -412,7 +412,7 @@ function updateAllCountdowns() {
     const modalEl = document.getElementById('modalCountdownText');
     if (modalEl) {
       const dir = directives.find(d => d.id === activeDetailDirectiveId);
-      if (dir && dir.status !== 'Hoàn thành' && dir.dueDate) {
+      if (dir && dir.status !== 'Kết thúc' && dir.dueDate) {
         const dueDateClean = dir.dueDate.split(' ')[0];
         modalEl.innerHTML = '<span style="color:#2e7d32; font-weight:bold; font-size:11px;">(Hạn xử lý: ' + dueDateClean + ')</span>';
       } else {
@@ -506,19 +506,17 @@ function applyDirectiveIndicators() {
     if (old) old.remove();
   });
 
-  const priority = {
-    'Bị từ chối': 6,
-    'Đã chỉ đạo': 5,
-    'Chờ phân công': 4,
-    'Đang xử lý': 3,
+  const orders = {
+    'Bị từ chối': 4,
+    'Chờ phê duyệt': 3,
     'Đã có báo cáo': 2,
-    'Hoàn thành': 1
+    'Kết thúc': 1
   };
   const metricMap = {};
   directives.forEach(d => {
     const ids = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
     ids.forEach(mid => {
-      if (!metricMap[mid] || (priority[d.status] || 0) > (priority[metricMap[mid].status] || 0)) {
+      if (!metricMap[mid] || (orders[d.status] || 0) > (orders[metricMap[mid].status] || 0)) {
         metricMap[mid] = d;
       }
     });
@@ -607,6 +605,7 @@ window.openDirectiveFormModal = function (editId = null) {
       document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
       if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
     }
+    if (dir.title) document.getElementById('formTitle').value = dir.title;
     if (dir.content) document.getElementById('formContent').value = dir.content;
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
@@ -657,6 +656,7 @@ window.openDirectiveFormModal = function (editId = null) {
     document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
     if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
 
+    document.getElementById('formTitle').value = '';
     document.getElementById('formContent').value = '';
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
@@ -681,11 +681,12 @@ window.saveDirectiveFromModal = function () {
   const dataSourceUrls = checkedPages.map(cb => ({ name: cb.getAttribute('data-name'), url: cb.getAttribute('data-url') }));
 
   const agency = document.getElementById('formAgency').value;
+  const title = document.getElementById('formTitle').value.trim();
   const content = document.getElementById('formContent').value.trim();
   const dueDate = document.getElementById('formDueDate').value;
   const director = 'Chủ tịch UBND Tỉnh';
 
-  if (!agency || !content) {
+  if (!agency || !title || !content) {
     showToast('Vui lòng nhập đầy đủ các thông tin bắt buộc (*)', 'error');
     return;
   }
@@ -702,6 +703,7 @@ window.saveDirectiveFromModal = function () {
       dir.dataPageNames = dataPageNames;
       dir.dataSourceUrls = dataSourceUrls;
       dir.agency = agency;
+      dir.title = title;
       dir.content = content;
       dir.dueDate = dueDate;
       dir.director = director;
@@ -721,6 +723,7 @@ window.saveDirectiveFromModal = function () {
       agency,
       director,
       creator: director,
+      title,
       content,
       dueDate,
       reportDueDate: '',
@@ -790,8 +793,13 @@ function populateUI() {
   listEl.innerHTML = '';
 
   const keyword = directiveSearch ? directiveSearch.value.trim().toLowerCase() : '';
-  const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked')).map(cb => cb.value);
-  const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked')).map(cb => cb.value);
+  const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked'))
+    .map(cb => cb.value).filter(val => val && val !== 'on');
+  const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked'))
+    .map(cb => cb.value).filter(val => val && val !== 'on');
+  const filterDeadlineValues = Array.from(document.querySelectorAll('#filterDeadlineDropdown input[type=checkbox]:checked'))
+    .map(cb => cb.value).filter(val => val && val !== 'on');
+
   const fromDateStr = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
   const toDateStr = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
   const fromDate = fromDateStr ? parseDDMMYYYY(fromDateStr) : null;
@@ -804,18 +812,16 @@ function populateUI() {
   };
   const tabStatuses = TAB_STATUSES[currentDirectiveTab] || TAB_STATUSES.inprogress;
 
-  const deadlineFilterEl = document.getElementById('directiveFilterDeadline');
-  const deadlineFilterVal = deadlineFilterEl ? deadlineFilterEl.value : 'Tất cả';
-
   const filteredDirectives = directives.filter(dir => {
     const metricLabel = (dir.metricIds || []).map(id => METRIC_LABELS[id] || id).join(' ');
     const matchKW = dir.content.toLowerCase().includes(keyword) ||
+      (dir.title || '').toLowerCase().includes(keyword) ||
       metricLabel.toLowerCase().includes(keyword) ||
       (dir.agency || '').toLowerCase().includes(keyword);
     const matchOrg = filterOrgValues.length === 0 || filterOrgValues.includes(dir.agency);
     const matchStatus = filterStatusValues.length === 0 || filterStatusValues.includes(dir.status);
     const matchTab = tabStatuses.includes(dir.status);
-    const matchDL = deadlineFilterVal === 'Tất cả' || isMatchDeadlineFilter(dir, deadlineFilterVal);
+    const matchDL = filterDeadlineValues.length === 0 || filterDeadlineValues.some(val => isMatchDeadlineFilter(dir, val));
 
     let matchDate = true;
     if (fromDate || toDate) {
@@ -921,10 +927,10 @@ function populateUI() {
         '<div class="directive-item-header">' +
         '<div class="directive-loc" style="flex: 1; min-width: 0;">' +
         '<div class="metric-tooltip-wrap" style="flex: 1; min-width: 0; padding-right: 8px;">' +
-        '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-        '<i class="fa-solid fa-chart-bar"></i> ' + metricLabels +
+        '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight:bold; font-size:13px; color:#1e293b;">' +
+        '<i class="fa-solid fa-chart-bar"></i> ' + (dir.title || 'Không có tiêu đề') +
         '</div>' +
-        '<span class="metric-tooltip">' + metricLabels + '</span>' +
+        '<span class="metric-tooltip">' + (dir.title || 'Không có tiêu đề') + '</span>' +
         '</div>' +
         '<span class="directive-status ' + statusClass + '" style="margin-left:6px; flex-shrink: 0;">' + dir.status + '</span>' +
         '</div>' +
@@ -971,12 +977,18 @@ window.switchDirectiveTab = function (tab) {
   const statusDropdown = document.getElementById('filterStatusDropdown');
   if (statusDropdown) {
     const statuses = tab === 'inprogress'
-      ? ['Đã chỉ đạo', 'Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối']
-      : ['Hoàn thành', 'Kết thúc'];
+      ? ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối']
+      : ['Chờ phê duyệt', 'Kết thúc'];
     
-    statusDropdown.innerHTML = statuses.map(s =>
+    let html = '<div class="fms-select-all-wrap" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">' +
+      '<label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllStatus" onchange="toggleSelectAllFilter(\'status\')"> <span>Chọn tất cả</span></label>' +
+      '</div>';
+
+    html += statuses.map(s =>
       '<label class="ms-opt"><input type="checkbox" value="' + s + '" onchange="onMultiFilterChange(\'status\')"> <span>' + s + '</span></label>'
     ).join('');
+
+    statusDropdown.innerHTML = html;
   }
 
   updateFilterLabel('status');
@@ -986,7 +998,7 @@ window.switchDirectiveTab = function (tab) {
 
 // ----- Filter multiselect helpers -----
 window.toggleFilterDropdown = function (type) {
-  const wrapId = type === 'org' ? 'filterOrgWrap' : 'filterStatusWrap';
+  const wrapId = type === 'org' ? 'filterOrgWrap' : (type === 'deadline' ? 'filterDeadlineWrap' : 'filterStatusWrap');
   const wrap = document.getElementById(wrapId);
   if (!wrap) return;
   const isOpen = wrap.classList.contains('open');
@@ -995,17 +1007,41 @@ window.toggleFilterDropdown = function (type) {
   if (!isOpen) wrap.classList.add('open');
 };
 
+window.toggleSelectAllFilter = function (type) {
+  const selectAllId = type === 'org' ? 'selectAllOrg' : (type === 'status' ? 'selectAllStatus' : 'selectAllDeadline');
+  const dropId = type === 'org' ? 'filterOrgDropdown' : (type === 'status' ? 'filterStatusDropdown' : 'filterDeadlineDropdown');
+  const selectAllCb = document.getElementById(selectAllId);
+  if (!selectAllCb) return;
+
+  const isChecked = selectAllCb.checked;
+  document.querySelectorAll('#' + dropId + ' input[type=checkbox]').forEach(cb => {
+    if (cb !== selectAllCb) cb.checked = isChecked;
+  });
+  updateFilterLabel(type);
+  currentPage = 1;
+  populateUI();
+};
+
 window.onMultiFilterChange = function (type) {
   updateFilterLabel(type);
 };
 
 function updateFilterLabel(type) {
-  const dropId = type === 'org' ? 'filterOrgDropdown' : 'filterStatusDropdown';
-  const labelId = type === 'org' ? 'filterOrgLabel' : 'filterStatusLabel';
-  const wrapId = type === 'org' ? 'filterOrgWrap' : 'filterStatusWrap';
-  const displayId = type === 'org' ? 'filterOrgDisplay' : 'filterStatusDisplay';
+  const dropId = type === 'org' ? 'filterOrgDropdown' : (type === 'deadline' ? 'filterDeadlineDropdown' : 'filterStatusDropdown');
+  const labelId = type === 'org' ? 'filterOrgLabel' : (type === 'deadline' ? 'filterDeadlineLabel' : 'filterStatusLabel');
+  const wrapId = type === 'org' ? 'filterOrgWrap' : (type === 'deadline' ? 'filterDeadlineWrap' : 'filterStatusWrap');
+  const displayId = type === 'org' ? 'filterOrgDisplay' : (type === 'deadline' ? 'filterDeadlineDisplay' : 'filterStatusDisplay');
+  const selectAllId = type === 'org' ? 'selectAllOrg' : (type === 'status' ? 'selectAllStatus' : 'selectAllDeadline');
 
-  const checked = Array.from(document.querySelectorAll('#' + dropId + ' input[type=checkbox]:checked'));
+  const allCbs = Array.from(document.querySelectorAll('#' + dropId + ' input[type=checkbox]'));
+  const selectAllCb = document.getElementById(selectAllId);
+  const optionCbs = allCbs.filter(cb => cb !== selectAllCb);
+  const checked = optionCbs.filter(cb => cb.checked);
+
+  if (selectAllCb) {
+    selectAllCb.checked = (checked.length === optionCbs.length && optionCbs.length > 0);
+  }
+
   const display = document.getElementById(displayId);
   const label = document.getElementById(labelId);
 
@@ -1013,7 +1049,7 @@ function updateFilterLabel(type) {
 
   if (checked.length === 0) {
     label.style.display = 'inline';
-    label.textContent = type === 'org' ? 'Tất cả đơn vị' : 'Tất cả trạng thái';
+    label.textContent = type === 'org' ? 'Tất cả đơn vị' : (type === 'deadline' ? 'Tất cả tình trạng' : 'Tất cả trạng thái');
     label.className = 'fms-placeholder';
     display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
   } else {
@@ -1021,18 +1057,16 @@ function updateFilterLabel(type) {
     display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
     const chevron = display.querySelector('.filter-multiselect-chevron');
 
-    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
     const visibleItems = checked.slice(0, 2);
     visibleItems.forEach(cb => {
       const tag = document.createElement('span');
       tag.className = 'fms-tag';
-      tag.textContent = cb.value; // Giữ đầy đủ tên đơn vị
+      tag.textContent = cb.value;
       tag.title = cb.value;
       if (chevron) display.insertBefore(tag, chevron);
       else display.appendChild(tag);
     });
 
-    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị đã chọn
     if (checked.length > 2) {
       const remainingCount = checked.length - 2;
       const badge = document.createElement('span');
@@ -1052,11 +1086,12 @@ window.applyDirectiveFilters = function () {
 
 window.resetDirectiveFilters = function () {
   // Uncheck all multiselect
-  document.querySelectorAll('#filterOrgDropdown input[type=checkbox], #filterStatusDropdown input[type=checkbox]').forEach(cb => {
+  document.querySelectorAll('#filterOrgDropdown input[type=checkbox], #filterStatusDropdown input[type=checkbox], #filterDeadlineDropdown input[type=checkbox]').forEach(cb => {
     cb.checked = false;
   });
   updateFilterLabel('org');
   updateFilterLabel('status');
+  updateFilterLabel('deadline');
   // Clear search
   const search = document.getElementById('directiveSearch');
   if (search) search.value = '';
@@ -1154,6 +1189,8 @@ window.viewDirectiveDetail = function (id) {
   const imageSrc = 'image/IOC_TinhHinhDanCuTheoGioiTinh.png';
 
   const tabInfoHtml =
+    // Tiêu đề chỉ đạo
+    '<div style="font-size:14px; font-weight:700; color:var(--text-dark); margin-bottom:12px; line-height:1.4;"><span style="color:var(--text-muted); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px;">Tiêu đề chỉ đạo:</span> ' + (dir.title || dir.content || 'Không có tiêu đề') + '</div>' +
     // Nội dung chỉ đạo
     '<div style="background:#f8f9ff; border:1px solid #e8eaf6; border-left:4px solid var(--pink); border-radius:8px; padding:14px 16px;">' +
     '<div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:8px;">Nội dung chỉ đạo</div>' +
@@ -1162,12 +1199,12 @@ window.viewDirectiveDetail = function (id) {
 
     // Metadata
     '<div class="detail-info-grid" style="margin-top:12px; padding:10px 12px; background:#fafafa; border-radius:8px; border:1px solid #f0f0f0;">' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Nguồn dữ liệu</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left; align-items:flex-start;">' + sourceLinksHtml + '</div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Hình ảnh chỉ đạo</strong><div style="text-align:left;"><div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal(\'' + imageSrc + '\')"><img src="' + imageSrc + '" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:160px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal(\'' + imageSrc + '\')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div></div></div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Nguồn dữ liệu</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left; align-items:flex-start; justify-content:flex-start;">' + sourceLinksHtml + '</div>' +
+    '<strong style="align-self:flex-start; margin-top:2px;">Hình ảnh chỉ đạo</strong><div style="text-align:left; display:flex; justify-content:flex-start;"><div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal(\'' + imageSrc + '\')"><img src="' + imageSrc + '" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:160px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal(\'' + imageSrc + '\')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div></div></div>' +
     '<strong style="align-self:flex-start; margin-top:2px;">Đơn vị xử lý</strong><span style="text-align:left; font-weight:400;">' + (dir.agency || 'N/A') + '</span>' +
+    '<strong>Thời hạn xử lý</strong><span style="font-weight:400;">' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</span>' +
     '<strong>Người chỉ đạo</strong><span style="font-weight:400;">' + (dir.creator || dir.director || 'N/A') + '</span>' +
     '<strong>Ngày tạo</strong><span style="font-weight:400;">' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</span>' +
-    '<strong>Thời hạn xử lý</strong><span style="font-weight:400;">' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</span>' +
     '</div>' +
 
     // Trạng thái
@@ -1233,18 +1270,18 @@ window.viewDirectiveDetail = function (id) {
   if (historyList.length > 0) {
     historyRowsHtml = historyList.map(function (h) {
       const agencyAttachHtml = (h.agencyAttach && h.agencyAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.agencyAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.agencyAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
+        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.agencyAttach + '\')" title="Xem danh sách file/ ảnh đính kèm: ' + h.agencyAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
         : '';
 
       const leaderAttachHtml = (h.leaderAttach && h.leaderAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.leaderAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.leaderAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
+        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.leaderAttach + '\')" title="Xem danh sách file/ ảnh đính kèm: ' + h.leaderAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
         : '';
 
       return '<tr>' +
         '<td><strong>' + (h.agency || '-') + '</strong></td>' +
         '<td style="white-space:nowrap;">' + (h.createdAt ? h.createdAt.split(' ')[0] : '-') + '</td>' +
         '<td>' + statusBadge(h.status) + '</td>' +
-        '<td>' + overdueBadge(h.overdue) + '</td>' +
+        '<td style="white-space:nowrap;">' + overdueBadge(h.overdue) + '</td>' +
         '<td>' + (h.approver || '-') + '</td>' +
         '<td style="white-space:nowrap;">' + (h.approvalDate && h.approvalDate !== '-' ? h.approvalDate.split(' ')[0] : '-') + '</td>' +
         '<td><div>' + (h.agencyNote || '-') + '</div>' + agencyAttachHtml + '</td>' +
@@ -1262,7 +1299,7 @@ window.viewDirectiveDetail = function (id) {
     '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Đơn vị tiếp nhận</th>' +
     '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Thời gian tiếp nhận</th>' +
     '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Trạng thái chỉ đạo</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Tình trạng</th>' +
+    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left; white-space:nowrap;">Tình trạng</th>' +
     '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Người phê duyệt</th>' +
     '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Thời gian phê duyệt</th>' +
     '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Ghi chú & Đính kèm Đơn vị</th>' +
@@ -1386,7 +1423,8 @@ window.renderUrgeDirectives = function () {
 
   if (!listContainer) return;
 
-  const uncompleted = directives.filter(d => d.status !== 'Hoàn thành');
+  // Default filter (exclude Kết thúc)
+  const uncompleted = directives.filter(d => d.status !== 'Kết thúc');
   urgeFiltered = filterAgency === 'Tất cả'
     ? uncompleted
     : uncompleted.filter(d => d.agency === filterAgency);
@@ -1539,7 +1577,7 @@ btnNextPage.addEventListener('click', () => {
 });
 
 // ----- Init -----
-populateUI();
+// populateUI() moved to end of file to ensure custom elements are defined first.
 
 // ----- Custom Web Component: DirectiveRibbon -----
 class DirectiveRibbon extends HTMLElement {
@@ -1653,16 +1691,16 @@ class DirectiveRibbon extends HTMLElement {
           itemIcon = clockSvg;
         }
 
-        const shortTitle = d.content && d.content.length > 35
-          ? d.content.substring(0, 35) + '...'
-          : (d.content || '');
+        const shortTitle = d.title && d.title.length > 35
+          ? d.title.substring(0, 35) + '...'
+          : (d.title || '');
 
         return `
           <div class="directive-ribbon-popover-item" data-id="${d.id}">
             <div class="directive-ribbon-popover-item-icon" style="color: ${iconColor}; width: 14px; height: 14px;">
               ${itemIcon}
             </div>
-            <div class="directive-ribbon-popover-item-text" title="${d.content || ''}">${shortTitle}</div>
+            <div class="directive-ribbon-popover-item-text" title="${d.title || ''}">${shortTitle}</div>
             <span class="directive-ribbon-popover-item-status ${statusClass}">${d.status}</span>
           </div>
         `;
@@ -1742,12 +1780,20 @@ class DirectiveRibbon extends HTMLElement {
   }
 }
 
+// ----- Modal Handlers / State -----
+let isWarningAlertEnabled = true;
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('toggleWarningAlert');
+  if (toggle) isWarningAlertEnabled = toggle.checked;
+});
+
 if (!customElements.get('directive-ribbon')) {
   customElements.define('directive-ribbon', DirectiveRibbon);
 }
 
-// ----- Modal Handlers -----
-let isWarningAlertEnabled = true;
+// ----- Init -----
+populateUI();
+
 window.handleWarningToggleChange = function (input) {
   isWarningAlertEnabled = input.checked;
   const blocks = document.querySelectorAll('.metric-block');
@@ -1764,7 +1810,7 @@ window.handleWarningToggleChange = function (input) {
     r.style.display = isWarningAlertEnabled ? 'block' : 'none';
   });
 
-  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị cảnh báo chỉ đạo!' : '🔕 Đã TẮT hiển thị cảnh báo chỉ đạo!');
+  showToast(isWarningAlertEnabled ? 'Đã bật hiển thị cảnh báo chỉ đạo!' : 'Đã tắt hiển thị cảnh báo chỉ đạo!');
 };
 
 // ============================================================

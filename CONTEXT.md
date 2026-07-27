@@ -57,6 +57,7 @@ Thiết kế/
 Xem đầy đủ tại `.agents/skills/gia-lai-dashboard/SKILL.md`
 
 Tóm tắt nhanh:
+- Trước mỗi lần thực hiện công việc trong dự án, bắt buộc đọc đầy đủ `CONTEXT.md` trước, sau đó đọc đầy đủ `system_design.md`, và tuân thủ hoàn toàn quy định trong cả hai file
 - Không hardcode — mọi giá trị đều phải dynamic hoặc dùng token
 - DRY — không lặp code, dùng shared CSS và shared JS
 - Directive gắn vào **metric-block** (khối chỉ số), không phải hàng dữ liệu

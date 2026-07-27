@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v13';
+const DATA_VERSION = 'gialai_directives_v15';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -87,6 +87,7 @@ if (directives.length === 0) {
     // --- Metric Tổng nhân khẩu: Chờ phân công ---
     {
       id: 'dir_mock_1',
+      title: 'Rà soát dữ liệu hộ khẩu khu vực Pleiku',
       layoutGroup: 'du-lieu-khac',
       dataPageIds: ['dlk-1'],
       dataPageNames: ['Trang Phân bố Dân cư theo Giới tính'],
@@ -100,9 +101,8 @@ if (directives.length === 0) {
       dueDate: dueSoon,
       reportDueDate: '',
       attachments: [
-        { name: 'Kế_hoạch_rà_soát_C06.pdf', source: 'leader' },
-        { name: 'Screenshot_Trang_Phan_bo_Dan_cu_theo_Gioi_tinh.png', source: 'leader', isScreenshot: true },
-        { name: 'https://gialai.gov.vn/giam-sat/dan-cu/gioi-tinh', source: 'leader', isLink: true }
+        { name: 'Kế_hoạch_rà_soát_C06.png', source: 'leader' },
+        { name: 'Screenshot_Trang_Phan_bo_Dan_cu_theo_Gioi_tinh.png', source: 'leader', isScreenshot: true }
       ],
       status: 'Chờ phân công',
       report: '',
@@ -110,6 +110,7 @@ if (directives.length === 0) {
     },
     {
       id: 'dir_mock_2',
+      title: 'Kiểm tra hạ tầng mạng kết nối C06',
       layoutGroup: 'dich-vu-cong',
       dataPageIds: ['dvc-1'],
       dataPageNames: ['Trang Tỷ lệ Hồ sơ Đúng hạn & Quá hạn'],
@@ -123,8 +124,8 @@ if (directives.length === 0) {
       dueDate: dueOverdue,
       reportDueDate: '',
       attachments: [
-        { name: 'Công_văn_chỉ_đạo_hạ_tầng.pdf', source: 'leader' },
-        { name: 'Biên_bản_kiểm_tra_hạ_tầng.docx', source: 'leader' }
+        { name: 'Công_văn_chỉ_đạo_hạ_tầng.jpg', source: 'leader' },
+        { name: 'Biên_bản_kiểm_tra_hạ_tầng.png', source: 'leader' }
       ],
       status: 'Chờ phân công',
       report: '',
@@ -132,6 +133,7 @@ if (directives.length === 0) {
     },
     {
       id: 'dir_mock_3',
+      title: 'Tổng hợp số liệu thống kê dân số 2026',
       layoutGroup: 'quan-ly-van-ban',
       dataPageIds: ['vb-3'],
       dataPageNames: ['Trang Theo dõi Chỉ đạo Điều hành'],
@@ -145,8 +147,8 @@ if (directives.length === 0) {
       dueDate: dueNormal,
       reportDueDate: dueNormal,
       attachments: [
-        { name: 'Đề_đánh_giá_thống_kê.pdf', source: 'leader' },
-        { name: 'Bang_tong_hop_dan_so.xlsx', source: 'agency' }
+        { name: 'Đề_đánh_giá_thống_kê.png', source: 'leader' },
+        { name: 'Bang_tong_hop_dan_so.png', source: 'agency' }
       ],
       status: 'Đang xử lý',
       report: 'Đơn vị đang tiến hành tổng hợp dữ liệu thu thập từ các huyện cơ sở.',
@@ -156,6 +158,7 @@ if (directives.length === 0) {
     // --- Metric Diện tích: Chờ phân công ---
     {
       id: 'dir_mock_4',
+      title: 'Cập nhật bản đồ địa giới hành chính sáp nhập',
       metricIds: ['metric-dien-tich'],
       metricId: 'metric-dien-tich',
       agency: 'Sở Kế hoạch và Đầu tư',
@@ -165,9 +168,8 @@ if (directives.length === 0) {
       dueDate: dueNormal,
       reportDueDate: '',
       attachments: [
-        { name: 'Chi_dao_dia_gioi.pdf', source: 'leader' },
-        { name: 'Screenshot_DiaTich_2026.png', source: 'leader', isScreenshot: true },
-        { name: 'https://gialai.gov.vn/dashboard/dien-tich', source: 'leader', isLink: true }
+        { name: 'Chi_dao_dia_gioi.png', source: 'leader' },
+        { name: 'Screenshot_DiaTich_2026.png', source: 'leader', isScreenshot: true }
       ],
       status: 'Chờ phân công',
       report: '',
@@ -177,6 +179,7 @@ if (directives.length === 0) {
     // --- Metric Mật độ dân số: Đang xử lý + Đã có báo cáo ---
     {
       id: 'dir_mock_5',
+      title: 'Báo cáo mật độ dân cư vùng đô thị trọng điểm',
       metricIds: ['metric-mat-do'],
       metricId: 'metric-mat-do',
       agency: 'UBND Huyện Pleiku',
@@ -185,13 +188,14 @@ if (directives.length === 0) {
       content: 'Báo cáo mật độ dân cư tập trung tại các vùng đô thị trọng điểm.',
       dueDate: dueNormal,
       reportDueDate: dueNormal,
-      attachments: [{ name: 'Chi_dao_mat_do.pdf', source: 'leader' }],
+      attachments: [{ name: 'Chi_dao_mat_do.jpg', source: 'leader' }],
       status: 'Đang xử lý',
       report: 'Đang thu thập báo cáo từ các phường xã trực thuộc.',
       createdAt: todayStr
     },
     {
       id: 'dir_mock_6',
+      title: 'Khảo sát biến động lực lượng lao động di cư',
       metricIds: ['metric-mat-do'],
       metricId: 'metric-mat-do',
       agency: 'Sở Lao động - Thương binh và Xã hội',
@@ -201,8 +205,8 @@ if (directives.length === 0) {
       dueDate: dueSoon,
       reportDueDate: dueSoon,
       attachments: [
-        { name: 'Khảo_sát_lao_động.pdf', source: 'leader' },
-        { name: 'Báo_cáo_kết_quả_bước_1.docx', source: 'agency' },
+        { name: 'Khảo_sát_lao_động.png', source: 'leader' },
+        { name: 'Báo_cáo_kết_quả_bước_1.png', source: 'agency' },
         { name: 'Hinh_anh_thuc_te.jpg', source: 'agency' }
       ],
       status: 'Đã có báo cáo',
@@ -213,6 +217,7 @@ if (directives.length === 0) {
     // --- Metric Trẻ em: Đang xử lý ---
     {
       id: 'dir_mock_7',
+      title: 'Lập danh sách trẻ em tiêm chủng đợt 2',
       metricIds: ['metric-tre-em'],
       metricId: 'metric-tre-em',
       agency: 'Sở Y tế',
@@ -221,7 +226,7 @@ if (directives.length === 0) {
       content: 'Lập danh sách trẻ em trong độ tuổi tiêm chủng đợt 2 năm 2026.',
       dueDate: dueSoon,
       reportDueDate: dueSoon,
-      attachments: [{ name: 'Ke_hoach_tiem_chung.pdf', source: 'leader' }],
+      attachments: [{ name: 'Ke_hoach_tiem_chung.png', source: 'leader' }],
       status: 'Đang xử lý',
       report: 'Đã gửi công văn hướng dẫn xuống các trung tâm y tế huyện.',
       createdAt: todayStr
@@ -230,6 +235,7 @@ if (directives.length === 0) {
     // --- Metric Người lao động: Kết thúc ---
     {
       id: 'dir_mock_8',
+      title: 'Tổng hợp giải quyết việc làm Quý 2',
       metricIds: ['metric-lao-dong'],
       metricId: 'metric-lao-dong',
       agency: 'Sở Lao động - Thương binh và Xã hội',
@@ -239,8 +245,8 @@ if (directives.length === 0) {
       dueDate: todayStr,
       reportDueDate: todayStr,
       attachments: [
-        { name: 'Yeu_cau_viec_lam.pdf', source: 'leader' },
-        { name: 'Bao_cao_viec_lam_Q2.pdf', source: 'agency' }
+        { name: 'Yeu_cau_viec_lam.png', source: 'leader' },
+        { name: 'Bao_cao_viec_lam_Q2.png', source: 'agency' }
       ],
       status: 'Kết thúc',
       report: 'Đã hoàn thành phê duyệt kết quả báo cáo giải quyết việc làm Quý 2.',
@@ -250,6 +256,7 @@ if (directives.length === 0) {
     // --- Metric Người lớn tuổi: Bị từ chối ---
     {
       id: 'dir_mock_9',
+      title: 'Khám sức khỏe định kỳ cho người cao tuổi',
       metricIds: ['metric-nguoi-lon-tuoi'],
       metricId: 'metric-nguoi-lon-tuoi',
       agency: 'Sở Y tế',
@@ -259,8 +266,8 @@ if (directives.length === 0) {
       dueDate: dueSoon,
       reportDueDate: dueSoon,
       attachments: [
-        { name: 'Kham_suc_khoe_NCT.pdf', source: 'leader' },
-        { name: 'Bao_cao_kham_suc_khoe_NCT_draft.pdf', source: 'agency' }
+        { name: 'Kham_suc_khoe_NCT.png', source: 'leader' },
+        { name: 'Bao_cao_kham_suc_khoe_NCT_draft.png', source: 'agency' }
       ],
       status: 'Bị từ chối',
       report: 'Số liệu thống kê chưa đầy đủ các huyện miền núi. Yêu cầu đơn vị rà soát và báo cáo lại chi tiết.',
@@ -270,6 +277,7 @@ if (directives.length === 0) {
     // --- Metric Bản đồ: Chờ phê duyệt ---
     {
       id: 'dir_mock_10',
+      title: 'Phê duyệt bản đồ phân bố dân cư năm 2026',
       metricIds: ['metric-map'],
       metricId: 'metric-map',
       agency: 'Sở Nội vụ',
@@ -279,8 +287,8 @@ if (directives.length === 0) {
       dueDate: dueNormal,
       reportDueDate: dueNormal,
       attachments: [
-        { name: 'Ban_do_phan_bo_dan_cu_2026.pdf', source: 'leader' },
-        { name: 'Bao_cao_ket_qua_tong_hop.docx', source: 'agency' },
+        { name: 'Ban_do_phan_bo_dan_cu_2026.png', source: 'leader' },
+        { name: 'Bao_cao_ket_qua_tong_hop.png', source: 'agency' },
         { name: 'Screenshot_BanDo_2026.png', source: 'agency', isScreenshot: true }
       ],
       status: 'Chờ phê duyệt',
@@ -316,7 +324,7 @@ directives = directives.map(function (d) {
   }, d, { attachments: normalizedAttachments });
 
   base.indicatorKeys = base.metricIds;
-  base.title = base.content || '';
+  base.title = d.title || d.content || '';
   base.statusEnum = STATUS_MAP_EN[base.status] || 'da_chi_dao';
 
   return base;
@@ -333,7 +341,7 @@ function saveDirectives() {
   };
   directives.forEach(d => {
     d.indicatorKeys = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
-    d.title = d.content || '';
+    d.title = d.title || d.content || '';
     d.statusEnum = STATUS_MAP_EN[d.status] || 'cho_phan_cong';
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(directives));

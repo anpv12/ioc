@@ -106,6 +106,7 @@
         <!-- Stats Top: Tổng nhân khẩu + Diện tích/Mật độ -->
         <div class="stats-top">
           <div class="card card-tong metric-block" id="metric-tong-nhan-khau">
+            <directive-ribbon metric-id="metric-tong-nhan-khau" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
             <div class="tong-top">
               <div class="tong-icon">
                 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
@@ -140,11 +141,13 @@
 
           <div class="stats-side">
             <div class="card thin stat-card compact metric-block" id="metric-dien-tich">
+              <directive-ribbon metric-id="metric-dien-tich" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
               <span class="lbl">Diện tích</span>
               <span class="num c-salmon">157,306</span>
               <span class="unit">Km²</span>
             </div>
             <div class="card thin stat-card compact metric-block" id="metric-mat-do">
+              <directive-ribbon metric-id="metric-mat-do" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
               <span class="lbl">Mật độ dân số</span>
               <span class="num c-blue">169,88</span>
               <span class="unit">Người/Km²</span>
@@ -155,16 +158,19 @@
         <!-- Stats Age Row -->
         <div class="stats-age">
           <div class="card thin stat-card stacked metric-block" id="metric-tre-em">
+            <directive-ribbon metric-id="metric-tre-em" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
             <span class="lbl">Trẻ em (0-14t)</span>
             <div class="row2"><span class="num c-salmon">842.339</span><span class="unit" style="margin-left:6px;">Nhân
                 khẩu</span></div>
           </div>
           <div class="card thin stat-card stacked metric-block" id="metric-lao-dong">
+            <directive-ribbon metric-id="metric-lao-dong" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
             <span class="lbl">Người lao động (15-64t)</span>
             <div class="row2"><span class="num c-blue">2.436.390</span><span class="unit" style="margin-left:6px;">Nhân
                 khẩu</span></div>
           </div>
           <div class="card thin stat-card stacked metric-block" id="metric-nguoi-lon-tuoi">
+            <directive-ribbon metric-id="metric-nguoi-lon-tuoi" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
             <span class="lbl">Người lớn tuổi (Trên 65t)</span>
             <div class="row2"><span class="num c-magenta">302.192</span><span class="unit" style="margin-left:6px;">Nhân
                 khẩu</span></div>
@@ -173,6 +179,7 @@
 
         <!-- Chart: Top 5 cao nhất -->
         <div class="card hairline chart-card metric-block" id="metric-chart-high">
+          <directive-ribbon metric-id="metric-chart-high" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
           <div class="strip grad">
             <h3>Top 5 xã phường có nhân khẩu cao nhất</h3>
           </div>
@@ -181,6 +188,7 @@
 
         <!-- Chart: Top 5 thấp nhất -->
         <div class="card hairline chart-card metric-block" id="metric-chart-low">
+          <directive-ribbon metric-id="metric-chart-low" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
           <div class="strip grad">
             <h3>Top 5 xã phường có nhân khẩu thấp nhất</h3>
           </div>
@@ -191,6 +199,7 @@
 
       <!-- Map card -->
       <div class="card thin map-card metric-block" id="metric-map">
+        <directive-ribbon metric-id="metric-map" style="display: block; color: rgb(226, 75, 74);"></directive-ribbon>
         <h3>Phân bố dân cư theo đơn vị hành chính</h3>
         <div class="map-svg-wrap">
           <svg id="mapSvg" viewBox="0 0 726 690" xmlns="http://www.w3.org/2000/svg"
@@ -275,61 +284,63 @@
               </button>
             </div>
             <!-- Hàng 2: Multiselect -->
-            <div class="filter-multiselect-wrap" id="filterOrgWrap" style="flex: 1 1 calc(50% - 3px); min-width:140px;"
+            <div class="filter-multiselect-wrap" id="filterOrgWrap" style="flex: 1.8 1 calc(40% - 4px); min-width:180px;"
               onclick="toggleFilterDropdown('org')">
               <div class="filter-multiselect-display" id="filterOrgDisplay">
                 <span class="fms-placeholder" id="filterOrgLabel">Tất cả đơn vị</span>
                 <i class="fa-solid fa-chevron-down filter-multiselect-chevron"></i>
               </div>
               <div class="filter-multiselect-dropdown" id="filterOrgDropdown" onclick="event.stopPropagation()">
+                <div class="fms-select-all-wrap" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">
+                  <label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllOrg" onchange="toggleSelectAllFilter('org')"> <span>Chọn tất cả</span></label>
+                </div>
                 <label><input type="checkbox" value="Sở Nội vụ" onchange="onMultiFilterChange('org')"> Sở Nội vụ</label>
-                <label><input type="checkbox" value="Sở Thông tin và Truyền thông"
-                    onchange="onMultiFilterChange('org')"> Sở Thông tin và Truyền thông</label>
-                <label><input type="checkbox" value="Sở Tư pháp" onchange="onMultiFilterChange('org')"> Sở Tư
-                  pháp</label>
-                <label><input type="checkbox" value="Sở Lao động - Thương binh và Xã hội"
-                    onchange="onMultiFilterChange('org')"> Sở Lao động - Thương binh và Xã hội</label>
+                <label><input type="checkbox" value="Sở Thông tin và Truyền thông" onchange="onMultiFilterChange('org')"> Sở Thông tin và Truyền thông</label>
+                <label><input type="checkbox" value="Sở Tư pháp" onchange="onMultiFilterChange('org')"> Sở Tư pháp</label>
+                <label><input type="checkbox" value="Sở Lao động - Thương binh và Xã hội" onchange="onMultiFilterChange('org')"> Sở Lao động - Thương binh và Xã hội</label>
                 <label><input type="checkbox" value="Sở Y tế" onchange="onMultiFilterChange('org')"> Sở Y tế</label>
-                <label><input type="checkbox" value="Sở Giáo dục và Đào tạo" onchange="onMultiFilterChange('org')"> Sở
-                  Giáo dục và Đào tạo</label>
-                <label><input type="checkbox" value="Sở Kế hoạch và Đầu tư" onchange="onMultiFilterChange('org')"> Sở Kế
-                  hoạch và Đầu tư</label>
-                <label><input type="checkbox" value="Sở Tài chính" onchange="onMultiFilterChange('org')"> Sở Tài
-                  chính</label>
-                <label><input type="checkbox" value="UBND Phường Pleiku" onchange="onMultiFilterChange('org')"> UBND
-                  Phường Pleiku</label>
-                <label><input type="checkbox" value="UBND Phường Ia Grai" onchange="onMultiFilterChange('org')"> UBND
-                  Phường Ia Grai</label>
-                <label><input type="checkbox" value="UBND Phường Chư Sê" onchange="onMultiFilterChange('org')"> UBND
-                  Phường Chư Sê</label>
-                <label><input type="checkbox" value="UBND Phường Đăk Đoa" onchange="onMultiFilterChange('org')"> UBND
-                  Phường Đăk Đoa</label>
-                <label><input type="checkbox" value="Cục Thống kê Gia Lai" onchange="onMultiFilterChange('org')"> Cục
-                  Thống kê Gia Lai</label>
-                <label><input type="checkbox" value="Công an Tỉnh Gia Lai" onchange="onMultiFilterChange('org')"> Công
-                  an Tỉnh Gia Lai</label>
+                <label><input type="checkbox" value="Sở Giáo dục và Đào tạo" onchange="onMultiFilterChange('org')"> Sở Giáo dục và Đào tạo</label>
+                <label><input type="checkbox" value="Sở Kế hoạch và Đầu tư" onchange="onMultiFilterChange('org')"> Sở Kế hoạch và Đầu tư</label>
+                <label><input type="checkbox" value="Sở Tài chính" onchange="onMultiFilterChange('org')"> Sở Tài chính</label>
+                <label><input type="checkbox" value="UBND Phường Pleiku" onchange="onMultiFilterChange('org')"> UBND Phường Pleiku</label>
+                <label><input type="checkbox" value="UBND Phường Ia Grai" onchange="onMultiFilterChange('org')"> UBND Phường Ia Grai</label>
+                <label><input type="checkbox" value="UBND Phường Chư Sê" onchange="onMultiFilterChange('org')"> UBND Phường Chư Sê</label>
+                <label><input type="checkbox" value="UBND Phường Đăk Đoa" onchange="onMultiFilterChange('org')"> UBND Phường Đăk Đoa</label>
+                <label><input type="checkbox" value="Cục Thống kê Gia Lai" onchange="onMultiFilterChange('org')"> Cục Thống kê Gia Lai</label>
+                <label><input type="checkbox" value="Công an Tỉnh Gia Lai" onchange="onMultiFilterChange('org')"> Công an Tỉnh Gia Lai</label>
               </div>
             </div>
             <div class="filter-multiselect-wrap" id="filterStatusWrap"
-              style="flex: 1 1 calc(50% - 3px); min-width:140px;" onclick="toggleFilterDropdown('status')">
+              style="flex: 1 1 calc(30% - 4px); min-width:120px;" onclick="toggleFilterDropdown('status')">
               <div class="filter-multiselect-display" id="filterStatusDisplay">
                 <span class="fms-placeholder" id="filterStatusLabel">Tất cả trạng thái</span>
                 <i class="fa-solid fa-chevron-down filter-multiselect-chevron"></i>
               </div>
               <div class="filter-multiselect-dropdown" id="filterStatusDropdown" onclick="event.stopPropagation()">
-                <label><input type="checkbox" value="Đã chỉ đạo" onchange="onMultiFilterChange('status')"> Đã chỉ đạo</label>
+                <div class="fms-select-all-wrap" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">
+                  <label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllStatus" onchange="toggleSelectAllFilter('status')"> <span>Chọn tất cả</span></label>
+                </div>
                 <label><input type="checkbox" value="Chờ phân công" onchange="onMultiFilterChange('status')"> Chờ phân công</label>
                 <label><input type="checkbox" value="Đang xử lý" onchange="onMultiFilterChange('status')"> Đang xử lý</label>
                 <label><input type="checkbox" value="Đã có báo cáo" onchange="onMultiFilterChange('status')"> Đã có báo cáo</label>
                 <label><input type="checkbox" value="Bị từ chối" onchange="onMultiFilterChange('status')"> Bị từ chối</label>
               </div>
             </div>
-            <!-- Bộ lọc Tình trạng ddl: Trong hạn, Quá hạn -->
-            <select id="directiveFilterDeadline" class="directive-filter-select" style="flex: 1 1 100%; padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; color:#334155; outline:none; background:#fff; cursor:pointer;" onchange="applyDirectiveFilters()">
-              <option value="Tất cả">Tất cả tình trạng</option>
-              <option value="Trong hạn">Trong hạn</option>
-              <option value="Quá hạn">Quá hạn</option>
-            </select>
+            <!-- Bộ lọc Tình trạng: Multiselect đồng bộ -->
+            <div class="filter-multiselect-wrap" id="filterDeadlineWrap"
+              style="flex: 1 1 calc(30% - 4px); min-width:120px;" onclick="toggleFilterDropdown('deadline')">
+              <div class="filter-multiselect-display" id="filterDeadlineDisplay">
+                <span class="fms-placeholder" id="filterDeadlineLabel">Tất cả tình trạng</span>
+                <i class="fa-solid fa-chevron-down filter-multiselect-chevron"></i>
+              </div>
+              <div class="filter-multiselect-dropdown" id="filterDeadlineDropdown" onclick="event.stopPropagation()">
+                <div class="fms-select-all-wrap" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">
+                  <label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllDeadline" onchange="toggleSelectAllFilter('deadline')"> <span>Chọn tất cả</span></label>
+                </div>
+                <label><input type="checkbox" value="Trong hạn" onchange="onMultiFilterChange('deadline')"> Trong hạn</label>
+                <label><input type="checkbox" value="Quá hạn" onchange="onMultiFilterChange('deadline')"> Quá hạn</label>
+              </div>
+            </div>
             <!-- Hàng 3: Lọc thời gian -->
             <div class="directive-date-filter" style="flex: 1 1 100%;">
               <input type="text" id="filterDateFrom" class="directive-filter-date" placeholder="Tạo từ ngày" readonly>
@@ -426,7 +437,7 @@
             <div class="form-group" id="formDataSourceGroup">
               <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Nguồn dữ liệu</label>
               <div id="formDataSourceLinks"
-                style="display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; min-height:36px; align-items:center;">
+                style="display:flex; flex-wrap:wrap; gap:6px; padding:8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; min-height:36px; align-items:flex-start;">
                 <!-- Link JS sinh -->
               </div>
             </div>
@@ -447,50 +458,15 @@
               </div>
             </div>
 
-            <!-- 4. Đơn vị xử lý -->
+
+
+            <!-- Tiêu đề chỉ đạo -->
             <div class="form-group">
-              <label for="formAgency" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đơn vị xử
-                lý <span class="required-star">(*)</span></label>
-              <input type="hidden" id="formAgency">
-              <div class="multiselect-wrap" id="formAgencyWrap" style="position:relative;">
-                <div class="multiselect-display" id="formAgencyDisplay" onclick="toggleAgencyDropdown()"
-                  style="position:relative; padding-right:32px;">
-                  <span id="formAgencyPlaceholder" style="color:var(--text-muted);">-- Chọn đơn vị xử lý --</span>
-                </div>
-                <i class="fa-solid fa-chevron-down multiselect-arrow-icon" onclick="toggleAgencyDropdown()"></i>
-                <div class="multiselect-dropdown" id="formAgencyDropdown">
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Nội vụ"
-                      onchange="selectAgencyMulti()"> <span>Sở Nội vụ</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Thông tin và Truyền thông"
-                      onchange="selectAgencyMulti()"> <span>Sở Thông tin và Truyền thông</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Tư pháp"
-                      onchange="selectAgencyMulti()"> <span>Sở Tư pháp</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb"
-                      value="Sở Lao động - Thương binh và Xã hội" onchange="selectAgencyMulti()"> <span>Sở Lao động -
-                      Thương binh và Xã hội</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Y tế"
-                      onchange="selectAgencyMulti()"> <span>Sở Y tế</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Giáo dục và Đào tạo"
-                      onchange="selectAgencyMulti()"> <span>Sở Giáo dục và Đào tạo</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Kế hoạch và Đầu tư"
-                      onchange="selectAgencyMulti()"> <span>Sở Kế hoạch và Đầu tư</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Tài chính"
-                      onchange="selectAgencyMulti()"> <span>Sở Tài chính</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Pleiku"
-                      onchange="selectAgencyMulti()"> <span>UBND Phường Pleiku</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Ia Grai"
-                      onchange="selectAgencyMulti()"> <span>UBND Phường Ia Grai</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Chư Sê"
-                      onchange="selectAgencyMulti()"> <span>UBND Phường Chư Sê</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Đăk Đoa"
-                      onchange="selectAgencyMulti()"> <span>UBND Phường Đăk Đoa</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Cục Thống kê Gia Lai"
-                      onchange="selectAgencyMulti()"> <span>Cục Thống kê Gia Lai</span></label>
-                  <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Công an Tỉnh Gia Lai"
-                      onchange="selectAgencyMulti()"> <span>Công an Tỉnh Gia Lai</span></label>
-                </div>
-              </div>
+              <label for="formTitle" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tiêu đề chỉ đạo <span class="required-star">(*)</span></label>
+              <input type="text" id="formTitle" placeholder="Nhập tiêu đề chỉ đạo..."
+                style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-family:var(--font-family); font-size:var(--fs-sm); margin-bottom:12px;">
             </div>
+
 
             <!-- 5. Nội dung chỉ đạo -->
             <div class="form-group">
@@ -500,13 +476,65 @@
                 style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; outline:none; font-family:var(--font-family); font-size:var(--fs-sm);"></textarea>
             </div>
 
-            <!-- 6. Hạn xử lý, 7. Người chỉ đạo & 8. Ngày tạo (Cùng 1 hàng 3 cột) -->
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <!-- 4. Đơn vị xử lý -->
+              <div class="form-group" style="flex:1; min-width:200px;">
+                <label for="formAgency" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Đơn vị xử
+                  lý <span class="required-star">(*)</span></label>
+                <input type="hidden" id="formAgency">
+                <div class="multiselect-wrap" id="formAgencyWrap" style="position:relative;">
+                  <div class="multiselect-display" id="formAgencyDisplay" onclick="toggleAgencyDropdown()"
+                    style="position:relative; padding-right:32px;">
+                    <span id="formAgencyPlaceholder" style="color:var(--text-muted);">-- Chọn đơn vị xử lý --</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-down multiselect-arrow-icon" onclick="toggleAgencyDropdown()"></i>
+                  <div class="multiselect-dropdown" id="formAgencyDropdown">
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Nội vụ"
+                        onchange="selectAgencyMulti()"> <span>Sở Nội vụ</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Thông tin và Truyền thông"
+                        onchange="selectAgencyMulti()"> <span>Sở Thông tin và Truyền thông</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Tư pháp"
+                        onchange="selectAgencyMulti()"> <span>Sở Tư pháp</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb"
+                        value="Sở Lao động - Thương binh và Xã hội" onchange="selectAgencyMulti()"> <span>Sở Lao động -
+                        Thương binh và Xã hội</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Y tế"
+                        onchange="selectAgencyMulti()"> <span>Sở Y tế</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Giáo dục và Đào tạo"
+                        onchange="selectAgencyMulti()"> <span>Sở Giáo dục và Đào tạo</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Kế hoạch và Đầu tư"
+                        onchange="selectAgencyMulti()"> <span>Sở Kế hoạch và Đầu tư</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Tài chính"
+                        onchange="selectAgencyMulti()"> <span>Sở Tài chính</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Pleiku"
+                        onchange="selectAgencyMulti()"> <span>UBND Phường Pleiku</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Ia Grai"
+                        onchange="selectAgencyMulti()"> <span>UBND Phường Ia Grai</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Chư Sê"
+                        onchange="selectAgencyMulti()"> <span>UBND Phường Chư Sê</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="UBND Phường Đăk Đoa"
+                        onchange="selectAgencyMulti()"> <span>UBND Phường Đăk Đoa</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Cục Thống kê Gia Lai"
+                        onchange="selectAgencyMulti()"> <span>Cục Thống kê Gia Lai</span></label>
+                    <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Công an Tỉnh Gia Lai"
+                        onchange="selectAgencyMulti()"> <span>Công an Tỉnh Gia Lai</span></label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 6. Hạn xử lý -->
               <div class="form-group" style="flex:1; min-width:130px;">
                 <label for="formDueDate" style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Hạn xử lý</label>
-                <input type="text" id="formDueDate" placeholder="Chọn ngày" readonly
-                  style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer; font-weight:400;">
+                <div style="position:relative;">
+                  <input type="text" id="formDueDate" placeholder="Chọn ngày" readonly
+                    style="width:100%; padding:8px 32px 8px 8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; cursor:pointer; font-weight:400;">
+                  <i class="fa-regular fa-calendar" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
+                </div>
               </div>
+            </div>
+
+            <!-- 7. Người chỉ đạo & 8. Ngày tạo (Cùng 1 hàng) -->
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
               <div class="form-group" style="flex:1; min-width:130px;">
                 <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Người chỉ đạo</label>
                 <input type="text" id="formDirector" value="Chủ tịch UBND Tỉnh" disabled
@@ -598,9 +626,9 @@
             <i class="fa-solid fa-check"></i>
           </div>
           <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
-            Phê duyệt báo cáo kết quả và đánh dấu Hoàn thành chỉ đạo này?
+            Phê duyệt báo cáo kết quả và đánh dấu Kết thúc chỉ đạo này?
           </p>
-          <span style="font-size: 12px; color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Hoàn thành và lưu vào hệ
+          <span style="font-size: 12px; color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Kết thúc và lưu vào hệ
             thống.</span>
         </div>
         <div class="modal-footer"
@@ -636,12 +664,12 @@
               style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:10px; font-family:var(--font-family); font-size:var(--fs-sm); outline:none;"></textarea>
           </div>
           <div class="form-group">
-            <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tải file / Ảnh đính
+            <label style="font-weight:700; font-size:var(--fs-sm); color:var(--text-dark);">Tải file/ ảnh đính
               kèm</label>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
               <label for="rejectAttachInput"
                 style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
-                <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Tải file / Ảnh
+                <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Tải file/ ảnh
               </label>
               <input type="file" id="rejectAttachInput" multiple style="display:none;"
                 onchange="handleRejectFileAttach(this)">
