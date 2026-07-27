@@ -389,23 +389,23 @@ const ALL_ORGS = ['Sở Thông tin và Truyền thông', 'Sở Y tế', 'UBND T�
 
 const getOrgPersonnel = (orgName) => {
   const leaders = [
-    'Nguyễn Thế Anh', 'Trần Hữu Bằng', 'Lê Minh Cường', 'Phạm Hồng Dương', 'Vũ Hoàng Hải', 
-    'Đặng Quốc Khánh', 'Bùi Xuân Lâm', 'Ngô Văn Minh', 'Dương Đức Nam', 'Phan Văn Phong', 
+    'Nguyễn Thế Anh', 'Trần Hữu Bằng', 'Lê Minh Cường', 'Phạm Hồng Dương', 'Vũ Hoàng Hải',
+    'Đặng Quốc Khánh', 'Bùi Xuân Lâm', 'Ngô Văn Minh', 'Dương Đức Nam', 'Phan Văn Phong',
     'Hoàng Quốc Việt', 'Lý Đại Nghĩa', 'Đỗ Tiến Quyết', 'Tạ Minh Tâm', 'Đinh Văn Thắng'
   ];
   const staffFirstNames = ['Văn', 'Thị', 'Hữu', 'Đức', 'Xuân', 'Thu', 'Minh', 'Thanh', 'Hồng', 'Tuấn'];
   const staffLastNames = ['An', 'Bình', 'Chấn', 'Dũng', 'Giang', 'Hải', 'Khánh', 'Linh', 'Nam', 'Phúc', 'Quỳnh', 'Sơn', 'Trang', 'Vinh', 'Yến'];
   const familyNames = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Vũ', 'Đặng', 'Bùi', 'Hoàng', 'Đỗ', 'Phan'];
-  
+
   let hash = 0;
   for (let i = 0; i < orgName.length; i++) {
     hash = (hash << 5) - hash + orgName.charCodeAt(i);
     hash |= 0;
   }
-  
+
   const absHash = Math.abs(hash);
   const leader = leaders[absHash % leaders.length];
-  
+
   const staff = [];
   for (let i = 1; i <= 5; i++) {
     const fIdx = (absHash + i * 17) % familyNames.length;
@@ -1340,11 +1340,11 @@ const processCatalog = [
     }
 
     step.assignees = selected;
-    
+
     const isLocked = (status === 'Chờ phân công' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
     const showAsMulti = (status === 'Chờ phân công' || status === 'Đang xử lý' || status === 'Đã có báo cáo');
     updateDropdownSummary(container, selected, showAsMulti);
-    
+
     if (isLocked) {
       selectBox.style.backgroundColor = '#f1f5f9';
       selectBox.style.cursor = 'not-allowed';
@@ -1363,15 +1363,15 @@ const processCatalog = [
   const renderStepAssigneeChoices = step => {
     const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
     if (!container) return;
-    
+
     const status = step.status;
     const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
-    
+
     let selectedAssignees = [];
     let isLocked = false;
     let availableAssignees = [];
     let grouped = false;
-    
+
     if (status === 'Chờ phân công') {
       const orgs = step.orgs || [];
       selectedAssignees = orgs.map(org => getOrgPersonnel(org).leader);
@@ -1398,9 +1398,9 @@ const processCatalog = [
       selectedAssignees = step.assignees || [];
       isLocked = isStepFieldsDisabled;
     }
-    
+
     step.assignees = selectedAssignees;
-    
+
     let menuContent = '';
     if (grouped) {
       const orgGroups = {};
@@ -1408,14 +1408,14 @@ const processCatalog = [
         if (!orgGroups[item.org]) orgGroups[item.org] = [];
         orgGroups[item.org].push(item.name);
       });
-      
+
       menuContent = `
         <label class="dropdown-item select-all-item">
           <input type="checkbox" id="selectAllAssignees" ${availableAssignees.length > 0 && availableAssignees.every(item => selectedAssignees.includes(item.name)) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
           <span style="font-weight: bold; color: var(--admin-text);">Chọn tất cả</span>
         </label>
       `;
-      
+
       for (const org in orgGroups) {
         menuContent += `
           <div class="dropdown-group-header" style="font-weight: bold; padding: 6px 12px; background: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
@@ -1438,7 +1438,7 @@ const processCatalog = [
         </div>
       `).join('');
     }
-    
+
     container.innerHTML = `
       <div class="select-box ${isLocked ? 'disabled-view' : ''}" 
            style="${isLocked ? 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.85;' : ''}"
@@ -1451,9 +1451,9 @@ const processCatalog = [
         ${menuContent}
       </div>
     `;
-    
+
     updateStepAssigneeSummary(step);
-    
+
     if (!isLocked) {
       const searchInput = container.querySelector('.dropdown-search-input');
       if (searchInput) {
@@ -1553,7 +1553,7 @@ const processCatalog = [
 
     const isLocked = (status === 'Đang xử lý' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
     updateDropdownSummary(container, selected, status === 'Chờ phân công');
-    
+
     if (isLocked) {
       selectBox.style.backgroundColor = '#f1f5f9';
       selectBox.style.cursor = 'not-allowed';
@@ -1573,13 +1573,13 @@ const processCatalog = [
   const renderStepOrgChoices = step => {
     const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
     if (!container) return;
-    
+
     const status = step.status;
     const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
-    
+
     let selectedOrgs = [];
     let isLocked = false;
-    
+
     if (status === 'Chờ phân công') {
       selectedOrgs = step.orgs || [];
       isLocked = false;
@@ -1593,14 +1593,14 @@ const processCatalog = [
       selectedOrgs = step.orgs || [];
       isLocked = isStepFieldsDisabled;
     }
-    
+
     step.orgs = selectedOrgs;
     step.org = selectedOrgs.join(', ');
-    
+
 
 
     const isAllSelected = orgList.length > 0 && orgList.every(org => selectedOrgs.includes(org));
-    
+
     let menuContent = '';
     if (status === 'Chờ phân công') {
       menuContent = `
@@ -1622,7 +1622,7 @@ const processCatalog = [
         </div>
       `).join('');
     }
-    
+
     container.innerHTML = `
       <div class="select-box ${isLocked ? 'disabled-view' : ''}" 
            style="${isLocked ? 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.85;' : ''}"
@@ -1635,7 +1635,7 @@ const processCatalog = [
         ${menuContent}
       </div>
     `;
-    
+
     updateStepOrgSummary(step);
     if (!isLocked) {
       bindAutoComplete(container);
@@ -1718,8 +1718,8 @@ const processCatalog = [
     if (!step) return;
     const status = step.status;
     const isAssigneeLocked = (status === 'Chờ phân công' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
-    const assignees = isAssigneeLocked 
-      ? (step.assignees || []) 
+    const assignees = isAssigneeLocked
+      ? (step.assignees || [])
       : [...elements.nodeForm.querySelectorAll('[data-step-assignee]:checked')].map(input => input.value);
     const unitNameInput = elements.nodeForm.querySelector('[data-step-field="unitName"]');
     const statusContainer = elements.nodeForm.querySelector('.process-step-status-dropdown');
