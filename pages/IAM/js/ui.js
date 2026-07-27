@@ -1,30 +1,62 @@
 /* ============================================================
-   UI.JS — Trang IAM (Identity and Access Management)
+   UI.JS — Trang IAM: Quản lý Cơ quan / Đơn vị
    ============================================================ */
 
-const usersData = [
-  { id: 1, name: 'Nguyễn Văn An', email: 'an.nv@gialai.gov.vn', dept: 'Sở Khoa học và Công nghệ', role: 'Lãnh đạo', roleClass: 'role-leader', status: 'Hoạt động' },
-  { id: 2, name: 'Trần Thị Trinh', email: 'trinh.ttt@gialai.gov.vn', dept: 'Trung tâm IOC', role: 'Quản trị hệ thống', roleClass: 'role-admin', status: 'Hoạt động' },
-  { id: 3, name: 'Lê Văn Nam', email: 'nam.lv@gialai.gov.vn', dept: 'Sở Y tế', role: 'Người thực thi', roleClass: 'role-user', status: 'Hoạt động' },
-  { id: 4, name: 'Phạm Minh Tuấn', email: 'tuan.pm@gialai.gov.vn', dept: 'Sở Lao động - TB&XH', role: 'Người thực thi', roleClass: 'role-user', status: 'Tạm khóa' }
+const agenciesData = [
+  {
+    id: 1,
+    name: 'Sở Khoa học và Công nghệ Tỉnh Gia Lai',
+    manager: 'Nguyễn Văn An',
+    address: '02 Trần Hưng Đạo, P. Tây Sơn, TP. Pleiku, Gia Lai',
+    active: true
+  },
+  {
+    id: 2,
+    name: 'Trung tâm Giám sát, Điều hành Thông minh (IOC)',
+    manager: 'Trần Thị Trinh',
+    address: '15 Lý Thái Tổ, P. Diên Hồng, TP. Pleiku, Gia Lai',
+    active: true
+  },
+  {
+    id: 3,
+    name: 'Sở Y tế Tỉnh Gia Lai',
+    manager: 'Lê Văn Nam',
+    address: '88 Anh Hùng Núp, P. Hoa Lư, TP. Pleiku, Gia Lai',
+    active: true
+  },
+  {
+    id: 4,
+    name: 'Sở Lao động - Thương binh và Xã hội Tỉnh Gia Lai',
+    manager: 'Phạm Minh Tuấn',
+    address: '12 Phạm Văn Đồng, P. Thống Nhất, TP. Pleiku, Gia Lai',
+    active: false
+  }
 ];
 
-function renderUsersTable() {
-  const tbody = document.getElementById('iamUserBody');
+function renderAgenciesTable() {
+  const tbody = document.getElementById('iamAgencyBody');
   if (!tbody) return;
 
   let html = '';
-  usersData.forEach((u) => {
+  agenciesData.forEach((item, index) => {
+    const activeChecked = item.active ? 'checked' : '';
     html += `
       <tr>
-        <td class="center">${u.id}</td>
-        <td><strong>${u.name}</strong></td>
-        <td>${u.email}</td>
-        <td>${u.dept}</td>
-        <td class="center"><span class="role-badge ${u.roleClass}">${u.role}</span></td>
-        <td class="center">${u.status}</td>
+        <td class="center">${index + 1}</td>
+        <td><strong>${item.name}</strong></td>
+        <td>${item.manager}</td>
+        <td>${item.address}</td>
         <td class="center">
-          <button style="border:none;background:#D0EBFF;color:#0091FF;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:inherit;">Sửa</button>
+          <label class="switch" style="position:relative;display:inline-block;width:34px;height:18px;margin:0;">
+            <input type="checkbox" ${activeChecked} onchange="toggleAgencyStatus(${item.id})">
+            <span class="slider round"></span>
+          </label>
+        </td>
+        <td class="center">
+          <div style="display:flex;gap:6px;justify-content:center;">
+            <button style="border:none;background:#D0EBFF;color:#0091FF;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;"><i class="fa-solid fa-pen"></i> Sửa</button>
+            <button style="border:none;background:#FFE2E8;color:#EA0001;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;"><i class="fa-solid fa-trash"></i> Xóa</button>
+          </div>
         </td>
       </tr>
     `;
@@ -32,4 +64,11 @@ function renderUsersTable() {
   tbody.innerHTML = html;
 }
 
-document.addEventListener('DOMContentLoaded', renderUsersTable);
+function toggleAgencyStatus(id) {
+  const item = agenciesData.find(a => a.id === id);
+  if (item) {
+    item.active = !item.active;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', renderAgenciesTable);
