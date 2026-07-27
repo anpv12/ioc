@@ -12,7 +12,7 @@
 html,
 body {
   margin: 0;
-  padding: 0;
+  padding: 0;s
   background: #F3F5F9;
   font-family: 'Roboto', Helvetica, Arial, sans-serif;
 }
@@ -598,47 +598,56 @@ input[type=number] {
   /* Thu nhỏ padding để tiết kiệm diện tích */
 }
 
-/* --- Tỉ lệ cột & Định dạng hiển thị riêng cho bảng Quy trình động --- */
-#view-dynamic-process .tbl-wrap th:nth-child(1) {
-  width: 25%;
-}
-
-/* Phiên bản */
-#view-dynamic-process .tbl-wrap th:nth-child(2) {
+/* ===================================================
+   4. Chia tỉ lệ % cho đúng 8 cột trong HTML của bạn
+   =================================================== */
+.tbl-wrap th:nth-child(1) {
   width: 10%;
-  text-align: center;
 }
 
-#view-dynamic-process .tbl-wrap td:nth-child(2) {
-  text-align: center;
+/* Mã quy trình */
+.tbl-wrap th:nth-child(2) {
+  width: 20%;
 }
 
-/* Cơ quan */
-#view-dynamic-process .tbl-wrap th:nth-child(3) {
-  width: 25%;
-}
-
-/* Trạng thái */
-#view-dynamic-process .tbl-wrap th:nth-child(4) {
-  width: 15%;
-}
-
-/* Ngày tạo */
-#view-dynamic-process .tbl-wrap th:nth-child(5) {
-  width: 10%;
-  text-align: center;
-}
-
-#view-dynamic-process .tbl-wrap td:nth-child(5) {
-  text-align: center;
-}
-
-/* Xử lý */
-#view-dynamic-process .tbl-wrap th:nth-child(6) {
+/* Tên quy trình (Dành nhiều không gian nhất) */
+.tbl-wrap th:nth-child(3) {
   width: 8%;
 }
 
-#view-dynamic-process .tbl-wrap td:nth-child(3) {
+/* Phiên bản */
+.tbl-wrap th:nth-child(4) {
+  width: 14%;
+}
+
+/* Nhóm giám sát */
+.tbl-wrap th:nth-child(5) {
+  width: 14%;
+}
+
+/* Cơ quan */
+.tbl-wrap th:nth-child(6) {
+  width: 5%;
+}
+
+/* Hoạt động */
+.tbl-wrap th:nth-child(7) {
+  width: 10%;
+}
+
+/* Ngày tạo */
+.tbl-wrap th:nth-child(8) {
+  width: 8%;
+}
+
+/* Xử lý */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.tbl-wrap td:nth-child(5) {
   white-space: nowrap !important;
   /* Bắt buộc không cho xuống dòng */
   overflow: hidden !important;
@@ -647,12 +656,6 @@ input[type=number] {
   /* Hiện dấu ... ở cuối */
   cursor: pointer;
   /* Đổi con trỏ chuột thành dạng bàn tay khi hover */
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 760px;
 }
 
 thead th {
@@ -4613,8 +4616,8 @@ td .status-badge {
   font-weight: 500;
 }
 
-.filter-item>select,
-.filter-item>input {
+.filter-item > select,
+.filter-item > input {
   height: 38px;
   padding: 0 12px;
   border: 1px solid #cbd5e1;
@@ -4627,12 +4630,12 @@ td .status-badge {
   font-family: inherit;
 }
 
-.filter-item>input::placeholder {
+.filter-item > input::placeholder {
   color: #94a3b8;
 }
 
-.filter-item>select:focus,
-.filter-item>input:focus {
+.filter-item > select:focus,
+.filter-item > input:focus {
   border-color: var(--admin-primary);
 }
 
@@ -5061,6 +5064,66 @@ label.dropdown-item {
   border-color: #ef4444 !important;
 }
 
+/* 1. Cố định kích thước cột bảng quy trình động (Không co giãn, không cuộn ngang) */
+#view-dynamic-process table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 100%;
+}
+
+#view-dynamic-process th,
+#view-dynamic-process td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#view-dynamic-process th:nth-child(1),
+#view-dynamic-process td:nth-child(1) {
+  width: 10%;
+}
+
+/* Mã quy trình */
+#view-dynamic-process th:nth-child(2),
+#view-dynamic-process td:nth-child(2) {
+  width: 23%;
+}
+
+/* Tên quy trình */
+#view-dynamic-process th:nth-child(3),
+#view-dynamic-process td:nth-child(3) {
+  width: 10%;
+}
+
+/* Phiên bản */
+#view-dynamic-process th:nth-child(4),
+#view-dynamic-process td:nth-child(4) {
+  width: 11%;
+}
+
+/* Nhóm giám sát */
+#view-dynamic-process th:nth-child(5),
+#view-dynamic-process td:nth-child(5) {
+  width: 23%;
+}
+
+/* Cơ quan */
+#view-dynamic-process th:nth-child(6),
+#view-dynamic-process td:nth-child(6) {
+  width: 5%;
+}
+
+/* Hoạt động */
+#view-dynamic-process th:nth-child(7),
+#view-dynamic-process td:nth-child(7) {
+  width: 10%;
+}
+
+/* Ngày tạo */
+#view-dynamic-process th:nth-child(8),
+#view-dynamic-process td:nth-child(8) {
+  width: 8%;
+}
 
 /* 2. Zoom & Pan UML Styles */
 .pe-diagram-zoom-wrapper {
@@ -5775,6 +5838,76 @@ details.history-card,
 }
 
 
+/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
+#view-dynamic-process table th:nth-child(1),
+#view-dynamic-process table td:nth-child(1) {
+  max-width: 8% !important;
+  width: 8% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+#view-dynamic-process table th:nth-child(2),
+#view-dynamic-process table td:nth-child(2) {
+  max-width: 18% !important;
+  width: 18% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
+#view-dynamic-process table th:nth-child(3),
+#view-dynamic-process table td:nth-child(3) {
+  max-width: 8% !important;
+  width: 8% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  text-align: center;
+}
+
+/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
+#view-dynamic-process table th:nth-child(4),
+#view-dynamic-process table td:nth-child(4) {
+  max-width: 10% !important;
+  width: 10% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+#view-dynamic-process table th:nth-child(5),
+#view-dynamic-process table td:nth-child(5) {
+  max-width: 15% !important;
+  width: 15% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#view-dynamic-process table th:nth-child(6),
+#view-dynamic-process table td:nth-child(6) {
+  max-width: 10% !important;
+  width: 10% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
+#view-dynamic-process table th:nth-child(7),
+#view-dynamic-process table td:nth-child(7) {
+  max-width: 9% !important;
+  width: 9% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* TỐI ƯU HÓA CỘT BẢNG QUY TRÌNH ĐỘNG */
+#view-dynamic-process table th:nth-child(8),
+#view-dynamic-process table td:nth-child(8) {
+  max-width: 8% !important;
+  width: 8% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
 
 /* Custom Confirm Overlay */
 .custom-confirm-overlay {
@@ -5969,22 +6102,19 @@ details.history-card,
   top: 20px;
   right: 20px;
   z-index: 9999;
-  width: 300px;
-  /* Tăng từ 260px lên 300px cho vừa vặn hơn */
+  width: 300px; /* Tăng từ 260px lên 300px cho vừa vặn hơn */
   pointer-events: none;
 }
 
 /* POPUP TO RA 1 XÍU, THOÁNG MẮT */
 .success {
   pointer-events: auto;
-  padding: 14px 18px;
-  /* Tăng padding giúp card dày dặn hơn */
-  border-radius: 8px;
-  /* Bo góc mềm mại hơn */
+  padding: 14px 18px; /* Tăng padding giúp card dày dặn hơn */
+  border-radius: 8px; /* Bo góc mềm mại hơn */
   background-color: #f0fdf4;
   border: 1px solid #bbf7d0;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-
+  
   /* Hiệu ứng trượt nhẹ từ bên phải */
   transform: translateX(120%);
   opacity: 0;
@@ -5997,8 +6127,7 @@ details.history-card,
 }
 
 .success-prompt-heading {
-  font-size: 0.95rem;
-  /* Tăng kích thước chữ tiêu đề */
+  font-size: 0.95rem; /* Tăng kích thước chữ tiêu đề */
   font-weight: 700;
   color: #166534;
   margin: 0;
@@ -6006,8 +6135,7 @@ details.history-card,
 
 .success-prompt-prompt {
   margin-top: 4px;
-  font-size: 0.825rem;
-  /* Tăng kích thước chữ nội dung */
+  font-size: 0.825rem; /* Tăng kích thước chữ nội dung */
   color: #15803d;
   line-height: 1.4;
 }
@@ -6019,12 +6147,10 @@ details.history-card,
   opacity: 0.85 !important;
   border-color: #cbd5e1 !important;
 }
-
 .select-box.disabled-view:hover {
   border-color: #cbd5e1 !important;
   box-shadow: none !important;
 }
-
 .dropdown-group-header {
   font-weight: bold;
   padding: 6px 12px;
@@ -6034,4 +6160,295 @@ details.history-card,
   text-transform: uppercase;
   border-bottom: 1px solid #e2e8f0;
   border-top: 1px solid #e2e8f0;
+}
+/* ============================================================
+   VIEW: Quản trị đơn vị (Unit Admin — Quản trị viên đơn vị)
+   ============================================================ */
+.unit-admin-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.unit-card-title {
+  margin: 0 0 var(--space-md);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--admin-text);
+}
+
+.unit-card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.unit-card-header-row .unit-card-title {
+  margin: 0;
+}
+
+/* ---- Khối 1: Thông tin đơn vị ---- */
+.unit-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.unit-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--admin-line);
+}
+
+.unit-info-row:last-child {
+  border-bottom: none;
+}
+
+.unit-info-label {
+  flex: 0 0 160px;
+  font-size: var(--fs-sm);
+  color: var(--admin-muted);
+}
+
+.unit-info-value {
+  flex: 1;
+  font-size: var(--fs-sm);
+  color: var(--admin-text);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---- Khối 2: Người nhận mặc định ---- */
+.unit-recipient-empty {
+  font-size: var(--fs-sm);
+  color: var(--admin-placeholder);
+  padding: var(--space-md) 0;
+}
+
+.unit-recipient-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.unit-recipient-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--admin-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-lg);
+  flex: none;
+}
+
+.unit-recipient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.unit-recipient-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.unit-recipient-name {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--admin-text);
+}
+
+.unit-recipient-role {
+  font-size: var(--fs-xs);
+  color: var(--admin-muted);
+}
+
+.unit-recipient-contact {
+  font-size: var(--fs-xs);
+  color: var(--admin-muted);
+  display: flex;
+  gap: var(--space-md);
+}
+
+.unit-status-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+}
+
+.unit-status-badge.active {
+  color: var(--directive-success-color);
+  background: var(--directive-success-bg);
+}
+
+/* ---- Modal chọn người nhận mặc định ---- */
+.unit-recipient-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  background: var(--directive-overlay);
+}
+
+.unit-recipient-modal-overlay[hidden] {
+  display: none;
+}
+
+.unit-recipient-modal-panel {
+  width: min(480px, 95vw);
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: var(--directive-radius-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--admin-line);
+}
+
+.unit-recipient-modal-body {
+  padding: var(--space-md) 14px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.unit-recipient-search {
+  position: relative;
+  width: 100%;
+}
+
+.unit-recipient-search input {
+  width: 100%;
+  height: 38px;
+  padding: 0 14px 0 36px;        /* chừa chỗ bên trái cho icon */
+  border: 1px solid var(--admin-control-line);
+  border-radius: var(--admin-radius-md);
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  color: var(--admin-text);
+  outline: none;
+  background: #fff;
+}
+
+.unit-recipient-search input:focus {
+  border-color: var(--admin-primary);
+}
+
+.unit-recipient-search input::placeholder {
+  color: var(--admin-placeholder);
+}
+
+.unit-recipient-search i,
+.unit-recipient-search svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--admin-placeholder);
+  font-size: 14px;
+  pointer-events: none;          /* click xuyên qua icon */
+}
+
+.unit-recipient-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.unit-recipient-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-sm);
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+
+.unit-recipient-option:hover {
+  background: var(--admin-control-hover);
+}
+
+.unit-recipient-option.selected {
+  border-color: var(--admin-primary);
+  background: #eaf5ff;
+}
+
+.unit-recipient-option input[type="radio"] {
+  accent-color: var(--admin-primary);
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.unit-recipient-option-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--admin-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-sm);
+  flex: none;
+}
+
+.unit-recipient-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.unit-recipient-option-name {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--admin-text);
+}
+
+.unit-recipient-option-role {
+  font-size: var(--fs-xs);
+  color: var(--admin-muted);
+}
+
+.unit-recipient-empty-search {
+  font-size: var(--fs-sm);
+  color: var(--admin-placeholder);
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+
+.btn-cancel {
+  height: var(--admin-control-height);
+  padding: 0 16px;
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid var(--admin-control-line);
+  background: #fff;
+  color: var(--admin-text);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: background-color .15s ease;
+}
+
+.btn-cancel:hover {
+  background: var(--admin-control-hover);
 }
