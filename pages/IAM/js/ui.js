@@ -53,9 +53,9 @@ function renderAgenciesTable() {
           </label>
         </td>
         <td class="center">
-          <div style="display:flex;gap:6px;justify-content:center;">
-            <button style="border:none;background:#D0EBFF;color:#0091FF;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;"><i class="fa-solid fa-pen"></i> Sửa</button>
-            <button style="border:none;background:#FFE2E8;color:#EA0001;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;"><i class="fa-solid fa-trash"></i> Xóa</button>
+          <div class="row-actions">
+            <button class="act-btn act-edit" title="Sửa"><i class="fa-solid fa-pen"></i></button>
+            <button class="act-btn act-del" title="Xóa"><i class="fa-solid fa-trash"></i></button>
           </div>
         </td>
       </tr>
