@@ -620,7 +620,8 @@ input[type=number] {
 }
 
 #view-dynamic-process .tbl-wrap td:nth-child(3) {
-  max-width: 0;              /* Cần với table-layout:fixed để ellipsis hoạt động */
+  max-width: 0;
+  /* Cần với table-layout:fixed để ellipsis hoạt động */
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -1747,7 +1748,7 @@ tbody tr:last-child td {
   gap: 4px;
   background: #dcfce7;
   border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
   padding: 18px 26px;
   min-width: 260px;
   max-width: 380px;
@@ -1790,7 +1791,9 @@ tbody tr:last-child td {
   justify-content: center;
 }
 
-.event-detail-overlay[hidden] { display: none !important; }
+.event-detail-overlay[hidden] {
+  display: none !important;
+}
 
 .event-detail-dialog {
   background: #ffffff;
@@ -1882,7 +1885,10 @@ tbody tr:last-child td {
   justify-content: center;
   backdrop-filter: blur(2px);
 }
-.custom-confirm-overlay[hidden] { display: none !important; }
+
+.custom-confirm-overlay[hidden] {
+  display: none !important;
+}
 
 .custom-confirm-box {
   background: #fff;
@@ -1890,11 +1896,11 @@ tbody tr:last-child td {
   padding: 28px 32px;
   min-width: 320px;
   max-width: 440px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
 }
 
 .custom-confirm-header h3 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 8px;

@@ -22,6 +22,7 @@
     pageInfo:      () => document.getElementById('directivePageInfo'),
     pageButtons:   () => document.getElementById('directivePageButtons'),
     pageSize:      () => document.getElementById('directivePageSize'),
+    listContainer: () => document.getElementById('directiveListContainer'),
     detailOverlay: () => document.getElementById('detailOverlay'),
     detailTitle:   () => document.getElementById('detailTitle'),
     detailStatus:  () => document.getElementById('detailStatusBadge'),
@@ -253,6 +254,7 @@
     el.detailRight().innerHTML = renderDetailRight(item, node, status);
 
     // Show
+    if (el.listContainer()) el.listContainer().hidden = true;
     el.detailOverlay().hidden = false;
 
     // Bind action buttons
@@ -356,16 +358,14 @@
           <div class="sub-reports-list">${subReportsHtml}</div>
         </div>
       </div>` : ''}
-
-      <!-- Assignee + Action form -->
-      ${renderAssigneePanel(item, node, status)}
-      ${renderActionPanel(item, node, status)}
     `;
   };
 
   const renderDetailRight = (item, node, status) => {
     return `
       ${renderUML(item, status)}
+      ${renderAssigneePanel(item, node, status)}
+      ${renderActionPanel(item, node, status)}
     `;
   };
 
@@ -634,6 +634,7 @@
   /* ── Close detail ────────────────────────────────────────────────── */
   const closeDetail = () => {
     el.detailOverlay().hidden = true;
+    if (el.listContainer()) el.listContainer().hidden = false;
     state.selectedId = null;
   };
 

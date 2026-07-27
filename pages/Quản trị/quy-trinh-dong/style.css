@@ -2137,18 +2137,18 @@ details.history-card[open] .history-body {
   min-width: 0 !important;
 }
 
-/* Tên quy trình: 35% */
+/* Tên quy trình: 25% */
 .tbl-wrap th:nth-child(1),
 .tbl-wrap td:nth-child(1) {
-  width: 35% !important;
+  width: 25% !important;
   white-space: normal !important;
   word-break: break-word !important;
 }
 
-/* Phiên bản: 5% */
+/* Phiên bản: 8% */
 .tbl-wrap th:nth-child(2),
 .tbl-wrap td:nth-child(2) {
-  width: 5% !important;
+  width: 8% !important;
   text-align: center !important;
   white-space: nowrap !important;
 }
@@ -2157,6 +2157,7 @@ details.history-card[open] .history-body {
 .tbl-wrap th:nth-child(3) {
   width: 28% !important;
 }
+
 .tbl-wrap td:nth-child(3) {
   width: 28% !important;
   max-width: 0 !important;
@@ -2190,4 +2191,4 @@ details.history-card[open] .history-body {
 .tbl-wrap td:nth-child(6) {
   width: 8% !important;
   text-align: center !important;
-}
+}

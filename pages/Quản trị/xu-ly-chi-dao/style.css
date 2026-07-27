@@ -1,4 +1,4 @@
-﻿/* ===================================================================
+/* ===================================================================
    style.css — Xử lý chỉ đạo (module-specific)
    Shared base: admin-base.css
    =================================================================== */
@@ -520,25 +520,24 @@
   cursor: default;
 }
 
-/* ── 4. Detail Overlay ───────────────────────────────────────────── */
+/* ── 4. Detail Panel (nằm trong .content, không che overlay) ─────── */
 .detail-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
-  backdrop-filter: blur(2px);
+  display: block;
+  width: 100%;
+}
+
+.detail-overlay[hidden] {
+  display: none !important;
 }
 
 .detail-panel {
-  width: min(90vw, 1100px);
-  height: 100%;
+  width: 100%;
+  min-height: calc(100vh - 170px);
   background: var(--admin-bg, #f8fafc);
   display: flex;
   flex-direction: column;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
   overflow: hidden;
 }
 
