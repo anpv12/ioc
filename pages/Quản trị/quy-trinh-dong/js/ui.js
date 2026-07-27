@@ -1,4 +1,4 @@
-﻿/* ---------------- Quản trị quy trình động ---------------- */
+/* ---------------- Quản trị quy trình động ---------------- */
 const orgList = [
   'Sở Thông tin và Truyền thông',
   'Sở Y tế',
@@ -527,30 +527,6 @@ const processCatalog = [
     process.processStatus ||= 'active';
     process.nodes = sourceNodes.map((step, index) => normalizeStep(step, index, sourceNodes));
   });
-  let noticeTimeout = null;
-  const showNotice = (message, autoHideMs = 2500) => {
-    if (!message) return;
-
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-
-    const titleEl = document.getElementById('toast-title');
-    const msgEl = document.getElementById('toast-message');
-    if (titleEl) titleEl.innerText = 'Thành công';
-    if (msgEl) msgEl.innerText = message;
-
-    toast.classList.add('show');
-
-    if (noticeTimeout) {
-      clearTimeout(noticeTimeout);
-    }
-
-    if (autoHideMs > 0) {
-      noticeTimeout = setTimeout(() => {
-        toast.classList.remove('show');
-      }, autoHideMs);
-    }
-  };
   const showError = message => { elements.error.textContent = message; elements.error.hidden = !message; };
   const refreshFilterOptions = () => {
     renderFilterScopeChoices();

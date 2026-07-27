@@ -1,4 +1,4 @@
-﻿/* ---------------- Xử lý chỉ đạo: state ---------------- */
+/* ---------------- Xử lý chỉ đạo: state ---------------- */
 const prototypeDateAtOffset = offsetDays => {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
@@ -211,7 +211,6 @@ const directiveState = {
     closeDetail: document.getElementById('closeDetail'), historyEventOverlay: document.getElementById('historyEventOverlay'),
     historyEventTitle: document.getElementById('historyEventTitle'), historyEventBody: document.getElementById('historyEventBody'),
     closeHistoryEvent: document.getElementById('closeHistoryEvent'), tableView: document.getElementById('tableView'),
-    kanbanView: document.getElementById('kanbanView'), viewButtons: document.querySelectorAll('[data-display-mode]'),
     timeCalendarPopover: document.getElementById('timeCalendarPopover'), timeCalendarInput: document.getElementById('timeCalendarInput'),
     timeCalendarTitle: document.getElementById('timeCalendarTitle'), timeCalendarSummary: document.getElementById('timeCalendarSummary'),
     closeTimeCalendar: document.getElementById('closeTimeCalendar')
@@ -401,42 +400,8 @@ const directiveState = {
     }
   }
 
-  function renderKanbanCard(item) {
-    const overdueClass = timeConditionFor(item) === 'overdue' ? 'overdue' : '';
-    return `<article class="kanban-card ${overdueClass}" data-id="${item.id}" role="button" tabindex="0" aria-label="Xem chi tiết ${item.id}">
-      <span class="directive-code">${item.id}</span>
-      <strong>${escapeHtml(item.title)}</strong>
-      <span class="kanban-deadline ${effectiveDeadlineType(item)}"><span>${item.deadline}</span>${renderTimeButton(item)}</span>
-      ${renderStatus(item)}
-    </article>`;
-  }
-
-  function renderKanban() {
-    const items = filteredDirectives();
-    elements.kanbanView.innerHTML = overviewColumns.map(column => {
-      const columnItems = items.filter(item => overviewFor(item) === column.key);
-      const meta = state.statusMeta[column.colorKey];
-      return `<section class="kanban-column" aria-label="${escapeHtml(column.label)}">
-        <header class="kanban-column-heading"><div><span class="kanban-status-dot overview-${column.key}"></span><h3>${escapeHtml(column.label)}</h3></div><span>${columnItems.length}</span></header>
-        <div class="kanban-column-cards">${columnItems.length ? columnItems.map(renderKanbanCard).join('') : `<div class="kanban-empty"><i class="fa-regular ${meta.icon === 'fa-circle-check' ? 'fa-circle-check' : 'fa-folder-open'}"></i><span>Chưa có chỉ đạo</span></div>`}</div>
-      </section>`;
-    }).join('');
-  }
-
   function renderDirectiveViews() {
     renderDirectiveTable();
-    renderKanban();
-  }
-
-  function setDisplayMode(mode) {
-    state.displayMode = mode === 'kanban' ? 'kanban' : 'table';
-    elements.tableView.hidden = state.displayMode !== 'table';
-    elements.kanbanView.hidden = state.displayMode !== 'kanban';
-    elements.viewButtons.forEach(button => {
-      const active = button.dataset.displayMode === state.displayMode;
-      button.classList.toggle('active', active);
-      button.setAttribute('aria-pressed', String(active));
-    });
   }
 
   function currentStep(item) {
@@ -1263,15 +1228,6 @@ const directiveState = {
     const target = event.target.closest('[data-id]'); if (target) openDetail(target.dataset.id);
   };
   elements.tbody.addEventListener('click', handleDirectiveClick);
-  elements.kanbanView.addEventListener('click', handleDirectiveClick);
-  elements.kanbanView.addEventListener('keydown', event => {
-    if (!['Enter', ' '].includes(event.key) || event.target.closest('[data-time-id]')) return;
-    const card = event.target.closest('[data-id]');
-    if (!card) return;
-    event.preventDefault();
-    openDetail(card.dataset.id);
-  });
-  elements.viewButtons.forEach(button => button.addEventListener('click', () => setDisplayMode(button.dataset.displayMode)));
   elements.closeDetail.addEventListener('click', closeDetail);
   elements.detailOverlay.addEventListener('click', event => { if (event.target === elements.detailOverlay) closeDetail(); });
   elements.detailBody.addEventListener('change', event => {
@@ -1348,5 +1304,5 @@ const directiveState = {
     }
   }
   renderDirectiveViews();
-  setDisplayMode(state.displayMode);
 })();
+
