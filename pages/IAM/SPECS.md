@@ -31,7 +31,8 @@ STT | Tên cơ quan | Địa chỉ | Người phụ trách | Hoạt động | X�
 
 - **Tên cơ quan**: cột rộng hơn (min-width ~240px), không xuống dòng.
 - **Địa chỉ**: cột thu hẹp; nếu dài thì cắt bằng ellipsis (`text-overflow: ellipsis`), hover hiện đủ qua `title`.
-- **Người phụ trách** *(TÍNH NĂNG MỚI)*: hiển thị tên người phụ trách chính của cơ quan (lấy từ field `manager`). Nếu chưa có, hiển thị **"Chưa cấu hình"** (màu chữ phụ). Được cập nhật khi lưu Form thông tin cơ quan. Nằm sau cột Địa chỉ.
+- **Người phụ trách** *(TÍNH NĂNG MỚI)*: trên danh sách chỉ hiển thị **tên đầy đủ**. Nếu chưa có, hiển thị **"Chưa cấu hình"** (màu chữ phụ). Nằm sau cột Địa chỉ.
+- **Menu Xử lý (⋮):** mở bằng `position: fixed` theo vị trí nút, không re-render bảng, không làm giao diện xê dịch/cuộn; tự đóng khi click ngoài / scroll / resize.
 - **Hoạt động**: badge text — "Hoạt động" (nền xanh nhạt, chữ xanh đậm) / "Không hoạt động" (nền đỏ nhạt, chữ đỏ). **Không** dùng switch toggle trên danh sách. Cột `white-space: nowrap` để không xuống dòng.
 - **Xử lý**: nút 3 chấm (⋮) mở dropdown menu gồm:
   - Xem (icon mắt) → mở Form ở chế độ Xem.
@@ -91,7 +92,7 @@ Bấm Xem sẽ ẩn danh sách và hiện form xem full-page.
 - Hiển thị dạng **label: value** gọn gàng (không dùng ô input disabled rộng); giá trị chi tiết không in đậm:
   - Tên cơ quan
   - Cơ quan cấp trên
-  - Người phụ trách chính *(TÍNH NĂNG MỚI)*
+  - Người phụ trách chính *(TÍNH NĂNG MỚI)*: hiển thị `username - fullName - phòng ban`
   - Số tầng
   - Tình trạng hoạt động (text "Hoạt động" / "Không hoạt động")
   - Địa chỉ
@@ -106,7 +107,8 @@ Bấm Xem sẽ ẩn danh sách và hiện form xem full-page.
 - Border xanh khi focus/open (`#0091FF`)
 - Chỉ chọn 1 item
 - Cho phép clear (nút ×)
-- Dropdown **Người phụ trách chính** là *(TÍNH NĂNG MỚI)* — nhóm theo phòng ban, hiển thị `username - fullName`.
+- **Ô tìm kiếm theo tên** trên đầu panel (lọc client-side).
+- Dropdown **Người phụ trách chính** là *(TÍNH NĂNG MỚI)* — nhóm theo phòng ban; item trong list: `username - fullName`; sau khi chọn hiển thị trên trigger: `username - fullName - phòng ban`.
 
 ### 3.5. Textfield hover / focus
 - Tất cả `.form-input`: hover và focus cùng màu border xanh `#0091FF`.

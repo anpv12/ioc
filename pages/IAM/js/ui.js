@@ -203,8 +203,6 @@ function renderAgenciesTable() {
       const statusBadge = item.active
         ? '<span class="status-badge status-badge-on">Hoạt động</span>'
         : '<span class="status-badge status-badge-off">Không hoạt động</span>';
-      const menuOpen = agencyOpenMenuId === item.id ? ' show' : '';
-
       html += `
         <tr>
           <td class="center">${start + index + 1}</td>
@@ -217,7 +215,7 @@ function renderAgenciesTable() {
               <button class="act-btn-dots" type="button" title="Thao tác" onclick="toggleAgencyMenu(event, ${item.id})">
                 <i class="fa-solid fa-ellipsis-vertical"></i>
               </button>
-              <div class="action-menu${menuOpen}">
+              <div class="action-menu">
                 <div class="action-menu-item" onclick="openForm1(${item.id}, 'view')">
                   <i class="fa-solid fa-eye"></i> Xem
                 </div>
@@ -257,17 +255,57 @@ function renderAgenciesTable() {
   }
 }
 
+function closeAllActionMenus() {
+  document.querySelectorAll('.action-menu.show').forEach(m => {
+    m.classList.remove('show');
+    m.style.top = '';
+    m.style.left = '';
+    m.style.right = '';
+    m.style.bottom = '';
+    m.style.position = '';
+  });
+  agencyOpenMenuId = null;
+}
+
 function toggleAgencyMenu(evt, id) {
   evt.stopPropagation();
-  agencyOpenMenuId = agencyOpenMenuId === id ? null : id;
-  renderAgenciesTable();
+  const btn = evt.currentTarget || evt.target.closest('.act-btn-dots');
+  const wrap = btn ? btn.closest('.action-menu-wrap') : null;
+  const menu = wrap ? wrap.querySelector('.action-menu') : null;
+
+  // Đóng menu khác
+  const wasOpen = agencyOpenMenuId === id;
+  closeAllActionMenus();
+  if (wasOpen || !menu || !btn) return;
+
+  agencyOpenMenuId = id;
+  const rect = btn.getBoundingClientRect();
+  const menuWidth = 140;
+  const menuApproxH = 130;
+  let top = rect.bottom + 4;
+  let left = rect.right - menuWidth;
+
+  // Nếu tràn dưới viewport → mở lên trên
+  if (top + menuApproxH > window.innerHeight - 8) {
+    top = rect.top - menuApproxH - 4;
+    if (top < 8) top = 8;
+  }
+  // Không tràn trái/phải
+  if (left < 8) left = 8;
+  if (left + menuWidth > window.innerWidth - 8) {
+    left = window.innerWidth - menuWidth - 8;
+  }
+
+  menu.style.position = 'fixed';
+  menu.style.top = top + 'px';
+  menu.style.left = left + 'px';
+  menu.style.right = 'auto';
+  menu.style.bottom = 'auto';
+  menu.classList.add('show');
 }
 
 function closeAgencyMenu() {
-  if (agencyOpenMenuId !== null) {
-    agencyOpenMenuId = null;
-    renderAgenciesTable();
-  }
+  closeAllActionMenus();
 }
 
 function handleSearch() {
@@ -361,40 +399,94 @@ function setCustomDdValue(ddId, value, displayText) {
   if (ddId === 'agencyManagerDd') renderManagerPanel();
 }
 
-function renderParentPanel() {
+function renderParentPanel(filterText) {
   const panel = document.getElementById('agencyParentPanel');
   if (!panel) return;
   const excludeId = form1EditingId;
-  let html = '';
+  const kw = (filterText || '').trim().toLowerCase();
+  let html = `<div class="custom-dd-search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" class="custom-dd-search" id="agencyParentSearch" placeholder="Tìm theo tên..." autocomplete="off">
+  </div>`;
+  let count = 0;
   agenciesData.forEach(a => {
     if (a.id === excludeId) return;
+    if (kw && !a.name.toLowerCase().includes(kw)) return;
     const sel = parentDdValue === a.id ? ' selected' : '';
     html += `<div class="custom-dd-item${sel}" data-id="${a.id}">${a.name}</div>`;
+    count++;
   });
-  panel.innerHTML = html || '<div class="custom-dd-item" style="color:#9AA0AC;cursor:default;">Không có dữ liệu</div>';
+  if (count === 0) {
+    html += '<div class="custom-dd-item custom-dd-empty">Không có dữ liệu</div>';
+  }
+  panel.innerHTML = html;
+  const searchInput = document.getElementById('agencyParentSearch');
+  if (searchInput) {
+    searchInput.value = filterText || '';
+    searchInput.addEventListener('click', (e) => e.stopPropagation());
+    searchInput.addEventListener('input', () => {
+      renderParentPanel(searchInput.value);
+      const again = document.getElementById('agencyParentSearch');
+      if (again) {
+        again.focus();
+        const len = again.value.length;
+        again.setSelectionRange(len, len);
+      }
+    });
+    searchInput.addEventListener('keydown', (e) => e.stopPropagation());
+  }
 }
 
-function renderManagerPanel() {
+function renderManagerPanel(filterText) {
   const panel = document.getElementById('agencyManagerPanel');
   if (!panel) return;
 
-  // group by department
+  const kw = (filterText || '').trim().toLowerCase();
+
+  // group by department (filter by name/username)
   const groups = {};
   employeesData.forEach(e => {
+    if (kw) {
+      const hay = `${e.username} ${e.fullName}`.toLowerCase();
+      if (!hay.includes(kw)) return;
+    }
     if (!groups[e.department]) groups[e.department] = [];
     groups[e.department].push(e);
   });
 
-  let html = '';
+  let html = `<div class="custom-dd-search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" class="custom-dd-search" id="agencyManagerSearch" placeholder="Tìm theo tên..." autocomplete="off">
+  </div>`;
+  let count = 0;
   Object.keys(groups).forEach(dept => {
     html += `<div class="custom-dd-group-label">${dept}</div>`;
     groups[dept].forEach(e => {
       const disp = empDisplay(e);
       const sel = managerDdValue === disp ? ' selected' : '';
       html += `<div class="custom-dd-item${sel}" data-value="${disp}">${disp}</div>`;
+      count++;
     });
   });
+  if (count === 0) {
+    html += '<div class="custom-dd-item custom-dd-empty">Không có dữ liệu</div>';
+  }
   panel.innerHTML = html;
+  const searchInput = document.getElementById('agencyManagerSearch');
+  if (searchInput) {
+    searchInput.value = filterText || '';
+    searchInput.addEventListener('click', (e) => e.stopPropagation());
+    searchInput.addEventListener('input', () => {
+      renderManagerPanel(searchInput.value);
+      const again = document.getElementById('agencyManagerSearch');
+      if (again) {
+        again.focus();
+        const len = again.value.length;
+        again.setSelectionRange(len, len);
+      }
+    });
+    searchInput.addEventListener('keydown', (e) => e.stopPropagation());
+  }
 }
 
 function initCustomDropdowns() {
@@ -934,10 +1026,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* --- Đóng menu 3 chấm khi click ra ngoài --- */
+  /* --- Đóng menu 3 chấm khi click ra ngoài / scroll / resize --- */
   document.addEventListener('click', () => {
     closeAgencyMenu();
   });
+  window.addEventListener('scroll', closeAgencyMenu, true);
+  window.addEventListener('resize', closeAgencyMenu);
 
   /* --- Form 1 --- */
   const btnForm1Back = document.getElementById('btnForm1Back');
