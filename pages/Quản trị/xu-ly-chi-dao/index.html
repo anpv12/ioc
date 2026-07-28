@@ -83,11 +83,9 @@
             <div class="tab-bar" id="tabBar">
               <button class="tab-btn active" id="tabActive" data-tab="active" type="button">
                 Đang xử lý
-                <span class="tab-count" id="countActive">0</span>
               </button>
               <button class="tab-btn" id="tabDone" data-tab="done" type="button">
                 Đã xử lý
-                <span class="tab-count" id="countDone">0</span>
               </button>
             </div>
           </div>
@@ -110,19 +108,32 @@
               </div>
 
               <div class="filter-bar-right">
-                <select id="statusFilterSelect" class="filter-select">
-                  <option value="">-- Tất cả trạng thái --</option>
-                  <option value="waitingAssign">Chờ phân công</option>
-                  <option value="processing">Đang xử lý</option>
-                  <option value="reported">Đã có báo cáo</option>
-                  <option value="waitingApproval">Chờ phê duyệt</option>
-                  <option value="completed">Đã kết thúc</option>
-                </select>
-                <select id="timeConditionFilterSelect" class="filter-select">
-                  <option value="">-- Tất cả hạn --</option>
-                  <option value="in_time">Còn hạn</option>
-                  <option value="overdue">Trễ hạn</option>
-                </select>
+                <div class="custom-select-wrap" id="statusFilterWrap">
+                  <button type="button" class="custom-select-trigger" id="statusFilterBtn">
+                    <span class="selected-text" id="statusFilterText">-- Tất cả trạng thái --</span>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                  </button>
+                  <div class="custom-select-dropdown" id="statusFilterMenu" hidden>
+                    <div class="custom-option active" data-value="">-- Tất cả trạng thái --</div>
+                    <div class="custom-option" data-value="waitingAssign">Chờ phân công</div>
+                    <div class="custom-option" data-value="processing">Đang xử lý</div>
+                    <div class="custom-option" data-value="reported">Đã có báo cáo</div>
+                    <div class="custom-option" data-value="waitingApproval">Chờ phê duyệt</div>
+                    <div class="custom-option" data-value="completed">Đã kết thúc</div>
+                  </div>
+                </div>
+
+                <div class="custom-select-wrap" id="timeConditionWrap">
+                  <button type="button" class="custom-select-trigger" id="timeConditionBtn">
+                    <span class="selected-text" id="timeConditionText">-- Tất cả tình trạng --</span>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                  </button>
+                  <div class="custom-select-dropdown" id="timeConditionMenu" hidden>
+                    <div class="custom-option active" data-value="">-- Tất cả tình trạng --</div>
+                    <div class="custom-option" data-value="in_time">Còn hạn</div>
+                    <div class="custom-option" data-value="overdue">Trễ hạn</div>
+                  </div>
+                </div>
                 <div class="deadline-wrap">
                   <i class="fa-regular fa-calendar"></i>
                   <input id="deadlineRange" type="text" placeholder="Hạn xử lý..." readonly class="filter-date-input">

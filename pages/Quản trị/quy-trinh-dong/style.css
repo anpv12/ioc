@@ -2192,3 +2192,43 @@ details.history-card[open] .history-body {
   width: 8% !important;
   text-align: center !important;
 }
+
+/* ── 8. Step Actions Modal & Readonly Form Clean CSS ──────────────── */
+.step-actions-panel {
+  width: min(600px, 95vw) !important;
+  max-height: 80vh !important;
+}
+
+.step-actions-body {
+  overflow-y: auto !important;
+  padding: 20px !important;
+}
+
+.step-actions-toolbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 12px !important;
+}
+
+.step-actions-label {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--admin-text) !important;
+}
+
+.btn-add-action {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+}
+
+.process-step-action-table {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.form-control[readonly] {
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed !important;
+}

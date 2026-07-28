@@ -143,11 +143,11 @@ function showCustomConfirm(title, message, onOk, onCancel) {
   const okBtn = document.getElementById('confirmDialogOk');
   const cancelBtn = document.getElementById('confirmDialogCancel');
   if (!overlay) {
-    if (confirm(`${title}\n${message}`)) { if (onOk) onOk(); }
+    if (confirm(`Xác nhận\n${message}`)) { if (onOk) onOk(); }
     else { if (onCancel) onCancel(); }
     return;
   }
-  if (titleEl) titleEl.textContent = title;
+  if (titleEl) titleEl.textContent = 'Xác nhận';
   if (msgEl) msgEl.textContent = message;
   overlay.hidden = false;
 

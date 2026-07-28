@@ -37,16 +37,16 @@ const createPrototypeDirectives = () => [
     id:            `CD-${new Date().getFullYear()}-TEST-01`,
     title:         'Triển khai kế hoạch kiểm soát ô nhiễm môi trường khu công nghiệp',
     domain:        'Tài nguyên và Môi trường',
-    dataGroups:    ['Kinh tế xã hội', 'Hành chính công'],
+    dataGroups:    ['Kinh tế xã hội'],
     source:        'Ông Nguyễn Văn Hùng – Phó Chủ tịch UBND Tỉnh',
     issuedDate:    prototypeDateAtOffset(-2),
     deadline:      prototypeDateAtOffset(20),
     deadlineType:  'normal',
     content:       'Tỉnh chỉ đạo Sở Tài nguyên và Môi trường triển khai kế hoạch kiểm soát ô nhiễm tại các khu công nghiệp trên địa bàn tỉnh Gia Lai trong quý III/2026. Yêu cầu hoàn thành báo cáo hiện trạng và kế hoạch hành động trước hạn.',
     dashboardLink: '../../dashboard/index.html',
-    attachment:    'dashboard_mockup.png',
-    attachmentSize:'1.4 MB',
-    previewImage:  '../dashboard_mockup.png',
+    attachment:    'CD_DanCu_GiaLai_2026.png',
+    attachmentSize:'1.8 MB',
+    previewImage:  'assets/dashboard_gialai.png',
     processId:     null,
     executionTree: {
       id: 'node-01-leader', contextId: 'leader',
@@ -69,7 +69,7 @@ const createPrototypeDirectives = () => [
     id:            `CD-${new Date().getFullYear()}-TEST-02`,
     title:         'Rà soát và cập nhật dữ liệu dân số phục vụ quy hoạch vùng',
     domain:        'Kế hoạch và Đầu tư',
-    dataGroups:    ['Dân cư', 'Kinh tế xã hội'],
+    dataGroups:    ['Dân cư'],
     source:        'Bà Trần Thị Mai – Chủ tịch UBND Tỉnh',
     issuedDate:    prototypeDateAtOffset(-10),
     deadline:      prototypeDateAtOffset(8),
@@ -127,7 +127,7 @@ const createPrototypeDirectives = () => [
     id:            `CD-${new Date().getFullYear()}-TEST-03`,
     title:         'Báo cáo kết quả triển khai chương trình chuyển đổi số nông nghiệp',
     domain:        'Nông nghiệp và PTNT',
-    dataGroups:    ['Kinh tế xã hội', 'Dân cư', 'Văn bản điều hành'],
+    dataGroups:    ['Hành chính công'],
     source:        'Ông Nguyễn Văn Hùng – Phó Chủ tịch UBND Tỉnh',
     issuedDate:    prototypeDateAtOffset(-30),
     deadline:      prototypeDateAtOffset(-3),
@@ -170,7 +170,7 @@ const createPrototypeDirectives = () => [
           availableAssignees: [],
           slaDeadline: prototypeDateAtOffset(-3),
           notes: '', notesFile: null,
-          subReports: [{ from:'Trần Thị Bình', time: prototypeHistoryTime(-5,'14:00'), content:'Đã nộp báo cáo đầy đủ.', file:'BaoCao.pdf', fileSize:'2.4 MB' }],
+          subReports: [],
           history: [],
           children: [
             {
@@ -182,6 +182,183 @@ const createPrototypeDirectives = () => [
               notes: '', notesFile: null,
               subReports: [],
               history: [{ order:3, time: prototypeHistoryTime(-5,'14:00'), actor:'Trần Thị Bình', action:'Trình duyệt', note:'Đã nộp báo cáo kết quả lên Sở.' }],
+              children: []
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  /* ── TEST-04: Chờ phê duyệt (Lãnh đạo Sở đã trình Tỉnh) ────────── */
+  {
+    id:            `CD-${new Date().getFullYear()}-TEST-04`,
+    title:         'Kiểm tra và nâng cấp hạ tầng y tế cơ sở tại các huyện miền núi',
+    domain:        'Y tế',
+    dataGroups:    ['Kinh tế xã hội'],
+    source:        'Ông Nguyễn Văn Hùng – Phó Chủ tịch UBND Tỉnh',
+    issuedDate:    prototypeDateAtOffset(-15),
+    deadline:      prototypeDateAtOffset(5),
+    deadlineType:  'normal',
+    content:       'Tỉnh giao Sở Y tế chủ trì khảo sát, đánh giá hiện trạng hạ tầng và trang thiết bị tại các trạm y tế xã, trung tâm y tế huyện miền núi. Tổng hợp nhu cầu nâng cấp giai đoạn 2026–2028 trình UBND Tỉnh.',
+    dashboardLink: '../../dashboard/index.html',
+    attachment:    'CD_YTeCoSo_2026.pdf',
+    attachmentSize:'1.8 MB',
+    previewImage:  null,
+    processId:     'process-1',
+    leaderReport: {
+      content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
+      file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+      time: prototypeHistoryTime(-1, '16:30')
+    },
+    leaderReports: [
+      {
+        content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
+        file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+        time: prototypeHistoryTime(-1, '16:30')
+      }
+    ],
+    executionTree: {
+      id: 'node-04-leader', contextId: 'leader',
+      unitName: 'Sở Y tế',
+      accountId: 'acc-so-yte', accountName: 'Lãnh đạo Sở',
+      stage: 'waitingApproval',
+      availableAssignees: [],
+      slaDeadline: prototypeDateAtOffset(5),
+      notes: 'Đã hoàn thành tổng hợp toàn tỉnh.',
+      notesFile: null,
+      subReports: [
+        {
+          from: 'Phạm Văn Nam (Chuyên viên)',
+          time: prototypeHistoryTime(-3, '10:15'),
+          content: 'Đã hoàn thành khảo sát thực tế 42 trạm y tế xã tại 5 huyện miền núi (Kông Chro, Krông Pa, Ia Pa, Mang Yang, KBang).',
+          file: 'BaoCao_KhaoSat_YTe.pdf',
+          fileSize: '3.1 MB'
+        }
+      ],
+      leaderReport: {
+        content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
+        file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+        time: prototypeHistoryTime(-1, '16:30')
+      },
+      leaderReports: [
+        {
+          content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
+          file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+          time: prototypeHistoryTime(-1, '16:30')
+        }
+      ],
+      history: [
+        { order:1, time: prototypeHistoryTime(-15), actor:'Hệ thống', action:'Đồng bộ văn bản', note:'Chỉ đạo chuyển đến Sở Y tế.' },
+        { order:2, time: prototypeHistoryTime(-14,'08:30'), actor:'Lãnh đạo Sở', action:'Chuyển xử lý', note:'Phân công Chuyên viên Phạm Văn Nam.' },
+        { order:3, time: prototypeHistoryTime(-3,'10:15'), actor:'Phạm Văn Nam', action:'Trình duyệt', note:'Nộp báo cáo kết quả khảo sát.' },
+        { order:4, time: prototypeHistoryTime(-1,'16:30'), actor:'Lãnh đạo Sở', action:'Trình Tỉnh', note:'Đã trình UBND Tỉnh phê duyệt.' }
+      ],
+      children: [
+        {
+          id: 'node-04-dept', contextId: 'department',
+          unitName: 'Phòng Nghiệp vụ Y', accountId: 'acc-truong-phong-04', accountName: 'Trưởng phòng Nghiệp vụ Y',
+          stage: 'waitingApproval',
+          availableAssignees: [],
+          slaDeadline: prototypeDateAtOffset(5),
+          notes: '', notesFile: null, subReports: [], history: [],
+          children: [
+            {
+              id: 'node-04-staff', contextId: 'individual',
+              unitName: 'Chuyên viên — Phòng Nghiệp vụ Y', accountId: 'acc-cv-04', accountName: 'Phạm Văn Nam',
+              stage: 'waitingApproval',
+              availableAssignees: [],
+              slaDeadline: prototypeDateAtOffset(5),
+              notes: '', notesFile: null, subReports: [], history: [],
+              children: []
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  /* ── TEST-05: Đã kết thúc (Tỉnh đã phê duyệt hoàn thành) ────────── */
+  {
+    id:            `CD-${new Date().getFullYear()}-TEST-05`,
+    title:         'Đảm bảo cơ sở vật chất và công tác chuẩn bị cho kỳ thi tốt nghiệp THPT 2026',
+    domain:        'Giáo dục và Đào tạo',
+    dataGroups:    ['Giáo dục'],
+    source:        'Bà Trần Thị Mai – Chủ tịch UBND Tỉnh',
+    issuedDate:    prototypeDateAtOffset(-25),
+    deadline:      prototypeDateAtOffset(-5),
+    deadlineType:  'normal',
+    content:       'Tỉnh chỉ đạo Sở Giáo dục và Đào tạo chủ trì phối hợp với các sở ngành đảm bảo an toàn tuyệt đối, cơ sở vật chất và điện nước cho các điểm thi tốt nghiệp THPT 2026 trên toàn tỉnh.',
+    dashboardLink: '../../dashboard/index.html',
+    attachment:    'CD_GiaoDuc_ThiTHPT_2026.pdf',
+    attachmentSize:'1.5 MB',
+    previewImage:  null,
+    processId:     'process-1',
+    leaderReport: {
+      content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
+      file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+      time: prototypeHistoryTime(-6, '15:00')
+    },
+    leaderReports: [
+      {
+        content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
+        file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+        time: prototypeHistoryTime(-6, '15:00')
+      }
+    ],
+    executionTree: {
+      id: 'node-05-leader', contextId: 'leader',
+      unitName: 'Sở Giáo dục và Đào tạo',
+      accountId: 'acc-so-gddt', accountName: 'Lãnh đạo Sở',
+      stage: 'completed',
+      availableAssignees: [],
+      slaDeadline: prototypeDateAtOffset(-5),
+      notes: 'Đã hoàn thành phê duyệt.',
+      notesFile: null,
+      subReports: [
+        {
+          from: 'Hoàng Minh Đức (Chuyên viên)',
+          time: prototypeHistoryTime(-8, '11:00'),
+          content: 'Đã kiểm tra 41/41 điểm thi. Đảm bảo đầy đủ thiết bị, máy phát điện dự phòng và lực lượng công an hỗ trợ.',
+          file: 'BaoCao_KiemTra_DiemThi.pdf',
+          fileSize: '1.9 MB'
+        }
+      ],
+      leaderReport: {
+        content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
+        file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+        time: prototypeHistoryTime(-6, '15:00')
+      },
+      leaderReports: [
+        {
+          content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
+          file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+          time: prototypeHistoryTime(-6, '15:00')
+        }
+      ],
+      history: [
+        { order:1, time: prototypeHistoryTime(-25), actor:'Hệ thống', action:'Đồng bộ văn bản', note:'Chỉ đạo chuyển đến Sở Giáo dục và Đào tạo.' },
+        { order:2, time: prototypeHistoryTime(-24,'09:00'), actor:'Lãnh đạo Sở', action:'Chuyển xử lý', note:'Phân công Chuyên viên Hoàng Minh Đức.' },
+        { order:3, time: prototypeHistoryTime(-8,'11:00'), actor:'Hoàng Minh Đức', action:'Trình duyệt', note:'Nộp báo cáo công tác chuẩn bị.' },
+        { order:4, time: prototypeHistoryTime(-6,'15:00'), actor:'Lãnh đạo Sở', action:'Trình Tỉnh', note:'Trình UBND Tỉnh báo cáo tổng hợp.' },
+        { order:5, time: prototypeHistoryTime(-5,'10:00'), actor:'Lãnh đạo Tỉnh', action:'Phê duyệt', note:'Tỉnh đã phê duyệt hoàn thành chỉ đạo.' }
+      ],
+      children: [
+        {
+          id: 'node-05-dept', contextId: 'department',
+          unitName: 'Phòng Khảo thí và Quản lý CLGD', accountId: 'acc-truong-phong-05', accountName: 'Trưởng phòng Khảo thí',
+          stage: 'completed',
+          availableAssignees: [],
+          slaDeadline: prototypeDateAtOffset(-5),
+          notes: '', notesFile: null, subReports: [], history: [],
+          children: [
+            {
+              id: 'node-05-staff', contextId: 'individual',
+              unitName: 'Chuyên viên — Phòng Khảo thí', accountId: 'acc-cv-05', accountName: 'Hoàng Minh Đức',
+              stage: 'completed',
+              availableAssignees: [],
+              slaDeadline: prototypeDateAtOffset(-5),
+              notes: '', notesFile: null, subReports: [], history: [],
               children: []
             }
           ]
