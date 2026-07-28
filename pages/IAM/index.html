@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -24,9 +25,6 @@
 
       <div class="nav-item active" id="nav-quan-ly-co-quan">
         <span class="dot"></span><span>Quản lý cơ quan</span>
-      </div>
-      <div class="nav-item" id="nav-quan-ly-phong-ban">
-        <span class="dot"></span><span>Quản lý phòng ban</span>
       </div>
     </div>
 
@@ -80,8 +78,14 @@
       </div>
 
       <div class="breadcrumb-row">
-        <div class="page-title" id="pageTitleText">Quản lý cơ quan</div>
-        <div class="breadcrumb">Trang chủ <span class="sep">&gt;</span> IAM <span class="sep">&gt;</span> <span class="cur" id="breadcrumbCurrent">Quản lý cơ quan</span></div>
+        <div class="breadcrumb-left">
+          <div class="page-title" id="pageTitleText">Quản lý cơ quan</div>
+          <div class="breadcrumb">Quản trị hệ thống <span class="sep">&gt;</span> <span class="cur" id="breadcrumbCurrent">Quản lý cơ quan</span></div>
+        </div>
+        <div class="breadcrumb-actions hidden" id="viewHeaderActions">
+          <button type="button" class="btn-back-light" id="btnViewEditTop">Chỉnh sửa</button>
+          <button type="button" class="btn-back-light" id="btnViewBackTop">Trở về</button>
+        </div>
       </div>
 
       <div class="content">
@@ -98,7 +102,7 @@
             <button class="btn-search" id="btnSearch">Tìm kiếm</button>
             <button class="btn-reset" id="btnReset">Làm mới</button>
             <div style="flex:1;"></div>
-            <button class="btn-primary" id="btnAddAgency"><i class="fa-solid fa-plus"></i>Thêm cơ quan</button>
+            <button class="btn-primary" id="btnAddAgency"><i class="fa-solid fa-plus"></i>Thêm mới</button>
           </div>
 
           <div class="tbl-wrap">
@@ -106,59 +110,36 @@
               <thead>
                 <tr>
                   <th class="center" style="width: 56px;">STT</th>
-                  <th>Tên cơ quan</th>
-                  <th style="width: 170px;">Người phụ trách</th>
-                  <th>Địa chỉ</th>
-                  <th class="center" style="width: 110px;">Đang quản lý</th>
-                  <th class="center" style="width: 100px;">Hoạt động</th>
-                  <th class="center" style="width: 160px;">Xử lý</th>
+                  <th class="col-name">Tên cơ quan</th>
+                  <th class="col-address">Địa chỉ</th>
+                  <th class="col-manager" style="width: 200px;">Người phụ trách</th>
+                  <th class="center col-status" style="width: 130px;">Hoạt động</th>
+                  <th class="center" style="width: 80px;">Xử lý</th>
                 </tr>
               </thead>
               <tbody id="iamAgencyBody"></tbody>
             </table>
           </div>
-        </div>
 
-        <!-- ============================================================
-             VIEW: DANH SÁCH PHÒNG BAN (top-level, toàn hệ thống)
-             ============================================================ -->
-        <div class="card hidden" id="listDeptView">
-          <div class="filter-row">
-            <div class="search-wrap">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input class="search-input" type="text" id="topDeptSearchInput" placeholder="Tìm kiếm ...">
+          <div class="pagination-row" id="agencyPagination">
+            <div class="pg-left">
+              <select class="page-size-select" id="agencyPageSize">
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+              <span class="pg-info" id="agencyPageInfo">Hiển thị 0-0/0</span>
             </div>
-            <button class="btn-search" id="btnTopDeptSearch">Tìm kiếm</button>
-            <button class="btn-reset" id="btnTopDeptReset">Làm mới</button>
-            <div style="flex:1;"></div>
-            <button class="btn-primary" id="btnTopDeptAdd"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            <div class="pg-btns" id="agencyPageButtons"></div>
           </div>
-
-          <div class="tbl-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th class="center" style="width: 56px;">STT</th>
-                  <th>Tên phòng ban</th>
-                  <th style="width: 260px;">Cơ quan</th>
-                  <th>Mô tả</th>
-                  <th class="center" style="width: 140px;">Hoạt động</th>
-                  <th class="center" style="width: 80px;">Xử lý</th>
-                </tr>
-              </thead>
-              <tbody id="topDeptTableBody"></tbody>
-            </table>
-          </div>
-
-          <div class="pagination-row" id="topDeptPagination"></div>
         </div>
 
         <!-- ============================================================
-             VIEW 2: FORM 1 — THÔNG TIN CƠ QUAN (Thêm / Sửa / Xem)
+             VIEW 2: FORM — THÊM / SỬA CƠ QUAN
              ============================================================ -->
         <div class="card form-view hidden" id="form1View">
           <div class="form-view-header">
-            <h2 class="form-view-title" id="form1Title">Thêm cơ quan</h2>
+            <h2 class="form-view-title" id="form1Title">Thông tin cơ quan</h2>
           </div>
 
           <div class="form-grid">
@@ -169,10 +150,33 @@
               <span class="field-error" id="agencyNameError"></span>
             </div>
 
-            <!-- Cơ quan cấp trên -->
+            <!-- Cơ quan cấp trên (custom dropdown) -->
             <div class="form-group">
               <label class="form-label">Cơ quan cấp trên</label>
-              <select class="form-input form-select" id="agencyParentSelect"></select>
+              <div class="custom-dd" id="agencyParentDd">
+                <div class="custom-dd-trigger" tabindex="0">
+                  <span class="dd-placeholder">-- Chọn --</span>
+                  <span class="dd-value hidden"></span>
+                  <button type="button" class="dd-clear" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+                  <i class="fa-solid fa-chevron-down dd-arrow"></i>
+                </div>
+                <div class="custom-dd-panel" id="agencyParentPanel"></div>
+              </div>
+            </div>
+
+            <!-- Người phụ trách chính (custom dropdown) -->
+            <div class="form-group">
+              <label class="form-label">Người phụ trách chính <span class="required-mark">*</span></label>
+              <div class="custom-dd" id="agencyManagerDd">
+                <div class="custom-dd-trigger" tabindex="0">
+                  <span class="dd-placeholder">-- Chọn --</span>
+                  <span class="dd-value hidden"></span>
+                  <button type="button" class="dd-clear" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+                  <i class="fa-solid fa-chevron-down dd-arrow"></i>
+                </div>
+                <div class="custom-dd-panel" id="agencyManagerPanel"></div>
+              </div>
+              <span class="field-error" id="agencyManagerError"></span>
             </div>
 
             <!-- Địa chỉ trụ sở -->
@@ -181,19 +185,23 @@
               <input type="text" class="form-input" id="agencyAddressInput" placeholder="Nhập địa chỉ trụ sở">
             </div>
 
-            <!-- Số tầng -->
+            <!-- Số tầng + Vị trí (cùng 1 dòng) -->
             <div class="form-group">
               <label class="form-label">Số tầng <span class="required-mark">*</span></label>
               <input type="number" class="form-input" id="agencyFloorsInput" placeholder="Nhập số tầng" min="0">
               <span class="field-error" id="agencyFloorsError"></span>
             </div>
-
-            <!-- Vị trí -->
-            <div class="form-group form-group-full">
+            <div class="form-group">
               <label class="form-label">Vị trí (lat, lng) <span class="required-mark">*</span></label>
               <input type="text" class="form-input" id="agencyLocationInput" placeholder="Ví dụ: 13.9833, 108.0000">
               <span class="field-error" id="agencyLocationError"></span>
-              <div class="map-placeholder" id="agencyMapPlaceholder">
+            </div>
+
+            <!-- Bản đồ -->
+            <div class="form-group form-group-full">
+              <label class="form-label">Bản đồ</label>
+              <div id="agencyMapEdit" class="map-container"></div>
+              <div class="map-placeholder hidden" id="agencyMapPlaceholder">
                 <i class="fa-solid fa-map-location-dot"></i>
                 <span id="agencyMapCoordText">Chưa có tọa độ</span>
               </div>
@@ -215,123 +223,24 @@
             </div>
           </div>
 
-          <!-- ============================================================
-               BLOCK: DANH SÁCH PHÒNG BAN THUỘC CƠ QUAN
-               Chỉ hiện ở chế độ Sửa / Xem (ẩn khi Thêm mới)
-               ============================================================ -->
-          <div class="dept-section hidden" id="deptSection">
-            <div class="dept-section-header">
-              <h3 class="dept-section-title">Danh sách phòng ban thuộc cơ quan</h3>
-            </div>
-
-            <div class="filter-row">
-              <div class="search-wrap">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input class="search-input" type="text" id="deptSearchInput" placeholder="Tìm kiếm ...">
-              </div>
-              <button class="btn-search" id="btnDeptSearch">Tìm kiếm</button>
-              <button class="btn-reset" id="btnDeptReset">Làm mới</button>
-              <div style="flex:1;"></div>
-              <button class="btn-primary" id="btnAddDept"><i class="fa-solid fa-plus"></i>Thêm mới</button>
-            </div>
-
-            <div class="tbl-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th class="center" style="width: 56px;">STT</th>
-                    <th>Tên phòng ban</th>
-                    <th>Mô tả</th>
-                    <th class="center" style="width: 140px;">Hoạt động</th>
-                    <th class="center" style="width: 80px;">Xử lý</th>
-                  </tr>
-                </thead>
-                <tbody id="deptTableBody"></tbody>
-              </table>
-            </div>
-
-            <div class="pagination-row" id="deptPagination"></div>
-          </div>
-
           <div class="form-view-footer">
-            <button class="btn-reset" id="btnForm1Back">Trở về danh sách</button>
-            <button class="btn-primary" id="btnForm1Save">Lưu</button>
+            <button type="button" class="btn-back-light" id="btnForm1Back">Trở về</button>
+            <button type="button" class="btn-primary" id="btnForm1Save">Lưu</button>
           </div>
         </div>
 
         <!-- ============================================================
-             VIEW 3: FORM 2 — NGƯỜI PHỤ TRÁCH CHÍNH
+             VIEW 3: XEM CHI TIẾT CƠ QUAN (compact)
              ============================================================ -->
-        <div class="card form-view hidden" id="form2View">
-          <div class="form-view-header">
-            <h2 class="form-view-title">Cấu hình người phụ trách chính</h2>
+        <div class="card form-view hidden" id="viewDetailView">
+          <div class="view-section-title">Thông tin chung</div>
+          <div class="view-grid" id="viewDetailGrid">
+            <!-- filled by JS -->
           </div>
 
-          <div class="form-grid form-grid-single">
-            <!-- Cơ quan -->
-            <div class="form-group">
-              <label class="form-label">Cơ quan <span class="required-mark">*</span></label>
-              <div class="combo-select" id="form2AgencyCombo">
-                <input type="text" class="form-input combo-input-lg" id="form2AgencySearch" 
-                      placeholder="Chọn cơ quan" autocomplete="off" readonly>
-                <input type="hidden" id="form2AgencyIdInput">
-                <div class="combo-dropdown" id="form2AgencyDropdown"></div>
-              </div>
-            </div>
-
-            <!-- Nhân viên (combo tìm kiếm) -->
-            <div class="form-group">
-              <label class="form-label">Nhân viên <span class="required-mark">*</span></label>
-              <div class="combo-select" id="form2StaffCombo">
-                <input type="text" class="form-input combo-input-lg" id="form2StaffSearch" placeholder="Tìm theo tên đăng nhập hoặc họ tên" autocomplete="off">
-                <input type="hidden" id="form2StaffIdInput">
-                <div class="combo-dropdown" id="form2StaffDropdown"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Block thông tin chi tiết nhân viên -->
-          <div class="staff-detail hidden" id="form2StaffDetail">
-            <div class="staff-detail-title">Thông tin nhân viên</div>
-            <div class="staff-detail-grid">
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Tên đăng nhập</span>
-                <span class="staff-detail-value" id="dvUsername"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Tên đầy đủ</span>
-                <span class="staff-detail-value" id="dvFullName"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Email</span>
-                <span class="staff-detail-value" id="dvEmail"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Số điện thoại</span>
-                <span class="staff-detail-value" id="dvPhone"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Ngày sinh</span>
-                <span class="staff-detail-value" id="dvBirthday"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Giới tính</span>
-                <span class="staff-detail-value" id="dvGender"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Cơ quan</span>
-                <span class="staff-detail-value" id="dvAgency"></span>
-              </div>
-              <div class="staff-detail-item">
-                <span class="staff-detail-label">Phòng ban</span>
-                <span class="staff-detail-value" id="dvDepartment"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-view-footer">
-            <button class="btn-reset" id="btnForm2Back">Trở về</button>
-            <button class="btn-primary" id="btnForm2Save">Lưu người phụ trách chính</button>
+          <div class="view-map-section">
+            <div class="view-section-title">Bản đồ</div>
+            <div id="agencyMapView" class="map-container"></div>
           </div>
         </div>
 
@@ -344,73 +253,33 @@
 
   </div>
 
-  <!-- MODAL: Xác nhận xóa (dùng chung cho Cơ quan & Phòng ban) -->
+  <!-- MODAL: Xác nhận xóa cơ quan -->
   <div class="modal-overlay" id="deleteConfirmModal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-title">Xác nhận xóa</div>
-        <button class="modal-close" id="deleteModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <p class="confirm-text">Bạn có chắc chắn muốn xóa <strong id="deleteTargetName"></strong>? Hành động này không thể hoàn tác.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-reset" id="deleteCancelBtn">Hủy</button>
-        <button class="btn-danger" id="deleteConfirmBtn">Xóa</button>
+    <div class="modal-box modal-box-center">
+      <div class="modal-body modal-body-center">
+        <div class="modal-warn-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="modal-title-center">Xác nhận xoá</div>
+        <p class="confirm-text confirm-text-center">Bạn đang thực hiện xóa cơ quan ra khỏi hệ thống. Bạn chắc chắn với thiết lập của mình chứ.</p>
+        <button class="btn-danger btn-danger-block" id="deleteConfirmBtn">Xác nhận</button>
+        <button class="btn-link-cancel" id="deleteCancelBtn">Hủy</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Thêm / Sửa phòng ban -->
-  <div class="modal-overlay" id="deptModalOverlay">
+  <!-- MODAL: Xác nhận đổi người phụ trách chính -->
+  <div class="modal-overlay" id="managerChangeModal">
     <div class="modal-box">
       <div class="modal-header">
-        <div class="modal-title" id="deptModalTitle">Thêm phòng ban</div>
-        <button class="modal-close" id="deptModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+        <div class="modal-title">Xác nhận đổi người phụ trách</div>
+        <button class="modal-close" id="managerChangeCloseBtn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <div class="form-group hidden" id="deptAgencyGroup">
-          <label class="form-label">Cơ quan <span class="required-mark">*</span></label>
-          <select class="form-input form-select" id="deptAgencySelect"></select>
-          <span class="field-error" id="deptAgencyError"></span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tên phòng ban <span class="required-mark">*</span></label>
-          <input type="text" class="form-input" id="deptNameInput" placeholder="Nhập tên phòng ban">
-          <span class="field-error" id="deptNameError"></span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mô tả</label>
-          <textarea class="form-input form-textarea" id="deptDescInput" rows="3" placeholder="Nhập mô tả phòng ban"></textarea>
-        </div>
-        <div class="form-group toggle-field">
-          <label class="switch">
-            <input type="checkbox" id="deptActiveInput">
-            <span class="slider round"></span>
-          </label>
-          <span class="form-label toggle-label">Hoạt động</span>
-        </div>
+        <p class="confirm-text" id="managerChangeText">Bạn có chắc chắn muốn đổi người phụ trách chính?</p>
+        <div class="manager-change-compare" id="managerChangeCompare"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn-reset" id="deptCancelBtn">Hủy</button>
-        <button class="btn-primary" id="deptSaveBtn">Lưu</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: Xác nhận thay đổi người phụ trách -->
-  <div class="modal-overlay" id="changeManagerConfirmModal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div class="modal-title">Xác nhận thay đổi người phụ trách</div>
-        <button class="modal-close" id="changeManagerCloseBtn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <p class="confirm-text" id="changeManagerText"></p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-reset" id="changeManagerCancelBtn">Hủy</button>
-        <button class="btn-primary" id="changeManagerConfirmBtn">Xác nhận</button>
+        <button class="btn-reset" id="managerChangeCancelBtn">Hủy</button>
+        <button class="btn-primary" id="managerChangeConfirmBtn">Xác nhận</button>
       </div>
     </div>
   </div>
@@ -421,6 +290,7 @@
     <span id="appToastMsg"></span>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/ui.js"></script>
 </body>
 
