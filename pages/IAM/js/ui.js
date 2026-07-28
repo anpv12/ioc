@@ -2,46 +2,82 @@
    UI.JS — Trang IAM: Quản lý Cơ quan / Đơn vị
    ============================================================ */
 
+/* ---------- MOCK DATA: Nhân viên (cho dropdown Người phụ trách) ---------- */
+const employeesData = [
+  { id: 1, username: 'HoaCM', fullName: 'Châu Minh Hoa', department: 'Phòng Tổ chức - Hành chính' },
+  { id: 2, username: 'AnNV', fullName: 'Nguyễn Văn An', department: 'Phòng Tổ chức - Hành chính' },
+  { id: 3, username: 'BinhTV', fullName: 'Trịnh Văn Bình', department: 'Phòng Tổ chức - Hành chính' },
+  { id: 4, username: 'TrinhTT', fullName: 'Trần Thị Trinh', department: 'Phòng Khoa học & Công nghệ' },
+  { id: 5, username: 'NamLV', fullName: 'Lê Văn Nam', department: 'Phòng Khoa học & Công nghệ' },
+  { id: 6, username: 'HongNT', fullName: 'Nguyễn Thị Hồng', department: 'Phòng Kế hoạch - Tài chính' },
+  { id: 7, username: 'LanDT', fullName: 'Đỗ Thị Lan', department: 'Phòng Kế hoạch - Tài chính' }
+];
+
+function empDisplay(emp) {
+  return emp ? `${emp.username} - ${emp.fullName}` : '';
+}
+
+function empDisplayWithDept(emp) {
+  return emp ? `${emp.username} - ${emp.fullName} - ${emp.department}` : '';
+}
+
+function findEmpByDisplay(disp) {
+  if (!disp) return null;
+  return employeesData.find(e => empDisplay(e) === disp) || null;
+}
+
+function managerFullNameOnly(managerStr) {
+  if (!managerStr) return '';
+  const emp = findEmpByDisplay(managerStr);
+  if (emp) return emp.fullName;
+  const parts = managerStr.split(' - ');
+  return parts.length >= 2 ? parts.slice(1).join(' - ').trim() : managerStr;
+}
+
+function managerDisplayDetail(managerStr) {
+  if (!managerStr) return '';
+  const emp = findEmpByDisplay(managerStr);
+  if (emp) return empDisplayWithDept(emp);
+  return managerStr;
+}
+
 /* ---------- MOCK DATA: Danh sách cơ quan ---------- */
 const agenciesData = [
   {
     id: 1,
     name: 'Sở Khoa học và Công nghệ Tỉnh Gia Lai',
-    manager: 'Nguyễn Văn An',
+    manager: 'AnNV - Nguyễn Văn An',
     address: '02 Trần Hưng Đạo, P. Tây Sơn, TP. Pleiku, Gia Lai',
     active: true,
     parentId: null,
     floors: 5,
     lat: 13.9833,
     lng: 108.0000,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, tham mưu quản lý nhà nước về khoa học và công nghệ.',
-    managedByCurrentUser: true
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, tham mưu quản lý nhà nước về khoa học và công nghệ.'
   },
   {
     id: 2,
     name: 'Trung tâm Giám sát, Điều hành Thông minh (IOC)',
-    manager: 'Trần Thị Trinh',
+    manager: 'TrinhTT - Trần Thị Trinh',
     address: '15 Lý Thái Tổ, P. Diên Hồng, TP. Pleiku, Gia Lai',
     active: true,
     parentId: 1,
     floors: 3,
     lat: 13.9755,
     lng: 108.0121,
-    description: 'Đơn vị vận hành, giám sát dữ liệu điều hành thông minh của tỉnh.',
-    managedByCurrentUser: true
+    description: 'Đơn vị vận hành, giám sát dữ liệu điều hành thông minh của tỉnh.'
   },
   {
     id: 3,
     name: 'Sở Y tế Tỉnh Gia Lai',
-    manager: 'Lê Văn Nam',
+    manager: 'NamLV - Lê Văn Nam',
     address: '88 Anh Hùng Núp, P. Hoa Lư, TP. Pleiku, Gia Lai',
     active: true,
     parentId: null,
     floors: 7,
     lat: 13.9694,
     lng: 107.9989,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về y tế.',
-    managedByCurrentUser: false
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về y tế.'
   },
   {
     id: 4,
@@ -53,8 +89,7 @@ const agenciesData = [
     floors: 4,
     lat: 13.9812,
     lng: 108.0056,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về lao động, người có công và xã hội.',
-    managedByCurrentUser: false
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về lao động, người có công và xã hội.'
   },
   {
     id: 5,
@@ -66,34 +101,31 @@ const agenciesData = [
     floors: 6,
     lat: 13.9770,
     lng: 107.9950,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về giáo dục và đào tạo.',
-    managedByCurrentUser: false
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về giáo dục và đào tạo.'
   },
   {
     id: 6,
     name: 'Sở Thông tin và Truyền thông Tỉnh Gia Lai',
-    manager: 'Nguyễn Thị Hồng',
+    manager: 'HongNT - Nguyễn Thị Hồng',
     address: '17 Hùng Vương, P. Diên Hồng, TP. Pleiku, Gia Lai',
     active: true,
     parentId: null,
     floors: 4,
     lat: 13.9820,
     lng: 108.0100,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về thông tin và truyền thông.',
-    managedByCurrentUser: false
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, quản lý nhà nước về thông tin và truyền thông.'
   },
   {
     id: 7,
     name: 'UBND Thành phố Pleiku',
-    manager: 'Trịnh Văn Bình',
+    manager: 'BinhTV - Trịnh Văn Bình',
     address: '01 Lê Lợi, P. Ia Kring, TP. Pleiku, Gia Lai',
     active: true,
     parentId: null,
     floors: 8,
     lat: 13.9718,
     lng: 108.0142,
-    description: 'Cơ quan hành chính nhà nước cấp thành phố, quản lý các mặt kinh tế - xã hội trên địa bàn.',
-    managedByCurrentUser: false
+    description: 'Cơ quan hành chính nhà nước cấp thành phố, quản lý các mặt kinh tế - xã hội trên địa bàn.'
   },
   {
     id: 8,
@@ -105,21 +137,19 @@ const agenciesData = [
     floors: 3,
     lat: 13.9840,
     lng: 108.0080,
-    description: 'Đơn vị sự nghiệp trực thuộc Sở TT&TT, vận hành hạ tầng CNTT và chuyển đổi số của tỉnh.',
-    managedByCurrentUser: true
+    description: 'Đơn vị sự nghiệp trực thuộc Sở TT&TT, vận hành hạ tầng CNTT và chuyển đổi số của tỉnh.'
   },
   {
     id: 9,
     name: 'Sở Tài chính Tỉnh Gia Lai',
-    manager: 'Đỗ Thị Lan',
+    manager: 'LanDT - Đỗ Thị Lan',
     address: '09 Trần Phú, P. Diên Hồng, TP. Pleiku, Gia Lai',
     active: true,
     parentId: null,
     floors: 5,
     lat: 13.9790,
     lng: 107.9975,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, tham mưu quản lý nhà nước về tài chính, ngân sách.',
-    managedByCurrentUser: false
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, tham mưu quản lý nhà nước về tài chính, ngân sách.'
   },
   {
     id: 10,
@@ -131,76 +161,17 @@ const agenciesData = [
     floors: 4,
     lat: 13.9805,
     lng: 108.0030,
-    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, tham mưu quản lý nhà nước về tổ chức bộ máy, cán bộ.',
-    managedByCurrentUser: false
+    description: 'Cơ quan chuyên môn thuộc UBND tỉnh, tham mưu quản lý nhà nước về tổ chức bộ máy, cán bộ.'
   }
 ];
 
-/* ---------- MOCK DATA: Phòng ban (mỗi cơ quan 2-4 phòng ban) ---------- */
-const departmentsData = [
-  { id: 1, agencyId: 1, name: 'Ban Giám đốc', description: 'Điều hành chung toàn cơ quan.', active: true },
-  { id: 2, agencyId: 1, name: 'Phòng Hành chính', description: 'Quản lý văn thư, hành chính, nhân sự.', active: true },
-  { id: 3, agencyId: 1, name: 'Phòng Kế hoạch', description: 'Xây dựng kế hoạch, tổng hợp báo cáo.', active: true },
-  { id: 4, agencyId: 1, name: 'Phòng Công nghệ thông tin', description: 'Quản trị hạ tầng CNTT của Sở.', active: false },
-
-  { id: 5, agencyId: 2, name: 'Phòng Kỹ thuật', description: 'Vận hành hệ thống giám sát, điều hành.', active: true },
-  { id: 6, agencyId: 2, name: 'Phòng Vận hành', description: 'Trực vận hành, xử lý sự cố 24/7.', active: true },
-  { id: 7, agencyId: 2, name: 'Phòng Phân tích dữ liệu', description: 'Phân tích, trực quan hóa dữ liệu dân cư.', active: true },
-
-  { id: 8, agencyId: 3, name: 'Ban Giám đốc', description: 'Điều hành chung Sở Y tế.', active: true },
-  { id: 9, agencyId: 3, name: 'Phòng Hành chính', description: 'Quản lý văn thư, hành chính, nhân sự.', active: true },
-
-  { id: 10, agencyId: 4, name: 'Ban Giám đốc', description: 'Điều hành chung Sở LĐTBXH.', active: true },
-  { id: 11, agencyId: 4, name: 'Phòng Kế hoạch', description: 'Xây dựng kế hoạch, tổng hợp báo cáo.', active: true },
-  { id: 12, agencyId: 4, name: 'Phòng Chính sách', description: 'Tham mưu chính sách lao động, xã hội.', active: false },
-
-  { id: 13, agencyId: 5, name: 'Ban Giám đốc', description: 'Điều hành chung Sở Giáo dục và Đào tạo.', active: true },
-  { id: 14, agencyId: 5, name: 'Phòng Giáo dục Tiểu học', description: 'Quản lý chuyên môn bậc tiểu học.', active: true },
-  { id: 15, agencyId: 5, name: 'Phòng Tổ chức Cán bộ', description: 'Quản lý tổ chức bộ máy, nhân sự ngành.', active: true },
-
-  { id: 16, agencyId: 6, name: 'Ban Giám đốc', description: 'Điều hành chung Sở Thông tin và Truyền thông.', active: true },
-  { id: 17, agencyId: 6, name: 'Phòng Bưu chính - Viễn thông', description: 'Quản lý nhà nước về bưu chính, viễn thông.', active: true },
-  { id: 18, agencyId: 6, name: 'Phòng Công nghệ thông tin', description: 'Quản lý nhà nước về CNTT trên địa bàn tỉnh.', active: true },
-
-  { id: 19, agencyId: 7, name: 'Văn phòng UBND', description: 'Tổng hợp, tham mưu điều hành chung.', active: true },
-  { id: 20, agencyId: 7, name: 'Phòng Quản lý Đô thị', description: 'Quản lý quy hoạch, xây dựng đô thị.', active: true },
-  { id: 21, agencyId: 7, name: 'Phòng Tài nguyên và Môi trường', description: 'Quản lý đất đai, tài nguyên, môi trường.', active: false },
-
-  { id: 22, agencyId: 8, name: 'Phòng Hạ tầng số', description: 'Vận hành, bảo trì hạ tầng CNTT dùng chung.', active: true },
-  { id: 23, agencyId: 8, name: 'Phòng Dữ liệu số', description: 'Quản trị, tích hợp dữ liệu dùng chung của tỉnh.', active: true },
-  { id: 24, agencyId: 8, name: 'Phòng An toàn thông tin', description: 'Giám sát, bảo đảm an toàn thông tin mạng.', active: true },
-
-  { id: 25, agencyId: 9, name: 'Ban Giám đốc', description: 'Điều hành chung Sở Tài chính.', active: true },
-  { id: 26, agencyId: 9, name: 'Phòng Ngân sách', description: 'Tham mưu quản lý ngân sách nhà nước.', active: true },
-  { id: 27, agencyId: 9, name: 'Phòng Quản lý Giá', description: 'Quản lý nhà nước về giá trên địa bàn tỉnh.', active: false },
-
-  { id: 28, agencyId: 10, name: 'Phòng Tổ chức Bộ máy', description: 'Quản lý tổ chức bộ máy hành chính.', active: true },
-  { id: 29, agencyId: 10, name: 'Phòng Công chức, Viên chức', description: 'Quản lý công chức, viên chức toàn tỉnh.', active: true }
-];
-
-/* ---------- MOCK DATA: Nhân viên ---------- */
-const staffData = [
-  { id: 1, username: 'AnNV', fullName: 'Nguyễn Văn An', email: 'annv@gialai.gov.vn', phone: '0905123001', birthday: '12/03/1980', gender: 'Nam', agencyId: 1, department: 'Ban Giám đốc' },
-  { id: 2, username: 'TrinhTT', fullName: 'Trần Thị Trinh', email: 'trinhtt@gialai.gov.vn', phone: '0905123002', birthday: '25/07/1985', gender: 'Nữ', agencyId: 2, department: 'Phòng Kỹ thuật' },
-  { id: 3, username: 'NamLV', fullName: 'Lê Văn Nam', email: 'namlv@gialai.gov.vn', phone: '0905123003', birthday: '02/11/1978', gender: 'Nam', agencyId: 3, department: 'Ban Giám đốc' },
-  { id: 4, username: 'TuanPM', fullName: 'Phạm Minh Tuấn', email: 'tuanpm@gialai.gov.vn', phone: '0905123004', birthday: '19/05/1982', gender: 'Nam', agencyId: 4, department: 'Ban Giám đốc' },
-  { id: 5, username: 'NgocHTB', fullName: 'Hoàng Thị Bích Ngọc', email: 'ngochtb@gialai.gov.vn', phone: '0905123005', birthday: '08/09/1990', gender: 'Nữ', agencyId: 1, department: 'Phòng Hành chính' },
-  { id: 6, username: 'HuyDQ', fullName: 'Đặng Quốc Huy', email: 'huydq@gialai.gov.vn', phone: '0905123006', birthday: '30/01/1988', gender: 'Nam', agencyId: 2, department: 'Phòng Vận hành' },
-  { id: 7, username: 'OanhVTK', fullName: 'Vũ Thị Kim Oanh', email: 'oanhvtk@gialai.gov.vn', phone: '0905123007', birthday: '14/06/1991', gender: 'Nữ', agencyId: 1, department: 'Phòng Kế hoạch' },
-  { id: 8, username: 'ThangBD', fullName: 'Bùi Đức Thắng', email: 'thangbd@gialai.gov.vn', phone: '0905123008', birthday: '22/12/1986', gender: 'Nam', agencyId: 2, department: 'Phòng Kỹ thuật' },
-  { id: 9, username: 'HangNT', fullName: 'Ngô Thanh Hằng', email: 'hangnt@gialai.gov.vn', phone: '0905123009', birthday: '05/04/1993', gender: 'Nữ', agencyId: 3, department: 'Phòng Hành chính' },
-  { id: 10, username: 'TruongDX', fullName: 'Đỗ Xuân Trường', email: 'truongdx@gialai.gov.vn', phone: '0905123010', birthday: '17/08/1984', gender: 'Nam', agencyId: 4, department: 'Phòng Kế hoạch' },
-  { id: 11, username: 'LinhPTM', fullName: 'Phan Thị Mỹ Linh', email: 'linhptm@gialai.gov.vn', phone: '0905123011', birthday: '09/02/1992', gender: 'Nữ', agencyId: 8, department: 'Phòng Hạ tầng số' },
-  { id: 12, username: 'KhoaNV', fullName: 'Nguyễn Văn Khoa', email: 'khoanv@gialai.gov.vn', phone: '0905123012', birthday: '23/10/1989', gender: 'Nam', agencyId: 8, department: 'Phòng Dữ liệu số' }
-];
-
-/* Lưu người phụ trách chính theo cơ quan: { [agencyId]: staffId } (mock, không backend) */
-const primaryManagerAssignments = {};
-
 /* ============================================================
-   1. DANH SÁCH CƠ QUAN
+   1. DANH SÁCH CƠ QUAN (có phân trang)
    ============================================================ */
 let currentKeyword = '';
+let agencyPage = 1;
+let agencyPageSize = 10;
+let agencyOpenMenuId = null;
 
 function getFilteredAgencies() {
   const kw = currentKeyword.trim().toLowerCase();
@@ -213,63 +184,135 @@ function renderAgenciesTable() {
   if (!tbody) return;
 
   const list = getFilteredAgencies();
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / agencyPageSize));
+  if (agencyPage > totalPages) agencyPage = totalPages;
 
-  if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="center" style="color:#9AA0AC;padding:24px;">Không tìm thấy cơ quan phù hợp</td></tr>`;
-    return;
+  const start = (agencyPage - 1) * agencyPageSize;
+  const end = Math.min(start + agencyPageSize, total);
+  const pageList = list.slice(start, end);
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="center" style="color:#9AA0AC;padding:24px;">Không tìm thấy cơ quan phù hợp</td></tr>`;
+  } else {
+    let html = '';
+    pageList.forEach((item, index) => {
+      const managerText = item.manager
+        ? managerFullNameOnly(item.manager)
+        : '<span class="text-muted">Chưa cấu hình</span>';
+      const statusBadge = item.active
+        ? '<span class="status-badge status-badge-on">Hoạt động</span>'
+        : '<span class="status-badge status-badge-off">Không hoạt động</span>';
+      html += `
+        <tr>
+          <td class="center">${start + index + 1}</td>
+          <td class="col-name">${item.name}</td>
+          <td class="col-address" title="${item.address || ''}">${item.address || ''}</td>
+          <td class="col-manager">${managerText}</td>
+          <td class="center col-status">${statusBadge}</td>
+          <td class="center">
+            <div class="action-menu-wrap">
+              <button class="act-btn-dots" type="button" title="Thao tác" onclick="toggleAgencyMenu(event, ${item.id})">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+              </button>
+              <div class="action-menu">
+                <div class="action-menu-item" onclick="openForm1(${item.id}, 'view')">
+                  <i class="fa-solid fa-eye"></i> Xem
+                </div>
+                <div class="action-menu-item" onclick="openForm1(${item.id}, 'edit')">
+                  <i class="fa-solid fa-pen"></i> Sửa
+                </div>
+                <div class="action-menu-item danger" onclick="openDeleteConfirm(${item.id})">
+                  <i class="fa-solid fa-trash"></i> Xóa
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
   }
 
-  let html = '';
-  list.forEach((item, index) => {
-    const activeChecked = item.active ? 'checked' : '';
-    const managedChecked = item.managedByCurrentUser ? 'checked' : '';
-    const managedTitle = item.managedByCurrentUser ? 'Bạn đang được gán quyền quản lý cơ quan này' : '';
-    const configBtn = item.managedByCurrentUser
-      ? `<button class="act-btn act-config" title="Cấu hình người phụ trách chính" onclick="openForm2(${item.id})"><i class="fa-solid fa-user-gear"></i></button>`
-      : '';
-    const managerText = item.manager
-      ? item.manager
-      : '<span class="text-muted">Chưa cấu hình</span>';
+  const infoEl = document.getElementById('agencyPageInfo');
+  if (infoEl) {
+    infoEl.textContent = total === 0
+      ? 'Hiển thị 0-0/0'
+      : `Hiển thị ${start + 1}-${end}/${total}`;
+  }
 
-    html += `
-      <tr>
-        <td class="center">${index + 1}</td>
-        <td><strong>${item.name}</strong></td>
-        <td>${managerText}</td>
-        <td>${item.address}</td>
-        <td class="center">
-          <input type="checkbox" class="readonly-checkbox" ${managedChecked} disabled title="${managedTitle}">
-        </td>
-        <td class="center">
-          <label class="switch">
-            <input type="checkbox" ${activeChecked} onchange="toggleAgencyStatus(${item.id})">
-            <span class="slider round"></span>
-          </label>
-        </td>
-        <td class="center">
-          <div class="row-actions">
-            <button class="act-btn act-view" title="Xem" onclick="openForm1(${item.id}, 'view')"><i class="fa-solid fa-eye"></i></button>
-            <button class="act-btn act-edit" title="Sửa" onclick="openForm1(${item.id}, 'edit')"><i class="fa-solid fa-pen"></i></button>
-            <button class="act-btn act-del" title="Xóa" onclick="openDeleteConfirm('agency', ${item.id})"><i class="fa-solid fa-trash"></i></button>
-            ${configBtn}
-          </div>
-        </td>
-      </tr>
-    `;
-  });
-  tbody.innerHTML = html;
+  const btnsEl = document.getElementById('agencyPageButtons');
+  if (btnsEl) {
+    let btns = '';
+    btns += `<button class="pg-btn" ${agencyPage === 1 ? 'disabled' : ''} data-page="1"><i class="fa-solid fa-angles-left"></i></button>`;
+    btns += `<button class="pg-btn" ${agencyPage === 1 ? 'disabled' : ''} data-page="${agencyPage - 1}"><i class="fa-solid fa-angle-left"></i></button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      btns += `<button class="pg-btn ${p === agencyPage ? 'active' : ''}" data-page="${p}">${p}</button>`;
+    }
+    btns += `<button class="pg-btn" ${agencyPage === totalPages ? 'disabled' : ''} data-page="${agencyPage + 1}"><i class="fa-solid fa-angle-right"></i></button>`;
+    btns += `<button class="pg-btn" ${agencyPage === totalPages ? 'disabled' : ''} data-page="${totalPages}"><i class="fa-solid fa-angles-right"></i></button>`;
+    btnsEl.innerHTML = btns;
+  }
 }
 
-function toggleAgencyStatus(id) {
-  const item = agenciesData.find(a => a.id === id);
-  if (item) {
-    item.active = !item.active;
+function closeAllActionMenus() {
+  document.querySelectorAll('.action-menu.show').forEach(m => {
+    m.classList.remove('show');
+    m.style.top = '';
+    m.style.left = '';
+    m.style.right = '';
+    m.style.bottom = '';
+    m.style.position = '';
+  });
+  agencyOpenMenuId = null;
+}
+
+function toggleAgencyMenu(evt, id) {
+  evt.stopPropagation();
+  const btn = evt.currentTarget || evt.target.closest('.act-btn-dots');
+  const wrap = btn ? btn.closest('.action-menu-wrap') : null;
+  const menu = wrap ? wrap.querySelector('.action-menu') : null;
+
+  // Đóng menu khác
+  const wasOpen = agencyOpenMenuId === id;
+  closeAllActionMenus();
+  if (wasOpen || !menu || !btn) return;
+
+  agencyOpenMenuId = id;
+  const rect = btn.getBoundingClientRect();
+  const menuWidth = 140;
+  const menuApproxH = 130;
+  let top = rect.bottom + 4;
+  let left = rect.right - menuWidth;
+
+  // Nếu tràn dưới viewport → mở lên trên
+  if (top + menuApproxH > window.innerHeight - 8) {
+    top = rect.top - menuApproxH - 4;
+    if (top < 8) top = 8;
   }
+  // Không tràn trái/phải
+  if (left < 8) left = 8;
+  if (left + menuWidth > window.innerWidth - 8) {
+    left = window.innerWidth - menuWidth - 8;
+  }
+
+  menu.style.position = 'fixed';
+  menu.style.top = top + 'px';
+  menu.style.left = left + 'px';
+  menu.style.right = 'auto';
+  menu.style.bottom = 'auto';
+  menu.classList.add('show');
+}
+
+function closeAgencyMenu() {
+  closeAllActionMenus();
 }
 
 function handleSearch() {
   const input = document.getElementById('searchInput');
   currentKeyword = input ? input.value : '';
+  agencyPage = 1;
+  agencyOpenMenuId = null;
   renderAgenciesTable();
 }
 
@@ -277,6 +320,8 @@ function handleReset() {
   const input = document.getElementById('searchInput');
   if (input) input.value = '';
   currentKeyword = '';
+  agencyPage = 1;
+  agencyOpenMenuId = null;
   renderAgenciesTable();
   showToast('Đã làm mới dữ liệu thành công', 'success');
 }
@@ -285,12 +330,17 @@ function handleReset() {
    2. ĐIỀU HƯỚNG GIỮA CÁC VIEW
    ============================================================ */
 function showView(viewId) {
-  ['listView', 'listDeptView', 'form1View', 'form2View'].forEach(id => {
+  ['listView', 'form1View', 'viewDetailView'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     if (id === viewId) el.classList.remove('hidden');
     else el.classList.add('hidden');
   });
+  const actions = document.getElementById('viewHeaderActions');
+  if (actions) {
+    if (viewId === 'viewDetailView') actions.classList.remove('hidden');
+    else actions.classList.add('hidden');
+  }
 }
 
 function setPageHeading(title) {
@@ -300,32 +350,12 @@ function setPageHeading(title) {
   if (crumbEl) crumbEl.textContent = title;
 }
 
-/* ---------- Điều hướng Sidebar: Quản lý cơ quan <-> Quản lý phòng ban ---------- */
-function setActiveNav(navId) {
-  ['nav-quan-ly-co-quan', 'nav-quan-ly-phong-ban'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.toggle('active', id === navId);
-  });
-}
-
 function goToAgencyList() {
   showView('listView');
-  setActiveNav('nav-quan-ly-co-quan');
   setPageHeading('Quản lý cơ quan');
+  agencyOpenMenuId = null;
+  destroyMaps();
   renderAgenciesTable();
-}
-
-function goToDeptListTop() {
-  topDeptKeyword = '';
-  topDeptPage = 1;
-  topDeptOpenMenuId = null;
-  const input = document.getElementById('topDeptSearchInput');
-  if (input) input.value = '';
-  showView('listDeptView');
-  setActiveNav('nav-quan-ly-phong-ban');
-  setPageHeading('Quản lý phòng ban');
-  renderTopDeptTable();
 }
 
 function backToList() {
@@ -333,57 +363,329 @@ function backToList() {
 }
 
 /* ============================================================
-   3. FORM 1 — THÔNG TIN CƠ QUAN (Thêm / Sửa / Xem)
+   3. CUSTOM DROPDOWN
    ============================================================ */
-let form1Mode = 'add'; // 'add' | 'edit' | 'view'
-let form1EditingId = null;
+let parentDdValue = null;   // agency id or null
+let managerDdValue = null;  // display string or null
 
-function populateParentSelect(excludeId) {
-  const select = document.getElementById('agencyParentSelect');
-  if (!select) return;
-
-  const options = ['<option value="">-- Không có --</option>'];
-  agenciesData.forEach(a => {
-    if (a.id === excludeId) return; // không cho chọn chính nó làm cơ quan cấp trên
-    options.push(`<option value="${a.id}">${a.name}</option>`);
+function closeAllCustomDd(exceptId) {
+  document.querySelectorAll('.custom-dd.open').forEach(dd => {
+    if (exceptId && dd.id === exceptId) return;
+    dd.classList.remove('open');
   });
-  select.innerHTML = options.join('');
 }
 
-function updateMapPlaceholder(lat, lng) {
+function setCustomDdValue(ddId, value, displayText) {
+  const dd = document.getElementById(ddId);
+  if (!dd) return;
+  const trigger = dd.querySelector('.custom-dd-trigger');
+  const ph = trigger.querySelector('.dd-placeholder');
+  const val = trigger.querySelector('.dd-value');
+  if (value == null || value === '') {
+    ph.classList.remove('hidden');
+    val.classList.add('hidden');
+    val.textContent = '';
+    trigger.classList.remove('has-value');
+  } else {
+    ph.classList.add('hidden');
+    val.classList.remove('hidden');
+    val.textContent = displayText || value;
+    trigger.classList.add('has-value');
+  }
+  if (ddId === 'agencyParentDd') parentDdValue = value;
+  if (ddId === 'agencyManagerDd') managerDdValue = value;
+  // re-render panel selection state
+  if (ddId === 'agencyParentDd') renderParentPanel();
+  if (ddId === 'agencyManagerDd') renderManagerPanel();
+}
+
+function renderParentPanel(filterText) {
+  const panel = document.getElementById('agencyParentPanel');
+  if (!panel) return;
+  const excludeId = form1EditingId;
+  const kw = (filterText || '').trim().toLowerCase();
+  let html = `<div class="custom-dd-search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" class="custom-dd-search" id="agencyParentSearch" placeholder="Tìm theo tên..." autocomplete="off">
+  </div>`;
+  let count = 0;
+  agenciesData.forEach(a => {
+    if (a.id === excludeId) return;
+    if (kw && !a.name.toLowerCase().includes(kw)) return;
+    const sel = parentDdValue === a.id ? ' selected' : '';
+    html += `<div class="custom-dd-item${sel}" data-id="${a.id}">${a.name}</div>`;
+    count++;
+  });
+  if (count === 0) {
+    html += '<div class="custom-dd-item custom-dd-empty">Không có dữ liệu</div>';
+  }
+  panel.innerHTML = html;
+  const searchInput = document.getElementById('agencyParentSearch');
+  if (searchInput) {
+    searchInput.value = filterText || '';
+    searchInput.addEventListener('click', (e) => e.stopPropagation());
+    searchInput.addEventListener('input', () => {
+      renderParentPanel(searchInput.value);
+      const again = document.getElementById('agencyParentSearch');
+      if (again) {
+        again.focus();
+        const len = again.value.length;
+        again.setSelectionRange(len, len);
+      }
+    });
+    searchInput.addEventListener('keydown', (e) => e.stopPropagation());
+  }
+}
+
+function renderManagerPanel(filterText) {
+  const panel = document.getElementById('agencyManagerPanel');
+  if (!panel) return;
+
+  const kw = (filterText || '').trim().toLowerCase();
+
+  // group by department (filter by name/username)
+  const groups = {};
+  employeesData.forEach(e => {
+    if (kw) {
+      const hay = `${e.username} ${e.fullName}`.toLowerCase();
+      if (!hay.includes(kw)) return;
+    }
+    if (!groups[e.department]) groups[e.department] = [];
+    groups[e.department].push(e);
+  });
+
+  let html = `<div class="custom-dd-search-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" class="custom-dd-search" id="agencyManagerSearch" placeholder="Tìm theo tên..." autocomplete="off">
+  </div>`;
+  let count = 0;
+  Object.keys(groups).forEach(dept => {
+    html += `<div class="custom-dd-group-label">${dept}</div>`;
+    groups[dept].forEach(e => {
+      const disp = empDisplay(e);
+      const sel = managerDdValue === disp ? ' selected' : '';
+      html += `<div class="custom-dd-item${sel}" data-value="${disp}">${disp}</div>`;
+      count++;
+    });
+  });
+  if (count === 0) {
+    html += '<div class="custom-dd-item custom-dd-empty">Không có dữ liệu</div>';
+  }
+  panel.innerHTML = html;
+  const searchInput = document.getElementById('agencyManagerSearch');
+  if (searchInput) {
+    searchInput.value = filterText || '';
+    searchInput.addEventListener('click', (e) => e.stopPropagation());
+    searchInput.addEventListener('input', () => {
+      renderManagerPanel(searchInput.value);
+      const again = document.getElementById('agencyManagerSearch');
+      if (again) {
+        again.focus();
+        const len = again.value.length;
+        again.setSelectionRange(len, len);
+      }
+    });
+    searchInput.addEventListener('keydown', (e) => e.stopPropagation());
+  }
+}
+
+function initCustomDropdowns() {
+  // Parent
+  const parentDd = document.getElementById('agencyParentDd');
+  if (parentDd) {
+    const trigger = parentDd.querySelector('.custom-dd-trigger');
+    const clearBtn = parentDd.querySelector('.dd-clear');
+    const panel = document.getElementById('agencyParentPanel');
+
+    trigger.addEventListener('click', (e) => {
+      if (e.target.closest('.dd-clear')) return;
+      const isOpen = parentDd.classList.contains('open');
+      closeAllCustomDd();
+      if (!isOpen) {
+        parentDd.classList.add('open');
+        renderParentPanel();
+      }
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCustomDdValue('agencyParentDd', null, '');
+      closeAllCustomDd();
+    });
+
+    panel.addEventListener('click', (e) => {
+      const item = e.target.closest('.custom-dd-item[data-id]');
+      if (!item) return;
+      const id = Number(item.dataset.id);
+      const name = item.textContent;
+      setCustomDdValue('agencyParentDd', id, name);
+      closeAllCustomDd();
+    });
+  }
+
+  // Manager
+  const managerDd = document.getElementById('agencyManagerDd');
+  if (managerDd) {
+    const trigger = managerDd.querySelector('.custom-dd-trigger');
+    const clearBtn = managerDd.querySelector('.dd-clear');
+    const panel = document.getElementById('agencyManagerPanel');
+
+    trigger.addEventListener('click', (e) => {
+      if (e.target.closest('.dd-clear')) return;
+      const isOpen = managerDd.classList.contains('open');
+      closeAllCustomDd();
+      if (!isOpen) {
+        managerDd.classList.add('open');
+        renderManagerPanel();
+      }
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCustomDdValue('agencyManagerDd', null, '');
+      closeAllCustomDd();
+    });
+
+    panel.addEventListener('click', (e) => {
+      const item = e.target.closest('.custom-dd-item[data-value]');
+      if (!item) return;
+      const val = item.dataset.value;
+      const emp = findEmpByDisplay(val);
+      const display = emp ? empDisplayWithDept(emp) : val;
+      setCustomDdValue('agencyManagerDd', val, display);
+      closeAllCustomDd();
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.custom-dd')) closeAllCustomDd();
+  });
+}
+
+/* ============================================================
+   4. MAP (Leaflet)
+   ============================================================ */
+let editMap = null;
+let editMarker = null;
+let viewMap = null;
+let viewMarker = null;
+
+function destroyMaps() {
+  if (editMap) { editMap.remove(); editMap = null; editMarker = null; }
+  if (viewMap) { viewMap.remove(); viewMap = null; viewMarker = null; }
+}
+
+function initEditMap(lat, lng) {
+  const container = document.getElementById('agencyMapEdit');
+  if (!container || typeof L === 'undefined') {
+    // fallback placeholder
+    const ph = document.getElementById('agencyMapPlaceholder');
+    if (ph) {
+      ph.classList.remove('hidden');
+      container.classList.add('hidden');
+      updateMapPlaceholderText(lat, lng);
+    }
+    return;
+  }
+  container.classList.remove('hidden');
+  const ph = document.getElementById('agencyMapPlaceholder');
+  if (ph) ph.classList.add('hidden');
+
+  if (editMap) {
+    editMap.remove();
+    editMap = null;
+    editMarker = null;
+  }
+
+  const hasCoord = lat != null && lng != null && !isNaN(lat) && !isNaN(lng);
+  const center = hasCoord ? [lat, lng] : [13.9833, 108.0000];
+  editMap = L.map(container).setView(center, hasCoord ? 14 : 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(editMap);
+
+  if (hasCoord) {
+    editMarker = L.marker(center).addTo(editMap);
+  }
+  setTimeout(() => editMap.invalidateSize(), 100);
+}
+
+function updateEditMap(lat, lng) {
+  if (!editMap) {
+    initEditMap(lat, lng);
+    return;
+  }
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return;
+  const pos = [lat, lng];
+  editMap.setView(pos, 14);
+  if (editMarker) {
+    editMarker.setLatLng(pos);
+  } else {
+    editMarker = L.marker(pos).addTo(editMap);
+  }
+}
+
+function initViewMap(lat, lng) {
+  const container = document.getElementById('agencyMapView');
+  if (!container || typeof L === 'undefined') return;
+
+  if (viewMap) {
+    viewMap.remove();
+    viewMap = null;
+    viewMarker = null;
+  }
+
+  const hasCoord = lat != null && lng != null && !isNaN(lat) && !isNaN(lng);
+  const center = hasCoord ? [lat, lng] : [13.9833, 108.0000];
+  viewMap = L.map(container).setView(center, hasCoord ? 14 : 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(viewMap);
+
+  if (hasCoord) {
+    viewMarker = L.marker(center).addTo(viewMap);
+  }
+  setTimeout(() => viewMap.invalidateSize(), 150);
+}
+
+function updateMapPlaceholderText(lat, lng) {
   const text = document.getElementById('agencyMapCoordText');
   if (!text) return;
-  if (lat !== '' && lng !== '' && lat !== undefined && lng !== undefined) {
+  if (lat !== '' && lng !== '' && lat != null && lng != null) {
     text.textContent = `Tọa độ: ${lat}, ${lng}`;
   } else {
     text.textContent = 'Chưa có tọa độ';
   }
 }
 
+/* ============================================================
+   5. FORM — THÊM / SỬA / XEM
+   ============================================================ */
+let form1Mode = 'add'; // 'add' | 'edit' | 'view'
+let form1EditingId = null;
+let originalManagerValue = null; // for change confirmation
+
 function clearForm1Errors() {
-  ['agencyNameError', 'agencyFloorsError', 'agencyLocationError'].forEach(id => {
+  ['agencyNameError', 'agencyManagerError', 'agencyFloorsError', 'agencyLocationError'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = '';
   });
 }
 
-function setForm1FieldsDisabled(disabled) {
-  const ids = [
-    'agencyNameInput', 'agencyParentSelect', 'agencyAddressInput',
-    'agencyFloorsInput', 'agencyLocationInput', 'agencyDescriptionInput', 'agencyActiveInput'
-  ];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = disabled;
-  });
-}
-
 function openForm1(id, mode) {
-  form1Mode = mode; // 'add' | 'edit' | 'view'
+  form1Mode = mode;
   form1EditingId = id || null;
-
+  agencyOpenMenuId = null;
+  closeAllCustomDd();
   clearForm1Errors();
+  destroyMaps();
 
+  if (mode === 'view') {
+    openViewDetail(id);
+    return;
+  }
+
+  // Thêm / Sửa
   const nameInput = document.getElementById('agencyNameInput');
   const addressInput = document.getElementById('agencyAddressInput');
   const floorsInput = document.getElementById('agencyFloorsInput');
@@ -392,58 +694,83 @@ function openForm1(id, mode) {
   const activeInput = document.getElementById('agencyActiveInput');
   const title = document.getElementById('form1Title');
   const saveBtn = document.getElementById('btnForm1Save');
-  const deptSection = document.getElementById('deptSection');
-
-  populateParentSelect(id || null);
 
   if (mode === 'add') {
-    title.textContent = 'Thêm cơ quan';
+    if (title) title.textContent = 'Thông tin cơ quan';
     nameInput.value = '';
-    document.getElementById('agencyParentSelect').value = '';
+    setCustomDdValue('agencyParentDd', null, '');
+    setCustomDdValue('agencyManagerDd', null, '');
+    originalManagerValue = null;
     addressInput.value = '';
     floorsInput.value = '';
     locationInput.value = '';
     descInput.value = '';
     activeInput.checked = true;
-    updateMapPlaceholder('', '');
-    setForm1FieldsDisabled(false);
-    saveBtn.classList.remove('hidden');
     setPageHeading('Thêm cơ quan');
-
-    // Thêm mới: ẩn hoàn toàn block Danh sách phòng ban
-    deptSection.classList.add('hidden');
-    setDeptSectionReadonly(false);
+    saveBtn.classList.remove('hidden');
+    showView('form1View');
+    setTimeout(() => initEditMap(null, null), 50);
   } else {
     const item = agenciesData.find(a => a.id === id);
     if (!item) return;
 
-    title.textContent = mode === 'edit' ? 'Sửa cơ quan' : 'Chi tiết cơ quan';
+    if (title) title.textContent = 'Thông tin cơ quan';
     nameInput.value = item.name;
-    document.getElementById('agencyParentSelect').value = item.parentId || '';
+    // parent
+    if (item.parentId) {
+      const parent = agenciesData.find(a => a.id === item.parentId);
+      setCustomDdValue('agencyParentDd', item.parentId, parent ? parent.name : '');
+    } else {
+      setCustomDdValue('agencyParentDd', null, '');
+    }
+    // manager — value lưu username - fullName; hiển thị thêm phòng ban
+    setCustomDdValue(
+      'agencyManagerDd',
+      item.manager || null,
+      item.manager ? managerDisplayDetail(item.manager) : ''
+    );
+    originalManagerValue = item.manager || '';
     addressInput.value = item.address || '';
     floorsInput.value = item.floors != null ? item.floors : '';
     locationInput.value = (item.lat != null && item.lng != null) ? `${item.lat}, ${item.lng}` : '';
     descInput.value = item.description || '';
     activeInput.checked = !!item.active;
-    updateMapPlaceholder(item.lat, item.lng);
+    setPageHeading('Cấu hình cơ quan');
+    saveBtn.classList.remove('hidden');
+    showView('form1View');
+    setTimeout(() => initEditMap(item.lat, item.lng), 50);
+  }
+}
 
-    if (mode === 'view') {
-      setForm1FieldsDisabled(true);
-      saveBtn.classList.add('hidden');
-      setPageHeading('Chi tiết cơ quan');
-    } else {
-      setForm1FieldsDisabled(false);
-      saveBtn.classList.remove('hidden');
-      setPageHeading('Sửa cơ quan');
-    }
+function openViewDetail(id) {
+  const item = agenciesData.find(a => a.id === id);
+  if (!item) return;
 
-    // Sửa / Xem: hiện block Danh sách phòng ban của đúng cơ quan này
-    deptSection.classList.remove('hidden');
-    setDeptSectionReadonly(mode === 'view');
-    openDeptSectionFor(item.id);
+  form1Mode = 'view';
+  form1EditingId = id;
+  setPageHeading('Cấu hình cơ quan');
+
+  const parent = item.parentId ? agenciesData.find(a => a.id === item.parentId) : null;
+  const grid = document.getElementById('viewDetailGrid');
+  if (grid) {
+    const rows = [
+      ['Tên cơ quan:', item.name || '—'],
+      ['Cơ quan cấp trên:', parent ? parent.name : '—'],
+      ['Người phụ trách chính:', item.manager ? managerDisplayDetail(item.manager) : '—'],
+      ['Số tầng:', item.floors != null ? item.floors : '—'],
+      ['Tình trạng hoạt động:', item.active ? 'Hoạt động' : 'Không hoạt động', item.active ? 'status-on' : 'status-off'],
+      ['Địa chỉ:', item.address || '—'],
+      ['Vị trí bản đồ:', (item.lat != null && item.lng != null) ? `${item.lat}, ${item.lng}` : '—'],
+      ['Mô tả:', item.description || '—']
+    ];
+    grid.innerHTML = rows.map(([label, value, cls]) => `
+      <div class="view-label">${label}</div>
+      <div class="view-value ${cls || ''} ${(!value || value === '—') ? 'empty' : ''}">${value}</div>
+    `).join('');
   }
 
-  showView('form1View');
+  showView('viewDetailView');
+  setTimeout(() => initViewMap(item.lat, item.lng), 80);
 }
 
 function validateForm1() {
@@ -459,6 +786,11 @@ function validateForm1() {
     valid = false;
   }
 
+  if (!managerDdValue) {
+    document.getElementById('agencyManagerError').textContent = 'Vui lòng chọn người phụ trách chính.';
+    valid = false;
+  }
+
   if (!floors) {
     document.getElementById('agencyFloorsError').textContent = 'Vui lòng nhập số tầng.';
     valid = false;
@@ -467,757 +799,166 @@ function validateForm1() {
     valid = false;
   }
 
-  const locationPattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
   if (!location) {
     document.getElementById('agencyLocationError').textContent = 'Vui lòng nhập vị trí (lat, lng).';
     valid = false;
-  } else if (!locationPattern.test(location)) {
-    document.getElementById('agencyLocationError').textContent = 'Định dạng vị trí không hợp lệ. Ví dụ: 13.9833, 108.0000';
-    valid = false;
+  } else {
+    const parts = location.split(',').map(s => s.trim());
+    if (parts.length !== 2 || parts[0] === '' || parts[1] === '' || isNaN(parts[0]) || isNaN(parts[1])) {
+      document.getElementById('agencyLocationError').textContent = 'Định dạng vị trí không hợp lệ. Ví dụ: 13.9833, 108.0000';
+      valid = false;
+    }
   }
 
   return valid;
 }
 
-function saveForm1() {
-  if (!validateForm1()) return;
-
+function doSaveForm1() {
   const name = document.getElementById('agencyNameInput').value.trim();
-  const parentVal = document.getElementById('agencyParentSelect').value;
+  const manager = managerDdValue || '';
   const address = document.getElementById('agencyAddressInput').value.trim();
-  const floors = Number(document.getElementById('agencyFloorsInput').value.trim());
+  const floors = Number(document.getElementById('agencyFloorsInput').value);
   const location = document.getElementById('agencyLocationInput').value.trim();
-  const [latStr, lngStr] = location.split(',').map(s => s.trim());
+  const parts = location.split(',').map(s => s.trim());
+  const lat = Number(parts[0]);
+  const lng = Number(parts[1]);
   const description = document.getElementById('agencyDescriptionInput').value.trim();
   const active = document.getElementById('agencyActiveInput').checked;
+  const parentId = parentDdValue != null ? Number(parentDdValue) : null;
 
+  let savedId = form1EditingId;
   if (form1Mode === 'add') {
     const newId = agenciesData.length > 0 ? Math.max(...agenciesData.map(a => a.id)) + 1 : 1;
     agenciesData.push({
       id: newId,
-      name: name,
-      manager: '',
-      address: address,
-      active: active,
-      parentId: parentVal ? Number(parentVal) : null,
-      floors: floors,
-      lat: Number(latStr),
-      lng: Number(lngStr),
-      description: description,
-      managedByCurrentUser: false
+      name,
+      manager,
+      address,
+      active,
+      parentId,
+      floors,
+      lat,
+      lng,
+      description
     });
+    savedId = newId;
     showToast('Thêm cơ quan thành công.', 'success');
   } else if (form1Mode === 'edit') {
     const item = agenciesData.find(a => a.id === form1EditingId);
     if (!item) {
-      showToast('Lưu thất bại. Không tìm thấy cơ quan cần cập nhật.', 'error');
+      showToast('Không tìm thấy cơ quan.', 'error');
       return;
     }
     item.name = name;
-    item.parentId = parentVal ? Number(parentVal) : null;
+    item.manager = manager;
     item.address = address;
-    item.floors = floors;
-    item.lat = Number(latStr);
-    item.lng = Number(lngStr);
-    item.description = description;
     item.active = active;
+    item.parentId = parentId;
+    item.floors = floors;
+    item.lat = lat;
+    item.lng = lng;
+    item.description = description;
+    savedId = form1EditingId;
     showToast('Cập nhật cơ quan thành công.', 'success');
   }
 
-  backToList();
+  // Giữ màn hình chi tiết sau khi lưu (không quay về danh sách)
+  if (savedId != null) openViewDetail(savedId);
+  else backToList();
 }
 
-/* ============================================================
-   4. DANH SÁCH PHÒNG BAN THUỘC CƠ QUAN (trong Form 1)
-   ============================================================ */
-let deptCurrentAgencyId = null;
-let deptKeyword = '';
-let deptPage = 1;
-const DEPT_PAGE_SIZE = 5;
-let deptOpenMenuId = null;
-let deptSectionReadonly = false;
+function saveForm1() {
+  if (form1Mode === 'view') return;
+  if (!validateForm1()) return;
 
-/* Chế độ Xem chi tiết cơ quan: khóa toàn bộ block phòng ban
-   (ẩn nút Thêm mới, disable tìm kiếm, menu chỉ còn "Xem"). */
-function setDeptSectionReadonly(readonly) {
-  deptSectionReadonly = readonly;
-  const addBtn = document.getElementById('btnAddDept');
-  const searchInput = document.getElementById('deptSearchInput');
-  const searchBtn = document.getElementById('btnDeptSearch');
-  const resetBtn = document.getElementById('btnDeptReset');
-  if (addBtn) addBtn.classList.toggle('hidden', readonly);
-  if (searchInput) searchInput.disabled = readonly;
-  if (searchBtn) searchBtn.disabled = readonly;
-  if (resetBtn) resetBtn.disabled = readonly;
-}
-
-function openDeptSectionFor(agencyId) {
-  deptCurrentAgencyId = agencyId;
-  deptKeyword = '';
-  deptPage = 1;
-  deptOpenMenuId = null;
-  const searchInput = document.getElementById('deptSearchInput');
-  if (searchInput) searchInput.value = '';
-  renderDeptTable();
-}
-
-function getFilteredDepartments() {
-  const kw = deptKeyword.trim().toLowerCase();
-  return departmentsData.filter(d => {
-    if (d.agencyId !== deptCurrentAgencyId) return false;
-    if (!kw) return true;
-    return d.name.toLowerCase().includes(kw);
-  });
-}
-
-function renderDeptTable() {
-  const tbody = document.getElementById('deptTableBody');
-  const pagination = document.getElementById('deptPagination');
-  if (!tbody || !pagination) return;
-
-  const filtered = getFilteredDepartments();
-  const totalPages = Math.max(1, Math.ceil(filtered.length / DEPT_PAGE_SIZE));
-  if (deptPage > totalPages) deptPage = totalPages;
-
-  const start = (deptPage - 1) * DEPT_PAGE_SIZE;
-  const pageItems = filtered.slice(start, start + DEPT_PAGE_SIZE);
-
-  if (pageItems.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="center" style="color:#9AA0AC;padding:20px;">Không có phòng ban phù hợp</td></tr>`;
-  } else {
-    tbody.innerHTML = pageItems.map((d, i) => {
-      const badge = d.active
-        ? `<span class="status-badge status-badge-on">Hoạt động</span>`
-        : `<span class="status-badge status-badge-off">Không hoạt động</span>`;
-      const menuShow = deptOpenMenuId === d.id ? ' show' : '';
-      const menuItems = deptSectionReadonly
-        ? `<div class="action-menu-item" onclick="closeDeptMenu(); openDeptModal('view', ${d.id}, 'agency')"><i class="fa-solid fa-eye"></i>Xem</div>`
-        : `<div class="action-menu-item" onclick="openDeptModal('edit', ${d.id}, 'agency')"><i class="fa-solid fa-pen"></i>Chỉnh sửa</div>
-           <div class="action-menu-item danger" onclick="closeDeptMenu(); openDeleteConfirm('department', ${d.id})"><i class="fa-solid fa-trash"></i>Xóa</div>`;
-      return `
-        <tr>
-          <td class="center">${start + i + 1}</td>
-          <td><strong>${d.name}</strong></td>
-          <td>${d.description || ''}</td>
-          <td class="center">${badge}</td>
-          <td class="center">
-            <div class="action-menu-wrap">
-              <button class="act-btn-dots" title="Xử lý" onclick="toggleDeptMenu(event, ${d.id})"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-              <div class="action-menu${menuShow}" id="deptMenu-${d.id}">
-                ${menuItems}
-              </div>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  pagination.innerHTML = `
-    <button class="page-btn" id="deptPrevBtn" ${deptPage <= 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>
-    <span class="page-info">Trang ${deptPage}/${totalPages}</span>
-    <button class="page-btn" id="deptNextBtn" ${deptPage >= totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>
-  `;
-
-  const prevBtn = document.getElementById('deptPrevBtn');
-  const nextBtn = document.getElementById('deptNextBtn');
-  if (prevBtn) prevBtn.addEventListener('click', () => { if (deptPage > 1) { deptPage--; renderDeptTable(); } });
-  if (nextBtn) nextBtn.addEventListener('click', () => { if (deptPage < totalPages) { deptPage++; renderDeptTable(); } });
-}
-
-function handleDeptSearch() {
-  const input = document.getElementById('deptSearchInput');
-  deptKeyword = input ? input.value : '';
-  deptPage = 1;
-  renderDeptTable();
-}
-
-function handleDeptReset() {
-  const input = document.getElementById('deptSearchInput');
-  if (input) input.value = '';
-  deptKeyword = '';
-  deptPage = 1;
-  renderDeptTable();
-  showToast('Đã làm mới dữ liệu thành công', 'success');
-}
-
-/* ---------- Menu 3 chấm của từng dòng phòng ban ---------- */
-function toggleDeptMenu(evt, deptId) {
-  evt.stopPropagation();
-  deptOpenMenuId = deptOpenMenuId === deptId ? null : deptId;
-  renderDeptTable();
-}
-
-function closeDeptMenu() {
-  deptOpenMenuId = null;
-}
-
-document.addEventListener('click', () => {
-  if (deptOpenMenuId !== null) {
-    deptOpenMenuId = null;
-    renderDeptTable();
-  }
-});
-
-/* ============================================================
-   5. MODAL THÊM / SỬA PHÒNG BAN
-   ============================================================ */
-let deptModalMode = 'add'; // 'add' | 'edit' | 'view'
-let deptEditingId = null;
-let deptModalContext = 'agency'; // 'agency' (trong Form 1) | 'top' (màn hình Quản lý phòng ban)
-
-function populateDeptAgencySelect() {
-  const select = document.getElementById('deptAgencySelect');
-  if (!select) return;
-  const options = ['<option value="">-- Chọn --</option>'];
-  agenciesData.forEach(a => options.push(`<option value="${a.id}">${a.name}</option>`));
-  select.innerHTML = options.join('');
-}
-
-function openDeptModal(mode, id, context) {
-  deptModalMode = mode;
-  deptEditingId = id || null;
-  deptModalContext = context || 'agency';
-  closeDeptMenu();
-  closeTopDeptMenu();
-  renderDeptTable();
-  renderTopDeptTable();
-
-  const title = document.getElementById('deptModalTitle');
-  const nameInput = document.getElementById('deptNameInput');
-  const descInput = document.getElementById('deptDescInput');
-  const activeInput = document.getElementById('deptActiveInput');
-  const errorEl = document.getElementById('deptNameError');
-  const agencyGroup = document.getElementById('deptAgencyGroup');
-  const agencySelect = document.getElementById('deptAgencySelect');
-  const agencyError = document.getElementById('deptAgencyError');
-  const saveBtn = document.getElementById('deptSaveBtn');
-  const cancelBtn = document.getElementById('deptCancelBtn');
-
-  if (errorEl) errorEl.textContent = '';
-  if (agencyError) agencyError.textContent = '';
-
-  const showAgencyField = deptModalContext === 'top';
-  if (agencyGroup) agencyGroup.classList.toggle('hidden', !showAgencyField);
-  if (showAgencyField) populateDeptAgencySelect();
-
-  if (mode === 'add') {
-    title.textContent = 'Thêm phòng ban';
-    nameInput.value = '';
-    descInput.value = '';
-    activeInput.checked = true;
-    if (agencySelect) agencySelect.value = '';
-  } else {
-    const dept = departmentsData.find(d => d.id === id);
-    if (!dept) return;
-    title.textContent = mode === 'view' ? 'Xem thông tin phòng ban' : 'Chỉnh sửa phòng ban';
-    nameInput.value = dept.name;
-    descInput.value = dept.description || '';
-    activeInput.checked = !!dept.active;
-    if (agencySelect) agencySelect.value = dept.agencyId;
-  }
-
-  const readonly = mode === 'view';
-  [nameInput, descInput, activeInput, agencySelect].forEach(el => { if (el) el.disabled = readonly; });
-  if (saveBtn) saveBtn.classList.toggle('hidden', readonly);
-  if (cancelBtn) cancelBtn.textContent = readonly ? 'Đóng' : 'Hủy';
-
-  document.getElementById('deptModalOverlay').classList.add('show');
-}
-
-function closeDeptModal() {
-  document.getElementById('deptModalOverlay').classList.remove('show');
-}
-
-function saveDeptModal() {
-  if (deptModalMode === 'view') { closeDeptModal(); return; }
-
-  const nameInput = document.getElementById('deptNameInput');
-  const descInput = document.getElementById('deptDescInput');
-  const activeInput = document.getElementById('deptActiveInput');
-  const errorEl = document.getElementById('deptNameError');
-  const agencySelect = document.getElementById('deptAgencySelect');
-  const agencyError = document.getElementById('deptAgencyError');
-
-  const name = nameInput.value.trim();
-  let valid = true;
-
-  if (!name) {
-    errorEl.textContent = 'Vui lòng nhập tên phòng ban.';
-    valid = false;
-  } else {
-    errorEl.textContent = '';
-  }
-
-  let targetAgencyId = deptCurrentAgencyId;
-  if (deptModalContext === 'top') {
-    const val = agencySelect ? agencySelect.value : '';
-    if (!val) {
-      if (agencyError) agencyError.textContent = 'Vui lòng chọn cơ quan.';
-      valid = false;
-    } else {
-      if (agencyError) agencyError.textContent = '';
-      targetAgencyId = Number(val);
-    }
-  }
-
-  if (!valid) return;
-
-  const description = descInput.value.trim();
-  const active = activeInput.checked;
-
-  if (deptModalMode === 'add') {
-    const newId = departmentsData.length > 0 ? Math.max(...departmentsData.map(d => d.id)) + 1 : 1;
-    departmentsData.push({
-      id: newId,
-      agencyId: targetAgencyId,
-      name: name,
-      description: description,
-      active: active
-    });
-    if (deptModalContext === 'agency') {
-      deptKeyword = '';
-      document.getElementById('deptSearchInput').value = '';
-      deptPage = 1;
-    } else {
-      topDeptKeyword = '';
-      document.getElementById('topDeptSearchInput').value = '';
-      topDeptPage = 1;
-    }
-    showToast('Thêm phòng ban thành công.', 'success');
-  } else {
-    const dept = departmentsData.find(d => d.id === deptEditingId);
-    if (!dept) {
-      showToast('Lưu thất bại. Không tìm thấy phòng ban cần cập nhật.', 'error');
+  // Check manager change on edit
+  if (form1Mode === 'edit') {
+    const newManager = managerDdValue || '';
+    const oldManager = originalManagerValue || '';
+    if (newManager !== oldManager) {
+      openManagerChangeConfirm(oldManager, newManager);
       return;
     }
-    dept.name = name;
-    dept.description = description;
-    dept.active = active;
-    if (deptModalContext === 'top') dept.agencyId = targetAgencyId;
-    showToast('Cập nhật phòng ban thành công.', 'success');
   }
 
-  closeDeptModal();
-  renderDeptTable();
-  renderTopDeptTable();
+  doSaveForm1();
 }
 
 /* ============================================================
-   5B. DANH SÁCH PHÒNG BAN (TOP-LEVEL, TOÀN HỆ THỐNG)
+   6. MODAL XÁC NHẬN ĐỔI NGƯỜI PHỤ TRÁCH
    ============================================================ */
-let topDeptKeyword = '';
-let topDeptPage = 1;
-const TOP_DEPT_PAGE_SIZE = 10;
-let topDeptOpenMenuId = null;
-
-function getFilteredTopDepartments() {
-  const kw = topDeptKeyword.trim().toLowerCase();
-  if (!kw) return departmentsData;
-  return departmentsData.filter(d => d.name.toLowerCase().includes(kw));
-}
-
-function renderTopDeptTable() {
-  const tbody = document.getElementById('topDeptTableBody');
-  const pagination = document.getElementById('topDeptPagination');
-  if (!tbody || !pagination) return;
-
-  const filtered = getFilteredTopDepartments();
-  const totalPages = Math.max(1, Math.ceil(filtered.length / TOP_DEPT_PAGE_SIZE));
-  if (topDeptPage > totalPages) topDeptPage = totalPages;
-
-  const start = (topDeptPage - 1) * TOP_DEPT_PAGE_SIZE;
-  const pageItems = filtered.slice(start, start + TOP_DEPT_PAGE_SIZE);
-
-  if (pageItems.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="center" style="color:#9AA0AC;padding:24px;">Không tìm thấy phòng ban phù hợp</td></tr>`;
-  } else {
-    tbody.innerHTML = pageItems.map((d, i) => {
-      const agency = agenciesData.find(a => a.id === d.agencyId);
-      const badge = d.active
-        ? `<span class="status-badge status-badge-on">Hoạt động</span>`
-        : `<span class="status-badge status-badge-off">Không hoạt động</span>`;
-      const menuShow = topDeptOpenMenuId === d.id ? ' show' : '';
-      return `
-        <tr>
-          <td class="center">${start + i + 1}</td>
-          <td><strong>${d.name}</strong></td>
-          <td>${agency ? agency.name : ''}</td>
-          <td>${d.description || ''}</td>
-          <td class="center">${badge}</td>
-          <td class="center">
-            <div class="action-menu-wrap">
-              <button class="act-btn-dots" title="Xử lý" onclick="toggleTopDeptMenu(event, ${d.id})"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-              <div class="action-menu${menuShow}" id="topDeptMenu-${d.id}">
-                <div class="action-menu-item" onclick="closeTopDeptMenu(); openDeptModal('view', ${d.id}, 'top')"><i class="fa-solid fa-eye"></i>Xem</div>
-                <div class="action-menu-item" onclick="closeTopDeptMenu(); openDeptModal('edit', ${d.id}, 'top')"><i class="fa-solid fa-pen"></i>Sửa</div>
-                <div class="action-menu-item danger" onclick="closeTopDeptMenu(); openDeleteConfirm('department', ${d.id})"><i class="fa-solid fa-trash"></i>Xóa</div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
+function openManagerChangeConfirm(oldVal, newVal) {
+  const textEl = document.getElementById('managerChangeText');
+  if (textEl) {
+    textEl.textContent = 'Bạn có chắc chắn muốn đổi người phụ trách chính?';
   }
-
-  pagination.innerHTML = `
-    <button class="page-btn" id="topDeptPrevBtn" ${topDeptPage <= 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>
-    <span class="page-info">Trang ${topDeptPage}/${totalPages}</span>
-    <button class="page-btn" id="topDeptNextBtn" ${topDeptPage >= totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>
-  `;
-
-  const prevBtn = document.getElementById('topDeptPrevBtn');
-  const nextBtn = document.getElementById('topDeptNextBtn');
-  if (prevBtn) prevBtn.addEventListener('click', () => { if (topDeptPage > 1) { topDeptPage--; renderTopDeptTable(); } });
-  if (nextBtn) nextBtn.addEventListener('click', () => { if (topDeptPage < totalPages) { topDeptPage++; renderTopDeptTable(); } });
-}
-
-function handleTopDeptSearch() {
-  const input = document.getElementById('topDeptSearchInput');
-  topDeptKeyword = input ? input.value : '';
-  topDeptPage = 1;
-  renderTopDeptTable();
-}
-
-function handleTopDeptReset() {
-  const input = document.getElementById('topDeptSearchInput');
-  if (input) input.value = '';
-  topDeptKeyword = '';
-  topDeptPage = 1;
-  renderTopDeptTable();
-  showToast('Đã làm mới dữ liệu thành công', 'success');
-}
-
-function toggleTopDeptMenu(evt, deptId) {
-  evt.stopPropagation();
-  topDeptOpenMenuId = topDeptOpenMenuId === deptId ? null : deptId;
-  renderTopDeptTable();
-}
-
-function closeTopDeptMenu() {
-  topDeptOpenMenuId = null;
-}
-
-document.addEventListener('click', () => {
-  if (topDeptOpenMenuId !== null) {
-    topDeptOpenMenuId = null;
-    renderTopDeptTable();
+  const compareEl = document.getElementById('managerChangeCompare');
+  if (compareEl) {
+    const oldEmp = findEmpByDisplay(oldVal);
+    const newEmp = findEmpByDisplay(newVal);
+    const oldName = oldVal || 'Chưa cấu hình';
+    const newName = newVal || 'Chưa cấu hình';
+    const oldDept = oldEmp ? oldEmp.department : '—';
+    const newDept = newEmp ? newEmp.department : '—';
+    compareEl.innerHTML = `
+      <div class="mgr-change-card">
+        <div class="mgr-role">Hiện tại</div>
+        <div class="mgr-name">${oldName}</div>
+        <div class="mgr-dept">${oldDept}</div>
+      </div>
+      <div class="mgr-change-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+      <div class="mgr-change-card">
+        <div class="mgr-role">Người mới</div>
+        <div class="mgr-name">${newName}</div>
+        <div class="mgr-dept">${newDept}</div>
+      </div>`;
   }
-});
+  document.getElementById('managerChangeModal').classList.add('show');
+}
+
+function closeManagerChangeConfirm() {
+  document.getElementById('managerChangeModal').classList.remove('show');
+}
+
+function confirmManagerChange() {
+  closeManagerChangeConfirm();
+  doSaveForm1();
+}
 
 /* ============================================================
-   6. XÓA (Modal xác nhận dùng chung: Cơ quan & Phòng ban)
+   7. MODAL XÁC NHẬN XÓA CƠ QUAN
    ============================================================ */
-let deleteContext = { type: null, id: null };
+let deleteTargetId = null;
 
-function openDeleteConfirm(type, id) {
-  let name = '';
-  if (type === 'agency') {
-    const item = agenciesData.find(a => a.id === id);
-    if (!item) return;
-    name = item.name;
-  } else if (type === 'department') {
-    const item = departmentsData.find(d => d.id === id);
-    if (!item) return;
-    name = item.name;
-  } else {
-    return;
-  }
-
-  deleteContext = { type, id };
-  document.getElementById('deleteTargetName').textContent = name;
+function openDeleteConfirm(id) {
+  agencyOpenMenuId = null;
+  const item = agenciesData.find(a => a.id === id);
+  if (!item) return;
+  deleteTargetId = id;
   document.getElementById('deleteConfirmModal').classList.add('show');
 }
 
 function closeDeleteConfirm() {
-  deleteContext = { type: null, id: null };
+  deleteTargetId = null;
   document.getElementById('deleteConfirmModal').classList.remove('show');
 }
 
 function confirmDeleteTarget() {
-  const { type, id } = deleteContext;
-  if (!type || id === null) return;
-
-  if (type === 'agency') {
-    const index = agenciesData.findIndex(a => a.id === id);
-    if (index === -1) {
-      showToast('Xóa thất bại. Không tìm thấy cơ quan.', 'error');
-      closeDeleteConfirm();
-      return;
-    }
-    agenciesData.splice(index, 1);
+  if (deleteTargetId == null) return;
+  const index = agenciesData.findIndex(a => a.id === deleteTargetId);
+  if (index === -1) {
+    showToast('Xóa thất bại. Không tìm thấy cơ quan.', 'error');
     closeDeleteConfirm();
-    renderAgenciesTable();
-    showToast('Xóa cơ quan thành công.', 'success');
-  } else if (type === 'department') {
-    const index = departmentsData.findIndex(d => d.id === id);
-    if (index === -1) {
-      showToast('Xóa thất bại. Không tìm thấy phòng ban.', 'error');
-      closeDeleteConfirm();
-      return;
-    }
-    departmentsData.splice(index, 1);
-    closeDeleteConfirm();
-    renderDeptTable();
-    renderTopDeptTable();
-    showToast('Xóa phòng ban thành công.', 'success');
+    return;
   }
+  agenciesData.splice(index, 1);
+  closeDeleteConfirm();
+  renderAgenciesTable();
+  showToast('Xóa cơ quan thành công.', 'success');
 }
 
 /* ============================================================
-   7. FORM 2 — NGƯỜI PHỤ TRÁCH CHÍNH
-   ============================================================ */
-let form2SelectedAgencyId = null;
-let form2SelectedStaffId = null;
-let form2StaffCommittedText = ''; // giá trị input đã "chốt" khi chọn 1 nhân viên
-
-function getManagedAgencies() {
-  return agenciesData.filter(a => a.managedByCurrentUser);
-}
-
-/* ---------- Form 2: Dropdown Cơ quan (custom combo, đồng bộ style với Nhân viên) ---------- */
-function renderForm2AgencyOptions() {
-  const dropdown = document.getElementById('form2AgencyDropdown');
-  if (!dropdown) return;
-
-  const managed = getManagedAgencies();
-  if (managed.length === 0) {
-    dropdown.innerHTML = `<div class="combo-empty">Không có cơ quan được gán quyền</div>`;
-    return;
-  }
-
-  dropdown.innerHTML = managed.map(a => {
-    const selectedCls = a.id === form2SelectedAgencyId ? ' selected' : '';
-    return `<div class="combo-option${selectedCls}" data-id="${a.id}" onclick="selectForm2AgencyOption(${a.id})">${a.name}</div>`;
-  }).join('');
-}
-
-function openForm2AgencyDropdown() {
-  const dropdown = document.getElementById('form2AgencyDropdown');
-  if (!dropdown) return;
-  renderForm2AgencyOptions();
-  dropdown.classList.add('show');
-}
-
-function closeForm2AgencyDropdown() {
-  const dropdown = document.getElementById('form2AgencyDropdown');
-  if (dropdown) dropdown.classList.remove('show');
-}
-
-function selectForm2AgencyOption(agencyId) {
-  const agency = agenciesData.find(a => a.id === agencyId);
-  if (!agency) return;
-
-  form2SelectedAgencyId = agency.id;
-  const searchEl = document.getElementById('form2AgencySearch');
-  const idEl = document.getElementById('form2AgencyIdInput');
-  if (searchEl) searchEl.value = agency.name;
-  if (idEl) idEl.value = agency.id;
-  closeForm2AgencyDropdown();
-  prefillForm2StaffForAgency(agency.id);
-}
-
-function resetForm2StaffSelection() {
-  form2SelectedStaffId = null;
-  form2StaffCommittedText = '';
-  const searchEl = document.getElementById('form2StaffSearch');
-  const idEl = document.getElementById('form2StaffIdInput');
-  const detailEl = document.getElementById('form2StaffDetail');
-  if (searchEl) searchEl.value = '';
-  if (idEl) idEl.value = '';
-  if (detailEl) detailEl.classList.add('hidden');
-  closeForm2StaffDropdown();
-}
-
-/* Tìm nhân viên đang là người phụ trách chính đã lưu của 1 cơ quan (nếu có),
-   ưu tiên primaryManagerAssignments, sau đó đối chiếu agency.manager với staffData. */
-function findAssignedStaffId(agencyId) {
-  if (primaryManagerAssignments[agencyId] != null) {
-    return primaryManagerAssignments[agencyId];
-  }
-  const agency = agenciesData.find(a => a.id === agencyId);
-  if (agency && agency.manager) {
-    const staff = staffData.find(s => s.agencyId === agencyId && s.fullName === agency.manager);
-    if (staff) return staff.id;
-  }
-  return null;
-}
-
-/* Pre-fill lại nhân viên phụ trách đã lưu (nếu có) khi mở Form 2 hoặc đổi cơ quan;
-   nếu cơ quan chưa có ai được cấu hình thì để trống. */
-function prefillForm2StaffForAgency(agencyId) {
-  const staffId = findAssignedStaffId(agencyId);
-  if (staffId != null) {
-    const staff = staffData.find(s => s.id === staffId);
-    if (staff) {
-      form2SelectedStaffId = staff.id;
-      form2StaffCommittedText = `${staff.username} – ${staff.fullName}`;
-      const searchEl = document.getElementById('form2StaffSearch');
-      const idEl = document.getElementById('form2StaffIdInput');
-      if (searchEl) searchEl.value = form2StaffCommittedText;
-      if (idEl) idEl.value = staff.id;
-      closeForm2StaffDropdown();
-      renderStaffDetail(staff);
-      return;
-    }
-  }
-  resetForm2StaffSelection();
-}
-
-function getStaffOfSelectedAgency() {
-  if (form2SelectedAgencyId === null) return [];
-  return staffData.filter(s => s.agencyId === form2SelectedAgencyId);
-}
-
-function renderForm2StaffOptions(keyword) {
-  const dropdown = document.getElementById('form2StaffDropdown');
-  if (!dropdown) return;
-
-  const kw = (keyword || '').trim().toLowerCase();
-  const staffList = getStaffOfSelectedAgency().filter(s =>
-    s.username.toLowerCase().includes(kw) || s.fullName.toLowerCase().includes(kw)
-  );
-
-  if (staffList.length === 0) {
-    dropdown.innerHTML = `<div class="combo-empty">Không tìm thấy nhân viên phù hợp</div>`;
-    return;
-  }
-
-  dropdown.innerHTML = staffList.map(s => {
-    const selectedCls = s.id === form2SelectedStaffId ? ' selected' : '';
-    return `<div class="combo-option${selectedCls}" data-id="${s.id}" onclick="selectForm2StaffOption(${s.id})">${s.username} – ${s.fullName}</div>`;
-  }).join('');
-}
-
-/* Mở dropdown: nếu ô tìm kiếm đang hiển thị đúng giá trị đã chọn trước đó (chưa gõ gì thêm)
-   thì hiện toàn bộ danh sách thay vì lọc theo chuỗi "username – họ tên" (sẽ không khớp ai). */
-function openForm2StaffDropdown() {
-  const dropdown = document.getElementById('form2StaffDropdown');
-  const searchInput = document.getElementById('form2StaffSearch');
-  if (!dropdown || !searchInput) return;
-
-  const typed = searchInput.value;
-  const effectiveKeyword = (form2SelectedStaffId !== null && typed === form2StaffCommittedText) ? '' : typed;
-
-  renderForm2StaffOptions(effectiveKeyword);
-  dropdown.classList.add('show');
-}
-
-function closeForm2StaffDropdown() {
-  const dropdown = document.getElementById('form2StaffDropdown');
-  if (dropdown) dropdown.classList.remove('show');
-}
-
-function selectForm2StaffOption(staffId) {
-  const staff = staffData.find(s => s.id === staffId);
-  if (!staff) return;
-
-  form2SelectedStaffId = staff.id;
-  form2StaffCommittedText = `${staff.username} – ${staff.fullName}`;
-  document.getElementById('form2StaffSearch').value = form2StaffCommittedText;
-  document.getElementById('form2StaffIdInput').value = staff.id;
-  closeForm2StaffDropdown();
-  renderStaffDetail(staff);
-}
-
-function renderStaffDetail(staff) {
-  const agency = agenciesData.find(a => a.id === staff.agencyId);
-
-  document.getElementById('dvUsername').textContent = staff.username;
-  document.getElementById('dvFullName').textContent = staff.fullName;
-  document.getElementById('dvEmail').textContent = staff.email;
-  document.getElementById('dvPhone').textContent = staff.phone;
-  document.getElementById('dvBirthday').textContent = staff.birthday;
-  document.getElementById('dvGender').textContent = staff.gender;
-  document.getElementById('dvAgency').textContent = agency ? agency.name : '';
-  document.getElementById('dvDepartment').textContent = staff.department;
-
-  document.getElementById('form2StaffDetail').classList.remove('hidden');
-}
-
-function openForm2(preselectAgencyId) {
-  const managed = getManagedAgencies();
-  if (managed.length === 0) {
-    showToast('Tài khoản của bạn hiện không được gán quyền quản lý cơ quan nào.', 'error');
-    return;
-  }
-
-  const target = preselectAgencyId && managed.some(a => a.id === preselectAgencyId)
-    ? preselectAgencyId
-    : managed[0].id;
-
-  form2SelectedAgencyId = target;
-  const agency = agenciesData.find(a => a.id === target);
-  const searchEl = document.getElementById('form2AgencySearch');
-  const idEl = document.getElementById('form2AgencyIdInput');
-  if (searchEl) searchEl.value = agency ? agency.name : '';
-  if (idEl) idEl.value = target;
-
-  prefillForm2StaffForAgency(target);
-  setPageHeading('Cấu hình người phụ trách chính');
-  showView('form2View');
-}
-
-function saveForm2() {
-  if (form2SelectedAgencyId === null) {
-    showToast('Vui lòng chọn cơ quan.', 'error');
-    return;
-  }
-  if (form2SelectedStaffId === null) {
-    showToast('Vui lòng chọn nhân viên phụ trách chính.', 'error');
-    return;
-  }
-
-  const staff = staffData.find(s => s.id === form2SelectedStaffId);
-  const agency = agenciesData.find(a => a.id === form2SelectedAgencyId);
-  if (!staff || !agency) return;
-
-  const oldStaffId = findAssignedStaffId(form2SelectedAgencyId);
-
-  if (oldStaffId != null && oldStaffId !== staff.id) {
-    const oldStaff = staffData.find(s => s.id === oldStaffId);
-    openChangeManagerConfirm(agency, oldStaff, staff);
-    return;
-  }
-
-  commitForm2Save(agency, staff);
-}
-
-function commitForm2Save(agency, staff) {
-  primaryManagerAssignments[agency.id] = staff.id;
-  // Cập nhật cột "Người phụ trách" ngoài danh sách cơ quan
-  agency.manager = staff.fullName;
-
-  showToast('Lưu người phụ trách chính thành công.', 'success');
-  backToList();
-}
-
-/* ---------- Modal xác nhận thay đổi người phụ trách ---------- */
-let changeManagerPending = null;
-
-function openChangeManagerConfirm(agency, oldStaff, newStaff) {
-  changeManagerPending = { agency, staff: newStaff };
-  const textEl = document.getElementById('changeManagerText');
-  if (textEl) {
-    textEl.innerHTML = `Bạn đang thay đổi người phụ trách chính của cơ quan <strong>${agency.name}</strong> từ <strong>${oldStaff ? oldStaff.fullName : 'chưa cấu hình'}</strong> sang <strong>${newStaff.fullName}</strong>. Bạn có chắc chắn?`;
-  }
-  document.getElementById('changeManagerConfirmModal').classList.add('show');
-}
-
-function closeChangeManagerConfirm() {
-  changeManagerPending = null;
-  document.getElementById('changeManagerConfirmModal').classList.remove('show');
-}
-
-function confirmChangeManager() {
-  if (!changeManagerPending) return;
-  const { agency, staff } = changeManagerPending;
-  closeChangeManagerConfirm();
-  commitForm2Save(agency, staff);
-}
-
-/* ============================================================
-   8. TOAST: Thông báo lưu thành công / thất bại
+   8. TOAST
    ============================================================ */
 let toastTimer = null;
 
@@ -1245,42 +986,10 @@ function showToast(message, type) {
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   renderAgenciesTable();
+  initCustomDropdowns();
 
-  /* --- Sidebar: điều hướng Quản lý cơ quan <-> Quản lý phòng ban --- */
   const navAgency = document.getElementById('nav-quan-ly-co-quan');
-  const navDept = document.getElementById('nav-quan-ly-phong-ban');
   if (navAgency) navAgency.addEventListener('click', goToAgencyList);
-  if (navDept) navDept.addEventListener('click', goToDeptListTop);
-
-  /* --- Danh sách phòng ban (top-level): tìm kiếm / làm mới / thêm --- */
-  const btnTopDeptSearch = document.getElementById('btnTopDeptSearch');
-  const btnTopDeptReset = document.getElementById('btnTopDeptReset');
-  const btnTopDeptAdd = document.getElementById('btnTopDeptAdd');
-  const topDeptSearchInput = document.getElementById('topDeptSearchInput');
-
-  if (btnTopDeptSearch) btnTopDeptSearch.addEventListener('click', handleTopDeptSearch);
-  if (btnTopDeptReset) btnTopDeptReset.addEventListener('click', handleTopDeptReset);
-  if (btnTopDeptAdd) btnTopDeptAdd.addEventListener('click', () => openDeptModal('add', null, 'top'));
-  if (topDeptSearchInput) {
-    topDeptSearchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleTopDeptSearch();
-    });
-  }
-
-  /* --- Modal xác nhận thay đổi người phụ trách --- */
-  const changeManagerCloseBtn = document.getElementById('changeManagerCloseBtn');
-  const changeManagerCancelBtn = document.getElementById('changeManagerCancelBtn');
-  const changeManagerConfirmBtn = document.getElementById('changeManagerConfirmBtn');
-  const changeManagerConfirmModal = document.getElementById('changeManagerConfirmModal');
-
-  if (changeManagerCloseBtn) changeManagerCloseBtn.addEventListener('click', closeChangeManagerConfirm);
-  if (changeManagerCancelBtn) changeManagerCancelBtn.addEventListener('click', closeChangeManagerConfirm);
-  if (changeManagerConfirmBtn) changeManagerConfirmBtn.addEventListener('click', confirmChangeManager);
-  if (changeManagerConfirmModal) {
-    changeManagerConfirmModal.addEventListener('click', (e) => {
-      if (e.target === changeManagerConfirmModal) closeChangeManagerConfirm();
-    });
-  }
 
   /* --- Danh sách cơ quan: tìm kiếm / làm mới / thêm --- */
   const btnSearch = document.getElementById('btnSearch');
@@ -1297,6 +1006,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* --- Phân trang --- */
+  const pageSizeSelect = document.getElementById('agencyPageSize');
+  if (pageSizeSelect) {
+    pageSizeSelect.addEventListener('change', (e) => {
+      agencyPageSize = Number(e.target.value) || 10;
+      agencyPage = 1;
+      renderAgenciesTable();
+    });
+  }
+  const pageButtons = document.getElementById('agencyPageButtons');
+  if (pageButtons) {
+    pageButtons.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-page]');
+      if (!btn || btn.disabled) return;
+      agencyPage = Number(btn.dataset.page);
+      agencyOpenMenuId = null;
+      renderAgenciesTable();
+    });
+  }
+
+  /* --- Đóng menu 3 chấm khi click ra ngoài / scroll / resize --- */
+  document.addEventListener('click', () => {
+    closeAgencyMenu();
+  });
+  window.addEventListener('scroll', closeAgencyMenu, true);
+  window.addEventListener('resize', closeAgencyMenu);
+
   /* --- Form 1 --- */
   const btnForm1Back = document.getElementById('btnForm1Back');
   const btnForm1Save = document.getElementById('btnForm1Save');
@@ -1308,85 +1044,23 @@ document.addEventListener('DOMContentLoaded', () => {
     locationInput.addEventListener('input', () => {
       const val = locationInput.value.trim();
       const parts = val.split(',').map(s => s.trim());
-      if (parts.length === 2 && parts[0] && parts[1]) {
-        updateMapPlaceholder(parts[0], parts[1]);
-      } else {
-        updateMapPlaceholder('', '');
+      if (parts.length === 2 && parts[0] && parts[1] && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        updateEditMap(Number(parts[0]), Number(parts[1]));
       }
     });
   }
 
-  /* --- Danh sách phòng ban (trong Form 1) --- */
-  const btnDeptSearch = document.getElementById('btnDeptSearch');
-  const btnDeptReset = document.getElementById('btnDeptReset');
-  const btnAddDept = document.getElementById('btnAddDept');
-  const deptSearchInput = document.getElementById('deptSearchInput');
-
-  if (btnDeptSearch) btnDeptSearch.addEventListener('click', handleDeptSearch);
-  if (btnDeptReset) btnDeptReset.addEventListener('click', handleDeptReset);
-  if (btnAddDept) btnAddDept.addEventListener('click', () => openDeptModal('add', null, 'agency'));
-  if (deptSearchInput) {
-    deptSearchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleDeptSearch();
+  /* --- View detail buttons (header) --- */
+  const btnViewEditTop = document.getElementById('btnViewEditTop');
+  const btnViewBackTop = document.getElementById('btnViewBackTop');
+  if (btnViewEditTop) {
+    btnViewEditTop.addEventListener('click', () => {
+      if (form1EditingId) openForm1(form1EditingId, 'edit');
     });
   }
+  if (btnViewBackTop) btnViewBackTop.addEventListener('click', backToList);
 
-  /* --- Modal Thêm/Sửa phòng ban --- */
-  const deptModalCloseBtn = document.getElementById('deptModalCloseBtn');
-  const deptCancelBtn = document.getElementById('deptCancelBtn');
-  const deptSaveBtn = document.getElementById('deptSaveBtn');
-  const deptModalOverlay = document.getElementById('deptModalOverlay');
-
-  if (deptModalCloseBtn) deptModalCloseBtn.addEventListener('click', closeDeptModal);
-  if (deptCancelBtn) deptCancelBtn.addEventListener('click', closeDeptModal);
-  if (deptSaveBtn) deptSaveBtn.addEventListener('click', saveDeptModal);
-  if (deptModalOverlay) {
-    deptModalOverlay.addEventListener('click', (e) => {
-      if (e.target === deptModalOverlay) closeDeptModal();
-    });
-  }
-
-  /* --- Form 2 --- */
-  const btnForm2Back = document.getElementById('btnForm2Back');
-  const btnForm2Save = document.getElementById('btnForm2Save');
-  const form2AgencySearch = document.getElementById('form2AgencySearch');
-  const form2AgencyCombo = document.getElementById('form2AgencyCombo');
-  const form2StaffSearch = document.getElementById('form2StaffSearch');
-  const form2StaffCombo = document.getElementById('form2StaffCombo');
-
-  if (btnForm2Back) btnForm2Back.addEventListener('click', backToList);
-  if (btnForm2Save) btnForm2Save.addEventListener('click', saveForm2);
-
-  /* Form 2: Cơ quan combo */
-  if (form2AgencySearch) {
-    form2AgencySearch.addEventListener('focus', openForm2AgencyDropdown);
-    form2AgencySearch.addEventListener('click', openForm2AgencyDropdown);
-  }
-  document.addEventListener('click', (e) => {
-    if (form2AgencyCombo && !form2AgencyCombo.contains(e.target)) {
-      closeForm2AgencyDropdown();
-    }
-  });
-
-  /* Form 2: Nhân viên combo */
-  if (form2StaffSearch) {
-    form2StaffSearch.addEventListener('focus', openForm2StaffDropdown);
-    form2StaffSearch.addEventListener('input', () => {
-      form2SelectedStaffId = null;
-      const idEl = document.getElementById('form2StaffIdInput');
-      const detailEl = document.getElementById('form2StaffDetail');
-      if (idEl) idEl.value = '';
-      if (detailEl) detailEl.classList.add('hidden');
-      openForm2StaffDropdown();
-    });
-  }
-  document.addEventListener('click', (e) => {
-    if (form2StaffCombo && !form2StaffCombo.contains(e.target)) {
-      closeForm2StaffDropdown();
-    }
-  });
-
-  /* --- Modal xác nhận xóa (dùng chung Cơ quan & Phòng ban) --- */
+  /* --- Modal xác nhận xóa --- */
   const deleteModalCloseBtn = document.getElementById('deleteModalCloseBtn');
   const deleteCancelBtn = document.getElementById('deleteCancelBtn');
   const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
@@ -1398,6 +1072,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (deleteConfirmModal) {
     deleteConfirmModal.addEventListener('click', (e) => {
       if (e.target === deleteConfirmModal) closeDeleteConfirm();
+    });
+  }
+
+  /* --- Modal xác nhận đổi manager --- */
+  const managerChangeCloseBtn = document.getElementById('managerChangeCloseBtn');
+  const managerChangeCancelBtn = document.getElementById('managerChangeCancelBtn');
+  const managerChangeConfirmBtn = document.getElementById('managerChangeConfirmBtn');
+  const managerChangeModal = document.getElementById('managerChangeModal');
+
+  if (managerChangeCloseBtn) managerChangeCloseBtn.addEventListener('click', closeManagerChangeConfirm);
+  if (managerChangeCancelBtn) managerChangeCancelBtn.addEventListener('click', closeManagerChangeConfirm);
+  if (managerChangeConfirmBtn) managerChangeConfirmBtn.addEventListener('click', confirmManagerChange);
+  if (managerChangeModal) {
+    managerChangeModal.addEventListener('click', (e) => {
+      if (e.target === managerChangeModal) closeManagerChangeConfirm();
     });
   }
 });
