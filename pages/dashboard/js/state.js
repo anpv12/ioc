@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v18';
+const DATA_VERSION = 'gialai_directives_v19';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -118,8 +118,8 @@ if (directives.length === 0) {
       dataSourceUrls: [{ name: 'Trang Tỷ lệ Hồ sơ Đúng hạn & Quá hạn', url: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/ty-le-ho-so' }],
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
-      agency: 'Sở Thông tin và Truyền thông',
-      agencies: [{name: 'Sở Thông tin và Truyền thông', pic: 'Nguyễn Văn D', dueDate: dueOverdue, status: 'Chờ phân công', report: ''}],
+      agency: 'Sở Thông tin và Truyền thông, Sở Kế hoạch và Đầu tư',
+      agencies: [{name: 'Sở Thông tin và Truyền thông', pic: 'Nguyễn Văn D', dueDate: dueOverdue, status: 'Chờ phân công', report: ''}, {name: 'Sở Kế hoạch và Đầu tư', pic: 'Trần Văn E', dueDate: dueOverdue, status: 'Đang xử lý', report: ''}],
       director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       content: 'Kiểm tra hạ tầng mạng kết nối dữ liệu dân cư quốc gia trên địa bàn tỉnh.',
