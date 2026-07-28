@@ -173,3 +173,310 @@ input:checked + .slider:before { transform: translateX(16px); }
   padding: 14px 24px; font-size: 13px; color: #6B7280;
   border-top: 1px solid #E5E7EB; background: #fff;
 }
+
+/* ---------- MODAL: Thiết lập cơ quan ---------- */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, .45);
+  align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.show { display: flex; }
+
+.modal-box {
+  width: 480px; max-width: 92vw;
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(20, 30, 60, .18);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid #E0E0E0;
+}
+.modal-title { font-size: 16px; font-weight: 700; color: rgba(0, 0, 0, .87); }
+.modal-close {
+  width: 28px; height: 28px; border: none; background: transparent;
+  color: #9AA0AC; font-size: 15px; cursor: pointer; border-radius: 6px;
+}
+.modal-close:hover { background: #F3F5F9; }
+
+.modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group-row { flex-direction: row; align-items: center; justify-content: space-between; }
+.form-label { font-size: 13px; font-weight: 600; color: rgba(0, 0, 0, .6); }
+.form-input {
+  height: 38px; border: 1px solid #D9D9D9; border-radius: 8px;
+  padding: 0 12px; font-size: 14px; font-family: inherit; outline: none;
+  transition: border-color .2s;
+}
+.form-input:focus { border-color: #0091FF; }
+
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 20px; border-top: 1px solid #E0E0E0;
+}
+
+.form-input:disabled {
+  background: #F3F5F9; color: #9AA0AC; cursor: not-allowed;
+}
+
+/* ---------- COMBO SELECT: Người phụ trách (tìm kiếm, chọn 1) ---------- */
+.combo-select { position: relative; }
+.combo-dropdown {
+  display: none;
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  max-height: 200px; overflow-y: auto;
+  background: #fff; border: 1px solid #D9D9D9; border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(20, 30, 60, .14);
+  z-index: 1100;
+}
+.combo-dropdown.show { display: block; }
+.combo-option {
+  padding: 9px 14px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, .87);
+  cursor: pointer;
+}
+.combo-option:hover,
+.combo-option.active,
+.combo-option.selected {
+  background: #E5F2FF;      /* xanh nhạt */
+  color: #0091FF;           /* chữ xanh */
+  font-weight: 600;
+}
+.combo-empty { padding: 10px 14px; font-size: 13px; color: #9AA0AC; }
+
+/* ---------- TOAST: Thông báo lưu thành công / thất bại ---------- */
+.toast {
+  position: fixed; top: 24px; right: 24px;
+  min-width: 260px; max-width: 380px;
+  padding: 12px 16px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; color: #fff;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 22px rgba(20, 30, 60, .2);
+  z-index: 2000;
+  opacity: 0; transform: translateY(-12px);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast-success { background: #1C9E56; }
+.toast-error { background: #EA0001; }
+
+/* ============================================================
+   BỔ SUNG — Rebuild trang Quản lý cơ quan (Danh sách / Form 1 / Form 2)
+   Chỉ thêm mới, không sửa các rule phía trên.
+   ============================================================ */
+
+/* ---------- Ẩn / hiện view ---------- */
+.hidden { display: none !important; }
+
+/* ---------- Checkbox readonly cột "Đang quản lý" ---------- */
+.readonly-checkbox {
+  width: 18px; height: 18px; cursor: default; accent-color: #0091FF;
+}
+
+/* ---------- Nút hành động bổ sung: Xem / Cấu hình người nhận ---------- */
+.act-view   { background: #EFEFEF; color: #6B7280; }
+.act-config { background: #E6F4EA; color: #137333; }
+
+/* ---------- Nút xóa (dùng trong modal xác nhận) ---------- */
+.btn-danger {
+  height: 38px; padding: 0 22px; border-radius: 8px; border: none;
+  background: #EA0001; color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: background 0.2s;
+}
+.btn-danger:hover { background: #C90001; }
+
+.confirm-text { font-size: 14px; color: rgba(0, 0, 0, .8); line-height: 1.5; margin: 0; }
+
+/* ---------- FORM VIEW (Form 1 / Form 2 — full page) ---------- */
+.form-view-header { margin-bottom: 16px; }
+.form-view-title { font-size: var(--fs-xl, 20px); font-weight: 700; color: rgba(0, 0, 0, .87); margin: 0; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+.form-group-full { grid-column: 1 / -1; }
+
+.required-mark { color: #EA0001; }
+
+.field-error {
+  font-size: 12px; color: #EA0001; min-height: 16px; display: block;
+}
+
+.form-select { background: #fff; cursor: pointer; appearance: auto; }
+.form-textarea { height: auto; padding: 10px 12px; resize: vertical; font-family: inherit; }
+
+/* ---------- Map placeholder (khu vực bản đồ minh họa cho Vị trí) ---------- */
+.map-placeholder {
+  margin-top: 10px;
+  height: 160px;
+  border: 1px dashed #C7D2E0;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(0,145,255,.06) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(0deg, rgba(0,145,255,.06) 1px, transparent 1px) 0 0 / 24px 24px,
+    #F5F9FF;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: #6B7280; font-size: 13px;
+}
+.map-placeholder i { font-size: 22px; color: #0091FF; }
+
+.form-view-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid #E0E0E0;
+}
+
+/* ---------- Staff detail block (Form 2) ---------- */
+.staff-detail {
+  margin-top: 20px; padding: 16px; border-radius: 8px; background: #F5F9FF;
+  border: 1px solid #E1ECFB;
+}
+.staff-detail-title { font-size: 14px; font-weight: 700; color: #0091FF; margin-bottom: 12px; }
+.staff-detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px 20px;
+}
+.staff-detail-item { display: flex; flex-direction: column; gap: 4px; }
+.staff-detail-label { font-size: 12px; color: #9AA0AC; }
+.staff-detail-value { font-size: 14px; color: rgba(0, 0, 0, .87); font-weight: 600; }
+
+/* ============================================================
+   BỔ SUNG (v2) — Tinh chỉnh theo phản hồi: khung nhân viên,
+   dropdown nhân viên, đổi tên "người phụ trách chính", checkbox
+   "Đang quản lý", field Hoạt động, block Danh sách phòng ban.
+   Chỉ thêm mới, không sửa rule phía trên.
+   ============================================================ */
+
+/* ---------- Chuẩn hóa .switch: không cần lặp inline style nữa ---------- */
+.switch { position: relative; display: inline-block; width: 34px; height: 18px; margin: 0; flex: 0 0 34px; }
+
+/* ---------- Field "Hoạt động": switch + label nằm sát trái, không căng giữa card ---------- */
+.toggle-field {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: flex-start !important;
+  gap: 10px;
+}
+.toggle-label { font-size: 14px; font-weight: 600; color: rgba(0, 0, 0, .87); }
+
+/* ---------- Form 2: ---------- */
+.form-grid-single {
+  grid-template-columns: 1fr 1fr;   /* 2 cột */
+  max-width: 100%;
+  gap: 16px 20px;
+}
+.combo-input-lg {
+  height: 44px;
+  font-size: 15px;
+  width: 100%;              /* ép full chiều ngang */
+}
+.combo-input-lg:focus {
+  border-color: #0091FF;
+  box-shadow: 0 0 0 2px rgba(0, 145, 255, 0.15);
+}
+
+/* ---------- Checkbox "Đang quản lý": to hơn, màu xanh đồng bộ với toggle ---------- */
+/* Checkbox "Đang quản lý" — ép màu xanh ngay cả khi disabled */
+.readonly-checkbox {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #D9D9D9;
+  border-radius: 4px;
+  background: #fff;
+  cursor: not-allowed;
+  position: relative;
+  vertical-align: middle;
+}
+
+.readonly-checkbox:checked {
+  background: #0091FF;
+  border-color: #0091FF;
+}
+
+.readonly-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ---------- Block: Danh sách phòng ban thuộc cơ quan ---------- */
+.dept-section {
+  margin-top: 20px; padding-top: 20px; border-top: 1px solid #E0E0E0;
+}
+.dept-section-header { margin-bottom: 14px; }
+.dept-section-title { font-size: 16px; font-weight: 700; color: rgba(0, 0, 0, .87); margin: 0; }
+
+/* ---------- Badge trạng thái phòng ban ---------- */
+.status-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 12px; font-weight: 700;
+}
+.status-badge-on  { background: #E6F4EA; color: #137333; }
+.status-badge-off { background: #EFEFEF; color: #6B7280; }
+
+/* ---------- Menu 3 chấm (Xử lý phòng ban) ---------- */
+.action-menu-wrap { position: relative; display: inline-block; }
+.act-btn-dots {
+  width: 28px; height: 28px; border-radius: 8px; border: none;
+  background: #F3F5F9; color: #6B7280; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.act-btn-dots:hover { background: #E7EAF0; }
+
+.action-menu {
+  display: none;
+  position: absolute; top: calc(100% + 4px); right: 0;
+  min-width: 160px; background: #fff; border: 1px solid #D9D9D9;
+  border-radius: 8px; box-shadow: 0 6px 18px rgba(20, 30, 60, .16);
+  z-index: 1100; overflow: hidden;
+}
+.action-menu.show { display: block; }
+.action-menu-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; font-size: 14px; color: rgba(0, 0, 0, .87); cursor: pointer;
+}
+.action-menu-item i { width: 14px; text-align: center; color: #9AA0AC; }
+.action-menu-item:hover { background: #F5F8FF; color: #0091FF; }
+.action-menu-item.danger { color: #EA0001; }
+.action-menu-item.danger i { color: #EA0001; }
+.action-menu-item.danger:hover { background: #FFF1F2; }
+
+/* ---------- Phân trang đơn giản ---------- */
+.pagination-row {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 10px; margin-top: 14px; font-size: 13px; color: #6B7280;
+}
+.page-btn {
+  width: 28px; height: 28px; border-radius: 6px; border: 1px solid #D9D9D9;
+  background: #fff; color: #6B7280; cursor: pointer; font-size: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.page-btn:hover:not(:disabled) { background: #F5F8FF; color: #0091FF; border-color: #0091FF; }
+.page-btn:disabled { opacity: .45; cursor: not-allowed; }
+.page-info { min-width: 70px; text-align: center; }
+
+/* ============================================================
+   BỔ SUNG — Quản lý phòng ban (top-level) + trạng thái Xem
+   Chỉ thêm mới, không sửa rule phía trên.
+   ============================================================ */
+
+/* ---------- Trạng thái disabled cho thanh công cụ khi ở chế độ Xem ---------- */
+.search-wrap .search-input:disabled { background: #F3F5F9; color: #9AA0AC; cursor: not-allowed; }
+.btn-search:disabled,
+.btn-reset:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- Text phụ, dùng cho cột "Người phụ trách" khi chưa cấu hình ---------- */
+.text-muted { color: #9AA0AC; }

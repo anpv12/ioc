@@ -6,6 +6,963 @@
   <title>Quản trị – PM Giám sát Gia Lai</title>
 </head>
 <body>
-  <script>window.location.replace('./quy-trinh-dong/index.html');</script>
+  <div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <span class="menu-label">Menu</span>
+        <button type="button" class="collapse-btn" id="sidebarCollapseBtn" aria-label="Thu gọn menu" title="Thu gọn">
+          <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="sidebar-search"><input type="text" placeholder="Tìm kiếm..."></div>
+
+      <div class="nav-parent open" id="navParent">
+        <span class="nav-ic"><i class="fa-solid fa-table-columns"></i></span>
+        <span>Dashboard</span>
+        <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-children" id="navChildren">
+        <div class="nav-item" id="nav-dashboard-giam-sat" onclick="window.location.href='../dashboard/index.html'">
+          <span class="dot"></span><span>Dashboard giám sát</span>
+        </div>
+      </div>
+
+      <div class="nav-parent open" id="adminNavParent">
+        <span class="nav-ic"><i class="fa-solid fa-list-check"></i></span>
+        <span>Quản trị</span>
+        <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-children" id="adminNavChildren">
+        <div class="nav-item active" id="nav-dynamic-process" data-view="dynamic-process" data-label="Quản trị quy trình động">
+          <span class="dot"></span><span>Quy trình động</span>
+        </div>
+        <div class="nav-item" id="nav-statistical-report" data-view="statistical-report" data-label="Báo cáo thống kê">
+          <span class="dot"></span><span>Báo cáo thống kê</span>
+        </div>
+        <div class="nav-item" id="nav-handling-directives" data-view="handling-directives" data-label="Xử lý chỉ đạo">
+          <span class="dot"></span><span>Xử lý chỉ đạo</span>
+        </div>
+        <div class="nav-item" id="nav-don-vi" data-view="don-vi" data-label="Quản trị đơn vị">
+          <span class="dot"></span><span>Quản trị đơn vị</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MAIN ================= -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="logo-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="logoClip2">
+                  <circle cx="50" cy="50" r="43" />
+                </clipPath>
+                <clipPath id="bandClip2">
+                  <rect x="0" y="73" width="100" height="27" />
+                </clipPath>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2" />
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4" />
+              <circle cx="50" cy="50" r="43" fill="#ffffff" />
+              <g clip-path="url(#logoClip2)">
+                <polygon points="10,66 34,26 55,66" fill="#1c6031" />
+                <polygon points="45,66 66,26 92,66" fill="#1c6031" />
+                <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2" />
+                <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2" />
+                <path
+                  d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z"
+                  fill="#ee522d" />
+                <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6" />
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip2)" />
+                <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+                  stroke-linecap="round" />
+                <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+                  stroke-linecap="round" />
+              </g>
+              <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700"
+                letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="bell-wrap"><i class="fa-solid fa-bell"></i><span class="bell-dot"></span></div>
+          <div class="admin-dd">
+            <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+            <span class="name">Quản trị</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <i class="fa-solid fa-circle-info info-ic"></i>
+        </div>
+      </div>
+
+      <div class="breadcrumb-row">
+        <div class="page-title" id="pageTitle">Quản trị quy trình động</div>
+        <div class="breadcrumb">
+          Trang chủ
+          <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
+          <span class="cur" id="breadcrumbCurrent">Quản trị quy trình động</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- ============ VIEW: Quản lý dashboard ============ -->
+        <div class="view" id="view-qldashboard">
+          <div class="card">
+            <div class="tabs-row">
+              <div class="tab active">Dashboard chính</div>
+              <div class="tab">Dashboard được chia sẻ</div>
+            </div>
+            <div class="filter-row">
+              <input class="search-input" type="text" placeholder="Tìm kiếm ...">
+              <button class="icon-btn search-ic"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="icon-btn refresh-ic"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+              <div class="spacer"></div>
+              <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center">STT</th>
+                    <th>Tên dashboard<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th>Cơ quan<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th class="center">Mặc định</th>
+                    <th class="center">Công khai</th>
+                    <th class="center">Xử lý</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="center">1</td>
+                    <td>Kiểm thử layout</td>
+                    <td>SỞ KHOA HỌC VÀ CÔNG NGHỆ</td>
+                    <td class="center dash-txt">-</td>
+                    <td class="center"><span class="switch"><span class="knob"></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
+                        <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
+                        <button class="act-btn act-del"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="center">2</td>
+                    <td>TRUNG TÂM KHO DỮ LIỆU Y TẾ SỐ</td>
+                    <td>SỞ KHOA HỌC VÀ CÔNG NGHỆ</td>
+                    <td class="center dash-txt">-</td>
+                    <td class="center"><span class="switch"><span class="knob"></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
+                        <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
+                        <button class="act-btn act-del"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="center">3</td>
+                    <td>TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH THÔNG MINH TỈNH GIA LAI</td>
+                    <td>SỞ KHOA HỌC VÀ CÔNG NGHỆ</td>
+                    <td class="center"><i class="fa-solid fa-star star-ic"></i></td>
+                    <td class="center"><span class="switch on"><span class="knob"></span></span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
+                        <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
+                        <button class="act-btn act-del"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select">
+                  <option>10</option>
+                </select>
+                <span class="pg-info">Hiển thị 1-0/0</span>
+              </div>
+              <div class="pg-btns">
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-left"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                <button class="pg-btn active">1</button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-right"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Quản lý layout ============ -->
+        <div class="view" id="view-qllayout">
+          <div class="card">
+            <div class="filter-row">
+              <input class="search-input" type="text" placeholder="Tìm kiếm...">
+              <div class="status-select">
+                <span>Trạng thái</span>
+                <i class="fa-solid fa-xmark"></i>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <button class="icon-btn search-ic"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="icon-btn refresh-ic"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+              <div class="spacer"></div>
+              <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center">STT</th>
+                    <th>Tên layout<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th>Số trang</th>
+                    <th>Số biểu đồ</th>
+                    <th class="center">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="qlLayoutBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select">
+                  <option>10</option>
+                </select>
+                <span class="pg-info">Hiển thị 1-10/10</span>
+              </div>
+              <div class="pg-btns">
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-left"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                <button class="pg-btn active">1</button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angle-right"></i></button>
+                <button class="pg-btn" disabled><i class="fa-solid fa-angles-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Loại biểu đồ ============ -->
+        <div class="view" id="view-loaibieudo">
+          <div class="card">
+            <div class="filter-row">
+              <input class="search-input" type="text" placeholder="Tìm kiếm...">
+              <div class="status-select">
+                <span>Trạng thái</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <button class="icon-btn search-ic"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="icon-btn refresh-ic"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+              <div class="spacer"></div>
+              <button class="btn-primary"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center">STT</th>
+                    <th>Mã</th>
+                    <th>Tên loại biểu đồ<i class="fa-solid fa-sort sort-ic"></i></th>
+                    <th>Nhóm</th>
+                    <th class="center">Icon</th>
+                    <th class="center">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="chartTypesBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select" id="chartPageSize">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="pg-info" id="chartTypesInfo"></span>
+              </div>
+              <div class="pg-btns" id="chartTypesPgBtns"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Quy trình động ============ -->
+        <div class="view active" id="view-dynamic-process">
+          <div class="card" id="processListContainer">
+            <!-- THANH CÔNG CỤ TRÊN CÙNG -->
+            <div class="top-bar">
+              <div class="left-tools">
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                  </svg>
+                  <input type="text" class="search-input" id="processSearch" placeholder="Tên quy trình, mã quy trình">
+                </div>
+
+                <button class="btn-icon btn-filter" id="processFilterToggle" type="button" title="Bộ lọc"
+                  aria-expanded="false" aria-controls="processFilterPanel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
+                  </svg>
+                </button>
+
+                <button class="btn-icon btn-search" id="processSearchButton" type="button" title="Tìm kiếm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                  </svg>
+                </button>
+
+                <button class="btn-icon btn-reset" id="processRefreshButton" type="button" title="Làm mới">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                  </svg>
+                </button>
+              </div>
+
+              <button class="btn-add" id="processAddButton" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+                Thêm mới
+              </button>
+            </div>
+
+            <!-- NỘI DUNG LỌC -->
+            <div class="filter-panel" id="processFilterPanel">
+              <div class="filter-grid">
+                <div class="filter-item">
+                  <label>Cơ quan</label>
+                  <div class="multiselect-container" id="filterProcessOrgContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
+                </div>
+                <div class="filter-item">
+                  <label>Nhóm giám sát</label>
+                  <div class="multiselect-container" id="filterProcessScopeContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
+                </div>
+
+                <div class="filter-item">
+                  <label>Trạng thái</label>
+                  <div class="multiselect-container" id="filterProcessActiveContainer">
+                    <!-- Render động autocomplete -->
+                  </div>
+                </div>
+
+                <div class="filter-item">
+                  <label for="filterProcessVersion">Phiên bản</label>
+                  <input type="text" id="filterProcessVersion" placeholder="Nhập phiên bản">
+                </div>
+              </div>
+            </div>
+
+            <div class="process-list-notice" id="processListNotice" role="status" hidden></div>
+
+            <div class="tbl-wrap">
+              <table aria-label="Danh sách mẫu quy trình động">
+                <thead>
+                  <tr>
+                    <th>Mã quy trình</th>
+                    <th>Tên quy trình</th>
+                    <th>Phiên bản</th>
+                    <th>Nhóm giám sát</th>
+                    <th>Cơ quan</th>
+                    <th class="center">Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th class="center">Xử lý</th>
+                  </tr>
+                </thead>
+                <tbody id="processTableBody"></tbody>
+              </table>
+              <div class="process-empty-state" id="processEmptyState" hidden><i
+                  class="fa-regular fa-folder-open"></i><span>Không tìm thấy quy trình phù hợp</span></div>
+            </div>
+
+            <div class="pagination-row">
+              <div class="pg-left">
+                <select class="page-size-select" id="processPageSize" aria-label="Số quy trình mỗi trang">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="pg-info" id="processPageInfo"></span>
+              </div>
+              <div class="pg-btns" id="processPageButtons"></div>
+            </div>
+          </div>
+
+          <div class="process-editor-overlay" id="processEditorOverlay" hidden>
+            <section class="process-editor-panel" role="dialog" aria-modal="true" aria-labelledby="processEditorTitle">
+
+              <!-- HEADER BLOCK -->
+              <div class="process-editor-header">
+                <div class="pe-header-left">
+                  <h2 id="processEditorTitle">Chỉnh sửa quy trình</h2>
+                  <i class="fa-solid fa-chevron-right pe-divider-icon"></i>
+                  <span id="processEditorEyebrow">Cấu hình mẫu quy trình</span>
+                </div>
+                <div class="pe-header-actions">
+                  <button class="pe-btn pe-btn-back" id="cancelProcessEditor" type="button">
+                    <i class="fa-solid fa-arrow-left"></i> Trở về
+                  </button>
+                  <button class="pe-btn pe-btn-clone" id="cloneProcessEditor" type="button">
+                    <i class="fa-solid fa-copy"></i> Tạo bản sao
+                  </button>
+                  <button class="pe-btn pe-btn-draft" id="draftProcessEditor" type="button">
+                    <i class="fa-solid fa-floppy-disk"></i> Lưu
+                  </button>
+                  <button class="pe-btn pe-btn-publish" id="publishProcessEditor" type="button">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i> Phát hành
+                  </button>
+                </div>
+              </div>
+
+              <form class="process-editor-form-scrollable" id="processEditorForm" novalidate>
+
+                <!-- CARD 1: THÔNG TIN QUY TRÌNH -->
+                <div class="pe-card">
+                  <div class="pe-card-header">
+                    <h3>Thông tin quy trình</h3>
+                  </div>
+                  <div class="pe-card-body">
+                    <!-- Hàng 1: Tên quy trình & Phiên bản -->
+                    <div class="form-row row-main-info">
+                      <div class="form-group">
+                        <label for="processNameInput">Tên quy trình <span class="required">*</span></label>
+                        <input id="processNameInput" name="name" type="text" class="form-control" maxlength="120"
+                          required placeholder="Nhập tên quy trình...">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="processVersionInput">Phiên bản <span class="required">*</span></label>
+                        <input id="processVersionInput" name="version" type="text" class="form-control" required
+                          placeholder="Ví dụ: 1.0" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                      </div>
+                    </div>
+
+                    <!-- Hàng 2: Nhóm giám sát & Cơ quan áp dụng -->
+                    <div class="form-row row-two-cols">
+                      <div class="form-group">
+                        <label>Nhóm giám sát <span class="required">*</span></label>
+                        <!-- CUSTOM DROPDOWN CHỌN ĐƠN -->
+                        <div class="multiselect-container" id="processScopeContainer">
+                          <!-- Render động -->
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label>Cơ quan áp dụng <span class="required">*</span></label>
+                        <div class="multiselect-container" id="processOrgsContainer">
+                          <!-- Render động -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Hàng 3: Mô tả quy trình -->
+                    <div class="form-row row-full">
+                      <div class="form-group">
+                        <label for="processDescriptionInput">Mô tả quy trình</label>
+                        <input id="processDescriptionInput" name="description" type="text" class="form-control"
+                          placeholder="Nhập mô tả quy trình ngắn...">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CARD 2: LUỒNG QUY TRÌNH -->
+                <div class="pe-card">
+                  <div class="pe-card-header pe-flow-header">
+                    <h3>Luồng quy trình</h3>
+                    <button class="button button-primary pe-add-node-btn" id="addProcessNode" type="button">
+                      <i class="fa-solid fa-plus"></i> Thêm bước mới
+                    </button>
+                  </div>
+
+                  <div class="pe-workspace">
+                    <!-- Cột trái: Danh sách bước xử lý -->
+                    <div class="pe-workspace-left">
+                      <div class="pe-column-title">Danh sách bước xử lý</div>
+                      <div class="process-editor-node-list" id="processEditorNodeList">
+                        <!-- Render động -->
+                      </div>
+                    </div>
+
+                    <!-- Cột phải: Biểu đồ luồng xử lý (UML) -->
+                    <div class="pe-workspace-right">
+                      <div class="pe-column-title">Biểu đồ mô tả quy trình</div>
+                      <div class="pe-diagram-container" id="processEditorDiagram">
+                        <!-- Render động biểu đồ quy trình -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="process-editor-error" id="processEditorError" role="alert" hidden></div>
+              </form>
+            </section>
+          </div>
+
+          <!-- Popup cấu hình chi tiết từng bước -->
+          <div class="process-node-modal-overlay" id="nodeConfigOverlay" hidden>
+            <div class="process-node-modal-panel">
+              <div class="pe-node-modal-header">
+                <h3>Thông tin bước xử lý</h3>
+                <button type="button" class="pe-node-modal-close" id="closeNodeConfig"><i
+                    class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="process-editor-node-form" id="processEditorNodeForm">
+                <!-- Render động các trường input -->
+              </div>
+              <div class="pe-node-modal-footer">
+                <button type="button" class="button button-primary" id="saveNodeConfig">Lưu bước</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Popup cấu hình hành động (rẽ nhánh) riêng biệt -->
+          <div class="process-node-modal-overlay" id="stepActionsOverlay" hidden>
+            <div class="process-node-modal-panel" style="width: min(600px, 95vw); max-height: 80vh;">
+              <div class="pe-node-modal-header">
+                <h3 id="stepActionsTitle">Cấu hình hành động</h3>
+                <button type="button" class="pe-node-modal-close" id="closeStepActions"><i
+                    class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="process-editor-node-form" style="overflow-y: auto; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <span style="font-size: 13px; font-weight: 600; color: var(--admin-text);">Danh sách hành động điều
+                    hướng</span>
+                  <button type="button" class="button button-secondary" id="addStepActionBtn"
+                    style="padding: 4px 10px; font-size: 12px;">
+                    <i class="fa-solid fa-plus"></i> Thêm hành động
+                  </button>
+                </div>
+                <div class="process-step-action-table" id="stepActionsTableContainer"
+                  style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- Render động các dòng hành động -->
+                </div>
+              </div>
+              <div class="pe-node-modal-footer" style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="button button-secondary" id="cancelStepActions">Hủy</button>
+                <button type="button" class="button button-primary" id="saveStepActions">Lưu cấu hình</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Báo cáo thống kê ============ -->
+        <div class="view" id="view-statistical-report">
+          <div class="report-page">
+            <section class="report-filter-card">
+              <div class="report-section-heading">
+                <div><span class="eyebrow">Điều hành và giám sát</span>
+                  <h2>Báo cáo thống kê chỉ đạo</h2>
+                </div><button class="button button-secondary" id="reportResetButton" type="button"><i
+                    class="fa-solid fa-arrows-rotate"></i> Đặt lại</button>
+              </div>
+              <div class="report-filter-row">
+                <label class="report-filter-field"><span>Vai trò xem</span><select id="reportRole">
+                    <option value="province" selected>Lãnh đạo Tỉnh</option>
+                    <option value="leader">Lãnh đạo Sở</option>
+                  </select></label>
+                <label class="report-filter-field"><span>Khoảng thời gian</span><select id="reportPeriod">
+                    <option value="week">Tuần</option>
+                    <option value="month" selected>Tháng</option>
+                    <option value="quarter">Quý</option>
+                    <option value="year">Năm</option>
+                    <option value="custom">Tùy chọn</option>
+                  </select></label>
+                <label class="report-filter-field"><span>Từ ngày</span><input id="reportFromDate" type="date"></label>
+                <label class="report-filter-field"><span>Đến ngày</span><input id="reportToDate" type="date"></label>
+                <label class="report-filter-field"><span id="reportUnitLabel">Sở/Ban/Ngành</span><select
+                    id="reportUnit">
+                    <option value="all">Tất cả Sở/Ban/Ngành</option>
+                    <option>Sở Khoa học và Công nghệ</option>
+                    <option>Sở Y tế</option>
+                    <option>Sở Tư pháp</option>
+                    <option>Sở Giáo dục và Đào tạo</option>
+                    <option>Sở Nội vụ</option>
+                  </select></label>
+                <button class="button button-primary report-apply-button" id="reportApplyButton" type="button"><i
+                    class="fa-solid fa-filter"></i> Áp dụng</button>
+              </div>
+            </section>
+
+            <section class="report-kpi-grid" aria-label="Các chỉ số tổng quan">
+              <article class="report-kpi-card report-kpi-total">
+                <div class="report-kpi-icon"><i class="fa-solid fa-inbox"></i></div>
+                <div><span>Tổng số chỉ đạo tiếp nhận</span><strong id="reportKpiTotal">0</strong><small>Trong khoảng
+                    thời gian đã chọn</small></div>
+              </article>
+              <article class="report-kpi-card report-kpi-complete">
+                <div class="report-kpi-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div><span>Đã hoàn thành</span><strong id="reportKpiCompleted">0</strong><small><b
+                      id="reportKpiOnTime">0%</b> đúng hạn · <b id="reportKpiLate">0%</b> trễ hạn</small></div>
+              </article>
+              <article class="report-kpi-card report-kpi-progress">
+                <div class="report-kpi-icon"><i class="fa-solid fa-spinner"></i></div>
+                <div><span>Đang xử lý</span><strong id="reportKpiProcessing">0</strong><small><b
+                      id="reportKpiActive">0%</b> trong hạn · <b id="reportKpiOverdue">0%</b> quá hạn</small></div>
+              </article>
+              <article class="report-kpi-card report-kpi-return">
+                <div class="report-kpi-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                <div><span>Tỷ lệ yêu cầu làm lại</span><strong id="reportKpiRevision">0%</strong><small>So với tổng số
+                    chỉ đạo</small></div>
+              </article>
+            </section>
+
+            <section class="report-chart-grid">
+              <article class="report-panel report-pie-panel">
+                <div class="report-panel-heading">
+                  <div>
+                    <h3>Phân bổ trạng thái</h3>
+                    <p>Tỷ lệ chỉ đạo theo trạng thái nghiệp vụ</p>
+                  </div><i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div class="report-pie-wrap"><svg id="reportPieChart" viewBox="0 0 560 330" role="img"
+                    aria-label="Biểu đồ phân bổ trạng thái"></svg>
+                  <div class="report-chart-tooltip" id="reportPieTooltip" hidden></div>
+                </div>
+                <div class="report-legend" id="reportStatusLegend"></div>
+                <div class="report-pie-subtext"
+                  style="font-size: 11px; color: #888; text-align: center; margin-top: 8px; border-top: 1px dashed #eee; padding-top: 6px; font-style: italic;">
+                  * Số liệu thống kê dựa trên trạng thái thực thi chi tiết tại cấp Sở/Ban/Ngành</div>
+              </article>
+              <article class="report-panel report-line-panel">
+                <div class="report-panel-heading">
+                  <div>
+                    <h3>Xu hướng xử lý</h3>
+                    <p>So sánh tiếp nhận mới và hoàn thành</p>
+                  </div><i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="report-line-chart"><svg id="reportLineChart" viewBox="0 0 640 290" role="img"
+                    aria-label="Biểu đồ xu hướng xử lý"></svg>
+                  <div class="report-chart-tooltip" id="reportLineTooltip" hidden></div>
+                </div>
+                <div class="report-chart-legend"><span><i class="legend-dot report-legend-blue"></i>Tiếp nhận
+                    mới</span><span><i class="legend-dot report-legend-green"></i>Đã hoàn thành</span></div>
+              </article>
+            </section>
+
+            <section class="report-panel report-performance-panel">
+              <div class="report-panel-heading">
+                <div>
+                  <h3 id="reportPerformanceTitle">Hiệu suất theo Sở/Ban/Ngành</h3>
+                  <p id="reportPerformanceDesc">Tổng hợp số việc và kết quả thực hiện ở cấp Sở/Ban/Ngành</p>
+                </div>
+                <div class="report-export-actions"><button class="button button-secondary" data-report-export="excel"
+                    type="button"><i class="fa-solid fa-file-excel"></i> Excel</button><button
+                    class="button button-secondary" data-report-export="pdf" type="button"><i
+                      class="fa-solid fa-file-pdf"></i> PDF</button><button class="button button-secondary"
+                    data-report-export="word" type="button"><i class="fa-solid fa-file-word"></i> Word</button></div>
+              </div>
+              <div class="report-table-wrap">
+                <table class="report-table">
+                  <thead>
+                    <tr>
+                      <th id="reportPerformanceColHeader">Sở/Ban/Ngành</th>
+                      <th>Tổng việc giao</th>
+                      <th>Hoàn thành</th>
+                      <th>Đúng hạn</th>
+                      <th>Yêu cầu làm lại</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportPerformanceBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Xử lý chỉ đạo ============ -->
+        <div class="view" id="view-handling-directives">
+          <div class="directive-view-heading">
+            <label class="role-switcher">Đơn vị mô phỏng
+              <select id="roleSelect">
+                <option value="leader">Sở</option>
+                <option value="department">Phòng</option>
+                <option value="individual">Cá nhân</option>
+              </select>
+            </label>
+            <div class="view-switcher" role="tablist" aria-label="Chế độ hiển thị">
+              <button class="view-switch-button active" type="button" data-display-mode="table" aria-pressed="true"><i
+                  class="fa-solid fa-table-list"></i><span>Danh sách</span></button>
+              <button class="view-switch-button" type="button" data-display-mode="kanban" aria-pressed="false"><i
+                  class="fa-solid fa-table-columns"></i><span>Kanban</span></button>
+            </div>
+          </div>
+          <section class="directive-card directive-list-card" aria-label="Danh sách xử lý chỉ đạo">
+            <!-- THANH CÔNG CỤ TRÊN CÙNG -->
+            <div class="top-bar">
+              <div class="left-tools">
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                  </svg>
+                  <input type="text" class="search-input" id="directiveSearch" placeholder="Tìm kiếm chỉ đạo...">
+                </div>
+
+                <button class="btn-icon btn-filter" id="directiveFilterToggle" type="button" title="Bộ lọc"
+                  aria-expanded="false" aria-controls="directiveFilterPanel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
+                  </svg>
+                </button>
+
+                <button class="btn-icon btn-search" id="directiveSearchButton" type="button" title="Tìm kiếm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                  </svg>
+                </button>
+
+                <button class="btn-icon btn-reset" id="resetFilters" type="button" title="Làm mới">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- NỘI DUNG LỌC -->
+            <div class="filter-panel" id="directiveFilterPanel">
+              <div class="filter-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
+                <div class="filter-item">
+                  <label for="statusFilterSelect">Trạng thái</label>
+                  <select id="statusFilterSelect">
+                    <option value="">-- Tất cả --</option>
+                    <option value="needsHandling">Cần phân công</option>
+                    <option value="processing">Đang xử lý</option>
+                    <option value="waitingApproval">Chờ duyệt</option>
+                    <option value="needsApproval">Cần duyệt</option>
+                    <option value="completed">Đã hoàn thành</option>
+                  </select>
+                </div>
+
+                <div class="filter-item">
+                  <label for="deadlineRange">Hạn xử lý</label>
+                  <div class="compact-filter-field"
+                    style="border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; height: 38px; display: flex; align-items: center; padding: 0 10px; position: relative;">
+                    <i class="fa-regular fa-calendar" style="color: #64748b; margin-right: 8px;"></i>
+                    <input id="deadlineRange" type="text" placeholder="Chọn khoảng ngày"
+                      style="border: none !important; outline: none !important; font-size: 13px; width: 100%; height: 100%; background: transparent; cursor: pointer;"
+                      readonly>
+                    <button class="compact-filter-clear" id="clearDeadlineRange" type="button"
+                      aria-label="Xóa khoảng hạn xử lý" hidden
+                      style="border: none; background: none; color: #94a3b8; cursor: pointer; position: absolute; right: 10px;"><i
+                        class="fa-solid fa-xmark"></i></button>
+                  </div>
+                </div>
+
+                <div class="filter-item">
+                  <label for="timeCondition">Tình trạng</label>
+                  <select id="timeCondition">
+                    <option value="">-- Tất cả --</option>
+                    <option value="available">Còn hạn</option>
+                    <option value="warning">Sắp đến hạn</option>
+                    <option value="overdue">Trễ hạn</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="tableView">
+              <div class="directive-table-wrap">
+                <table class="directive-table">
+                  <thead>
+                    <tr>
+                      <th class="center" style="width: 50px;">STT</th>
+                      <th>Mã chỉ đạo</th>
+                      <th>Nội dung chỉ đạo</th>
+                      <th>Ngày ban hành</th>
+                      <th>Hạn xử lý</th>
+                      <th>Trạng thái</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="directiveTableBody"></tbody>
+                </table>
+                <div class="empty-state" id="emptyState" hidden><i class="fa-regular fa-folder-open"></i>
+                  <p>Không tìm thấy chỉ đạo phù hợp</p>
+                </div>
+              </div>
+              <div class="pagination-row">
+                <div class="pg-left">
+                  <select class="page-size-select" id="directivePageSize">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                  <span class="pg-info" id="directivePageInfo"></span>
+                </div>
+                <div class="pg-btns" id="directivePageButtons"></div>
+              </div>
+            </div>
+            <div class="kanban-board" id="kanbanView" hidden></div>
+          </section>
+
+          <div class="detail-overlay" id="detailOverlay" hidden>
+            <section class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+              <div class="detail-header">
+                <div class="pe-header-left">
+                  <span class="eyebrow">Chi tiết chỉ đạo > </span>
+                  <i id="detailTitle"></i>
+                </div>
+                <div class="pe-header-actions" style="display: flex; align-items: center; gap: 10px;">
+                  <button class="pe-btn pe-btn-back" id="closeDetail" type="button">
+                    <i class="fa-solid fa-arrow-left"></i> Trở về
+                  </button>
+                  <div id="detailActions" style="display: inline-flex; gap: 8px;"></div>
+                </div>
+              </div>
+              <div class="detail-body" id="detailBody"></div>
+            </section>
+          </div>
+          <div class="event-detail-overlay" id="historyEventOverlay" hidden>
+            <section class="event-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="historyEventTitle">
+              <div class="detail-header">
+                <h2 id="historyEventTitle">Chi tiết lịch sử</h2><button class="directive-icon-button"
+                  id="closeHistoryEvent" type="button" aria-label="Đóng chi tiết lịch sử"><i
+                    class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="event-detail-body" id="historyEventBody"></div>
+            </section>
+          </div>
+          <div class="time-calendar-popover" id="timeCalendarPopover" role="dialog" aria-label="Quỹ thời gian xử lý"
+            hidden>
+            <div class="time-calendar-heading">
+              <div><strong id="timeCalendarTitle">Quỹ thời gian</strong><small id="timeCalendarSummary"></small></div>
+              <button class="directive-icon-button" id="closeTimeCalendar" type="button" aria-label="Đóng lịch"><i
+                  class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input id="timeCalendarInput" type="text" aria-hidden="true" tabindex="-1">
+            <div class="time-calendar-legend"><span><i class="legend-issued"></i> Bắt đầu</span><span><i
+                  class="legend-today"></i> Hôm nay</span><span><i class="legend-deadline"></i> Hạn xử lý</span></div>
+          </div>
+        </div>
+
+        <!-- ============ VIEW: Quản trị đơn vị ============ -->
+        <div class="view" id="view-don-vi">
+          <div class="unit-admin-grid">
+            <div class="card unit-info-card">
+              <h3 class="unit-card-title">Thông tin đơn vị</h3>
+              <div class="unit-info-list" id="unitInfoList"></div>
+            </div>
+
+            <div class="card unit-recipient-card">
+              <div class="unit-card-header-row">
+                <h3 class="unit-card-title">Người nhận mặc định</h3>
+                <button class="btn-primary" id="unitRecipientSetupBtn" type="button">
+                  <i class="fa-solid fa-user-pen"></i>Thiết lập / Sửa người nhận
+                </button>
+              </div>
+              <div id="unitRecipientBody"></div>
+            </div>
+          </div>
+
+          <!-- Modal chọn người nhận mặc định -->
+          <div class="unit-recipient-modal-overlay" id="unitRecipientModalOverlay" hidden>
+            <section class="unit-recipient-modal-panel" role="dialog" aria-modal="true"
+              aria-labelledby="unitRecipientModalTitle">
+              <div class="pe-node-modal-header">
+                <h3 id="unitRecipientModalTitle">Chọn người nhận mặc định</h3>
+                <button class="pe-node-modal-close" id="unitRecipientModalClose" type="button" aria-label="Đóng">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="unit-recipient-modal-body">
+                <div class="search-input-wrapper unit-recipient-search">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                  </svg>
+                  <input type="text" id="unitRecipientSearchInput" placeholder="Tìm kiếm theo tên...">
+                </div>
+                <div class="unit-recipient-list" id="unitRecipientList"></div>
+              </div>
+              <div class="pe-node-modal-footer">
+                <button class="btn-cancel" id="unitRecipientModalCancel" type="button">Hủy</button>
+                <button class="btn-primary" id="unitRecipientModalSave" type="button">Lưu</button>
+              </div>
+            </section>
+          </div>
+        </div>
+
+      </div><!-- /.content -->
+
+      <div class="footer">
+        <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div>
+        <div class="support">
+          <span>Hỗ trợ:</span>
+          <span><i class="fa-solid fa-phone fi"></i>(0256) 3815.519</span>
+          <span class="sep2">|</span>
+          <span><i class="fa-solid fa-envelope fi"></i>skhcn@gialai.gov.vn</span>
+        </div>
+      </div>
+    </div><!-- /.main -->
+
+  </div><!-- /.app -->
+
+  <!-- Custom Confirm Popup -->
+  <div id="confirmDialogOverlay" class="custom-confirm-overlay" hidden>
+    <div class="custom-confirm-box">
+      <div class="custom-confirm-header">
+        <h3 id="confirmDialogTitle">Xác nhận</h3>
+        <p id="confirmDialogMessage">Nội dung thông báo...</p>
+      </div>
+      <div class="custom-confirm-footer">
+        <button type="button" class="confirm-btn-cancel" id="confirmDialogCancel">Hủy</button>
+        <button type="button" class="confirm-btn-ok" id="confirmDialogOk">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Image Viewer Popup -->
+  <div id="imageViewerOverlay" class="custom-confirm-overlay" hidden>
+    <div class="custom-image-box"
+      style="background-color: #ffffff; border-radius: 12px; max-width: 90%; max-height: 90%; padding: 24px; position: relative; display: flex; flex-direction: column; align-items: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);">
+      <button type="button" id="closeImageViewer"
+        style="position: absolute; top: -12px; right: -12px; width: 32px; height: 32px; border-radius: 50%; background: #ef4444; color: white; border: none; font-size: 18px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-weight: bold;">&times;</button>
+      <img id="viewerImage" src="" alt="Hình ảnh đính kèm"
+        style="max-width: 100%; max-height: 75vh; border-radius: 6px; object-fit: contain;">
+    </div>
+  </div>
+
+  <!-- POPUP NOTIFICATION GÓC TRÊN BÊN PHẢI -->
+  <div class="notifications-container">
+    <div id="toast" class="success">
+      <p id="toast-title" class="success-prompt-heading">Thành công</p>
+      <div id="toast-message" class="success-prompt-prompt">
+        Thao tác đã hoàn tất thành công.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="js/ui.js"></script>
 </body>
 </html>
