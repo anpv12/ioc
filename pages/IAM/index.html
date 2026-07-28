@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IAM – Quản lý Cơ quan | Gia Lai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <span class="menu-label">Menu</span>
+        <button class="collapse-btn"><i class="fa-solid fa-angles-left"></i></button>
+      </div>
+
+      <div class="nav-item active" id="nav-quan-ly-co-quan">
+        <span class="dot"></span><span>Quản lý cơ quan</span>
+      </div>
+      <div class="nav-item" id="nav-quan-ly-phong-ban">
+        <span class="dot"></span><span>Quản lý phòng ban</span>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="logoClipIAM">
+                  <circle cx="50" cy="50" r="43" />
+                </clipPath>
+                <clipPath id="bandClipIAM">
+                  <rect x="0" y="73" width="100" height="27" />
+                </clipPath>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2" />
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4" />
+              <circle cx="50" cy="50" r="43" fill="#ffffff" />
+              <g clip-path="url(#logoClipIAM)">
+                <polygon points="10,66 34,26 55,66" fill="#1c6031" />
+                <polygon points="45,66 66,26 92,66" fill="#1c6031" />
+                <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2" />
+                <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2" />
+                <path
+                  d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z"
+                  fill="#ee522d" />
+                <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6" />
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClipIAM)" />
+                <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+                  stroke-linecap="round" />
+                <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8"
+                  stroke-linecap="round" />
+              </g>
+              <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700"
+                letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">HỆ THỐNG QUẢN LÝ TRUY CẬP VÀ XÁC THỰC (IAM)</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="admin-dd">
+            <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+            <span class="name">Quản trị viên</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="breadcrumb-row">
+        <div class="page-title" id="pageTitleText">Quản lý cơ quan</div>
+        <div class="breadcrumb">Trang chủ <span class="sep">&gt;</span> IAM <span class="sep">&gt;</span> <span class="cur" id="breadcrumbCurrent">Quản lý cơ quan</span></div>
+      </div>
+
+      <div class="content">
+
+        <!-- ============================================================
+             VIEW 1: DANH SÁCH CƠ QUAN
+             ============================================================ -->
+        <div class="card" id="listView">
+          <div class="filter-row">
+            <div class="search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input class="search-input" type="text" id="searchInput" placeholder="Tìm kiếm ...">
+            </div>
+            <button class="btn-search" id="btnSearch">Tìm kiếm</button>
+            <button class="btn-reset" id="btnReset">Làm mới</button>
+            <div style="flex:1;"></div>
+            <button class="btn-primary" id="btnAddAgency"><i class="fa-solid fa-plus"></i>Thêm cơ quan</button>
+          </div>
+
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center" style="width: 56px;">STT</th>
+                  <th>Tên cơ quan</th>
+                  <th style="width: 170px;">Người phụ trách</th>
+                  <th>Địa chỉ</th>
+                  <th class="center" style="width: 110px;">Đang quản lý</th>
+                  <th class="center" style="width: 100px;">Hoạt động</th>
+                  <th class="center" style="width: 160px;">Xử lý</th>
+                </tr>
+              </thead>
+              <tbody id="iamAgencyBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             VIEW: DANH SÁCH PHÒNG BAN (top-level, toàn hệ thống)
+             ============================================================ -->
+        <div class="card hidden" id="listDeptView">
+          <div class="filter-row">
+            <div class="search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input class="search-input" type="text" id="topDeptSearchInput" placeholder="Tìm kiếm ...">
+            </div>
+            <button class="btn-search" id="btnTopDeptSearch">Tìm kiếm</button>
+            <button class="btn-reset" id="btnTopDeptReset">Làm mới</button>
+            <div style="flex:1;"></div>
+            <button class="btn-primary" id="btnTopDeptAdd"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+          </div>
+
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center" style="width: 56px;">STT</th>
+                  <th>Tên phòng ban</th>
+                  <th style="width: 260px;">Cơ quan</th>
+                  <th>Mô tả</th>
+                  <th class="center" style="width: 140px;">Hoạt động</th>
+                  <th class="center" style="width: 80px;">Xử lý</th>
+                </tr>
+              </thead>
+              <tbody id="topDeptTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination-row" id="topDeptPagination"></div>
+        </div>
+
+        <!-- ============================================================
+             VIEW 2: FORM 1 — THÔNG TIN CƠ QUAN (Thêm / Sửa / Xem)
+             ============================================================ -->
+        <div class="card form-view hidden" id="form1View">
+          <div class="form-view-header">
+            <h2 class="form-view-title" id="form1Title">Thêm cơ quan</h2>
+          </div>
+
+          <div class="form-grid">
+            <!-- Tên cơ quan -->
+            <div class="form-group">
+              <label class="form-label">Tên cơ quan <span class="required-mark">*</span></label>
+              <input type="text" class="form-input" id="agencyNameInput" placeholder="Nhập tên cơ quan">
+              <span class="field-error" id="agencyNameError"></span>
+            </div>
+
+            <!-- Cơ quan cấp trên -->
+            <div class="form-group">
+              <label class="form-label">Cơ quan cấp trên</label>
+              <select class="form-input form-select" id="agencyParentSelect"></select>
+            </div>
+
+            <!-- Địa chỉ trụ sở -->
+            <div class="form-group">
+              <label class="form-label">Địa chỉ trụ sở</label>
+              <input type="text" class="form-input" id="agencyAddressInput" placeholder="Nhập địa chỉ trụ sở">
+            </div>
+
+            <!-- Số tầng -->
+            <div class="form-group">
+              <label class="form-label">Số tầng <span class="required-mark">*</span></label>
+              <input type="number" class="form-input" id="agencyFloorsInput" placeholder="Nhập số tầng" min="0">
+              <span class="field-error" id="agencyFloorsError"></span>
+            </div>
+
+            <!-- Vị trí -->
+            <div class="form-group form-group-full">
+              <label class="form-label">Vị trí (lat, lng) <span class="required-mark">*</span></label>
+              <input type="text" class="form-input" id="agencyLocationInput" placeholder="Ví dụ: 13.9833, 108.0000">
+              <span class="field-error" id="agencyLocationError"></span>
+              <div class="map-placeholder" id="agencyMapPlaceholder">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span id="agencyMapCoordText">Chưa có tọa độ</span>
+              </div>
+            </div>
+
+            <!-- Mô tả -->
+            <div class="form-group form-group-full">
+              <label class="form-label">Mô tả</label>
+              <textarea class="form-input form-textarea" id="agencyDescriptionInput" rows="3" placeholder="Nhập mô tả cơ quan"></textarea>
+            </div>
+
+            <!-- Hoạt động -->
+            <div class="form-group form-group-full toggle-field">
+              <label class="switch">
+                <input type="checkbox" id="agencyActiveInput">
+                <span class="slider round"></span>
+              </label>
+              <span class="form-label toggle-label">Hoạt động</span>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               BLOCK: DANH SÁCH PHÒNG BAN THUỘC CƠ QUAN
+               Chỉ hiện ở chế độ Sửa / Xem (ẩn khi Thêm mới)
+               ============================================================ -->
+          <div class="dept-section hidden" id="deptSection">
+            <div class="dept-section-header">
+              <h3 class="dept-section-title">Danh sách phòng ban thuộc cơ quan</h3>
+            </div>
+
+            <div class="filter-row">
+              <div class="search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input class="search-input" type="text" id="deptSearchInput" placeholder="Tìm kiếm ...">
+              </div>
+              <button class="btn-search" id="btnDeptSearch">Tìm kiếm</button>
+              <button class="btn-reset" id="btnDeptReset">Làm mới</button>
+              <div style="flex:1;"></div>
+              <button class="btn-primary" id="btnAddDept"><i class="fa-solid fa-plus"></i>Thêm mới</button>
+            </div>
+
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="center" style="width: 56px;">STT</th>
+                    <th>Tên phòng ban</th>
+                    <th>Mô tả</th>
+                    <th class="center" style="width: 140px;">Hoạt động</th>
+                    <th class="center" style="width: 80px;">Xử lý</th>
+                  </tr>
+                </thead>
+                <tbody id="deptTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="pagination-row" id="deptPagination"></div>
+          </div>
+
+          <div class="form-view-footer">
+            <button class="btn-reset" id="btnForm1Back">Trở về danh sách</button>
+            <button class="btn-primary" id="btnForm1Save">Lưu</button>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             VIEW 3: FORM 2 — NGƯỜI PHỤ TRÁCH CHÍNH
+             ============================================================ -->
+        <div class="card form-view hidden" id="form2View">
+          <div class="form-view-header">
+            <h2 class="form-view-title">Cấu hình người phụ trách chính</h2>
+          </div>
+
+          <div class="form-grid form-grid-single">
+            <!-- Cơ quan -->
+            <div class="form-group">
+              <label class="form-label">Cơ quan <span class="required-mark">*</span></label>
+              <div class="combo-select" id="form2AgencyCombo">
+                <input type="text" class="form-input combo-input-lg" id="form2AgencySearch" 
+                      placeholder="Chọn cơ quan" autocomplete="off" readonly>
+                <input type="hidden" id="form2AgencyIdInput">
+                <div class="combo-dropdown" id="form2AgencyDropdown"></div>
+              </div>
+            </div>
+
+            <!-- Nhân viên (combo tìm kiếm) -->
+            <div class="form-group">
+              <label class="form-label">Nhân viên <span class="required-mark">*</span></label>
+              <div class="combo-select" id="form2StaffCombo">
+                <input type="text" class="form-input combo-input-lg" id="form2StaffSearch" placeholder="Tìm theo tên đăng nhập hoặc họ tên" autocomplete="off">
+                <input type="hidden" id="form2StaffIdInput">
+                <div class="combo-dropdown" id="form2StaffDropdown"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Block thông tin chi tiết nhân viên -->
+          <div class="staff-detail hidden" id="form2StaffDetail">
+            <div class="staff-detail-title">Thông tin nhân viên</div>
+            <div class="staff-detail-grid">
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Tên đăng nhập</span>
+                <span class="staff-detail-value" id="dvUsername"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Tên đầy đủ</span>
+                <span class="staff-detail-value" id="dvFullName"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Email</span>
+                <span class="staff-detail-value" id="dvEmail"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Số điện thoại</span>
+                <span class="staff-detail-value" id="dvPhone"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Ngày sinh</span>
+                <span class="staff-detail-value" id="dvBirthday"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Giới tính</span>
+                <span class="staff-detail-value" id="dvGender"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Cơ quan</span>
+                <span class="staff-detail-value" id="dvAgency"></span>
+              </div>
+              <div class="staff-detail-item">
+                <span class="staff-detail-label">Phòng ban</span>
+                <span class="staff-detail-value" id="dvDepartment"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-view-footer">
+            <button class="btn-reset" id="btnForm2Back">Trở về</button>
+            <button class="btn-primary" id="btnForm2Save">Lưu người phụ trách chính</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer">
+        <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ Tỉnh Gia Lai</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: Xác nhận xóa (dùng chung cho Cơ quan & Phòng ban) -->
+  <div class="modal-overlay" id="deleteConfirmModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Xác nhận xóa</div>
+        <button class="modal-close" id="deleteModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">Bạn có chắc chắn muốn xóa <strong id="deleteTargetName"></strong>? Hành động này không thể hoàn tác.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-reset" id="deleteCancelBtn">Hủy</button>
+        <button class="btn-danger" id="deleteConfirmBtn">Xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Thêm / Sửa phòng ban -->
+  <div class="modal-overlay" id="deptModalOverlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="deptModalTitle">Thêm phòng ban</div>
+        <button class="modal-close" id="deptModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group hidden" id="deptAgencyGroup">
+          <label class="form-label">Cơ quan <span class="required-mark">*</span></label>
+          <select class="form-input form-select" id="deptAgencySelect"></select>
+          <span class="field-error" id="deptAgencyError"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên phòng ban <span class="required-mark">*</span></label>
+          <input type="text" class="form-input" id="deptNameInput" placeholder="Nhập tên phòng ban">
+          <span class="field-error" id="deptNameError"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-input form-textarea" id="deptDescInput" rows="3" placeholder="Nhập mô tả phòng ban"></textarea>
+        </div>
+        <div class="form-group toggle-field">
+          <label class="switch">
+            <input type="checkbox" id="deptActiveInput">
+            <span class="slider round"></span>
+          </label>
+          <span class="form-label toggle-label">Hoạt động</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-reset" id="deptCancelBtn">Hủy</button>
+        <button class="btn-primary" id="deptSaveBtn">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Xác nhận thay đổi người phụ trách -->
+  <div class="modal-overlay" id="changeManagerConfirmModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Xác nhận thay đổi người phụ trách</div>
+        <button class="modal-close" id="changeManagerCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text" id="changeManagerText"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-reset" id="changeManagerCancelBtn">Hủy</button>
+        <button class="btn-primary" id="changeManagerConfirmBtn">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST: Thông báo -->
+  <div class="toast" id="appToast">
+    <i class="fa-solid fa-circle-check" id="appToastIcon"></i>
+    <span id="appToastMsg"></span>
+  </div>
+
+  <script src="js/ui.js"></script>
+</body>
+
+</html>
