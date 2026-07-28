@@ -13,7 +13,7 @@
   width: 540px;
   bottom: 49px;
   background: #fff;
-  border: 3px solid var(--pink);
+  border: 1px solid #cbd5e1;
   border-radius: 20px;
   z-index: 100;
   transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -75,7 +75,7 @@
   border-radius: 8px;
   border: 1px solid var(--pink);
   background: #fff;
-  color: var(--pink);
+  color: #1e293b;
   font-family: var(--font-family);
   font-size: var(--fs-xs);
   font-weight: 700;
@@ -529,7 +529,7 @@ directive-ribbon {
 }
 
 .directive-search-wrap input:focus {
-  border-color: var(--pink);
+  border-color: #1e293b;
 }
 
 .directive-search-wrap i {
@@ -556,7 +556,7 @@ directive-ribbon {
 }
 
 .directive-filter-select:focus {
-  border-color: var(--pink);
+  border-color: #1e293b;
 }
 
 /* ----- Directive List container ----- */
@@ -602,7 +602,7 @@ directive-ribbon {
 }
 
 .pagination-limit select:focus {
-  border-color: var(--pink);
+  border-color: #1e293b;
 }
 
 .pagination-controls {
@@ -626,8 +626,8 @@ directive-ribbon {
 }
 
 .pagination-controls button:hover:not(:disabled) {
-  border-color: var(--pink);
-  color: var(--pink);
+  border-color: #1e293b;
+  color: #1e293b;
 }
 
 .pagination-controls button:disabled {
@@ -749,7 +749,7 @@ directive-ribbon {
   max-width: 95vw;
   background: #fff;
   border-radius: 20px;
-  border: 3px solid var(--pink);
+  border: 1px solid #cbd5e1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -758,23 +758,29 @@ directive-ribbon {
 }
 
 .modal-header {
-  background: linear-gradient(100deg, var(--pink) 47%, var(--pink-light) 100%);
-  color: #fff;
-  padding: 12px 18px;
-  font-size: var(--fs-lg);
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 14px 20px;
+  font-size: 15px;
   font-weight: 700;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-close {
   background: none;
   border: none;
-  color: #fff;
-  font-size: var(--fs-xl);
+  color: #64748b;
+  font-size: 20px;
   cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.modal-close:hover {
+  color: #0f172a;
 }
 
 .modal-body {
@@ -799,7 +805,8 @@ directive-ribbon {
   display: flex;
   border-bottom: 2px solid #f0f0f0;
   flex-shrink: 0;
-  background: #fafafa;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-tab {
@@ -818,12 +825,12 @@ directive-ribbon {
 }
 
 .modal-tab:hover {
-  color: var(--pink);
+  color: #1e293b;
 }
 
 .modal-tab.active {
-  color: var(--pink);
-  border-bottom-color: var(--pink);
+  color: #1e293b;
+  border-bottom-color: #1e293b;
   background: #fff;
 }
 
@@ -899,7 +906,7 @@ directive-ribbon {
 }
 
 .multiselect-display:hover {
-  border-color: var(--pink);
+  border-color: #1e293b;
 }
 
 .multiselect-dropdown {
@@ -938,7 +945,7 @@ directive-ribbon {
 }
 
 .ms-opt input[type=checkbox] {
-  accent-color: var(--pink);
+  accent-color: #1e293b;
   cursor: pointer;
 }
 
@@ -946,7 +953,7 @@ directive-ribbon {
   display: inline-flex;
   align-items: center;
   background: #ffe5ef;
-  color: var(--pink);
+  color: #1e293b;
   border-radius: 4px;
   padding: 2px 6px;
   font-size: 10px;
@@ -968,7 +975,7 @@ directive-ribbon {
   padding: 5px 12px;
   border-radius: 6px;
   border: 1px dashed var(--pink);
-  color: var(--pink);
+  color: #1e293b;
   background: #fff9fb;
   cursor: pointer;
   font-size: var(--fs-xs);
@@ -1257,7 +1264,7 @@ directive-ribbon {
 }
 
 .directive-filter-date:focus {
-  border-color: var(--pink);
+  border-color: #1e293b;
 }
 
 /* ----- Toast Notification — góc phải trên ----- */
@@ -1377,7 +1384,7 @@ directive-ribbon {
 }
 
 .tab-info-col-label.leader-label {
-  color: var(--pink);
+  color: #1e293b;
   border-bottom-color: #fcc;
 }
 
@@ -1403,7 +1410,7 @@ directive-ribbon {
 
 .file-preview-link.leader {
   background: #fff0f5;
-  color: var(--pink);
+  color: #1e293b;
   border-color: #fcc;
 }
 
@@ -1446,8 +1453,8 @@ directive-ribbon {
 }
 
 .urge-page-btn:hover:not(:disabled) {
-  border-color: var(--pink);
-  color: var(--pink);
+  border-color: #1e293b;
+  color: #1e293b;
 }
 
 .urge-page-btn:disabled {
@@ -1500,7 +1507,7 @@ directive-ribbon {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  color: var(--pink);
+  color: #1e293b;
   background: #fff0f5;
   border: 1px solid #fcc;
   padding: 2px 6px;
@@ -1525,7 +1532,7 @@ directive-ribbon {
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; }
 .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .3s; }
-input:checked + .slider { background-color: var(--pink); }
+input:checked + .slider { background-color: #1e293b; }
 input:checked + .slider:before { transform: translateX(16px); }
 .slider.round { border-radius: 18px; }
 .slider.round:before { border-radius: 50%; }
@@ -1547,7 +1554,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 }
 
 .multiselect-display:hover {
-  border-color: var(--pink);
+  border-color: #1e293b;
 }
 
 /* Multiselect Tag Chip */
@@ -1595,7 +1602,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 }
 
 .attach-chip-large:hover {
-  border-color: var(--pink);
+  border-color: #1e293b;
   background: #f8fafc;
 }
 
@@ -1692,7 +1699,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 }
 
 .multiselect-wrap:hover .multiselect-arrow-icon {
-  color: var(--pink);
+  color: #1e293b;
 }
 
 .metric-tooltip {
@@ -1776,7 +1783,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 .drawer-tab.active {
   background: #fff;
-  color: var(--pink);
+  color: #1e293b;
   box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 
@@ -1805,12 +1812,12 @@ input:checked + .slider:before { transform: translateX(16px); }
   transition: border-color 0.2s;
 }
 
-.filter-multiselect-display:hover { border-color: var(--pink); }
+.filter-multiselect-display:hover { border-color: #1e293b; }
 .filter-multiselect-display .fms-placeholder { color: var(--text-muted); font-size: 11px; }
 
 .filter-multiselect-display .fms-tag {
   background: #fce7f3;
-  color: var(--pink);
+  color: #1e293b;
   border-radius: 4px;
   padding: 1px 6px;
   font-size: 10px;
@@ -1870,7 +1877,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 .filter-multiselect-dropdown label:last-child { border-bottom: none; }
 .filter-multiselect-dropdown label:hover { background: #fef2f2; }
-.filter-multiselect-dropdown input[type=checkbox] { accent-color: var(--pink); cursor: pointer; }
+.filter-multiselect-dropdown input[type=checkbox] { accent-color: #1e293b; cursor: pointer; }
 
 /* Filter action buttons */
 .filter-action-btn {
@@ -1911,7 +1918,7 @@ input:checked + .slider:before { transform: translateX(16px); }
   transition: all 0.2s;
 }
 
-.file-preview-card:hover { border-color: var(--pink); box-shadow: 0 2px 8px rgba(225,29,72,0.08); }
+.file-preview-card:hover { border-color: #1e293b; box-shadow: 0 2px 8px rgba(225,29,72,0.08); }
 
 .file-preview-card .fpc-icon {
   width: 40px;
@@ -1927,7 +1934,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 .fpc-icon.pdf { background: #fee2e2; color: #dc2626; }
 .fpc-icon.word { background: #dbeafe; color: #2563eb; }
 .fpc-icon.excel { background: #dcfce7; color: #16a34a; }
-.fpc-icon.image { background: #fce7f3; color: var(--pink); }
+.fpc-icon.image { background: #fce7f3; color: #1e293b; }
 .fpc-icon.screenshot { background: #ede9fe; color: #7c3aed; }
 .fpc-icon.link { background: #f0fdf4; color: #059669; }
 .fpc-icon.generic { background: #f8fafc; color: #64748b; }
@@ -1966,3 +1973,38 @@ input:checked + .slider:before { transform: translateX(16px); }
 }
 .data-source-link-chip:hover { background: #dbeafe; }
 
+/* Đồng bộ style cho các text input / textarea */
+.form-group input[type="text"], 
+.form-group textarea {
+  font-family: var(--font-family) !important;
+  font-size: var(--fs-sm) !important;
+  padding: 8px 12px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  outline: none;
+  background-color: #fff;
+  color: var(--text-dark);
+}
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: var(--pink) !important;
+  box-shadow: 0 0 0 2px rgba(226, 75, 74, 0.1);
+}
+
+
+.fms-select-all-wrap {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Scoped colors for event panel and modals to be grayscale/slate */
+.event-drawer,
+.modal-overlay,
+.modal-card {
+  --pink: #475569 !important;
+  --pink-light: #64748b !important;
+  --border-pink: #475569 !important;
+}

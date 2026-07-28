@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v15';
+const DATA_VERSION = 'gialai_directives_v18';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -95,6 +95,7 @@ if (directives.length === 0) {
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
       agency: 'Công an Tỉnh Gia Lai',
+      agencies: [{name: 'Công an Tỉnh Gia Lai', pic: 'Nguyễn Văn A', dueDate: dueSoon, status: 'Chờ phân công', report: ''}, {name: 'Sở Y tế', pic: 'Trần Thị B', dueDate: dueSoon, status: 'Đang xử lý', report: ''}, {name: 'UBND TP Pleiku', pic: 'Lê Văn C', dueDate: dueSoon, status: 'Kết thúc', report: 'Đã hoàn thành rà soát.'}],
       director: 'Chủ tịch UBND Tỉnh',
       creator: 'Chủ tịch UBND Tỉnh',
       content: 'Rà soát dữ liệu hộ khẩu và cập nhật biến động nhân khẩu khu vực thành phố Pleiku.',
@@ -118,6 +119,7 @@ if (directives.length === 0) {
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
       agency: 'Sở Thông tin và Truyền thông',
+      agencies: [{name: 'Sở Thông tin và Truyền thông', pic: 'Nguyễn Văn D', dueDate: dueOverdue, status: 'Chờ phân công', report: ''}],
       director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       content: 'Kiểm tra hạ tầng mạng kết nối dữ liệu dân cư quốc gia trên địa bàn tỉnh.',
@@ -141,6 +143,7 @@ if (directives.length === 0) {
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
       agency: 'Cục Thống kê Gia Lai',
+      agencies: [{name: 'Cục Thống kê Gia Lai', pic: 'Nguyễn Văn E', dueDate: dueNormal, status: 'Đã có báo cáo', report: 'Đã gửi file tổng hợp số liệu.'}],
       director: 'Chủ tịch UBND Tỉnh',
       creator: 'Chủ tịch UBND Tỉnh',
       content: 'Tổng hợp số liệu thống kê dân số phục vụ lập quy hoạch phát triển đợt mới.',
