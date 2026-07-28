@@ -20,7 +20,9 @@
     <div class="sidebar">
       <div class="sidebar-top">
         <span class="menu-label">Menu</span>
-        <button class="collapse-btn"><i class="fa-solid fa-angles-left"></i></button>
+        <button type="button" class="collapse-btn" id="sidebarCollapseBtn" aria-label="Thu gọn menu" title="Thu gọn">
+          <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+        </button>
       </div>
       <div class="sidebar-search"><input type="text" placeholder="Tìm kiếm..."></div>
 
@@ -63,6 +65,9 @@
     <div class="main">
       <div class="topbar">
         <div class="brand">
+          <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
           <div class="logo-box">
             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -112,18 +117,18 @@
       </div>
 
       <div class="breadcrumb-row">
-        <div class="page-title" id="pageTitle">Quản lý dashboard</div>
+        <div class="page-title" id="pageTitle">Quản trị quy trình động</div>
         <div class="breadcrumb">
           Trang chủ
           <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
-          <span class="cur" id="breadcrumbCurrent">Quản lý dashboard</span>
+          <span class="cur" id="breadcrumbCurrent">Quản trị quy trình động</span>
         </div>
       </div>
 
       <div class="content">
 
         <!-- ============ VIEW: Quản lý dashboard ============ -->
-        <div class="view active" id="view-qldashboard">
+        <div class="view" id="view-qldashboard">
           <div class="card">
             <div class="tabs-row">
               <div class="tab active">Dashboard chính</div>
@@ -158,7 +163,7 @@
                     <td>
                       <div class="row-actions">
                         <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
                         <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
                         <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
                         <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
@@ -175,7 +180,7 @@
                     <td>
                       <div class="row-actions">
                         <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
                         <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
                         <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
                         <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
@@ -192,7 +197,7 @@
                     <td>
                       <div class="row-actions">
                         <button class="act-btn act-edit"><i class="fa-solid fa-pen"></i></button>
-                        <button class="act-btn act-view"><i class="fa-solid fa-eye"></i></button>
+                        <button class="act-btn act-view" title="Xem Dashboard" onclick="window.location.href='../dashboard/'"><i class="fa-solid fa-eye"></i></button>
                         <button class="act-btn act-share"><i class="fa-solid fa-share-nodes"></i></button>
                         <button class="act-btn act-users"><i class="fa-solid fa-users"></i></button>
                         <button class="act-btn act-gear"><i class="fa-solid fa-gear"></i></button>
