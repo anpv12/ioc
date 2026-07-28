@@ -1,0 +1,2234 @@
+/* ---------- PROCESS EDITOR NEW STYLE (STATIC REPLICATED) ---------- */
+.process-editor-overlay {
+  display: block;
+  min-height: 0;
+}
+
+.process-editor-overlay[hidden] {
+  display: none;
+}
+
+.process-editor-panel {
+  width: 100%;
+  height: var(--process-editor-height);
+  min-height: 0;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  background: #f6f8ff;
+}
+
+.process-editor-header {
+  flex: none;
+  padding: var(--space-md);
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pe-header-left h2 {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 16px;
+  font-weight: 700;
+  color: #141515;
+}
+
+.pe-breadcrumbs {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 12px;
+  color: var(--admin-muted);
+}
+
+.pe-breadcrumbs i {
+  font-size: 10px;
+}
+
+.pe-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.pe-close-btn {
+  width: var(--admin-icon-button-size);
+  height: var(--admin-icon-button-size);
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.pe-close-btn:hover {
+  background: var(--admin-control-hover);
+}
+
+/* Button variants matching React layout */
+.pe-btn {
+  height: 38px;
+  min-width: 130px;
+  padding: 0 var(--space-lg);
+  border-radius: var(--admin-radius-md);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  border: 1px solid var(--admin-control-line);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pe-btn-back {
+  background: var(--admin-surface);
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.pe-btn-back:hover {
+  color: var(--directive-info-color);
+  border-color: var(--directive-info-color);
+  background: var(--admin-control-hover);
+}
+
+.pe-btn-clone {
+  background: var(--admin-surface);
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.pe-btn-clone:hover {
+  color: var(--directive-info-color);
+  border-color: var(--directive-info-color);
+  background: var(--admin-control-hover);
+}
+
+.pe-btn-save {
+  background: var(--admin-primary);
+  color: var(--admin-surface);
+  border-color: transparent;
+}
+
+.pe-btn-save:hover {
+  background: var(--directive-info-color);
+}
+
+.pe-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Scrollable Form Area */
+.process-editor-form-scrollable {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  overflow-y: auto;
+}
+
+/* Card layout matching React Paper */
+.pe-card {
+  flex: none;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.pe-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--admin-line);
+  background: #ffffff;
+}
+
+.pe-card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.pe-card-body {
+  padding: 20px;
+}
+
+/* Form grid */
+.pe-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.readonly-field-box {
+  height: var(--admin-control-height);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--admin-control-line);
+  border-radius: var(--admin-radius-md);
+  background: var(--directive-neutral-bg);
+  display: flex;
+  align-items: center;
+  color: var(--admin-text);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+}
+
+.pe-input-disabled {
+  background: var(--directive-neutral-bg) !important;
+  color: var(--admin-muted) !important;
+  cursor: not-allowed;
+}
+
+/* Switch styling for Hoạt động checkbox */
+.switch-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--fs-sm);
+}
+
+.switch-container input {
+  display: none;
+}
+
+.switch-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background-color: #cbd5e1;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.switch-slider::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.switch-container input:checked+.switch-slider {
+  background-color: var(--admin-primary);
+}
+
+.switch-container input:checked+.switch-slider::before {
+  transform: translateX(16px);
+}
+
+.switch-label {
+  font-weight: 500;
+  color: var(--admin-text);
+}
+
+/* Card 2 workspace flow */
+.pe-flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pe-workspace {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  min-height: var(--process-flow-min-height);
+  border-top: 1px solid var(--admin-line);
+}
+
+.pe-workspace-left {
+  border-right: 1px solid var(--admin-line);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pe-workspace-right {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pe-column-title {
+  padding: 12px 16px;
+  background: var(--admin-primary);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid var(--admin-line);
+}
+
+.pe-workspace-left .pe-column-title {
+  border-top-left-radius: 0;
+}
+
+.pe-workspace-right .pe-column-title {
+  border-top-right-radius: 0;
+}
+
+/* Flow list rendering node styling */
+.process-editor-node-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+.process-external-node {
+  padding: 12px;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-md);
+  background: var(--directive-neutral-bg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.process-external-node i {
+  font-size: 16px;
+  color: var(--admin-muted);
+}
+
+.process-external-node strong {
+  display: block;
+  font-size: 13px;
+  color: var(--admin-text);
+}
+
+.process-external-node small {
+  display: block;
+  font-size: 11px;
+  color: var(--admin-muted);
+}
+
+.process-flow-node {
+  padding: 12px;
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-md);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.process-flow-node:hover {
+  background: var(--admin-control-hover);
+  border-color: var(--admin-primary);
+}
+
+.process-flow-node.active {
+  background: #edf4ff;
+  border-color: var(--admin-primary);
+}
+
+.process-flow-node>span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--admin-primary);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.process-flow-node>div {
+  flex: 1;
+  min-width: 0;
+}
+
+.process-flow-node strong {
+  display: block;
+  font-size: 13px;
+  color: var(--admin-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.process-flow-node small {
+  display: block;
+  font-size: 11px;
+  color: var(--admin-muted);
+  margin-top: 2px;
+}
+
+.process-flow-node i {
+  color: var(--admin-placeholder);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* UML Flowchart Diagram Styling */
+.pe-diagram-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
+  background: #fcfdfe;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.pe-diagram-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.diagram-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 220px;
+  transition: all 0.25s ease;
+}
+
+.diagram-node .node-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  color: #475569;
+  font-weight: 700;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.diagram-node.province-node .node-circle {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #475569;
+  cursor: default;
+}
+
+.diagram-node.province-node .node-circle i {
+  font-size: 20px;
+}
+
+.diagram-node.select-node:hover .node-circle {
+  transform: scale(1.1);
+  border-color: #0091ff;
+  box-shadow: 0 10px 15px -3px rgba(0, 145, 255, 0.2);
+}
+
+.diagram-node.select-node.active .node-circle {
+  background: #0091ff;
+  border-color: #0072c7;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 145, 255, 0.15);
+}
+
+.diagram-node .node-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-clamp: 2;
+  box-orient: vertical;
+  line-height: 1.4;
+}
+
+.diagram-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+}
+
+.diagram-arrow svg {
+  display: block;
+}
+
+/* Popup modal overlay for node configuration */
+.process-node-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  background: var(--directive-overlay);
+}
+
+.process-node-modal-overlay[hidden] {
+  display: none;
+}
+
+.process-node-modal-panel {
+  width: min(720px, 95vw);
+  max-height: 80vh !important;
+  background: #ffffff;
+  border-radius: var(--directive-radius-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border: 1px solid var(--admin-line);
+}
+
+.pe-node-modal-header {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--admin-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  border-top-left-radius: var(--directive-radius-lg);
+  border-top-right-radius: var(--directive-radius-lg);
+}
+
+.pe-node-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.pe-node-modal-close {
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--admin-muted);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.pe-node-modal-close:hover {
+  background: var(--admin-control-hover);
+}
+
+.pe-node-modal-footer {
+  padding: 8px 14px;
+  border-top: 1px solid var(--admin-line);
+  display: flex;
+  justify-content: flex-end;
+  background: #f8fafc;
+  flex: none;
+  border-bottom-left-radius: var(--directive-radius-lg);
+  border-bottom-right-radius: var(--directive-radius-lg);
+}
+
+/* Node form inside popup styling overrides */
+.process-editor-node-form {
+  padding: 16px 20px;
+  flex: 1;
+  overflow: visible !important;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  background: #ffffff;
+}
+
+.process-editor-node-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--admin-line);
+  padding-bottom: 14px;
+  margin-bottom: 6px;
+  gap: var(--space-md);
+}
+
+.process-editor-node-heading h3 {
+  margin: 4px 0 0 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.process-node-remove {
+  background: #ffe3e6 !important;
+  color: var(--directive-danger-color) !important;
+  border-color: transparent !important;
+}
+
+.process-node-remove:hover:not(:disabled) {
+  background: #ffc9cf !important;
+}
+
+.process-node-remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.process-editor-node-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.process-editor-node-grid .process-editor-wide {
+  grid-column: span 2;
+}
+
+.process-config-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  border-top: 1px solid var(--admin-line);
+  padding-top: var(--space-md);
+}
+
+.process-config-section h4 {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--admin-text);
+}
+
+.process-editor-check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.process-editor-check-grid label {
+  min-height: var(--admin-icon-button-size);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--admin-text);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.process-editor-check-grid input {
+  accent-color: var(--admin-primary);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.process-editor-readonly {
+  min-height: var(--admin-control-height);
+  padding: var(--space-md);
+  border-radius: var(--admin-radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--admin-muted);
+  background: var(--directive-neutral-bg);
+  font-size: var(--fs-sm);
+}
+
+.process-editor-help {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--admin-muted);
+  font-size: var(--fs-xs);
+}
+
+.process-editor-help i {
+  color: var(--admin-primary);
+}
+
+.process-config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.process-config-grid>div {
+  min-width: 0;
+  padding: var(--space-sm);
+  border-radius: var(--admin-radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  background: var(--directive-neutral-bg);
+}
+
+.process-config-grid span {
+  color: var(--admin-muted);
+  font-size: var(--fs-xs);
+}
+
+.process-config-grid strong {
+  color: var(--admin-text);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.process-editor-error {
+  padding: var(--space-md);
+  color: var(--directive-danger-color);
+  border-radius: var(--admin-radius-md);
+  background: var(--directive-danger-bg);
+  font-size: var(--fs-sm);
+  margin-top: 10px;
+}
+
+.process-editor-error[hidden] {
+  display: none;
+}
+
+/* ---------- COMMON FORM BUTTONS ---------- */
+/* ====================================================
+   UNIFIED BUTTON STYLES FOR THE ENTIRE APP
+==================================================== */
+.button,
+.btn-primary,
+.button-primary,
+.button-secondary,
+.detail-actions button,
+.process-detail-actions button {
+  height: 38px !important;
+  min-width: 130px !important;
+  padding: 0 16px !important;
+  border-radius: 8px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+/* Nút dạng chính (Primary) */
+.button-primary,
+.btn-primary,
+.detail-actions .button-primary,
+.process-detail-actions .button-primary {
+  background: var(--admin-primary) !important;
+  color: #ffffff !important;
+  border: 1px solid transparent !important;
+}
+
+.button-primary:hover,
+.btn-primary:hover,
+.detail-actions .button-primary:hover,
+.process-detail-actions .button-primary:hover {
+  background: #0072c7 !important;
+}
+
+/* Nút dạng phụ (Secondary) */
+.button-secondary,
+.btn-secondary,
+.detail-actions .button-secondary,
+.process-detail-actions .button-secondary {
+  background: #ffffff !important;
+  color: var(--admin-primary) !important;
+  border: 1px solid var(--admin-primary) !important;
+}
+
+.button-secondary:hover,
+.btn-secondary:hover,
+.detail-actions .button-secondary:hover,
+.process-detail-actions .button-secondary:hover {
+  background: var(--admin-control-hover) !important;
+  color: #0072c7 !important;
+  border-color: #0072c7 !important;
+}
+
+.process-editor-form input[type="number"]::-webkit-inner-spin-button,
+.process-editor-form input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.process-editor-form input[type="number"] {
+  appearance: textfield;
+}
+
+
+/* ---------- CUSTOM CSS FOR PROCESS FLOW UPDATE ---------- */
+.orgs-checkbox-container,
+.assignees-checkbox-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-control-line);
+  border-radius: 8px;
+  background: #ffffff;
+  max-height: 120px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.orgs-checkbox-item,
+.assignees-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.orgs-checkbox-item input,
+.assignees-checkbox-item input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--admin-primary);
+  cursor: pointer;
+  margin: 0;
+}
+
+/* 3-dot Action Dropdown styling */
+.process-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.process-dropdown-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--admin-muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.process-dropdown-btn:hover {
+  background: var(--admin-control-hover);
+  color: var(--admin-text);
+}
+
+.process-dropdown-content {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 99;
+  min-width: 140px;
+  background: #ffffff;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.process-dropdown-content[hidden] {
+  display: none;
+}
+
+.process-dropdown-item {
+  width: 100%;
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-text);
+  font-family: inherit;
+}
+
+.process-dropdown-item:hover {
+  background: var(--admin-control-hover);
+}
+
+.process-dropdown-item.text-danger {
+  color: var(--directive-danger-color);
+}
+
+.process-dropdown-item.text-danger:hover {
+  background: var(--directive-danger-bg);
+}
+
+/* Actions table */
+.node-actions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.node-actions-table th,
+.node-actions-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--admin-line);
+  font-size: 13px;
+}
+
+.node-actions-table select {
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: 1px solid var(--admin-control-line);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  width: 100%;
+}
+
+.node-actions-table input {
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 4px;
+  border: 1px solid var(--admin-control-line);
+  font-family: inherit;
+  font-size: 12px;
+  width: 100%;
+}
+
+.node-action-remove-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 0;
+  background: #ffe3e6;
+  color: var(--directive-danger-color);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.node-action-remove-btn:hover {
+  background: #ffc9cf;
+}
+
+.process-short-description {
+  min-height: var(--admin-control-height);
+  font-size: var(--fs-xs);
+  resize: none;
+}
+
+.orgs-checkbox-container {
+  display: block;
+}
+
+.orgs-checkbox-container label,
+.process-step-assignees label {
+  min-height: var(--admin-icon-button-size);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  font-size: var(--fs-xs);
+}
+
+.orgs-checkbox-container input,
+.process-step-assignees input {
+  accent-color: var(--admin-primary);
+}
+
+.process-org-multiselect {
+  position: relative;
+}
+
+.process-org-toggle {
+  width: 100%;
+  height: var(--admin-control-height);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--admin-control-line);
+  border-radius: var(--admin-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+.process-org-menu {
+  position: absolute;
+  z-index: 25;
+  top: calc(100% + var(--space-sm));
+  left: 0;
+  right: 0;
+  max-height: var(--directive-title-width);
+  padding: var(--space-sm);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-md);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+  overflow-y: auto;
+  background: var(--admin-surface);
+  box-shadow: 0 var(--space-sm) var(--space-lg) var(--directive-shadow);
+}
+
+.process-org-menu[hidden] {
+  display: none;
+}
+
+.process-flow-node.fixed {
+  color: var(--admin-muted);
+  background: var(--directive-neutral-bg);
+  cursor: default;
+}
+
+.process-flow-node.fixed>span {
+  background: var(--admin-muted);
+}
+
+.process-simple-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  padding: 40px 0;
+}
+
+.circle-node {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: var(--directive-info-bg);
+  border: 2px solid #bae6fd;
+  color: var(--directive-info-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(186, 230, 253, 0.4);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.circle-node.fixed {
+  background-color: var(--directive-neutral-bg);
+  border-color: var(--admin-control-line);
+  color: var(--admin-muted);
+  box-shadow: none;
+}
+
+.node-number {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.circle-node .edit-btn {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  background-color: #ffffff;
+  color: var(--admin-primary);
+  border-radius: 50%;
+  border: 1.5px solid var(--admin-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.circle-node .edit-btn:hover {
+  transform: scale(1.15);
+  color: var(--admin-primary);
+  border-color: var(--admin-control-line);
+}
+
+.circle-node .edit-btn svg {
+  width: 11px;
+  height: 11px;
+  fill: currentColor;
+}
+
+.connector-wrapper {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.decision-wrapper {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.diamond-node {
+  position: absolute;
+  top: 55px;
+  width: 30px;
+  height: 30px;
+  background-color: #f3e8ff;
+  border: 2px solid #e9d5ff;
+  border-radius: 4px;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 10px rgba(233, 213, 255, 0.5);
+  z-index: 2;
+}
+
+.uml-svg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+.label-text {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  position: absolute;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.label-reject {
+  color: var(--directive-danger-color);
+  background-color: var(--directive-danger-bg);
+  border: 1px solid var(--directive-danger-color);
+  left: 135px;
+  top: 35px;
+  z-index: 3;
+}
+
+.label-approve {
+  color: var(--directive-success-color);
+  background-color: var(--directive-success-bg);
+  border: 1px solid var(--directive-success-color);
+  left: 268px;
+  top: 115px;
+  z-index: 3;
+}
+
+.process-diagram-node {
+  display: none;
+}
+
+.process-step-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.process-step-assignees {
+  grid-column: span 2;
+}
+
+.process-step-assignees>.process-assignee-multiselect {
+  display: block;
+}
+
+.process-assignee-multiselect {
+  position: relative;
+}
+
+.process-assignee-toggle {
+  width: 100%;
+  height: var(--admin-control-height);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--admin-control-line);
+  border-radius: var(--admin-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+.process-assignee-menu {
+  position: absolute;
+  z-index: 25;
+  top: calc(100% + var(--space-sm));
+  left: 0;
+  right: 0;
+  max-height: var(--directive-title-width);
+  padding: var(--space-sm);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-md);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+  overflow-y: auto;
+  background: var(--admin-surface);
+  box-shadow: 0 var(--space-sm) var(--space-lg) var(--directive-shadow);
+}
+
+.process-assignee-menu[hidden] {
+  display: none;
+}
+
+.process-step-actions {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--admin-line);
+}
+
+.process-step-actions-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.process-step-actions-heading h4 {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.process-step-action-table {
+  margin-top: var(--space-md);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+}
+
+.process-step-action-head,
+.process-step-action-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) var(--admin-control-height);
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.process-step-action-head {
+  padding: var(--space-md);
+  color: var(--admin-muted);
+  background: var(--directive-neutral-bg);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+}
+
+.process-step-action-row {
+  padding: var(--space-md);
+  border-top: 1px solid var(--admin-line);
+}
+
+.process-step-action-row input,
+.process-step-action-row select {
+  width: 100%;
+  height: var(--admin-control-height);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--admin-control-line);
+  border-radius: var(--admin-radius-sm);
+  color: var(--admin-text);
+  background: var(--admin-surface);
+  font: inherit;
+}
+
+.process-more {
+  position: relative;
+  display: inline-flex;
+}
+
+.process-more-button {
+  width: var(--admin-icon-button-size);
+  height: var(--admin-icon-button-size);
+  border: 0;
+  border-radius: var(--admin-radius-sm);
+  color: var(--admin-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.process-more-button:hover {
+  color: var(--admin-primary);
+  background: var(--admin-control-hover);
+}
+
+.process-action-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--space-sm));
+  right: 0;
+  min-width: var(--directive-status-filter-width);
+  padding: var(--space-sm);
+  border: 1px solid var(--admin-line);
+  border-radius: var(--admin-radius-md);
+  background: var(--admin-surface);
+  box-shadow: 0 var(--space-sm) var(--space-lg) var(--directive-shadow);
+}
+
+.process-action-menu[hidden] {
+  display: none;
+}
+
+.process-action-menu button {
+  width: 100%;
+  min-height: var(--admin-icon-button-size);
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--admin-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--admin-text);
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-xs);
+  text-align: left;
+  cursor: pointer;
+}
+
+.process-action-menu button:hover {
+  color: var(--admin-primary);
+  background: var(--admin-control-hover);
+}
+
+.process-action-menu button i {
+  width: var(--directive-step-size);
+  text-align: center;
+}
+
+/* --- PROCESS EDITOR FORM CARD (CARD 1) STYLE --- */
+.form-row {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.row-main-info {
+  grid-template-columns: 3fr 1fr;
+}
+
+.row-two-cols {
+  grid-template-columns: 1fr 1fr;
+}
+
+.row-full {
+  grid-template-columns: 1fr;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.sub-label {
+  font-weight: 400;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.form-control {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+select.form-control {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.form-control:focus {
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.1);
+}
+
+.form-control::placeholder {
+  color: #94a3b8;
+}
+
+/* --- CUSTOM MULTI-SELECT DROPDOWN FOR PROCESS CATALOG --- */
+.multiselect-container {
+  position: relative;
+  width: 100%;
+}
+
+.select-box {
+  min-height: 38px;
+  padding: 4px 30px 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.select-box:hover,
+.multiselect-container.open .select-box {
+  border-color: var(--admin-primary);
+}
+
+.select-box .placeholder {
+  color: #94a3b8;
+  font-size: 14px;
+  padding-left: 4px;
+  user-select: none;
+}
+
+.arrow-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  fill: #64748b;
+  pointer-events: none;
+  transition: transform 0.2s;
+}
+
+.multiselect-container.open .arrow-icon {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.tag {
+  background-color: #e6f0ff;
+  color: #0066cc;
+  border: 1px solid #bae0ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.tag .remove-tag {
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: #0066cc;
+}
+
+.tag .remove-tag:hover {
+  color: #ff4d4f;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  padding: 6px 0;
+}
+
+.multiselect-container.open .dropdown-menu {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #334155;
+  transition: background-color 0.15s;
+  user-select: none;
+}
+
+label.dropdown-item {
+  font-weight: normal !important;
+  font-family: inherit !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+}
+
+.dropdown-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--admin-primary);
+  margin: 0;
+}
+
+/* --- UNIFY SELECT DROPDOWNS IN PROCESS EDITOR & MODAL --- */
+.process-editor-overlay select,
+.process-node-modal-overlay select {
+  border-radius: 6px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 16px !important;
+  padding-right: 30px !important;
+  cursor: pointer !important;
+}
+
+/* --- PROCESS NODE CONFIG MODAL STYLES (720px width & 8px border-radius) --- */
+.process-node-modal-panel .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 20px;
+}
+
+.process-node-modal-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.process-node-modal-panel .form-group.full-width {
+  grid-column: span 2;
+}
+
+.process-node-modal-panel .form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.process-node-modal-panel .form-control,
+.process-node-modal-overlay select,
+.process-node-modal-panel .select-box,
+.process-node-modal-panel .dropdown-menu {
+  border-radius: 8px !important;
+}
+
+.process-node-modal-panel .tag {
+  border-radius: 6px;
+}
+
+.process-node-modal-panel select {
+  border-radius: 8px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 16px !important;
+  padding-right: 30px !important;
+  cursor: pointer !important;
+}
+
+/* --- STEP ACTION BUTTONS (EDIT / DELETE) --- */
+.step-node-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.node-act-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.node-act-btn.act-edit:hover {
+  color: #0284c7;
+  background: #e0f2fe;
+}
+
+.node-act-btn.act-del:hover {
+  color: #e11d48;
+  background: #ffe4e6;
+}
+
+.circle-node-actions {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+.circle-node .del-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #e11d48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+}
+
+.circle-node .del-btn:hover {
+  background: #ffe4e6;
+  border-color: #f43f5e;
+}
+
+/* --- STEP ACTION DROPDOWN MENU --- */
+.step-action-menu-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-menu-toggle {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+}
+
+.step-menu-toggle:hover {
+  background: #e0f2fe;
+  border-color: #0284c7;
+  color: #0284c7;
+}
+
+.step-action-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 140px !important;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap !important;
+}
+
+.circle-node .step-action-menu-container {
+  position: absolute;
+  top: -10px;
+  right: -24px;
+  z-index: 20;
+}
+
+.circle-node .step-action-dropdown {
+  top: 30px;
+  left: 0;
+  right: auto;
+  white-space: nowrap;
+}
+
+.step-action-dropdown[hidden] {
+  display: none !important;
+}
+
+.step-action-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.step-action-dropdown button:hover {
+  background: #f1f5f9;
+}
+
+.step-action-dropdown button.act-del-item {
+  color: #e11d48;
+}
+
+.step-action-dropdown button.act-del-item:hover {
+  background: #ffe4e6;
+}
+
+/* Field validation error message styling */
+.field-error-msg {
+  color: #ef4444 !important;
+  font-size: 12px !important;
+  margin-top: 4px !important;
+  display: block !important;
+  font-weight: 500 !important;
+}
+
+.has-error {
+  border-color: #ef4444 !important;
+}
+
+
+/* 2. Zoom & Pan UML Styles */
+.pe-diagram-zoom-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  cursor: grab;
+  user-select: none;
+}
+
+.pe-diagram-zoom-wrapper:active {
+  cursor: grabbing;
+}
+
+/* ====================================================
+   CLEAN VIEW SPECIFIC STYLES (History & Directive Card)
+==================================================== */
+
+/* Đồng bộ font chữ Roboto cho toàn bộ modal chi tiết và các card con */
+body,
+select,
+input,
+button,
+textarea,
+.detail-panel,
+.directive-card,
+.history-card-container {
+  font-family: 'Roboto', -apple-system, sans-serif !important;
+}
+
+/* CONTAINER CHÍNH CỦA KHỐI LỊCH SỬ */
+details.history-card {
+  width: 100%;
+  margin-top: 10px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+details.history-card[open] {
+  border-color: #cbd5e1;
+  height: auto !important;
+}
+
+/* HEADER DROPDOWN BAN ĐẦU */
+.history-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  background: #ffffff;
+  transition: background 0.15s;
+}
+
+.history-header:hover {
+  background: #f8fafc;
+}
+
+.head-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.head-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+}
+
+.head-count {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.head-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Icon Chevron Mũi tên xoay */
+.icon-chevron {
+  width: 16px;
+  height: 16px;
+  stroke: #64748b;
+  stroke-width: 2;
+  fill: none;
+  transition: transform 0.25s ease;
+}
+
+details.history-card[open] .icon-chevron {
+  transform: rotate(180deg);
+  stroke: #2563eb;
+}
+
+details.history-card[open] .toggle-text-open {
+  display: inline !important;
+}
+
+details.history-card[open] .toggle-text-closed {
+  display: none !important;
+}
+
+/* DANH SÁCH BÊN TRONG DROPDOWN */
+.history-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+  background: #f8fafc;
+  border-top: 1px solid transparent;
+  padding: 0 16px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin !important;
+}
+
+details.history-card[open] .history-body {
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 16px;
+  border-top-color: #f1f5f9;
+  transition: max-height 0.3s ease-in-out;
+}
+
+/* Thanh cuộn siêu mỏng cho mục Lịch sử */
+.history-body::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+.history-body::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.history-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 3px !important;
+}
+
+.history-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* --- KỸ THUẬT TẠO ĐƯỜNG NỐI LIỀN MẠCH THẲNG TẮP --- */
+.timeline-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 12px;
+  width: 100%;
+}
+
+.timeline-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  /* Nối từ tâm điểm chấm đầu tiên */
+  bottom: 14px;
+  /* Đến tâm điểm chấm cuối cùng */
+  left: 5px;
+  /* Căn chính giữa chấm tròn */
+  width: 1.5px;
+  /* Độ dày đường xám */
+  background: #cbd5e1;
+  /* Màu xám nhạt đơn giản */
+  z-index: 1;
+}
+
+/* MỖI BƯỚC LÀ 1 ITEM DỌC */
+.step-item {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+  /* Nổi lên trên đường nối xám */
+  width: 100%;
+}
+
+/* CỘT CHỨA DẤU CHẤM TRÒN */
+.dot-col {
+  width: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+  /* Căn ngang tầm với ô tiêu đề */
+  flex-shrink: 0;
+}
+
+.dot-node {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #94a3b8;
+  box-shadow: 0 0 0 3px #f8fafc;
+  /* Viền đệm trùng màu nền để tạo sự tách biệt nhẹ */
+}
+
+/* CARD BOX CHO MỖI BƯỚC */
+.step-box {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.step-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.step-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.step-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #eff6ff;
+  color: #2563eb;
+  margin-left: 6px;
+}
+
+.step-time {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.step-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #475569;
+}
+
+.timeline-wrapper .file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.timeline-wrapper .file-chip:hover {
+  background: #eff6ff;
+}
+
+/* STATE CẢNH BÁO / YÊU CẦU LÀM LẠI */
+.step-item.danger .step-box {
+  border-color: #fecaca;
+  background: #fff5f5;
+}
+
+.step-item.danger .step-name {
+  color: #dc2626;
+}
+
+.step-item.danger .step-badge {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.step-item.danger .step-bottom {
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+.file-chip:hover {
+  background: #e2e8f0;
+  color: #0284c7;
+}
+
+.box-overdue {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.box-overdue::before {
+  border-color: #dc2626;
+  background: #dc2626;
+}
+
+.box-overdue .action-name {
+  color: #991b1b;
+}
+
+.box-rejected {
+  border: 2px solid #ef4444;
+  background-color: #ffffff;
+}
+
+.box-rejected::before {
+  border-color: #dc2626;
+  background: #ffffff;
+}
+
+.box-rejected .action-name {
+  color: #dc2626;
+}
+
+.box-success::before {
+  border-color: #16a34a;
+  background: #16a34a;
+}
+
+.box-info::before {
+  border-color: #2563eb;
+  background: #ffffff;
+}
+
+/* NÚT LƯU VÀ PHÁT HÀNH TRONG FORM QUY TRÌNH */
+.pe-btn-draft {
+  background-color: #e2f9eb !important;
+  color: #15803d !important;
+}
+
+.pe-btn-draft:hover {
+  background-color: #d1f2dd !important;
+}
+
+.pe-btn-publish {
+  background-color: var(--admin-primary) !important;
+  color: #ffffff !important;
+}
+
+.pe-btn-publish:hover {
+  background-color: #0072c7 !important;
+}
+
+/* ── Bảng danh sách quy trình: fix cột & truncate Cơ quan */
+.tbl-wrap table {
+  table-layout: fixed !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Tên quy trình: 25% */
+.tbl-wrap th:nth-child(1),
+.tbl-wrap td:nth-child(1) {
+  width: 25% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* Phiên bản: 8% */
+.tbl-wrap th:nth-child(2),
+.tbl-wrap td:nth-child(2) {
+  width: 8% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+/* Cơ quan: 28% — truncate 1 dòng, không xuống dòng */
+.tbl-wrap th:nth-child(3) {
+  width: 28% !important;
+}
+
+.tbl-wrap td:nth-child(3) {
+  width: 28% !important;
+  max-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  cursor: default !important;
+}
+
+/* Trạng thái: 12% */
+.tbl-wrap th:nth-child(4),
+.tbl-wrap td:nth-child(4) {
+  width: 12% !important;
+  text-align: center !important;
+}
+
+/* Ngày tạo: 12% */
+.tbl-wrap th:nth-child(5),
+.tbl-wrap td:nth-child(5) {
+  width: 12% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Xử lý: 8% */
+.tbl-wrap th:nth-child(6),
+.tbl-wrap td:nth-child(6) {
+  width: 8% !important;
+  text-align: center !important;
+}
+
+/* ── 8. Step Actions Modal & Readonly Form Clean CSS ──────────────── */
+.step-actions-panel {
+  width: min(600px, 95vw) !important;
+  max-height: 80vh !important;
+}
+
+.step-actions-body {
+  overflow-y: auto !important;
+  padding: 20px !important;
+}
+
+.step-actions-toolbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 12px !important;
+}
+
+.step-actions-label {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--admin-text) !important;
+}
+
+.btn-add-action {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+}
+
+.process-step-action-table {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.form-control[readonly] {
+  background-color: #f1f5f9 !important;
+  cursor: not-allowed !important;
+}

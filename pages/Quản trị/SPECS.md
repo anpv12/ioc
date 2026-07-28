@@ -1,12 +1,12 @@
-# Đặc tả kỹ thuật (SPECS) — Phân hệ Quản trị
+# Đặc tả Kỹ thuật & Nghiệp vụ (SPECS) — Phân hệ Quản trị
 
-## 0. Shell / Sidebar
-- Sidebar trái có nút **Thu gọn** (angles-left). Khi thu gọn: sidebar ẩn, hiện nút **Mở menu** (bars) trên topbar.
-- Trạng thái đóng/mở được nhớ trong `localStorage` (`gialai_admin_sidebar_collapsed`).
+## 1. Cấu trúc Phân hệ & Component Chung
 
-## 1. Quản trị Dashboard & Layout & Biểu đồ
-- **Dashboard & Layout**: Cho phép Thêm, Sửa, Xóa, Chia sẻ, cấu hình layout dạng prototype UI.
-- **Loại biểu đồ**: Hiển thị danh sách 62 mẫu biểu đồ dạng phân trang (cỡ trang 10/20/50).
+### 1.1 Khai báo Các Module Độc lập
+Phân hệ Quản trị gồm 3 module nghiệp vụ chính:
+- **Quản trị Quy trình động** (`quy-trinh-dong/index.html`): Quản lý mẫu quy trình xử lý công việc và phân công vai trò.
+- **Báo cáo Thống kê** (`bao-cao-thong-ke/index.html`): Thống kê hiệu suất và tiến độ thực hiện chỉ đạo.
+- **Xử lý Chỉ đạo** (`xu-ly-chi-dao/index.html`): Tiếp nhận, phân công, thực hiện và trình phê duyệt chỉ đạo.
 
 ## 2. Quản trị Quy trình động
 - **Danh sách quy trình**:
@@ -29,9 +29,11 @@
   - Cấu hình hành động: Bỏ node `Bắt đầu` (Start) và `Kết thúc` (End) khỏi danh sách dropdown lựa chọn "Bước tiếp nhận" của các hành động. Trạng thái "Chờ phê duyệt" có thêm hành động "Trả xử lý" mặc định trỏ về bước liền trước (`parentNodeId`). Mặc định có 1 bước Chuyển xử lý.
   - Mô tả ngắn của bước: Bị khóa chỉnh sửa khi quy trình ở trạng thái Hoạt động.
 
-## 3. Báo cáo thống kê chỉ đạo
-- **Bộ lọc**: Vai trò (Tỉnh/Sở), Khoảng thời gian (Tuần/Tháng/Quý/Năm/Tùy chọn), Đơn vị (Sở hoặc Phòng ban).
-- **Thống kê & Biểu đồ**: Hiển thị KPI chỉ đạo, biểu đồ tròn phân bổ trạng thái, biểu đồ đường xu hướng và bảng hiệu suất công việc kèm nút xuất dữ liệu (Excel/PDF/Word).
+### 1.2 Component Khung Điều hướng (Sidebar Navigation & Shell)
+- **Chức năng**:
+  - Điều hướng người dùng giữa các module trong phân hệ Quản trị (Quy trình động, Báo cáo thống kê, Xử lý chỉ đạo).
+  - Hỗ trợ thao tác mở rộng hoặc thu gọn danh mục menu.
+  - Tự động lưu trạng thái thu gọn/mở rộng vào bộ nhớ cục bộ (`localStorage`).
 
 ## 4. Xử lý chỉ đạo (Đơn vị mô phỏng)
 - **Mô phỏng đa cấp**: Phân vai Sở (Lãnh đạo), Phòng ban, Cá nhân. Hiển thị dạng Danh sách hoặc Kanban (5 trạng thái).
