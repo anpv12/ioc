@@ -198,12 +198,15 @@ const formatStepOrgs = (orgs) => {
 
 const getOrgsTooltip = (orgs) => {
   if (!orgs || orgs.length === 0) return 'Chưa chọn cơ quan';
-  return orgs.join('\n');
+  if (orgs.length <= 3) return orgs.join(', ');
+  return `${orgs.slice(0, 3).join(', ')}... (+${orgs.length - 3} cơ quan khác)`;
 };
 
 const ALL_ORGS = ['Sở Thông tin và Truyền thông', 'Sở Y tế', 'UBND Tỉnh Gia Lai', 'Sở Giáo dục và Đào tạo', 'Sở Tài chính', 'Sở Xây dựng', 'Sở Kế hoạch và Đầu tư', 'Sở Giao thông vận tải', 'Sở Công Thương', 'Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh', 'Cục Thống kê tỉnh Gia Lai', 'UBND Thành phố Pleiku'];
 
-const getOrgPersonnel = (orgName) => {
+const orgPersonnelCache = {};
+
+const generateOrgPersonnel = (orgName) => {
   const leaders = [
     'Nguyễn Thế Anh', 'Trần Hữu Bằng', 'Lê Minh Cường', 'Phạm Hồng Dương', 'Vũ Hoàng Hải',
     'Đặng Quốc Khánh', 'Bùi Xuân Lâm', 'Ngô Văn Minh', 'Dương Đức Nam', 'Phan Văn Phong',
@@ -214,22 +217,49 @@ const getOrgPersonnel = (orgName) => {
   const familyNames = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Vũ', 'Đặng', 'Bùi', 'Hoàng', 'Đỗ', 'Phan'];
 
   let hash = 0;
-  for (let i = 0; i < orgName.length; i++) {
-    hash = (hash << 5) - hash + orgName.charCodeAt(i);
+  const nameStr = orgName || 'DefaultOrg';
+  for (let i = 0; i < nameStr.length; i++) {
+    hash = (hash << 5) - hash + nameStr.charCodeAt(i);
     hash |= 0;
   }
-
   const absHash = Math.abs(hash);
-  const leader = leaders[absHash % leaders.length];
+  const leaderName = leaders[absHash % leaders.length];
+  const leaderObj = {
+    name: leaderName,
+    title: 'Lãnh đạo',
+    fullName: `${leaderName} - Lãnh đạo`
+  };
 
+  const staffObjs = [];
   const staff = [];
   for (let i = 1; i <= 5; i++) {
     const fIdx = (absHash + i * 17) % familyNames.length;
     const mIdx = (absHash + i * 31) % staffFirstNames.length;
     const lIdx = (absHash + i * 47) % staffLastNames.length;
-    staff.push(`${familyNames[fIdx]} ${staffFirstNames[mIdx]} ${staffLastNames[lIdx]}`);
+    const sName = `${familyNames[fIdx]} ${staffFirstNames[mIdx]} ${staffLastNames[lIdx]}`;
+    const sObj = {
+      name: sName,
+      title: 'Chuyên viên',
+      fullName: `${sName} - Chuyên viên`
+    };
+    staffObjs.push(sObj);
+    staff.push(sObj.fullName);
   }
-  return { leader, staff };
+
+  return {
+    leader: leaderObj.fullName,
+    leaderObj,
+    staff,
+    staffObjs
+  };
+};
+
+const getOrgPersonnel = (orgName) => {
+  const key = orgName || 'DefaultOrg';
+  if (!orgPersonnelCache[key]) {
+    orgPersonnelCache[key] = generateOrgPersonnel(key);
+  }
+  return orgPersonnelCache[key];
 };
 
 const getFakeAssigneeArray = (orgsList) => {
@@ -247,7 +277,7 @@ const FULL_STEPS = (orgsList) => [
     status: 'Chờ phân công',
     org: orgsList[0] || 'Sở Thông tin và Truyền thông',
     orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Tạ Minh Tâm',
+    assignee: getFakeAssigneeArray(orgsList)[0] || '',
     assignees: getFakeAssigneeArray(orgsList),
     description: 'Lãnh đạo đơn vị tiếp nhận và phân công việc xử lý chỉ đạo cho chuyên viên.',
     persisted: true,
@@ -310,7 +340,7 @@ const THREE_STEPS = (orgsList) => [
     status: 'Chờ phân công',
     org: orgsList[0] || 'Sở Thông tin và Truyền thông',
     orgs: orgsList,
-    assignee: getFakeAssigneeArray(orgsList)[0] || 'Nguyễn Văn Anh',
+    assignee: getFakeAssigneeArray(orgsList)[0] || '',
     assignees: getFakeAssigneeArray(orgsList),
     description: 'Lãnh đạo đơn vị tiếp nhận và phân công việc xử lý chỉ đạo cho chuyên viên.',
     persisted: true,
@@ -346,53 +376,273 @@ const processCatalog = [
   {
     id: 'process-1',
     code: 'QT-2026-001',
-    name: 'Quy trình xử lý PAHT',
+    name: 'Quy trình tiếp nhận và xử lý Phản ánh hiện trường',
     version: '1.0',
     scope: 'Phản ánh hiện trường',
     orgs: ['Sở Thông tin và Truyền thông', 'Sở Y tế'],
     active: true,
     processStatus: 'active',
     createdAt: '23/07/2026 09:30',
-    description: 'Mô phỏng quy trình đang hoạt động, full tất cả các bước xử lý, 2 cơ quan áp dụng.',
-    nodes: FULL_STEPS(['Sở Thông tin và Truyền thông', 'Sở Y tế'])
+    description: 'Quy trình chuẩn xử lý phản ánh kiến nghị của người dân qua trung tâm IOC.',
+    nodes: [
+      {
+        id: 'node-p1-1',
+        unitName: 'Tiếp nhận và Phân công xử lý',
+        status: 'Chờ phân công',
+        org: 'Sở Thông tin và Truyền thông, Sở Y tế',
+        orgs: ['Sở Thông tin và Truyền thông', 'Sở Y tế'],
+        assignee: 'Nguyễn Thế Anh - Lãnh đạo, Phạm Hồng Dương - Lãnh đạo',
+        assignees: [getOrgPersonnel('Sở Thông tin và Truyền thông').leader, getOrgPersonnel('Sở Y tế').leader],
+        description: 'Lãnh đạo đơn vị tiếp nhận phản ánh và phân công cán bộ chuyên trách.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p1-2' }]
+      },
+      {
+        id: 'node-p1-2',
+        unitName: 'Thực hiện xác minh & Xử lý hiện trường',
+        status: 'Đang xử lý',
+        org: 'Sở Thông tin và Truyền thông, Sở Y tế',
+        orgs: ['Sở Thông tin và Truyền thông', 'Sở Y tế'],
+        assignee: 'Đặng Tuấn An - Chuyên viên, Phạm Thu Bình - Chuyên viên',
+        assignees: [getOrgPersonnel('Sở Thông tin và Truyền thông').staff[0], getOrgPersonnel('Sở Y tế').staff[0]],
+        description: 'Chuyên viên các đơn vị kiểm tra thông tin thực tế và xử lý kiến nghị.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p1-3' }]
+      },
+      {
+        id: 'node-p1-3',
+        unitName: 'Tổng hợp Báo cáo kết quả',
+        status: 'Đã có báo cáo',
+        org: 'Sở Thông tin và Truyền thông, Sở Y tế',
+        orgs: ['Sở Thông tin và Truyền thông', 'Sở Y tế'],
+        assignee: 'Nguyễn Thế Anh - Lãnh đạo, Phạm Hồng Dương - Lãnh đạo',
+        assignees: [getOrgPersonnel('Sở Thông tin và Truyền thông').leader, getOrgPersonnel('Sở Y tế').leader],
+        description: 'Lập báo cáo tổng hợp kết quả xử lý gửi Lãnh đạo phê duyệt.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p1-4' }]
+      },
+      {
+        id: 'node-p1-4',
+        unitName: 'Trình Lãnh đạo Tỉnh phê duyệt',
+        status: 'Chờ phê duyệt',
+        org: 'Tỉnh Gia Lai',
+        orgs: ['Tỉnh Gia Lai'],
+        assignee: 'Lãnh đạo Tỉnh',
+        assignees: ['Lãnh đạo Tỉnh'],
+        description: 'Lãnh đạo UBND Tỉnh xem xét và ban hành phê duyệt báo cáo.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p1-5' }, { name: 'Trả về', nextNodeId: 'node-p1-3' }]
+      },
+      {
+        id: 'node-p1-5',
+        unitName: 'Kết thúc chỉ đạo & Đóng phản ánh',
+        status: 'Đã kết thúc',
+        org: 'Tỉnh Gia Lai',
+        orgs: ['Tỉnh Gia Lai'],
+        assignee: 'Lãnh đạo Tỉnh',
+        assignees: ['Lãnh đạo Tỉnh'],
+        description: 'Công khai kết quả xử lý và kết thúc luồng chỉ đạo.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
+      }
+    ]
   },
   {
     id: 'process-2',
     code: 'QT-2026-002',
-    name: 'Quy trình Báo cáo Kinh tế - Xã hội',
+    name: 'Quy trình Tổng hợp Báo cáo Kinh tế - Xã hội Định kỳ',
     version: '1.0',
     scope: 'Kinh tế xã hội',
-    orgs: ALL_ORGS,
+    orgs: ['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương'],
     active: true,
     processStatus: 'active',
     createdAt: '02/08/2026 08:00',
-    description: 'Mô phỏng quy trình đang hoạt động, yêu cầu báo cáo định kỳ từ tất cả các Sở, Ban, Ngành trên địa bàn.',
-    nodes: FULL_STEPS(ALL_ORGS)
+    description: 'Quy trình báo cáo tổng hợp các chỉ số phát triển kinh tế xã hội định kỳ.',
+    nodes: [
+      {
+        id: 'node-p2-1',
+        unitName: 'Phân công thu thập chỉ số báo cáo',
+        status: 'Chờ phân công',
+        org: 'Sở Kế hoạch và Đầu tư, Sở Tài chính, Sở Công Thương',
+        orgs: ['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương'],
+        assignee: 'Lê Minh Cường - Lãnh đạo',
+        assignees: getFakeAssigneeArray(['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương']),
+        description: 'Phân công các phòng chuyên môn tổng hợp dữ liệu ngành.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p2-2' }]
+      },
+      {
+        id: 'node-p2-2',
+        unitName: 'Nghiên cứu & Tổng hợp dữ liệu chỉ số',
+        status: 'Đang xử lý',
+        org: 'Sở Kế hoạch và Đầu tư, Sở Tài chính, Sở Công Thương',
+        orgs: ['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương'],
+        assignee: 'Nguyễn Văn Bình - Chuyên viên',
+        assignees: getFakeStaffArray(['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương']),
+        description: 'Chuyên viên các đơn vị tổng hợp số liệu ngành.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p2-3' }]
+      },
+      {
+        id: 'node-p2-3',
+        unitName: 'Hoàn thiện dự thảo báo cáo Kinh tế - Xã hội',
+        status: 'Đã có báo cáo',
+        org: 'Sở Kế hoạch và Đầu tư, Sở Tài chính, Sở Công Thương',
+        orgs: ['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương'],
+        assignee: 'Lê Minh Cường - Lãnh đạo',
+        assignees: getFakeAssigneeArray(['Sở Kế hoạch và Đầu tư', 'Sở Tài chính', 'Sở Công Thương']),
+        description: 'Duyệt dự thảo báo cáo và trình Uỷ ban Tỉnh.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p2-4' }]
+      },
+      {
+        id: 'node-p2-4',
+        unitName: 'Trình Lãnh đạo Tỉnh kết luận',
+        status: 'Chờ phê duyệt',
+        org: 'Tỉnh Gia Lai',
+        orgs: ['Tỉnh Gia Lai'],
+        assignee: 'Lãnh đạo Tỉnh',
+        assignees: ['Lãnh đạo Tỉnh'],
+        description: 'Lãnh đạo Tỉnh họp nghe báo cáo và kết luận chỉ đạo.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p2-5' }, { name: 'Trả về', nextNodeId: 'node-p2-3' }]
+      },
+      {
+        id: 'node-p2-5',
+        unitName: 'Ban hành kết luận & Lưu hồ sơ',
+        status: 'Đã kết thúc',
+        org: 'Tỉnh Gia Lai',
+        orgs: ['Tỉnh Gia Lai'],
+        assignee: 'Lãnh đạo Tỉnh',
+        assignees: ['Lãnh đạo Tỉnh'],
+        description: 'Ban hành văn bản kết luận chỉ đạo kinh tế xã hội.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
+      }
+    ]
   },
   {
     id: 'process-3',
     code: 'QT-2026-003',
-    name: 'Quy trình Đánh giá Trường chuẩn Quốc gia',
+    name: 'Quy trình Đánh giá & Thẩm định Trường chuẩn Quốc gia',
     version: '1.0',
     scope: 'Giáo dục',
-    orgs: ['Sở Giáo dục và Đào tạo'],
+    orgs: ['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng'],
     active: false,
     processStatus: 'draft',
     createdAt: '03/08/2026 08:00',
-    description: 'Bản nháp quy trình thẩm định, lấy ý kiến hiệp thương từ tất cả các cơ quan (mô phỏng phân công toàn bộ).',
-    nodes: FULL_STEPS(ALL_ORGS)
+    description: 'Quy trình bản nháp thẩm định các tiêu chí trường chuẩn quốc gia trên địa bàn tỉnh.',
+    nodes: [
+      {
+        id: 'node-p3-1',
+        unitName: 'Tiếp nhận hồ sơ & Phân công hội đồng',
+        status: 'Chờ phân công',
+        org: 'Sở Giáo dục và Đào tạo, Sở Giao thông vận tải, Sở Xây dựng',
+        orgs: ['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng'],
+        assignee: 'Bùi Xuân Lâm - Lãnh đạo',
+        assignees: getFakeAssigneeArray(['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng']),
+        description: 'Thành lập đoàn kiểm tra và phân công cán bộ chuyên môn.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p3-2' }]
+      },
+      {
+        id: 'node-p3-2',
+        unitName: 'Thẩm định thực tế tại cơ sở giáo dục',
+        status: 'Đang xử lý',
+        org: 'Sở Giáo dục và Đào tạo, Sở Giao thông vận tải, Sở Xây dựng',
+        orgs: ['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng'],
+        assignee: 'Phạm Văn Dũng - Chuyên viên',
+        assignees: getFakeStaffArray(['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng']),
+        description: 'Kiểm tra cơ sở vật chất và chất lượng giảng dạy thực tế.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p3-3' }]
+      },
+      {
+        id: 'node-p3-3',
+        unitName: 'Lập biên bản thẩm định chuẩn quốc gia',
+        status: 'Đã có báo cáo',
+        org: 'Sở Giáo dục và Đào tạo, Sở Giao thông vận tải, Sở Xây dựng',
+        orgs: ['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng'],
+        assignee: 'Bùi Xuân Lâm - Lãnh đạo',
+        assignees: getFakeAssigneeArray(['Sở Giáo dục và Đào tạo', 'Sở Giao thông vận tải', 'Sở Xây dựng']),
+        description: 'Tổng hợp biên bản kết quả thẩm định trình cấp có thẩm quyền.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p3-4' }]
+      },
+      {
+        id: 'node-p3-4',
+        unitName: 'Trình Quyết định công nhận trường chuẩn',
+        status: 'Chờ phê duyệt',
+        org: 'Tỉnh Gia Lai',
+        orgs: ['Tỉnh Gia Lai'],
+        assignee: 'Lãnh đạo Tỉnh',
+        assignees: ['Lãnh đạo Tỉnh'],
+        description: 'Trình UBND Tỉnh ký quyết định công nhận.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p3-5' }, { name: 'Trả về', nextNodeId: 'node-p3-3' }]
+      },
+      {
+        id: 'node-p3-5',
+        unitName: 'Trao quyết định & Hoàn tất luồng',
+        status: 'Đã kết thúc',
+        org: 'Tỉnh Gia Lai',
+        orgs: ['Tỉnh Gia Lai'],
+        assignee: 'Lãnh đạo Tỉnh',
+        assignees: ['Lãnh đạo Tỉnh'],
+        description: 'Công bố quyết định và kết thúc quy trình.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
+      }
+    ]
   },
   {
     id: 'process-4',
     code: 'QT-2026-004',
-    name: 'Quy trình Thẩm định Dự án Đầu tư',
+    name: 'Quy trình Thẩm định Dự án Đầu tư Công',
     version: '1.0',
     scope: 'Hành chính công',
-    orgs: ['Sở Xây dựng', 'Sở Kế hoạch và Đầu tư'],
+    orgs: ['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh'],
     active: false,
     processStatus: 'draft',
     createdAt: '04/08/2026 08:00',
-    description: 'Bản nháp quy trình thẩm định, phối hợp ngắn gọn 3 bước giữa Sở Xây dựng và Sở KH&ĐT.',
-    nodes: THREE_STEPS(['Sở Xây dựng', 'Sở Kế hoạch và Đầu tư'])
+    description: 'Quy trình phối hợp liên ngành thẩm định chủ trương đầu tư dự án công.',
+    nodes: [
+      {
+        id: 'node-p4-1',
+        unitName: 'Phân công tổ thẩm định dự án',
+        status: 'Chờ phân công',
+        org: 'Sở Nội vụ, Sở Lao động Thương binh và Xã hội, Công an Tỉnh',
+        orgs: ['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh'],
+        assignee: 'Hoàng Quốc Việt - Lãnh đạo',
+        assignees: getFakeAssigneeArray(['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh']),
+        description: 'Phân công các chuyên viên liên ngành thẩm định đề xuất dự án.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p4-2' }]
+      },
+      {
+        id: 'node-p4-2',
+        unitName: 'Thẩm định nguồn vốn & Khả năng cân đối',
+        status: 'Đang xử lý',
+        org: 'Sở Nội vụ, Sở Lao động Thương binh và Xã hội, Công an Tỉnh',
+        orgs: ['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh'],
+        assignee: 'Lê Hữu Giang - Chuyên viên',
+        assignees: getFakeStaffArray(['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh']),
+        description: 'Đánh giá tính khả thi tài chính và quy hoạch xây dựng.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'node-p4-3' }]
+      },
+      {
+        id: 'node-p4-3',
+        unitName: 'Báo cáo kết quả thẩm định chủ trương',
+        status: 'Đã có báo cáo',
+        org: 'Sở Nội vụ, Sở Lao động Thương binh và Xã hội, Công an Tỉnh',
+        orgs: ['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh'],
+        assignee: 'Hoàng Quốc Việt - Lãnh đạo',
+        assignees: getFakeAssigneeArray(['Sở Nội vụ', 'Sở Lao động Thương binh và Xã hội', 'Công an Tỉnh']),
+        description: 'Lập báo cáo thẩm định dự án hoàn chỉnh.',
+        persisted: true,
+        actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }]
+      }
+    ]
   }
 ];

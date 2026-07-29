@@ -134,7 +134,7 @@
       if (tabFor(item) !== tab) return false;
 
       const matchSearch = !search ||
-        `${item.id} ${item.title}`.toLowerCase().includes(search);
+        `${item.id} ${item.title} ${item.content} ${item.domain || ''} ${item.source || ''}`.toLowerCase().includes(search);
 
       const itemStatus = statusFor(item);
       const matchStatus = !statusF || itemStatus === statusF;
@@ -203,9 +203,9 @@
         </td>
         <td class="center col-status">${statusBadgeHtml(status)}</td>
         <td class="center col-act">
-          <div class="row-actions" style="display: flex; justify-content: center;">
-            <button class="act-btn act-edit" data-open-id="${escHtml(item.id)}" type="button" title="Xem chi tiết">
-              <i class="fa-solid fa-pen"></i>
+          <div class="row-actions centered">
+            <button class="act-btn act-edit" data-open-id="${escHtml(item.id)}" type="button" title="${state.activeTab === 'done' ? 'Xem chi tiết' : 'Xử lý chỉ đạo'}">
+              <i class="${state.activeTab === 'done' ? 'fa-regular fa-eye' : 'fa-solid fa-pen'}"></i>
             </button>
           </div>
         </td>
@@ -217,13 +217,13 @@
 
     // Pagination buttons (Matching Quy trình động: First, Prev, Pages, Next, Last)
     const btns = [];
-    btns.push(`<button class="pg-btn" type="button" data-page="1" ${state.page === 1 ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang đầu"><i class="fa-solid fa-angles-left"></i></button>`);
-    btns.push(`<button class="pg-btn" type="button" data-page="${Math.max(1, state.page - 1)}" ${state.page === 1 ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang trước"><i class="fa-solid fa-angle-left"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="1" ${state.page === 1 ? 'disabled' : ''} title="Trang đầu"><i class="fa-solid fa-angles-left"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="${Math.max(1, state.page - 1)}" ${state.page === 1 ? 'disabled' : ''} title="Trang trước"><i class="fa-solid fa-angle-left"></i></button>`);
     for (let p = 1; p <= maxPage; p++) {
       btns.push(`<button class="pg-btn${p === state.page ? ' active' : ''}" type="button" data-page="${p}">${p}</button>`);
     }
-    btns.push(`<button class="pg-btn" type="button" data-page="${Math.min(maxPage, state.page + 1)}" ${state.page === maxPage ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang sau"><i class="fa-solid fa-angle-right"></i></button>`);
-    btns.push(`<button class="pg-btn" type="button" data-page="${maxPage}" ${state.page === maxPage ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Trang cuối"><i class="fa-solid fa-angles-right"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="${Math.min(maxPage, state.page + 1)}" ${state.page === maxPage ? 'disabled' : ''} title="Trang sau"><i class="fa-solid fa-angle-right"></i></button>`);
+    btns.push(`<button class="pg-btn" type="button" data-page="${maxPage}" ${state.page === maxPage ? 'disabled' : ''} title="Trang cuối"><i class="fa-solid fa-angles-right"></i></button>`);
     el.pageButtons().innerHTML = btns.join('');
   };
 
@@ -234,11 +234,104 @@
     state.selectedId = null;
   };
 
+  /* ── Helper format Thời gian tệp đính kèm (HH:mm - DD/MM/YYYY) ────── */
+  const formatDateTimeFormatted = (val) => {
+    if (!val) {
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      return `${hh}:${mm} - ${dd}/${mo}/${yyyy}`;
+    }
+    const str = String(val).trim();
+    const mTimeDate = str.match(/(\d{1,2}):(\d{1,2})(?::\d{1,2})?\s*(?:-\s*)?(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (mTimeDate) {
+      const hh = mTimeDate[1].padStart(2, '0');
+      const mm = mTimeDate[2].padStart(2, '0');
+      const dd = mTimeDate[3].padStart(2, '0');
+      const mo = mTimeDate[4].padStart(2, '0');
+      const yyyy = mTimeDate[5];
+      return `${hh}:${mm} - ${dd}/${mo}/${yyyy}`;
+    }
+    const mDate = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (mDate) {
+      const dd = mDate[1].padStart(2, '0');
+      const mo = mDate[2].padStart(2, '0');
+      const yyyy = mDate[3];
+      return `08:00 - ${dd}/${mo}/${yyyy}`;
+    }
+    return str;
+  };
+
+  /* ── Helper render Danh sách Tệp đính kèm Full 1 dòng ────── */
+  const renderFileTable = (filesArray, options = {}) => {
+    const { allowDelete = false, deleteAttr = '' } = options;
+    if (!filesArray || !filesArray.length) {
+      return '';
+    }
+
+    const itemsHtml = filesArray.map((fileObj, index) => {
+      const fileName = typeof fileObj === 'string' ? fileObj : fileObj.name || 'Tệp đính kèm';
+      const fileSize = typeof fileObj === 'object' && fileObj.size ? fileObj.size : '1.5 MB';
+      const rawDate = typeof fileObj === 'object' && fileObj.date ? fileObj.date : null;
+      const fileDate = formatDateTimeFormatted(rawDate);
+      const ext = fileName.split('.').pop().toLowerCase();
+
+      let iconClass = 'fa-file-lines';
+      let typeClass = 'default';
+      if (ext === 'pdf') {
+        iconClass = 'fa-file-pdf';
+        typeClass = 'pdf';
+      } else if (['xls', 'xlsx'].includes(ext)) {
+        iconClass = 'fa-file-excel';
+        typeClass = 'excel';
+      } else if (['doc', 'docx'].includes(ext)) {
+        iconClass = 'fa-file-word';
+        typeClass = 'word';
+      } else if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
+        iconClass = 'fa-file-image';
+        typeClass = 'image';
+      }
+
+      return `
+        <div class="file-card-item full-width">
+          <div class="file-card-main">
+            <i class="fa-regular ${iconClass} file-type-icon ${typeClass}"></i>
+            <div class="file-card-info">
+              <a href="javascript:void(0)" class="file-card-name" title="${escHtml(fileName)}" data-view-file="${escHtml(fileName)}">
+                ${escHtml(fileName)}
+              </a>
+              <span class="file-card-meta">${escHtml(fileSize)} • ${escHtml(fileDate)}</span>
+            </div>
+          </div>
+          ${allowDelete ? `
+          <div class="file-card-actions">
+            <button class="file-card-btn btn-delete" type="button" title="Xóa tệp" ${deleteAttr}="${index}">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="file-grid-container single-column">
+        ${itemsHtml}
+      </div>
+    `;
+  };
+
   /* ── Render Detail ───────────────────────────────────────────────── */
   const openDetail = (id) => {
     const item = state.directives.find(d => d.id === id);
     if (!item) return;
     state.selectedId = id;
+
+    // Reset draft files state for this modal session
+    state.draftReportFiles = [];
+    state.draftLeaderFiles = [];
 
     const node = nodeForRole(item);
     const status = statusFor(item);
@@ -284,29 +377,18 @@
   const renderLeaderReportCards = (reports) => {
     if (!reports || !reports.length) return '';
     return reports.map(lr => `
-      <div class="submitted-report-card" style="background:#f8fafc; border:1px solid #f1f5f9; border-radius:8px; padding:12px; margin-bottom:8px;">
-        <div style="font-size:13px; color:#334155; line-height:1.5; white-space:pre-wrap; margin-bottom:8px;">${escHtml(lr.content)}</div>
-        <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px; margin-top:4px;">
-          <div>
-            ${lr.file ? `
-              <div style="display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; padding:3px 8px; border-radius:6px; border:1px solid #bae6fd; font-size:12px;">
-                <i class="fa-solid fa-paperclip" style="color:#0284c7;"></i>
-                <span style="font-weight:600; color:#0369a1;">${escHtml(lr.file)}</span>
-              </div>` : ''}
-          </div>
-          <div style="color:var(--admin-muted); font-size:11.5px;">
-            <i class="fa-regular fa-clock" style="margin-right:4px;"></i>${escHtml(lr.time || '')}
-          </div>
-        </div>
+      <div class="submitted-report-card">
+        <div class="report-content">${escHtml(lr.content)}</div>
+        ${renderFileTable(lr.files || (lr.file ? [{ name: lr.file, size: lr.fileSize || '1.8 MB', date: lr.time }] : []), { allowDelete: false })}
 
         ${lr.rejection ? `
-          <div style="margin-top:10px;">
-            <div style="font-size:12px; font-weight:600; color:#dc2626; margin-bottom:4px;">
+          <div class="report-rejection">
+            <div class="rejection-label">
               Lý do từ chối của Tỉnh:
             </div>
-            <div style="font-size:12.5px; color:#991b1b; line-height:1.4; white-space:pre-wrap; background:#fff5f5; padding:8px 10px; border-radius:6px; border:1px solid #fee2e2;">${escHtml(lr.rejection.reason)}</div>
-            <div style="display:flex; align-items:center; justify-content:flex-end; font-size:11px; color:#b91c1c; opacity:0.85; margin-top:6px;">
-              <i class="fa-regular fa-clock" style="margin-right:4px;"></i>${escHtml(lr.rejection.time || '')}
+            <div class="rejection-reason">${escHtml(lr.rejection.reason)}</div>
+            <div class="rejection-time">
+              <i class="fa-regular fa-clock"></i>${escHtml(formatDateTimeFormatted(lr.rejection.time || ''))}
             </div>
           </div>` : ''}
       </div>
@@ -316,29 +398,17 @@
   const renderDetailLeft = (item, node, status) => {
     const groupVal = Array.isArray(item.dataGroups) ? item.dataGroups[0] : (item.dataGroup || item.dataGroups);
     const groups = groupVal
-      ? `<span class="dg-tag"><i class="fa-solid fa-tag"></i>${escHtml(groupVal)}</span>`
+      ? escHtml(groupVal)
       : '';
-
-    const subReports = (node?.subReports || []);
-    const subReportsHtml = subReports.length
-      ? subReports.map(r => `
-          <div class="sub-report-item">
-            <div class="sub-report-header">
-              <span class="sub-report-from"><i class="fa-solid fa-user"></i> ${escHtml(r.from)}</span>
-              <span class="sub-report-time">${escHtml(r.time)}</span>
-            </div>
-            <div class="sub-report-content">${escHtml(r.content)}</div>
-            ${r.file ? `<div class="sub-report-file">
-              <i class="fa-solid fa-paperclip"></i>
-              <span>${escHtml(r.file)}</span>
-              <span style="color:var(--admin-muted)">(${escHtml(r.fileSize)})</span>
-            </div>` : ''}
-          </div>`).join('')
-      : `<div style="font-size:13px;color:var(--admin-muted);padding:8px 0">Chưa có báo cáo từ cấp dưới.</div>`;
 
     const cond = deadlineCondition(item);
     const dlLabel = deadlineLabel(item);
     const dlClass = cond === 'overdue' ? 'overdue' : cond === 'warning' ? 'warning' : 'normal';
+
+    const origFiles = item.attachments || [
+      { name: item.attachment || 'CD_DanCu_GiaLai_2026.pdf', size: item.attachmentSize || '1.8 MB', date: item.issuedDate },
+      { name: 'PhuLuc_HuongDan_TrienKhai.docx', size: '540 KB', date: item.issuedDate }
+    ];
 
     return `
       <!-- Thông tin chỉ đạo -->
@@ -351,18 +421,18 @@
           </div>
           <div class="info-row">
             <span class="info-label">Nhóm dữ liệu</span>
-            <span class="info-value"><div class="data-group-tags">${groups || '<i style="color:var(--admin-muted)">Chưa phân nhóm</i>'}</div></span>
+            <span class="info-value">${groups || '<i class="text-muted">Chưa phân nhóm</i>'}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Hạn xử lý</span>
-            <span class="info-value ${dlClass}" style="font-weight:600">${escHtml(dlLabel)}</span>
+            <span class="info-value ${dlClass}">${escHtml(dlLabel)}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Người giao</span>
             <span class="info-value">${escHtml(item.source)}</span>
           </div>
           <div class="info-row">
-            <span class="info-label">Ngày ban hành</span>
+            <span class="info-label">Ngày chỉ đạo</span>
             <span class="info-value">${escHtml(item.issuedDate)}</span>
           </div>
           <div class="info-row">
@@ -376,58 +446,49 @@
           <div class="info-row">
             <span class="info-label">Hình ảnh</span>
             <span class="info-value">
-              <a href="javascript:void(0)" class="dashboard-link" data-view-img="${escHtml(item.previewImage || 'assets/dashboard_gialai.png')}" style="color:var(--admin-primary);font-weight:600;cursor:pointer;">
-                <i class="fa-regular fa-image"></i> Xem hình ảnh (${escHtml(item.attachment || 'CD_DanCu_GiaLai_2026.png')})
+              <a href="javascript:void(0)" class="dashboard-link" data-view-img="${escHtml(item.previewImage || 'assets/dashboard_gialai.png')}">
+                <i class="fa-regular fa-image"></i> Xem sơ đồ/hình ảnh đính kèm
               </a>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Tệp đính kèm</span>
+            <span class="info-value">
+              <div class="info-file-list">
+                ${origFiles.map(f => {
+                  const fname = typeof f === 'string' ? f : f.name;
+                  return `<a href="javascript:void(0)" class="file-plain-link" data-open-file="${escHtml(fname)}">${escHtml(fname)}</a>`;
+                }).join('<span class="file-comma-sep">,</span> ')}
+              </div>
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Ghi chú Sở (option) -->
-      ${['leader', 'department', 'individual'].includes(state.role) && status !== 'completed' ? `
-      <div class="notes-input-block info-block">
-        <div class="info-block-header">Ghi chú thêm của đơn vị (tuỳ chọn)</div>
-        <div class="info-block-body">
-          ${status === 'waitingAssign' ? `
-            <textarea id="notesInput" class="action-textarea" placeholder="Nhập ghi chú bổ sung..." rows="2">${escHtml(node?.notes || '')}</textarea>
-            <div class="notes-file-row">
-              <label for="notesFileInput"><i class="fa-solid fa-paperclip"></i> Đính kèm file</label>
-              <input type="file" id="notesFileInput">
-              <span id="notesFileName" class="notes-file-name">${node?.notesFile ? escHtml(typeof node.notesFile === 'string' ? node.notesFile : node.notesFile.name) : ''}</span>
-            </div>
-          ` : `
-            <textarea id="notesInput" class="action-textarea notes-readonly" readonly placeholder="Không có ghi chú bổ sung..." rows="2">${escHtml(node?.notes || '')}</textarea>
-            <div class="notes-file-readonly" style="margin-top:10px; display:flex; align-items:center; gap:8px; font-size:13px;">
-              <span style="color:var(--admin-muted); font-weight:500;">Tệp đính kèm:</span>
-              ${node?.notesFile ? `
-                <span style="color:#0284c7; font-weight:600; display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; padding:4px 10px; border-radius:6px; border:1px solid #bae6fd;">
-                  <i class="fa-solid fa-paperclip"></i>
-                  ${escHtml(typeof node.notesFile === 'string' ? node.notesFile : node.notesFile.name)}
-                  ${node.notesFile.size ? `<span style="font-weight:400; color:#0369a1; font-size:12px;">(${escHtml(node.notesFile.size)})</span>` : ''}
-                </span>
-              ` : `
-                <span style="color:var(--admin-muted); font-style:italic;">Không có tệp đính kèm</span>
-              `}
-            </div>
-          `}
-        </div>
-      </div>` : ''}
-
       <!-- Chọn người xử lý & Nút Chuyển xử lý (chỉ leader + waitingAssign) -->
       ${state.role === 'leader' && status === 'waitingAssign' ? `
-      <div class="assignee-dropdown-block info-block" style="width: 100%;">
+      <div class="assignee-dropdown-block info-block">
         <div class="info-block-header">Chọn người xử lý</div>
-        <div class="info-block-body" style="width: 100%; box-sizing: border-box;">
-          <select id="assigneeSelect" class="assignee-dropdown-select" style="width: 100% !important; max-width: 100% !important; display: block !important; box-sizing: border-box !important;">
-            <option value="">-- Chọn người xử lý --</option>
-            ${(node?.availableAssignees || []).map(a => `
-              <option value="${escHtml(a.id)}">${escHtml(a.name)}</option>
-            `).join('')}
-          </select>
-          <div id="assigneeSelectError" style="display:none; color:#dc2626; font-size:12px; font-weight:500; margin-top:6px;">* Vui lòng chọn người xử lý.</div>
-          <div class="assignee-actions-row" style="margin-top: 12px; display: flex; justify-content: flex-end; width: 100%;">
-            <button class="btn-primary-action btn-assign-inline" id="btnChuyen" type="button" style="padding: 8px 18px;">
+        <div class="info-block-body">
+          <input type="hidden" id="assigneeSelect" value="">
+          <div class="directive-assignee-autocomplete" id="assigneeAutocompleteContainer">
+            <div class="select-box" tabindex="0">
+              <span class="placeholder">-- Chọn người xử lý --</span>
+              <span class="selected-text" hidden></span>
+              <input type="text" class="dropdown-search-input" placeholder="Gõ từ khóa tìm kiếm..." hidden>
+              <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+            <div class="dropdown-menu" hidden>
+              ${(node?.availableAssignees || []).map(a => `
+                <div class="dropdown-item" data-assignee-id="${escHtml(a.id)}" data-assignee-name="${escHtml(a.name)}">
+                  <span>${escHtml(a.name)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div id="assigneeSelectError" class="assignee-select-error" hidden>* Vui lòng chọn người xử lý.</div>
+          <div class="assignee-actions-row">
+            <button class="btn-primary-action btn-assign-inline" id="btnChuyen" type="button">
               Chuyển xử lý
             </button>
           </div>
@@ -441,20 +502,18 @@
         <div class="info-block-body">
           <div class="info-row">
             <span class="info-label">Cán bộ xử lý</span>
-            <span class="info-value" style="font-weight:600;color:#0284c7;">
-              <i class="fa-solid fa-user-check" style="margin-right:6px;color:#0284c7;"></i>
+            <span class="info-value assignee-read-value">
               ${(() => {
-          const indivChild = flattenNodes(item.executionTree).find(n => n.contextId === 'individual');
-          if (indivChild) return `${escHtml(indivChild.accountName)} - ${escHtml(indivChild.unitName)}`;
-          return 'Đã phân công cán bộ xử lý';
-        })()}
+                const indivChild = flattenNodes(item.executionTree).find(n => n.contextId === 'individual');
+                if (indivChild) return escHtml(indivChild.accountName);
+                return 'Đã phân công cán bộ xử lý';
+              })()}
             </span>
           </div>
         </div>
       </div>` : ''}
 
       <!-- Báo cáo kết quả đã nộp (khi status === 'reported', 'waitingApproval', 'completed') -->
-      <!-- Báo cáo kết quả đã nộp (hiển thị khi có báo cáo hoặc ở trạng thái đã báo cáo/trình/xong) -->
       ${(() => {
         const treeReports = flattenNodes(item.executionTree).flatMap(n => n.subReports || []);
         const allReports = [
@@ -478,42 +537,27 @@
           <div class="info-block-header">Báo cáo kết quả của đơn vị</div>
           <div class="info-block-body">
             ${uniqueReports.length ? uniqueReports.map(r => `
-              <div class="submitted-report-card" style="background:#f8fafc; border:1px solid #f1f5f9; border-radius:8px; padding:12px; margin-bottom:8px;">
-                <div style="font-size:13px; color:#334155; line-height:1.5; white-space:pre-wrap; margin-bottom:8px;">${escHtml(r.content)}</div>
-                <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px; margin-top:4px;">
-                  <div>
-                    ${r.file ? `
-                      <div style="display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; padding:3px 8px; border-radius:6px; border:1px solid #bae6fd; font-size:12px;">
-                        <i class="fa-solid fa-paperclip" style="color:#0284c7;"></i>
-                        <span style="font-weight:600; color:#0369a1;">${escHtml(r.file)}</span>
-                      </div>` : ''}
-                  </div>
-                  <div style="color:var(--admin-muted); font-size:11.5px;">
-                    <i class="fa-regular fa-clock" style="margin-right:4px;"></i>${escHtml(r.time || '')}
-                  </div>
-                </div>
+              <div class="submitted-report-card">
+                <div class="submitted-report-text">${escHtml(r.content)}</div>
+                ${renderFileTable(r.files || (r.file ? [{ name: r.file, size: r.fileSize || '1.5 MB', date: r.time }] : []), { allowDelete: false })}
 
                 ${r.rejection ? `
-                  <div style="margin-top:10px;">
-                    <div style="font-size:12px; font-weight:600; color:#dc2626; margin-bottom:4px;">
+                  <div class="rejection-box-wrapper">
+                    <div class="rejection-box-title">
                       Lý do trả về:
                     </div>
-                    <div style="font-size:12.5px; color:#991b1b; line-height:1.4; white-space:pre-wrap; background:#fff5f5; padding:8px 10px; border-radius:6px; border:1px solid #fee2e2;">${escHtml(r.rejection.reason)}</div>
-                    <div style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; margin-top:6px;">
+                    <div class="rejection-box-content">${escHtml(r.rejection.reason)}</div>
+                    <div class="rejection-meta-row">
                       <div>
-                        ${r.rejection.file ? `
-                          <div style="display:inline-flex; align-items:center; gap:6px; background:#fee2e2; padding:3px 8px; border-radius:6px; border:1px solid #fca5a5; font-size:11.5px;">
-                            <i class="fa-solid fa-paperclip" style="color:#dc2626;"></i>
-                            <span style="font-weight:600; color:#991b1b;">${escHtml(r.rejection.file)}</span>
-                          </div>` : ''}
+                        ${renderFileTable(r.rejection.files || (r.rejection.file ? [{ name: r.rejection.file, size: '1.2 MB', date: r.rejection.time }] : []), { allowDelete: false })}
                       </div>
-                      <div style="color:#b91c1c; opacity:0.85; font-size:11px;">
-                        <i class="fa-regular fa-clock" style="margin-right:4px;"></i>${escHtml(r.rejection.time || '')}
+                      <div class="rejection-time-tag">
+                        <i class="fa-regular fa-clock"></i>${escHtml(r.rejection.time || '')}
                       </div>
                     </div>
                   </div>` : ''}
               </div>
-            `).join('') : '<div style="font-size:13px; color:var(--admin-muted); font-style:italic; padding:4px 0;">Báo cáo đã được ghi nhận.</div>'}
+            `).join('') : '<div class="report-recorded-note">Báo cáo đã được ghi nhận.</div>'}
           </div>
         </div>`;
       })()}
@@ -525,7 +569,7 @@
         if (!reports.length) return '';
         if (['waitingApproval', 'completed'].includes(status)) return '';
         return `
-        <div class="leader-report-submitted-block info-block" style="margin-top:12px;">
+        <div class="leader-report-submitted-block info-block">
           <div class="info-block-header">Báo cáo trình Tỉnh của Sở</div>
           <div class="info-block-body">
             ${renderLeaderReportCards(reports)}
@@ -572,9 +616,9 @@
 
       let circleContent = '';
       if (isStart) {
-        circleContent = '<i class="fa-solid fa-play" style="font-size: 11px; margin-left: 2px;"></i>';
+        circleContent = '<i class="fa-solid fa-play uml-icon-play"></i>';
       } else if (isEnd) {
-        circleContent = '<i class="fa-solid fa-flag-checkered" style="font-size: 13px;"></i>';
+        circleContent = '<i class="fa-solid fa-flag-checkered uml-icon-flag"></i>';
       } else {
         circleContent = `<span>${node.num}</span>`;
       }
@@ -609,7 +653,6 @@
                   <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171" />
                 </marker>
               </defs>
-
               <!-- Forward vertical green dashed lines between node circles -->
               <line x1="58" y1="32" x2="58" y2="80" stroke="#22c55e" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#uml-arrow-green)" />
               <line x1="58" y1="112" x2="58" y2="160" stroke="#22c55e" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#uml-arrow-green)" />
@@ -658,7 +701,7 @@
         const reports = (role === 'leader') ? getLeaderReports(item, node) : [];
         return `
         ${reports.length ? `
-        <div class="leader-report-submitted-block info-block" style="margin-bottom:12px;">
+        <div class="leader-report-submitted-block info-block">
           <div class="info-block-header">Báo cáo trình Tỉnh của Sở</div>
           <div class="info-block-body">
             ${renderLeaderReportCards(reports)}
@@ -667,15 +710,15 @@
         <div class="report-input-block info-block">
           <div class="info-block-header">Trạng thái</div>
           <div class="info-block-body">
-            <div style="font-size:13px; color:${textColor}; font-weight:normal; font-style:italic; padding:4px 0;">
+            <div class="status-notice-text">
               ${statusText}
             </div>
             ${(status === 'waitingApproval' && role === 'leader') ? `
-            <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:10px;">
-              <button class="btn-primary-action" id="btnTinhDongY" type="button" style="padding:6px 14px; font-size:12.5px; background:#16a34a; border-color:#16a34a;">
+            <div class="status-notice-actions">
+              <button class="btn-primary-action btn-province-accept" id="btnTinhDongY" type="button">
                 Mô phỏng: Tỉnh đồng ý
               </button>
-              <button class="btn-danger-action" id="btnTinhTuChoi" type="button" style="padding:6px 14px; font-size:12.5px;">
+              <button class="btn-danger-action btn-province-reject" id="btnTinhTuChoi" type="button">
                 Mô phỏng: Tỉnh từ chối
               </button>
             </div>` : ''}
@@ -690,14 +733,20 @@
         <div class="info-block-header">Nộp báo cáo kết quả</div>
         <div class="info-block-body">
           <textarea id="reportInput" class="action-textarea" placeholder="Nhập nội dung báo cáo..." rows="2"></textarea>
-          <div id="reportInputError" style="display:none; color:#dc2626; font-size:12px; font-weight:500; margin-top:6px;">* Vui lòng nhập nội dung báo cáo.</div>
-          <div class="notes-file-row" style="margin-top:10px; display:flex; align-items:center; justify-content:space-between;">
-            <div>
+          <div id="reportInputError" class="report-input-error">* Vui lòng nhập nội dung báo cáo.</div>
+          
+          <div class="report-attach-section">
+            <div class="notes-file-row notes-file-row-flex">
               <label for="reportFileInput"><i class="fa-solid fa-paperclip"></i> Đính kèm file</label>
-              <input type="file" id="reportFileInput">
-              <span id="reportFileName" class="notes-file-name"></span>
+              <input type="file" id="reportFileInput" multiple hidden>
             </div>
-            <button class="btn-primary-action" id="btnTrinhDuyet" type="button" style="padding:8px 18px;">
+            <div id="reportFileTableContainer" class="report-file-container">
+              ${renderFileTable(state.draftReportFiles || [], { allowDelete: true, deleteAttr: 'data-del-draft-report' })}
+            </div>
+          </div>
+
+          <div class="report-action-footer">
+            <button class="btn-primary-action" id="btnTrinhDuyet" type="button">
               Trình phê duyệt
             </button>
           </div>
@@ -711,21 +760,25 @@
         <div class="info-block-header">Xem xét báo cáo & Trình phê duyệt</div>
         <div class="info-block-body">
           <textarea id="leaderReportInput" class="action-textarea" placeholder="Nhập nội dung từ chối hoặc báo cáo..." rows="2"></textarea>
-          <div id="leaderReportInputError" style="display:none; color:#dc2626; font-size:12px; font-weight:500; margin-top:6px;">* Vui lòng nhập nội dung.</div>
-          <div class="notes-file-row" style="margin-top:10px; display:flex; align-items:center; justify-content:space-between;">
-            <div>
+          <div id="leaderReportInputError" class="report-input-error">* Vui lòng nhập nội dung.</div>
+          
+          <div class="report-attach-section">
+            <div class="notes-file-row notes-file-row-flex">
               <label for="leaderReportFile"><i class="fa-solid fa-paperclip"></i> Đính kèm file</label>
-              <input type="file" id="leaderReportFile">
-              <span id="leaderFileName" class="notes-file-name"></span>
+              <input type="file" id="leaderReportFile" multiple hidden>
             </div>
-            <div class="action-buttons" style="display:flex; gap:10px;">
-              <button class="btn-primary-action" id="btnTrinhTinh" type="button" style="padding:8px 18px;">
-                Trình phê duyệt
-              </button>
-              <button class="btn-danger-action" id="btnTraVe" type="button" style="padding:8px 18px;">
-                Trả về
-              </button>
+            <div id="leaderFileTableContainer" class="report-file-container">
+              ${renderFileTable(state.draftLeaderFiles || [], { allowDelete: true, deleteAttr: 'data-del-draft-leader' })}
             </div>
+          </div>
+
+          <div class="action-buttons report-action-footer">
+            <button class="btn-primary-action" id="btnTrinhTinh" type="button">
+              Trình phê duyệt
+            </button>
+            <button class="btn-danger-action" id="btnTraVe" type="button">
+              Trả về
+            </button>
           </div>
         </div>
       </div>`;
@@ -746,11 +799,11 @@
           <div class="info-block-header">Báo cáo trình Tỉnh của Sở</div>
           <div class="info-block-body">
             ${renderLeaderReportCards(reports)}
-            <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:10px;">
-              <button class="btn-primary-action" id="btnTinhDongY" type="button" style="padding:6px 14px; font-size:12.5px; background:#16a34a; border-color:#16a34a;">
+            <div class="status-notice-actions">
+              <button class="btn-primary-action btn-province-accept" id="btnTinhDongY" type="button">
                 Mô phỏng: Tỉnh đồng ý
               </button>
-              <button class="btn-danger-action" id="btnTinhTuChoi" type="button" style="padding:6px 14px; font-size:12.5px;">
+              <button class="btn-danger-action btn-province-reject" id="btnTinhTuChoi" type="button">
                 Mô phỏng: Tỉnh từ chối
               </button>
             </div>
@@ -761,16 +814,8 @@
       <div class="report-input-block info-block">
         <div class="info-block-header">Trạng thái</div>
         <div class="info-block-body">
-          <div style="font-size:13px; color:#1e293b; font-weight:normal; font-style:italic; padding:4px 0;">
+          <div class="status-notice-text text-slate">
             Chỉ đạo đang chờ Lãnh đạo Tỉnh phê duyệt.
-          </div>
-          <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:10px;">
-            <button class="btn-primary-action" id="btnTinhDongY" type="button" style="padding:6px 14px; font-size:12.5px; background:#16a34a; border-color:#16a34a;">
-              Mô phỏng: Tỉnh đồng ý
-            </button>
-            <button class="btn-danger-action" id="btnTinhTuChoi" type="button" style="padding:6px 14px; font-size:12.5px;">
-              Mô phỏng: Tỉnh từ chối
-            </button>
           </div>
         </div>
       </div>`;
@@ -780,7 +825,7 @@
       const reports = (role === 'leader') ? getLeaderReports(item, node) : [];
       return `
       ${reports.length ? `
-      <div class="leader-report-submitted-block info-block" style="margin-bottom:12px;">
+      <div class="leader-report-submitted-block info-block">
         <div class="info-block-header">Báo cáo trình Tỉnh của Sở</div>
         <div class="info-block-body">
           ${renderLeaderReportCards(reports)}
@@ -789,7 +834,7 @@
       <div class="report-input-block info-block">
         <div class="info-block-header">Trạng thái</div>
         <div class="info-block-body">
-          <div style="font-size:13px; color:#166534; font-weight:normal; font-style:italic; padding:4px 0;">
+          <div class="status-notice-text text-green">
             Chỉ đạo đã được hoàn thành và phê duyệt.
           </div>
         </div>
@@ -802,30 +847,191 @@
   /* ── Bind detail action buttons ──────────────────────────────── */
   const bindDetailActions = (item, node, status) => {
     const role = state.role;
+    state.draftReportFiles = state.draftReportFiles || [];
+    state.draftLeaderFiles = state.draftLeaderFiles || [];
 
-    // File input displays
-    const bindFile = (inputId, nameId) => {
-      const inp = document.getElementById(inputId);
-      const lbl = document.getElementById(nameId);
-      if (inp && lbl) inp.addEventListener('change', () => {
-        lbl.textContent = inp.files[0]?.name || '';
+    // Multiple File input handlers
+    const reportFileInput = document.getElementById('reportFileInput');
+    if (reportFileInput) {
+      reportFileInput.addEventListener('change', () => {
+        if (reportFileInput.files && reportFileInput.files.length) {
+          Array.from(reportFileInput.files).forEach(f => {
+            const sizeStr = f.size / (1024 * 1024) >= 0.1
+              ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+              : (f.size / 1024).toFixed(0) + ' KB';
+            state.draftReportFiles.push({
+              name: f.name,
+              size: sizeStr,
+              date: formatDateTimeFormatted()
+            });
+          });
+          reportFileInput.value = '';
+          const container = document.getElementById('reportFileTableContainer');
+          if (container) {
+            container.innerHTML = renderFileTable(state.draftReportFiles, { allowDelete: true, deleteAttr: 'data-del-draft-report' });
+          }
+        }
       });
-    };
-    bindFile('reportFileInput', 'reportFileName');
-    bindFile('leaderReportFile', 'leaderFileName');
-    bindFile('notesFileInput', 'notesFileName');
+    }
+
+    const leaderReportFileInput = document.getElementById('leaderReportFile');
+    if (leaderReportFileInput) {
+      leaderReportFileInput.addEventListener('change', () => {
+        if (leaderReportFileInput.files && leaderReportFileInput.files.length) {
+          Array.from(leaderReportFileInput.files).forEach(f => {
+            const sizeStr = f.size / (1024 * 1024) >= 0.1
+              ? (f.size / (1024 * 1024)).toFixed(1) + ' MB'
+              : (f.size / 1024).toFixed(0) + ' KB';
+            state.draftLeaderFiles.push({
+              name: f.name,
+              size: sizeStr,
+              date: formatDateTimeFormatted()
+            });
+          });
+          leaderReportFileInput.value = '';
+          const container = document.getElementById('leaderFileTableContainer');
+          if (container) {
+            container.innerHTML = renderFileTable(state.draftLeaderFiles, { allowDelete: true, deleteAttr: 'data-del-draft-leader' });
+          }
+        }
+      });
+    }
+
+    // Delegate click events for deleting draft files & viewing files
+    const detailLeftEl = el.detailLeft();
+    if (detailLeftEl && !detailLeftEl._fileDelegated) {
+      detailLeftEl._fileDelegated = true;
+      detailLeftEl.addEventListener('click', e => {
+        const delReportBtn = e.target.closest('[data-del-draft-report]');
+        if (delReportBtn) {
+          const idx = Number(delReportBtn.dataset.delDraftReport);
+          if (!isNaN(idx)) {
+            state.draftReportFiles.splice(idx, 1);
+            const container = document.getElementById('reportFileTableContainer');
+            if (container) {
+              container.innerHTML = renderFileTable(state.draftReportFiles, { allowDelete: true, deleteAttr: 'data-del-draft-report' });
+            }
+          }
+          return;
+        }
+
+        const delLeaderBtn = e.target.closest('[data-del-draft-leader]');
+        if (delLeaderBtn) {
+          const idx = Number(delLeaderBtn.dataset.delDraftLeader);
+          if (!isNaN(idx)) {
+            state.draftLeaderFiles.splice(idx, 1);
+            const container = document.getElementById('leaderFileTableContainer');
+            if (container) {
+              container.innerHTML = renderFileTable(state.draftLeaderFiles, { allowDelete: true, deleteAttr: 'data-del-draft-leader' });
+            }
+          }
+          return;
+        }
+
+        const openFileBtn = e.target.closest('[data-open-file]');
+        if (openFileBtn) {
+          const fname = openFileBtn.dataset.openFile || '';
+          const lower = fname.toLowerCase();
+          if (lower.endsWith('.xlsx') || lower.endsWith('.xls') || lower.endsWith('.docx') || lower.endsWith('.doc')) {
+            showNotice(`Đang tải xuống tệp "${fname}"...`);
+          } else {
+            showNotice(`Đang mở xem tệp "${fname}"...`);
+          }
+          return;
+        }
+
+        const viewFileBtn = e.target.closest('[data-view-file]');
+        if (viewFileBtn) {
+          const fname = viewFileBtn.dataset.viewFile || '';
+          const lower = fname.toLowerCase();
+          if (lower.endsWith('.xlsx') || lower.endsWith('.xls') || lower.endsWith('.docx') || lower.endsWith('.doc')) {
+            showNotice(`Đang tải xuống tệp "${fname}"...`);
+          } else {
+            showNotice(`Đang mở xem tệp "${fname}"...`);
+          }
+          return;
+        }
+      });
+    }
 
     // CHUYỂN XỬ LÝ (leader + waitingAssign)
     if (role === 'leader' && status === 'waitingAssign') {
+      const container = document.getElementById('assigneeAutocompleteContainer');
       const selectEl = document.getElementById('assigneeSelect');
-      if (selectEl) {
-        selectEl.addEventListener('change', () => {
+      const errorEl = document.getElementById('assigneeSelectError');
+
+      if (container) {
+        const selectBox = container.querySelector('.select-box');
+        const menu = container.querySelector('.dropdown-menu');
+        const placeholder = container.querySelector('.placeholder');
+        const selectedText = container.querySelector('.selected-text');
+        const searchInput = container.querySelector('.dropdown-search-input');
+        const items = menu.querySelectorAll('.dropdown-item');
+
+        const openMenu = () => {
+          container.classList.add('open');
+          menu.hidden = false;
+          if (!selectEl.value) {
+            placeholder.style.display = 'none';
+            selectedText.style.display = 'none';
+            searchInput.style.display = 'block';
+            searchInput.value = '';
+            searchInput.focus();
+            items.forEach(item => item.style.display = 'flex');
+          }
+        };
+
+        const closeMenu = () => {
+          container.classList.remove('open');
+          menu.hidden = true;
+          searchInput.style.display = 'none';
           if (selectEl.value) {
-            selectEl.classList.remove('is-invalid');
-            selectEl.style.borderColor = '';
-            selectEl.style.backgroundColor = '';
-            const errEl = document.getElementById('assigneeSelectError');
-            if (errEl) errEl.style.display = 'none';
+            placeholder.style.display = 'none';
+            selectedText.style.display = 'block';
+          } else {
+            placeholder.style.display = 'block';
+            selectedText.style.display = 'none';
+          }
+        };
+
+        selectBox.addEventListener('click', (e) => {
+          if (e.target === searchInput) return;
+          if (container.classList.contains('open')) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+
+        searchInput.addEventListener('input', () => {
+          const query = searchInput.value.toLowerCase().trim();
+          items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(query)) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+
+        items.forEach(item => {
+          item.addEventListener('click', () => {
+            const id = item.dataset.assigneeId;
+            const name = item.dataset.assigneeName;
+            selectEl.value = id;
+            selectedText.textContent = name;
+            items.forEach(el => el.classList.remove('selected'));
+            item.classList.add('selected');
+            if (errorEl) errorEl.style.display = 'none';
+            if (selectBox) selectBox.style.borderColor = '#d0d5dd';
+            closeMenu();
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!container.contains(e.target)) {
+            closeMenu();
           }
         });
       }
@@ -833,31 +1039,21 @@
       const btn = document.getElementById('btnChuyen');
       if (btn) btn.addEventListener('click', () => {
         const selectedVal = selectEl?.value;
-        const errEl = document.getElementById('assigneeSelectError');
-
         if (!selectedVal) {
-          if (selectEl) {
-            selectEl.classList.add('is-invalid');
-            selectEl.style.setProperty('border-color', '#dc2626', 'important');
+          const selectBox = container?.querySelector('.select-box');
+          if (selectBox) {
+            selectBox.style.setProperty('border-color', '#dc2626', 'important');
           }
-          if (errEl) errEl.style.display = 'block';
+          if (errorEl) errorEl.style.display = 'block';
           return;
         }
-
-        if (selectEl) {
-          selectEl.classList.remove('is-invalid');
-          selectEl.style.removeProperty('border-color');
-        }
-        if (errEl) errEl.style.display = 'none';
 
         const assignee = (node.availableAssignees || []).find(a => a.id === selectedVal);
         showCustomConfirm(
           'Xác nhận',
           'Bạn có chắc chắn muốn chuyển xử lý chỉ đạo này?',
           () => {
-            // Cập nhật stage
             node.stage = 'processing';
-            // Thêm child individual node nếu chưa có
             const existingIndiv = node.children?.find(c => c.contextId === 'individual');
             if (!existingIndiv && assignee) {
               node.children = node.children || [];
@@ -875,16 +1071,6 @@
                 children: []
               });
             }
-            // Ghi chú & Tệp đính kèm
-            const notesEl = document.getElementById('notesInput');
-            if (notesEl && notesEl.value.trim()) node.notes = notesEl.value.trim();
-            const notesFileInp = document.getElementById('notesFileInput');
-            if (notesFileInp && notesFileInp.files && notesFileInp.files[0]) {
-              node.notesFile = {
-                name: notesFileInp.files[0].name,
-                size: (notesFileInp.files[0].size / 1024).toFixed(1) + ' KB'
-              };
-            }
 
             render();
             openDetail(item.id);
@@ -897,51 +1083,32 @@
     // TRÌNH DUYỆT (individual + processing)
     if (role === 'individual' && status === 'processing') {
       const reportEl = document.getElementById('reportInput');
-      if (reportEl) {
-        reportEl.addEventListener('input', () => {
-          if (reportEl.value.trim()) {
-            reportEl.classList.remove('is-invalid');
-            reportEl.style.removeProperty('border-color');
-            const errEl = document.getElementById('reportInputError');
-            if (errEl) errEl.style.display = 'none';
-          }
-        });
-      }
-
       const btn = document.getElementById('btnTrinhDuyet');
       if (btn) btn.addEventListener('click', () => {
         const content = reportEl?.value.trim() || '';
-        const errEl = document.getElementById('reportInputError');
-
         if (!content) {
-          if (reportEl) {
-            reportEl.classList.add('is-invalid');
-            reportEl.style.setProperty('border-color', '#dc2626', 'important');
-          }
-          if (errEl) errEl.style.display = 'block';
+          reportEl.classList.add('is-invalid');
+          reportEl.style.setProperty('border-color', '#dc2626', 'important');
+          document.getElementById('reportInputError').style.display = 'block';
           return;
         }
 
-        if (reportEl) {
-          reportEl.classList.remove('is-invalid');
-          reportEl.style.removeProperty('border-color');
-        }
-        if (errEl) errEl.style.display = 'none';
-
         showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình phê duyệt báo cáo này?', () => {
-          // Đổi stage individual → reported
           node.stage = 'reported';
           node.subReports = node.subReports || [];
+          const filesToSubmit = state.draftReportFiles && state.draftReportFiles.length
+            ? [...state.draftReportFiles]
+            : [{ name: 'BaoCao_KetQua_ChiTiet.pdf', size: '1.8 MB', date: new Date().toLocaleString('vi-VN') }];
+
           const reportObj = {
             from: node.accountName || 'Chuyên viên',
             time: new Date().toLocaleString('vi-VN'),
             content,
-            file: document.getElementById('reportFileInput')?.files[0]?.name || null,
-            fileSize: ''
+            files: filesToSubmit
           };
+          state.draftReportFiles = [];
           node.subReports.push(reportObj);
 
-          // Đổi stage leader → reported (để leader thấy ở tab Đang xử lý)
           const leaderNode = flattenNodes(item.executionTree).find(n => n.contextId === 'leader');
           if (leaderNode) {
             leaderNode.stage = 'reported';
@@ -958,51 +1125,29 @@
     // TRÌNH TỈNH (leader + reported)
     if (role === 'leader' && status === 'reported') {
       const leaderReportEl = document.getElementById('leaderReportInput');
-      if (leaderReportEl) {
-        leaderReportEl.addEventListener('input', () => {
-          if (leaderReportEl.value.trim()) {
-            leaderReportEl.classList.remove('is-invalid');
-            leaderReportEl.style.removeProperty('border-color');
-            const errEl = document.getElementById('leaderReportInputError');
-            if (errEl) errEl.style.display = 'none';
-          }
-        });
-      }
-
       const btnTrinh = document.getElementById('btnTrinhTinh');
       if (btnTrinh) btnTrinh.addEventListener('click', () => {
         const content = leaderReportEl?.value.trim() || '';
-        const file = document.getElementById('leaderReportFile')?.files[0]?.name || null;
-        const errEl = document.getElementById('leaderReportInputError');
-
         if (!content) {
-          if (leaderReportEl) {
-            leaderReportEl.classList.add('is-invalid');
-            leaderReportEl.style.setProperty('border-color', '#dc2626', 'important');
-          }
-          if (errEl) errEl.style.display = 'block';
+          leaderReportEl.classList.add('is-invalid');
+          leaderReportEl.style.setProperty('border-color', '#dc2626', 'important');
+          document.getElementById('leaderReportInputError').style.display = 'block';
           return;
         }
 
-        if (leaderReportEl) {
-          leaderReportEl.classList.remove('is-invalid');
-          leaderReportEl.style.removeProperty('border-color');
-        }
-        if (errEl) errEl.style.display = 'none';
-
         showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình Lãnh đạo Tỉnh phê duyệt?', () => {
+          const filesToSubmit = state.draftLeaderFiles && state.draftLeaderFiles.length
+            ? [...state.draftLeaderFiles]
+            : [{ name: 'BaoCao_TrinhTinh_TongHop.pdf', size: '2.4 MB', date: new Date().toLocaleString('vi-VN') }];
+
           const lrObj = {
             content: content,
-            file: file,
+            files: filesToSubmit,
             time: new Date().toLocaleString('vi-VN')
           };
+          state.draftLeaderFiles = [];
           node.leaderReports = node.leaderReports || [];
           node.leaderReports.push(lrObj);
-          item.leaderReports = item.leaderReports || [];
-          item.leaderReports.push(lrObj);
-          node.leaderReport = lrObj;
-          item.leaderReport = lrObj;
-
           node.stage = 'waitingApproval';
           flattenNodes(item.executionTree).forEach(n => {
             if (n.contextId !== 'leader') n.stage = 'waitingApproval';
@@ -1016,49 +1161,30 @@
       const btnTra = document.getElementById('btnTraVe');
       if (btnTra) btnTra.addEventListener('click', () => {
         const reason = leaderReportEl?.value.trim() || '';
-        const file = document.getElementById('leaderReportFile')?.files[0]?.name || null;
-        const errEl = document.getElementById('leaderReportInputError');
-
         if (!reason) {
-          if (leaderReportEl) {
-            leaderReportEl.classList.add('is-invalid');
-            leaderReportEl.style.setProperty('border-color', '#dc2626', 'important');
-          }
-          if (errEl) errEl.style.display = 'block';
+          leaderReportEl.classList.add('is-invalid');
+          leaderReportEl.style.setProperty('border-color', '#dc2626', 'important');
+          document.getElementById('leaderReportInputError').style.display = 'block';
           return;
         }
 
-        if (leaderReportEl) {
-          leaderReportEl.classList.remove('is-invalid');
-          leaderReportEl.style.removeProperty('border-color');
-        }
-        if (errEl) errEl.style.display = 'none';
-
         showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trả về báo cáo này?', () => {
-
           node.stage = 'processing';
           const indivNode = flattenNodes(item.executionTree).find(n => n.contextId === 'individual');
           if (indivNode) indivNode.stage = 'processing';
 
-          // Gắn thông tin lý do trả về & file vào báo cáo mới nhất (nếu có)
           const rejObj = {
-            reason: reason || 'Yêu cầu chỉnh sửa, bổ sung báo cáo.',
-            file: file,
+            reason: reason,
+            files: [...state.draftLeaderFiles],
             time: new Date().toLocaleString('vi-VN')
           };
+          state.draftLeaderFiles = [];
           const allSub = node.subReports || [];
-          if (allSub.length) {
-            allSub[allSub.length - 1].rejection = rejObj;
-          } else {
-            const treeReports = flattenNodes(item.executionTree).flatMap(n => n.subReports || []);
-            if (treeReports.length) {
-              treeReports[treeReports.length - 1].rejection = rejObj;
-            }
-          }
-
+          if (allSub.length) allSub[allSub.length - 1].rejection = rejObj;
+          
           render();
           openDetail(item.id);
-          showNotice('Đã trả về thành công!');
+          showNotice('Đã trả về báo cáo!');
         });
       });
     }
