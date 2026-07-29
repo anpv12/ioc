@@ -1,22 +1,25 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Báo cáo thống kê – Quản trị | PM Giám sát Gia Lai</title>
-  <meta name="description" content="Báo cáo thống kê chỉ đạo theo thời gian, đơn vị và trạng thái xử lý">
+  <meta name="description" content="Hệ thống báo cáo và thống kê chỉ đạo điều hành tỉnh Gia Lai">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Flatpickr Datepicker -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <!-- Admin base styles (Blue design system) -->
   <link rel="stylesheet" href="../shared/admin-base.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="app">
-    <!-- ================= MAIN ================= -->
+    <!-- ================= MAIN CONTENT ================= -->
     <div class="main">
       <div class="topbar">
         <div class="brand">
@@ -63,139 +66,274 @@
       </div>
 
       <div class="breadcrumb-row">
-        <div class="page-title" id="pageTitle">Báo cáo thống kê chỉ đạo</div>
+        <div class="page-title" id="pageTitle">Báo cáo & Thống kê Chỉ đạo</div>
         <div class="breadcrumb">
           Trang chủ
           <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
-          <span class="cur" id="breadcrumbCurrent">Báo cáo thống kê</span>
+          <span class="cur" id="breadcrumbCurrent">Báo cáo & Thống kê</span>
         </div>
       </div>
 
       <div class="content">
+        <div class="report-container">
 
-        <div class="report-page">
-          <section class="report-filter-card">
-            <div class="report-section-heading">
-              <div><span class="eyebrow">Điều hành và giám sát</span>
-                <h2>Báo cáo thống kê chỉ đạo</h2>
+          <!-- KHU VỰC CHỌN MẪU BÁO CÁO / THỐNG KÊ -->
+          <section class="report-templates-section" id="templatesSection">
+            <div class="templates-heading">
+              <div class="selected-template-summary">
+                <i id="selectedTemplateIcon" class="fa-solid fa-file-lines"></i>
+                <span id="selectedTemplateName">Báo cáo tổng hợp dành cho lãnh đạo</span>
               </div>
-              <button class="button button-secondary" id="reportResetButton" type="button">
-                <i class="fa-solid fa-arrows-rotate"></i> Đặt lại
+              <button type="button" class="btn-template-toggle" id="btnToggleTemplates" aria-expanded="true">
+                <i class="fa-solid fa-chevron-up"></i><span>Thu gọn</span>
               </button>
             </div>
-            <div class="report-filter-row">
-              <label class="report-filter-field"><span>Vai trò xem</span>
-                <select id="reportRole">
-                  <option value="province" selected>Lãnh đạo Tỉnh</option>
-                  <option value="leader">Lãnh đạo Sở</option>
-                </select>
-              </label>
-              <label class="report-filter-field"><span>Khoảng thời gian</span>
-                <select id="reportPeriod">
+            <div id="templatesCollapsible">
+              <div class="template-main-tabs">
+                <button type="button" class="tab-btn active" id="tabBtnReport" onclick="switchMainTab('report')">
+                  <i class="fa-solid fa-file-lines"></i> Mẫu Báo cáo chỉ đạo
+                </button>
+                <button type="button" class="tab-btn" id="tabBtnStat" onclick="switchMainTab('stat')">
+                  <i class="fa-solid fa-chart-column"></i> Mẫu Thống kê chỉ đạo
+                </button>
+              </div>
+              <div class="template-cards-grid" id="templateCardsGrid"></div>
+            </div>
+          </section>
+          
+          <!-- BỘ LỌC NÂNG CAO & TÌM KIẾM -->
+          <section class="report-filter-panel">
+            <div class="filter-panel-header">
+              <div class="filter-title">
+                <i class="fa-solid fa-filter"></i>
+                <span>Bộ lọc nâng cao & Tìm kiếm</span>
+              </div>
+              <div class="filter-actions">
+                <button type="button" class="btn-apply-filter" id="btnApplyFilters">
+                  <i class="fa-solid fa-filter-circle-dollar"></i> Lọc
+                </button>
+                <button type="button" class="btn-reset" id="btnResetFilters">
+                  <i class="fa-solid fa-rotate-left"></i> Đặt lại bộ lọc
+                </button>
+              </div>
+            </div>
+
+            <!-- Hàng 1: Các dropdown cơ bản & ngày -->
+            <div class="filter-row">
+              <div class="filter-group">
+                <label>Khoảng thời gian</label>
+                <select id="filterPeriod">
+                  <option value="">Không chọn</option>
+                  <option value="today">Hôm nay</option>
                   <option value="week">Tuần</option>
                   <option value="month" selected>Tháng</option>
                   <option value="quarter">Quý</option>
-                  <option value="year">Năm</option>
-                  <option value="custom">Tùy chọn</option>
+                  <option value="custom">Tùy chọn ngày</option>
                 </select>
-              </label>
-              <label class="report-filter-field"><span>Từ ngày</span><input id="reportFromDate" type="date"></label>
-              <label class="report-filter-field"><span>Đến ngày</span><input id="reportToDate" type="date"></label>
-              <label class="report-filter-field"><span id="reportUnitLabel">Sở/Ban/Ngành</span>
-                <select id="reportUnit">
-                  <option value="all">Tất cả Sở/Ban/Ngành</option>
-                  <option>Sở Khoa học và Công nghệ</option>
-                  <option>Sở Y tế</option>
-                  <option>Sở Tư pháp</option>
-                  <option>Sở Giáo dục và Đào tạo</option>
-                  <option>Sở Nội vụ</option>
+              </div>
+              <div class="filter-group period-detail-group" id="periodDetailGroup">
+                <label id="periodDetailLabel">Tháng / Năm</label>
+                <div class="period-detail-controls">
+                  <select id="filterPeriodValue" title="Giá trị kỳ"></select>
+                  <select id="filterPeriodYear" title="Năm"></select>
+                </div>
+              </div>
+
+              <div class="filter-group date-group">
+                <label>Từ ngày</label>
+                <div class="input-with-icon">
+                  <input type="text" id="filterFromDate" placeholder="dd/mm/yyyy" readonly>
+                  <i class="fa-regular fa-calendar"></i>
+                </div>
+              </div>
+
+              <div class="filter-group date-group">
+                <label>Đến ngày</label>
+                <div class="input-with-icon">
+                  <input type="text" id="filterToDate" placeholder="dd/mm/yyyy" readonly>
+                  <i class="fa-regular fa-calendar"></i>
+                </div>
+              </div>
+
+              <div class="filter-group searchable-multiselect" data-filter="units">
+                <label>Đơn vị chủ trì</label>
+                <div class="multi-control" id="unitsMultiControl" tabindex="0">
+                  <div class="multi-tags" id="unitsTags"></div><span class="multi-placeholder">Tất cả đơn vị</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="multi-dropdown"><input type="search" placeholder="Tìm đơn vị..."><div class="multi-options"></div><button type="button" class="multi-clear">Xóa tất cả</button></div>
+              </div>
+
+              <div class="filter-group searchable-multiselect" data-filter="assigners">
+                <label>Người giao chỉ đạo</label>
+                <div class="multi-control" id="assignersMultiControl" tabindex="0"><div class="multi-tags" id="assignersTags"></div><span class="multi-placeholder">Tất cả người giao</span><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="multi-dropdown"><input type="search" placeholder="Tìm người giao..."><div class="multi-options"></div><button type="button" class="multi-clear">Xóa tất cả</button></div>
+              </div>
+
+              <div class="filter-group searchable-multiselect" data-filter="assignees">
+                <label>Người xử lý chính</label>
+                <div class="multi-control" id="assigneesMultiControl" tabindex="0"><div class="multi-tags" id="assigneesTags"></div><span class="multi-placeholder">Tất cả người xử lý</span><i class="fa-solid fa-chevron-down"></i></div>
+                <div class="multi-dropdown"><input type="search" placeholder="Tìm người xử lý..."><div class="multi-options"></div><button type="button" class="multi-clear">Xóa tất cả</button></div>
+              </div>
+            </div>
+
+            <!-- Hàng 2: Multi-select trạng thái đóng được + Nhóm dữ liệu + Checkbox điều kiện + Search -->
+            <div class="filter-row filter-row-secondary">
+              
+              <!-- Custom Multi-select Trạng thái quy trình (Closable, no backdrop) -->
+              <div class="filter-group multiselect-group" id="statusMultiselectWrap">
+                <label>Trạng thái chỉ đạo</label>
+                <div class="custom-multiselect-trigger" id="statusMultiselectTrigger">
+                  <span id="statusMultiselectLabel">Tất cả trạng thái</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="custom-multiselect-dropdown" id="statusMultiselectDropdown">
+                  <div class="multiselect-header">
+                    <label class="checkbox-label font-bold">
+                      <input type="checkbox" id="cbStatusSelectAll">
+                      <span>Chọn tất cả trạng thái</span>
+                    </label>
+                  </div>
+                  <div class="multiselect-body">
+                    <label class="checkbox-label"><input type="checkbox" class="cb-status-opt" value="Chờ phân công"> <span>Chờ phân công</span></label>
+                    <label class="checkbox-label"><input type="checkbox" class="cb-status-opt" value="Đang xử lý"> <span>Đang xử lý</span></label>
+                    <label class="checkbox-label"><input type="checkbox" class="cb-status-opt" value="Đã có báo cáo"> <span>Đã có báo cáo</span></label>
+                    <label class="checkbox-label"><input type="checkbox" class="cb-status-opt" value="Chờ phê duyệt"> <span>Chờ phê duyệt</span></label>
+                    <label class="checkbox-label"><input type="checkbox" class="cb-status-opt" value="Đã kết thúc"> <span>Đã kết thúc</span></label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nhóm dữ liệu -->
+              <div class="filter-group">
+                <label>Nhóm dữ liệu</label>
+                <select id="filterDataGroup">
+                  <option value="all">Tất cả nhóm dữ liệu</option>
+                  <option value="Dân cư theo địa giới">Dân cư theo địa giới</option>
+                  <option value="Độ tuổi & Giới tính">Độ tuổi & Giới tính</option>
+                  <option value="Lao động & Việc làm">Lao động & Việc làm</option>
+                  <option value="Giáo dục & Độ tuổi">Giáo dục & Độ tuổi</option>
+                  <option value="Bảo trợ xã hội">Bảo trợ xã hội</option>
+                  <option value="Dân tộc & Tôn giáo">Dân tộc & Tôn giáo</option>
                 </select>
-              </label>
-              <button class="button button-primary report-apply-button" id="reportApplyButton" type="button">
-                <i class="fa-solid fa-filter"></i> Áp dụng
-              </button>
+              </div>
+
+              <!-- Checkbox điều kiện nhanh -->
+              <div class="filter-group checkbox-row-group">
+                <label>Điều kiện bổ sung</label>
+                <div class="checkbox-tags-row">
+                  <label class="checkbox-tag">
+                    <input type="checkbox" id="cbOntime">
+                    <span class="tag-label tag-green"><i class="fa-solid fa-circle-check"></i> Đúng hạn</span>
+                  </label>
+                  <label class="checkbox-tag">
+                    <input type="checkbox" id="cbOverdue">
+                    <span class="tag-label tag-red"><i class="fa-solid fa-clock"></i> Quá hạn</span>
+                  </label>
+                  <label class="checkbox-tag">
+                    <input type="checkbox" id="cbRevision">
+                    <span class="tag-label tag-orange"><i class="fa-solid fa-rotate-left"></i> Yêu cầu làm lại</span>
+                  </label>
+                  <label class="checkbox-tag">
+                    <input type="checkbox" id="cbHasFile">
+                    <span class="tag-label tag-blue"><i class="fa-solid fa-paperclip"></i> Có file đính kèm</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Ô Tìm kiếm toàn văn -->
+              <div class="filter-group search-group">
+                <label>Tìm kiếm toàn văn</label>
+                <div class="search-input-wrap">
+                  <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                  <input type="text" id="searchInput" placeholder="Nhập mã chỉ đạo, nội dung, người xử lý, đơn vị...">
+                  <button type="button" class="btn-clear-search" id="btnClearSearch" hidden>&times;</button>
+                </div>
+              </div>
+
             </div>
           </section>
 
-          <section class="report-kpi-grid" aria-label="Các chỉ số tổng quan">
-            <article class="report-kpi-card report-kpi-total">
-              <div class="report-kpi-icon"><i class="fa-solid fa-inbox"></i></div>
-              <div><span>Tổng số chỉ đạo tiếp nhận</span><strong id="reportKpiTotal">0</strong><small>Trong khoảng thời gian đã chọn</small></div>
-            </article>
-            <article class="report-kpi-card report-kpi-complete">
-              <div class="report-kpi-icon"><i class="fa-solid fa-circle-check"></i></div>
-              <div><span>Đã hoàn thành</span><strong id="reportKpiCompleted">0</strong><small><b id="reportKpiOnTime">0%</b> đúng hạn · <b id="reportKpiLate">0%</b> trễ hạn</small></div>
-            </article>
-            <article class="report-kpi-card report-kpi-progress">
-              <div class="report-kpi-icon"><i class="fa-solid fa-spinner"></i></div>
-              <div><span>Đang xử lý</span><strong id="reportKpiProcessing">0</strong><small><b id="reportKpiActive">0%</b> trong hạn · <b id="reportKpiOverdue">0%</b> quá hạn</small></div>
-            </article>
-            <article class="report-kpi-card report-kpi-return">
-              <div class="report-kpi-icon"><i class="fa-solid fa-rotate-left"></i></div>
-              <div><span>Tỷ lệ yêu cầu làm lại</span><strong id="reportKpiRevision">0%</strong><small>So với tổng số chỉ đạo</small></div>
-            </article>
-          </section>
+          <!-- BẢNG DỮ LIỆU HIỆN ĐẠI (DATA TABLE) -->
+          <section class="report-table-section">
+            
+            <div class="table-toolbar-header">
+              <div class="table-title-area">
+                <h3 id="currentTemplateTitle">Báo cáo tổng hợp dành cho lãnh đạo</h3>
+                <p id="currentTemplateDesc">Theo dõi bức tranh tổng thể các chỉ đạo, trạng thái và tiến độ quy trình</p>
+              </div>
 
-          <section class="report-chart-grid">
-            <article class="report-panel report-pie-panel">
-              <div class="report-panel-heading">
-                <div><h3>Phân bổ trạng thái</h3><p>Tỷ lệ chỉ đạo theo trạng thái nghiệp vụ</p></div>
-                <i class="fa-solid fa-chart-pie"></i>
-              </div>
-              <div class="report-pie-wrap">
-                <svg id="reportPieChart" viewBox="0 0 560 330" role="img" aria-label="Biểu đồ phân bổ trạng thái"></svg>
-                <div class="report-chart-tooltip" id="reportPieTooltip" hidden></div>
-              </div>
-              <div class="report-legend" id="reportStatusLegend"></div>
-              <div class="report-pie-subtext" style="font-size: 11px; color: #888; text-align: center; margin-top: 8px; border-top: 1px dashed #eee; padding-top: 6px; font-style: italic;">
-                * Số liệu thống kê dựa trên trạng thái thực thi chi tiết tại cấp Sở/Ban/Ngành
-              </div>
-            </article>
-            <article class="report-panel report-line-panel">
-              <div class="report-panel-heading">
-                <div><h3>Xu hướng xử lý</h3><p>So sánh tiếp nhận mới và hoàn thành</p></div>
-                <i class="fa-solid fa-chart-line"></i>
-              </div>
-              <div class="report-line-chart">
-                <svg id="reportLineChart" viewBox="0 0 640 290" role="img" aria-label="Biểu đồ xu hướng xử lý"></svg>
-                <div class="report-chart-tooltip" id="reportLineTooltip" hidden></div>
-              </div>
-              <div class="report-chart-legend">
-                <span><i class="legend-dot report-legend-blue"></i>Tiếp nhận mới</span>
-                <span><i class="legend-dot report-legend-green"></i>Đã hoàn thành</span>
-              </div>
-            </article>
-          </section>
+              <!-- Thanh thao tác hàng loạt & xuất file -->
+              <div class="table-actions-area">
+                <div class="chart-actions">
+                  <select id="chartType" aria-label="Loại biểu đồ">
+                    <option value="bar">Bar</option><option value="line">Line</option><option value="pie">Pie</option>
+                  </select>
+                  <button type="button" class="btn-chart" id="btnShowChart"><i class="fa-solid fa-chart-simple"></i> Xem biểu đồ</button>
+                </div>
+                
+                <!-- Batch actions toolbar (appears when items checked) -->
+                <div class="batch-actions-wrap" id="batchActionsWrap" hidden>
+                  <span class="selected-count-label">Đã chọn <strong id="selectedCount">0</strong> mục</span>
+                  <button type="button" class="btn-batch-action" onclick="handleBatchAction('export')">
+                    <i class="fa-solid fa-file-export"></i> Xuất các mục chọn
+                  </button>
+                </div>
 
-          <section class="report-panel report-performance-panel">
-            <div class="report-panel-heading">
-              <div>
-                <h3 id="reportPerformanceTitle">Hiệu suất theo Sở/Ban/Ngành</h3>
-                <p id="reportPerformanceDesc">Tổng hợp số việc và kết quả thực hiện ở cấp Sở/Ban/Ngành</p>
-              </div>
-              <div class="report-export-actions">
-                <button class="button button-secondary" data-report-export="excel" type="button"><i class="fa-solid fa-file-excel"></i> Excel</button>
-                <button class="button button-secondary" data-report-export="pdf" type="button"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                <button class="button button-secondary" data-report-export="word" type="button"><i class="fa-solid fa-file-word"></i> Word</button>
+                <div class="export-dropdown-wrap">
+                  <button type="button" class="btn-export-main" onclick="toggleExportMenu()">
+                    <i class="fa-solid fa-download"></i> Xuất báo cáo <i class="fa-solid fa-chevron-down ml-1"></i>
+                  </button>
+                  <div class="export-menu-dropdown" id="exportMenuDropdown">
+                    <button type="button" onclick="exportData('excel')"><i class="fa-solid fa-file-excel color-green"></i> Xuất Excel (.xlsx)</button>
+                    <button type="button" onclick="exportData('pdf')"><i class="fa-solid fa-file-pdf color-red"></i> Xuất PDF (.pdf)</button>
+                    <button type="button" onclick="exportData('word')"><i class="fa-solid fa-file-word color-blue"></i> Xuất Word (.docx)</button>
+                    <button type="button" onclick="exportData('print')"><i class="fa-solid fa-print"></i> In báo cáo ngay</button>
+                  </div>
+                </div>
+
               </div>
             </div>
-            <div class="report-table-wrap">
-              <table class="report-table">
-                <thead>
-                  <tr>
-                    <th id="reportPerformanceColHeader">Sở/Ban/Ngành</th>
-                    <th>Tổng việc giao</th>
-                    <th>Hoàn thành</th>
-                    <th>Đúng hạn</th>
-                    <th>Yêu cầu làm lại</th>
-                  </tr>
+
+            <!-- Table responsive wrapper -->
+            <div class="table-responsive">
+              <table class="report-data-table" id="reportDataTable">
+                <thead id="tableHead">
+                  <!-- Generated dynamically by JS based on current template columns -->
                 </thead>
-                <tbody id="reportPerformanceBody"></tbody>
+                <tbody id="tableBody">
+                  <!-- Generated dynamically by JS -->
+                </tbody>
               </table>
             </div>
-          </section>
-        </div>
 
+            <!-- Table Footer: Pagination & Page size -->
+            <div class="table-pagination-footer">
+              <div class="pagination-info">
+                Hiển thị từ <span id="pagStart">1</span> đến <span id="pagEnd">10</span> trong tổng số <span id="pagTotal">0</span> bản ghi
+              </div>
+
+              <div class="pagination-controls">
+                <label class="page-size-picker">
+                  <span>Hiển thị</span>
+                  <select id="pageSizeSelect" onchange="changePageSize(this.value)">
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                  <span>dòng/trang</span>
+                </label>
+
+                <div class="pagination-buttons" id="paginationButtons">
+                  <!-- Render buttons by JS -->
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+        </div>
       </div><!-- /.content -->
 
       <div class="footer">
@@ -211,7 +349,38 @@
 
   </div><!-- /.app -->
 
-  <!-- Shared: Toast -->
+  <!-- SLIDE-OVER DRAWER XEM CHI TIẾT CHỈ ĐẠO & QUY TRÌNH -->
+  <div class="drawer-overlay" id="detailDrawerOverlay" onclick="closeDetailDrawer()"></div>
+  <aside class="detail-drawer" id="detailDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title-box">
+        <span class="drawer-badge" id="drawerCodeBadge">CD-2026-001</span>
+        <h3 id="drawerDirectiveTitle">Chi tiết chỉ đạo điều hành</h3>
+      </div>
+      <button type="button" class="btn-close-drawer" onclick="closeDetailDrawer()" aria-label="Đóng">&times;</button>
+    </div>
+
+    <div class="drawer-body" id="drawerBody">
+      <!-- Generated dynamically by JS -->
+    </div>
+
+    <div class="drawer-footer">
+      <button type="button" class="btn-secondary-drawer" onclick="closeDetailDrawer()">Đóng</button>
+      <a href="#" target="_blank" class="btn-primary-drawer" id="drawerDashboardLink">
+        <i class="fa-solid fa-chart-line"></i> Mở Dashboard Dân cư
+      </a>
+    </div>
+  </aside>
+
+  <div class="chart-modal" id="chartModal" hidden>
+    <div class="chart-dialog">
+      <div class="chart-dialog-header"><h3>Biểu đồ dữ liệu đang lọc</h3><button type="button" id="btnCloseChart" aria-label="Đóng">&times;</button></div>
+      <div class="chart-summary" id="chartSummary"></div>
+      <div class="chart-canvas-wrap"><canvas id="reportChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
   <div class="notifications-container">
     <div id="toast" class="success">
       <p id="toast-title" class="success-prompt-heading">Thành công</p>
@@ -219,8 +388,18 @@
     </div>
   </div>
 
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx/build/index.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Admin Shared JS -->
   <script src="../shared/admin-shared.js"></script>
-  <script>loadSharedLayout('nav-bao-cao-thong-ke');</script>
+  <!-- Module JS -->
+  <script src="js/state.js"></script>
   <script src="js/ui.js"></script>
 </body>
 
