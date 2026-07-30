@@ -133,8 +133,15 @@
 }
 
 @keyframes dropdownFadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .custom-dropdown-item {
@@ -200,11 +207,25 @@
 }
 
 /* KÍCH THƯỚC CỘT & CĂN LỀ CSS (THU NHỎ CỘT TÊN NHÓM QUYỀN 15%, MỞ RỘNG MÔ TẢ 46%) */
-.role-table .col-code { width: 18%; }
-.role-table .col-name { width: 15%; }
-.role-table .col-desc { width: 46%; }
-.role-table .col-status { width: 15%; }
-.role-table .col-action { width: 6%; }
+.role-table .col-code {
+  width: 18%;
+}
+
+.role-table .col-name {
+  width: 15%;
+}
+
+.role-table .col-desc {
+  width: 46%;
+}
+
+.role-table .col-status {
+  width: 15%;
+}
+
+.role-table .col-action {
+  width: 6%;
+}
 
 .role-table .center,
 .center {
@@ -355,7 +376,8 @@
   gap: 6px;
 }
 
-.pg-nav-btn, .pg-num-btn {
+.pg-nav-btn,
+.pg-num-btn {
   height: 32px;
   min-width: 32px;
   padding: 0 8px;
@@ -370,7 +392,8 @@
   justify-content: center;
 }
 
-.pg-nav-btn.disabled, .pg-nav-btn:disabled {
+.pg-nav-btn.disabled,
+.pg-nav-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -406,6 +429,7 @@
   border-radius: 12px;
   width: 100%;
   max-width: 680px;
+  max-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -414,8 +438,15 @@
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-header {
@@ -450,7 +481,9 @@
 
 .modal-body {
   padding: 14px 20px;
-  overflow: hidden;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .form-row-two {
@@ -512,26 +545,29 @@
   cursor: not-allowed;
 }
 
-/* THIẾT KẾ VALIDATION: VIỀN ĐỎ #E53E3E, NỀN TRẮNG TINH #FFFFFF, DÒNG LỖI MÀU ĐỎ IN NGHIÊNG KHÔNG CHIẾM DIỆN TÍCH FORM */
+/* THIẾT KẾ VALIDATION: ĐỒNG BỘ 100% VỚI QUY TRÌNH ĐỘNG (VIỀN ĐỎ #EF4444, DÒNG LỖI 12.5PX IN NGHIÊNG BÊN DƯỚI) */
 .form-input.is-invalid,
 .perm-tree-container.is-invalid {
-  border-color: #E53E3E !important;
-  background-color: #FFFFFF !important;
-  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.15) !important;
+  border-color: #ef4444 !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
 }
 
-/* ĐỊNH VỊ TUYỆT ĐỐI & CHỮ IN NGHIÊNG KHÔNG CHIẾM LAYOUT CAO GIỮ FORM CỐ ĐỊNH 100% */
 .form-error-msg {
-  position: absolute;
-  left: 0;
-  bottom: -15px;
-  font-size: 11px;
-  color: #E53E3E;
-  font-style: italic;
-  font-weight: 400;
-  white-space: nowrap;
-  line-height: 1;
-  pointer-events: none;
+  display: block !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 100% !important;
+  margin-top: 2px !important;
+  font-size: 11.5px !important;
+  color: #ef4444 !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+  z-index: 5 !important;
+  padding: 4px !important;
 }
 
 .form-error-msg[hidden] {
@@ -641,24 +677,24 @@
   pointer-events: auto !important;
 }
 
-.tree-group.collapsed > .tree-sub-list-line,
-.tree-sub-group.collapsed > .tree-sub-list-line {
+.tree-group.collapsed>.tree-sub-list-line,
+.tree-sub-group.collapsed>.tree-sub-list-line {
   display: none !important;
 }
 
-.tree-group.collapsed > .tree-group-header .tree-caret,
-.tree-sub-group.collapsed > .tree-group-header .tree-caret {
+.tree-group.collapsed>.tree-group-header .tree-caret,
+.tree-sub-group.collapsed>.tree-group-header .tree-caret {
   transform: rotate(-90deg);
 }
 
 /* MÀU SẮC TIÊU ĐỀ NỐT CHA (XANH NHẠT) VÀ NỐT CON (XÁM NHẠT) */
 .tree-group-title.text-blue,
-.tree-sub-group:has(.tree-sub-list-line) > .tree-group-header .tree-sub-group-title {
+.tree-sub-group:has(.tree-sub-list-line)>.tree-group-header .tree-sub-group-title {
   color: #0091FF;
   font-weight: 600;
 }
 
-.tree-sub-group:not(:has(.tree-sub-list-line)) > .tree-group-header .tree-sub-group-title,
+.tree-sub-group:not(:has(.tree-sub-list-line))>.tree-group-header .tree-sub-group-title,
 .tree-sub-item-row span {
   color: #475569;
   font-weight: 400;
@@ -681,7 +717,7 @@
   opacity: 0.75 !important;
 }
 
-.modal-box.mode-view .switch-toggle input:checked + .switch-slider {
+.modal-box.mode-view .switch-toggle input:checked+.switch-slider {
   background-color: #93C5FD !important;
 }
 
@@ -691,7 +727,7 @@
 
 /* NỐT CHA Ở CHẾ ĐỘ XEM: Tiêu đề & Caret -> xanh nhạt dịu mắt #60A5FA */
 .modal-box.mode-view .tree-group-title.text-blue,
-.modal-box.mode-view .tree-sub-group:has(.tree-sub-list-line) > .tree-group-header .tree-sub-group-title,
+.modal-box.mode-view .tree-sub-group:has(.tree-sub-list-line)>.tree-group-header .tree-sub-group-title,
 .modal-box.mode-view .tree-group-header .tree-caret {
   color: #60A5FA !important;
 }
@@ -802,7 +838,10 @@
 .switch-slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: #CBD5E1;
   transition: 0.2s;
   border-radius: 20px;
@@ -820,11 +859,11 @@
   border-radius: 50%;
 }
 
-input:checked + .switch-slider {
+input:checked+.switch-slider {
   background-color: #0091FF;
 }
 
-input:checked + .switch-slider:before {
+input:checked+.switch-slider:before {
   transform: translateX(16px);
 }
 
@@ -990,6 +1029,13 @@ input:checked + .switch-slider:before {
   pointer-events: none;
 }
 
+.notifications-container #toast.error,
+.notifications-container #toast.danger,
+.notifications-container #toast.failure {
+  background: #FEF2F2 !important;
+  border-color: #FECACA !important;
+}
+
 .notifications-container #toast.show {
   opacity: 1;
   transform: translateY(0);
@@ -1002,8 +1048,20 @@ input:checked + .switch-slider:before {
   margin: 0;
 }
 
+#toast.error .success-prompt-heading,
+#toast.danger .success-prompt-heading,
+#toast.failure .success-prompt-heading {
+  color: #991B1B !important;
+}
+
 #toast .success-prompt-prompt {
   font-size: 13px;
   color: #166534;
   margin: 0;
+}
+
+#toast.error .success-prompt-prompt,
+#toast.danger .success-prompt-prompt,
+#toast.failure .success-prompt-prompt {
+  color: #B91C1C !important;
 }

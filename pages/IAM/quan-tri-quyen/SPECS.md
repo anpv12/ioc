@@ -61,8 +61,10 @@ Hệ thống áp dụng Mô hình Phân quyền 2 Lớp độc lập và chặt 
 - **Nút Hủy**: Hủy bỏ thao tác, giữ nguyên trạng thái hiện tại.
 - **Nút Đồng ý**: Thực thi thao tác và hiển thị thông báo thành công.
 
-### 3.7. Popup Thông báo thành công (Toast Notification)
-- **Ý nghĩa**: Hiển thị thông báo ngắn gọn ở góc màn hình sau khi hoàn tất thành công các thao tác Thêm mới, Cập nhật hoặc Xóa. Tự động ẩn sau một khoảng thời gian ngắn.
+### 3.7. Popup Thông báo Thành công & Thất bại (Toast Notification)
+- **Thông báo Thành công**: Hiển thị thông báo màu xanh ở góc màn hình sau khi hoàn tất thành công các thao tác Thêm mới, Cập nhật hoặc Xóa. Tự động ẩn sau một khoảng thời gian ngắn.
+- **Thông báo Thất bại**: Hiển thị thông báo nổi bật màu đỏ (tiêu đề "Thất bại", nội dung như *"Lưu thất bại"*, *"Xóa thất bại"*, *"Hệ thống gặp sự cố"*) chỉ xuất hiện khi xảy ra lỗi xử lý bên trong hệ thống.
+- **Quy tắc Kiểm tra Nhập liệu (Inline Validation)**: Trường hợp người dùng chưa nhập đủ thông tin bắt buộc, hệ thống chỉ sử dụng dòng chữ và viền đỏ báo lỗi trực tiếp bên dưới ô nhập liệu (Inline Validation), **tuyệt đối không** bật Popup Toast thông báo thất bại.
 
 ### 3.8. Thanh phân trang (Pagination)
 - **Dropdown số lượng bản ghi**: Chọn số lượng bản ghi hiển thị trên mỗi trang.
@@ -71,7 +73,7 @@ Hệ thống áp dụng Mô hình Phân quyền 2 Lớp độc lập và chặt 
 
 ## 4. Luồng thao tác nghiệp vụ
 
-1. **Thêm mới nhóm quyền**: Nhấn "Thêm mới" -> Nhập thông tin và chọn quyền chức năng -> Nhấn "Lưu" -> Xác nhận "Đồng ý" -> Lưu dữ liệu, đóng form và hiển thị thông báo thành công.
-2. **Chỉnh sửa nhóm quyền**: Nhấn menu 3 chấm -> Chọn "Sửa" -> Thay đổi thông tin -> Nhấn "Lưu" -> Xác nhận "Đồng ý" -> Cập nhật dữ liệu, đóng form và hiển thị thông báo thành công.
+1. **Thêm mới nhóm quyền**: Nhấn "Thêm mới" -> Nhập thông tin và chọn quyền chức năng -> Nếu thiếu thông tin: hiển thị lỗi viền đỏ trực tiếp bên dưới trường nhập (không hiện popup thất bại) -> Khi đủ thông tin: Nhấn "Lưu" -> Xác nhận "Đồng ý" -> Lưu dữ liệu, đóng form và hiển thị thông báo thành công.
+2. **Chỉnh sửa nhóm quyền**: Nhấn menu 3 chấm -> Chọn "Sửa" -> Thay đổi thông tin -> Nếu thiếu thông tin: hiển thị lỗi viền đỏ inline -> Khi đủ thông tin: Nhấn "Lưu" -> Xác nhận "Đồng ý" -> Cập nhật dữ liệu, đóng form và hiển thị thông báo thành công.
 3. **Xem chi tiết nhóm quyền**: Nhấn menu 3 chấm -> Chọn "Xem" -> Form mở ở chế độ chỉ xem -> Nhấn "Trở về" để đóng form.
 4. **Xóa nhóm quyền**: Nhấn menu 3 chấm -> Chọn "Xóa" -> Xác nhận "Đồng ý" -> Xóa khỏi danh sách và hiển thị thông báo thành công.

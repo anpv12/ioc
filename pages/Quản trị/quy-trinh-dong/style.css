@@ -1800,6 +1800,7 @@ label.dropdown-item {
   margin-top: 4px !important;
   display: block !important;
   font-weight: 500 !important;
+  font-style: italic !important;
 }
 
 .has-error {

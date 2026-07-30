@@ -18,9 +18,31 @@ document.addEventListener('DOMContentLoaded', () => {
 // HELPER: POPUP THÔNG BÁO THÀNH CÔNG (TOAST NOTIFICATION)
 function showToastNotice(message = 'Thao tác đã hoàn tất thành công.') {
   const toast = document.getElementById('toast');
+  const toastTitle = document.getElementById('toast-title');
   const toastMsg = document.getElementById('toast-message');
   if (!toast || !toastMsg) return;
 
+  toast.classList.remove('error', 'danger', 'failure');
+  toast.classList.add('success');
+  if (toastTitle) toastTitle.textContent = 'Thành công';
+  toastMsg.textContent = message;
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+// HELPER: POPUP THÔNG BÁO THẤT BẠI (ERROR TOAST NOTIFICATION)
+function showToastError(message = 'Thao tác thất bại.', title = 'Thất bại') {
+  const toast = document.getElementById('toast');
+  const toastTitle = document.getElementById('toast-title');
+  const toastMsg = document.getElementById('toast-message');
+  if (!toast || !toastMsg) return;
+
+  toast.classList.remove('success');
+  toast.classList.add('error');
+  if (toastTitle) toastTitle.textContent = title;
   toastMsg.textContent = message;
   toast.classList.add('show');
 
@@ -684,3 +706,7 @@ function initModalEvents() {
     });
   }
 }
+
+// Export global helpers for IAM
+window.showToastNotice = showToastNotice;
+window.showToastError = showToastError;

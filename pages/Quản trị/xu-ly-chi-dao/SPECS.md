@@ -46,11 +46,11 @@
    - Khi thực hiện thành công các thao tác (*Chuyển xử lý*, *Trình phê duyệt*, *Trả về*): Form modal giữ nguyên mở, tự động cập nhật dữ liệu và sơ đồ luồng quy trình mới nhất, đồng thời hiển thị thông báo Toast thành công.
 
 2. **Quy tắc Kiểm tra Dữ liệu Đầu vào (Inline Validation)**:
-   - Khi chưa chọn người xử lý hoặc chưa nhập nội dung báo cáo/lý do trả về mà nhấn nút hành động, hệ thống hiển thị câu chữ báo lỗi trực tiếp bên dưới ô nhập liệu tương ứng.
+   - Khi chưa chọn người xử lý hoặc chưa nhập nội dung báo cáo/lý do trả về mà nhấn nút hành động, hệ thống hiển thị câu chữ báo lỗi trực tiếp bên dưới ô nhập liệu tương ứng (Inline Validation); **không** hiển thị Popup Toast thông báo thất bại.
 
-3. **Thông báo Xác nhận & Toast**:
+3. **Thông báo Xác nhận & Toast (Thành công / Thất bại Hệ thống)**:
    - Mọi thao tác chuyển trạng thái đều yêu cầu người dùng xác nhận qua Popup xác nhận trước khi thực hiện.
-   - Hiển thị thông báo Toast ngắn gọn sau khi hoàn thành thao tác.
+   - Hiển thị thông báo Toast màu xanh khi thao tác thành công. Popup Toast màu đỏ (thất bại) chỉ xuất hiện khi xảy ra lỗi xử lý bên trong hệ thống.
 
 4. **Tự động chụp màn hình Dashboard khi trình phê duyệt**:
    - Tại mốc thời gian bấm nút *Trình phê duyệt*, hệ thống tự động ghi nhận ảnh chụp màn hình Dashboard tại đường dẫn liên kết chỉ đạo và tạo tệp `.png` (`Dashboard_CapNhat_ThoiDiemTrinh.png`) đính kèm trực tiếp vào báo cáo.

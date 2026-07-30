@@ -1559,6 +1559,7 @@ textarea.action-textarea.is-invalid {
   color: #dc2626;
   font-size: 12px;
   font-weight: 500;
+  font-style: italic !important;
   margin-top: 4px;
 }
 
@@ -1874,6 +1875,7 @@ textarea.action-textarea.is-invalid {
   color: #dc2626 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
+  font-style: italic !important;
   margin-top: 6px !important;
 }
 
