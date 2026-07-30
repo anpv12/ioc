@@ -452,7 +452,7 @@ function updateDeadlineBell() {
   const bannerEl = document.getElementById('drawerNotificationBanner');
   if (countEl) {
     if (total > 0) {
-      countEl.textContent = 'Có ' + total + ' chỉ đạo cần chú ý deadline';
+      countEl.textContent = 'Có ' + total + ' chỉ đạo cần xử lý';
       if (bannerEl) {
         bannerEl.style.background = '#fef2f2';
         bannerEl.style.borderColor = '#fca5a5';
@@ -1783,7 +1783,14 @@ window.previewFile = function (fileName) {
 };
 
 // ----- Event Listeners -----
-document.getElementById('btnToggleDrawer').addEventListener('click', toggleDrawer);
+document.getElementById('btnToggleDrawer').addEventListener('click', () => {
+  const roleSelect = document.getElementById('mockRoleSelect');
+  if (roleSelect && roleSelect.value === 'leader_department') {
+    window.location.href = '../Quản trị/xu-ly-chi-dao/index.html';
+  } else {
+    toggleDrawer();
+  }
+});
 
 document.addEventListener('click', () => {
   document.querySelectorAll('.directive-actions-dropdown').forEach(el => el.classList.remove('open'));
