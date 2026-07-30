@@ -49,7 +49,7 @@ const DIRECTORS = [
 ];
 
 const STORAGE_KEY = 'gialai_directives';
-const DATA_VERSION = 'gialai_directives_v19';
+const DATA_VERSION = 'gialai_directives_v30';
 
 // Helper: format Date to dd/mm/yyyy
 function formatDateDMY(d) {
@@ -57,6 +57,54 @@ function formatDateDMY(d) {
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const yyyy = d.getFullYear();
   return dd + '/' + mm + '/' + yyyy;
+}
+
+// Helper: Giả lập 105 đơn vị toàn tỉnh (cho trường hợp cá biệt)
+function generate105Agencies(dueStr) {
+  const baseAgencies = [
+    'Sở Nội vụ', 'Sở TT&TT', 'Sở Tư pháp', 'Sở LĐ-TB&XH', 'Sở Y tế', 'Sở GD&ĐT', 'Sở KH&ĐT', 'Sở Tài chính',
+    'UBND TP Pleiku', 'UBND TX An Khê', 'UBND TX Ayun Pa', 'UBND Huyện Chư Păh', 'UBND Huyện Chư Prông', 'UBND Huyện Chư Sê', 'UBND Huyện Đăk Đoa'
+  ];
+  const statuses = ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Kết thúc'];
+  const list = [];
+  for (let i = 1; i <= 105; i++) {
+    const baseName = baseAgencies[(i - 1) % baseAgencies.length];
+    const name = i <= baseAgencies.length ? baseName : `${baseName} (Đơn vị cơ sở ${Math.floor(i / baseAgencies.length) + 1})`;
+    const firstNames = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Hoàng', 'Huỳnh', 'Phan', 'Vũ', 'Võ', 'Đặng', 'Bùi', 'Đỗ', 'Hồ', 'Ngô', 'Dương', 'Lý'];
+    const middleNames = ['Văn', 'Thị', 'Hữu', 'Đức', 'Hoài', 'Thanh', 'Minh', 'Ngọc', 'Quang', 'Xuân', 'Đình', 'Hải', 'Thành', 'Thu'];
+    const lastNames = ['An', 'Bình', 'Châu', 'Dũng', 'Giang', 'Hùng', 'Hương', 'Khánh', 'Linh', 'Minh', 'Nga', 'Phong', 'Quân', 'Sơn', 'Trang', 'Tuấn', 'Hải', 'Yến'];
+    
+    const randomName = firstNames[(i * 3) % firstNames.length] + ' ' + 
+                       middleNames[(i * 5) % middleNames.length] + ' ' + 
+                       lastNames[(i * 7) % lastNames.length];
+
+    list.push({
+      name: name,
+      pic: randomName,
+      dueDate: dueStr,
+      status: statuses[i % statuses.length],
+      report: (i % 4 === 2 || i % 4 === 3) ? 'Đã hoàn thành nội dung báo cáo theo yêu cầu của Lãnh đạo UBND tỉnh. Số liệu đính kèm bên dưới.' : '',
+      attachments: (i % 4 === 2 || i % 4 === 3) ? [
+        { name: 'Bao_cao_chi_tiet_' + i + '.pdf', source: 'agency' }, 
+        { name: 'Phu_luc_so_lieu.xlsx', source: 'agency' },
+        { name: 'Hinh_anh_minh_chung.png', source: 'agency' },
+        { name: 'Danh_sach_don_vi.docx', source: 'agency' }
+      ] : []
+    });
+  }
+  return list;
+}
+
+// Helper: Tạo danh sách đơn vị từ AGENCIES thật
+function generateRealAgencies(dueStr) {
+  const statuses = ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Kết thúc'];
+  return AGENCIES.map((name, i) => ({
+    name: name,
+    pic: `Phụ trách ${name}`,
+    dueDate: dueStr,
+    status: statuses[i % statuses.length],
+    report: i % 4 === 0 ? 'Đã rà soát và gửi báo cáo theo quy định.' : ''
+  }));
 }
 
 // Khởi tạo và kiểm tra dữ liệu từ localStorage
@@ -70,7 +118,7 @@ try {
 
 // Reset nếu phiên bản dữ liệu cũ
 const currentVersion = localStorage.getItem('gialai_directives_version');
-if (currentVersion !== DATA_VERSION || !Array.isArray(directives) || directives.length > 20) {
+if (currentVersion !== DATA_VERSION || !Array.isArray(directives) || directives.length > 25) {
   directives = [];
   localStorage.setItem('gialai_directives_version', DATA_VERSION);
   localStorage.removeItem(STORAGE_KEY);
@@ -84,6 +132,7 @@ if (directives.length === 0) {
   const dueNormal = formatDateDMY(new Date(Date.now() + 7 * 86400000));
 
   directives = [
+    // --- Giả lập Chỉ đạo Toàn tỉnh (105 đơn vị) ---
     // --- Metric Tổng nhân khẩu: Chờ phân công ---
     {
       id: 'dir_mock_1',
@@ -110,6 +159,31 @@ if (directives.length === 0) {
       createdAt: todayStr
     },
     {
+      id: 'dir_mock_province_105',
+      title: 'Tổng kiểm tra chuẩn hóa dữ liệu định danh điện tử toàn tỉnh',
+      layoutGroup: 'du-lieu-khac',
+      dataPageIds: ['dlk-1'],
+      dataPageNames: ['Trang Phân bố Dân cư theo Giới tính'],
+      dataSourceUrls: [{ name: 'Trang Phân bố Dân cư theo Giới tính', url: 'https://gialai.gov.vn/giam-sat/dan-cu/gioi-tinh' }],
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Chỉ đạo toàn tỉnh',
+      agencies: generateRealAgencies(dueSoon),
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Tổng kiểm tra, rà soát và chuẩn hóa dữ liệu định danh điện tử VNeID của toàn bộ công dân trên địa bàn tỉnh Gia Lai.',
+      dueDate: dueSoon,
+      reportDueDate: '',
+      attachments: [
+        { name: 'Kế_hoạch_rà_soát_C06.pdf', source: 'leader' },
+        { name: 'Ke_hoach_trien_khai_chi_tiet_2026.docx', source: 'leader' },
+        { name: 'Screenshot_Trang_Phan_bo_Dan_cu_theo_Gioi_tinh.png', source: 'leader', isScreenshot: true }
+      ],
+      status: 'Đang xử lý',
+      report: '',
+      createdAt: todayStr
+    },
+    {
       id: 'dir_mock_2',
       title: 'Kiểm tra hạ tầng mạng kết nối C06',
       layoutGroup: 'dich-vu-cong',
@@ -118,8 +192,14 @@ if (directives.length === 0) {
       dataSourceUrls: [{ name: 'Trang Tỷ lệ Hồ sơ Đúng hạn & Quá hạn', url: 'https://gialai.gov.vn/giam-sat/dich-vu-cong/ty-le-ho-so' }],
       metricIds: ['metric-tong-nhan-khau'],
       metricId: 'metric-tong-nhan-khau',
-      agency: 'Sở Thông tin và Truyền thông, Sở Kế hoạch và Đầu tư',
-      agencies: [{name: 'Sở Thông tin và Truyền thông', pic: 'Nguyễn Văn D', dueDate: dueOverdue, status: 'Chờ phân công', report: ''}, {name: 'Sở Kế hoạch và Đầu tư', pic: 'Trần Văn E', dueDate: dueOverdue, status: 'Đang xử lý', report: ''}],
+      agency: 'Sở Thông tin và Truyền thông, Sở Kế hoạch và Đầu tư, Sở Nội vụ, Sở Tư pháp',
+      agencies: [
+        {name: 'Sở Thông tin và Truyền thông', pic: 'Nguyễn Văn D', dueDate: dueOverdue, status: 'Chờ phân công', report: ''}, 
+        {name: 'Sở Kế hoạch và Đầu tư', pic: 'Trần Văn E', dueDate: dueOverdue, status: 'Đang xử lý', report: ''},
+        {name: 'Sở Nội vụ', pic: 'Lê Văn F', dueDate: dueOverdue, status: 'Chờ phân công', report: ''},
+        {name: 'Sở Tư pháp', pic: 'Phạm Văn G', dueDate: dueOverdue, status: 'Đang xử lý', report: ''},
+        {name: 'Sở Tài chính', pic: 'Vũ Văn H', dueDate: dueOverdue, status: 'Chờ phân công', report: ''}
+      ],
       director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       content: 'Kiểm tra hạ tầng mạng kết nối dữ liệu dân cư quốc gia trên địa bàn tỉnh.',
@@ -223,15 +303,16 @@ if (directives.length === 0) {
       title: 'Lập danh sách trẻ em tiêm chủng đợt 2',
       metricIds: ['metric-tre-em'],
       metricId: 'metric-tre-em',
-      agency: 'Sở Y tế',
+      agency: 'Chỉ đạo toàn tỉnh (105 đơn vị)',
+      agencies: generate105Agencies(dueSoon),
       director: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
       creator: 'Phó Chủ tịch UBND Tỉnh (phụ trách KTXH)',
-      content: 'Lập danh sách trẻ em trong độ tuổi tiêm chủng đợt 2 năm 2026.',
+      content: 'Lập danh sách trẻ em trong độ tuổi tiêm chủng đợt 2 năm 2026 trên toàn tỉnh.',
       dueDate: dueSoon,
       reportDueDate: dueSoon,
       attachments: [{ name: 'Ke_hoach_tiem_chung.png', source: 'leader' }],
       status: 'Đang xử lý',
-      report: 'Đã gửi công văn hướng dẫn xuống các trung tâm y tế huyện.',
+      report: 'Đã có 50 đơn vị bắt đầu triển khai.',
       createdAt: todayStr
     },
 
@@ -297,8 +378,29 @@ if (directives.length === 0) {
       status: 'Chờ phê duyệt',
       report: 'Đơn vị đã hoàn chỉnh báo cáo và đang chờ lãnh đạo phê duyệt.',
       createdAt: todayStr
+    },
+    {
+      id: 'dir_mock_province_new',
+      title: 'Đôn đốc triển khai nhiệm vụ chuyển đổi số toàn diện',
+      layoutGroup: 'du-lieu-khac',
+      dataPageIds: ['dlk-1'],
+      dataPageNames: ['Trang Phân bố Dân cư theo Giới tính'],
+      dataSourceUrls: [{ name: 'Trang Phân bố Dân cư theo Giới tính', url: 'https://gialai.gov.vn/giam-sat/dan-cu/gioi-tinh' }],
+      metricIds: ['metric-tong-nhan-khau'],
+      metricId: 'metric-tong-nhan-khau',
+      agency: 'Chỉ đạo toàn tỉnh',
+      agencies: generate105Agencies(dueSoon),
+      director: 'Chủ tịch UBND Tỉnh',
+      creator: 'Chủ tịch UBND Tỉnh',
+      content: 'Yêu cầu 105 cơ quan, đơn vị trên toàn tỉnh khẩn trương báo cáo tiến độ triển khai các nền tảng số dùng chung.',
+      dueDate: dueSoon,
+      reportDueDate: dueSoon,
+      attachments: [{ name: 'Ke_hoach_chuyen_doi_so.pdf', source: 'leader' }],
+      status: 'Đang xử lý',
+      report: '',
+      createdAt: todayStr
     }
-  ];
+  ].reverse();
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(directives));
 }
@@ -332,6 +434,8 @@ directives = directives.map(function (d) {
 
   return base;
 });
+
+saveDirectives();
 
 function saveDirectives() {
   const STATUS_MAP_EN = {

@@ -16,6 +16,9 @@ html, body {
   overflow: hidden;
   background: var(--page-bg); /* lề 2 bên stage sẽ hiện màu này */
 }
+button, input, select, textarea, table, th, td {
+  font-family: var(--font-family);
+}
 
 /* Ẩn spin arrows trên input[type=number] */
 input[type=number]::-webkit-inner-spin-button,
