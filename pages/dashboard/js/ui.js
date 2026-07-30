@@ -590,6 +590,26 @@ function applyDirectiveIndicators() {
 
 // ----- Save & Update Directive Modal Popup (#directiveFormModal) -----
 let editingDirectiveId = null;
+// Các đơn vị đã tiếp nhận chỉ đạo khi mở luồng Sửa: chỉ được thêm mới, không được xoá
+let lockedAgencies = [];
+
+window.isAgencyLocked = function (name) {
+  return lockedAgencies.includes((name || '').trim());
+};
+
+// Khoá checkbox + gắn nhãn ổ khoá cho các đơn vị đã tiếp nhận chỉ đạo.
+// Không dùng tooltip title — chỉ dấu trực quan là icon ổ khoá; sai thao tác thì báo bằng toast.
+window.applyAgencyLockUI = function () {
+  document.querySelectorAll('#formAgencyDropdown input[name="agencyCb"]').forEach(cb => {
+    const label = cb.closest('.ms-opt');
+    const locked = isAgencyLocked(cb.value);
+
+    cb.disabled = locked;
+    if (locked) cb.checked = true;
+
+    if (label) label.classList.toggle('ms-opt-locked', locked);
+  });
+};
 
 window.openDirectiveFormModal = function (editId = null) {
   editingDirectiveId = editId;
@@ -631,16 +651,27 @@ window.openDirectiveFormModal = function (editId = null) {
     }
 
     // Khôi phục Đơn vị xử lý (Checkbox Multi-select)
+    const agencyCbs = Array.from(document.querySelectorAll('#formAgencyDropdown input[name="agencyCb"]'));
+    const isAllProvinceDir = dir.agency === 'Chỉ đạo toàn tỉnh' || dir.agency === 'Toàn tỉnh';
+
     if (dir.agency) {
-      const agencies = dir.agency.split(',').map(s => s.trim());
-      document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => {
-        cb.checked = agencies.includes(cb.value);
-      });
-      if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
+      const agencies = isAllProvinceDir
+        ? agencyCbs.map(cb => cb.value)
+        : dir.agency.split(',').map(s => s.trim()).filter(Boolean);
+
+      agencyCbs.forEach(cb => { cb.checked = agencies.includes(cb.value); });
+      const cbAll = document.getElementById('selectAllAgencyForm');
+      if (cbAll) cbAll.checked = isAllProvinceDir;
+
+      // Các đơn vị đang có trong chỉ đạo = đã tiếp nhận => khoá, không cho xoá
+      lockedAgencies = agencyCbs.filter(cb => cb.checked).map(cb => cb.value);
     } else {
-      document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
-      if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
+      agencyCbs.forEach(cb => { cb.checked = false; });
+      lockedAgencies = [];
     }
+
+    applyAgencyLockUI();
+    if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
     // (dir.title is removed)
     if (dir.content) document.getElementById('formContent').value = dir.content;
     const dirSelect = document.getElementById('formDirector');
@@ -695,6 +726,8 @@ window.openDirectiveFormModal = function (editId = null) {
 
     document.getElementById('formAgency').value = '';
     document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
+    lockedAgencies = [];
+    applyAgencyLockUI();
     if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
 
     // formTitle is removed
@@ -712,6 +745,8 @@ window.openDirectiveFormModal = function (editId = null) {
 window.closeDirectiveFormModal = function () {
   document.getElementById('directiveFormModal').classList.remove('open');
   editingDirectiveId = null;
+  lockedAgencies = [];
+  applyAgencyLockUI();
 };
 
 window.saveDirectiveFromModal = function () {
@@ -752,6 +787,16 @@ window.saveDirectiveFromModal = function () {
   const isAllProvince = agency === 'Chỉ đạo toàn tỉnh' || agency === 'Toàn tỉnh';
   const finalAgency = isAllProvince ? 'Chỉ đạo toàn tỉnh' : agency;
 
+  // Ràng buộc luồng Sửa: không được bỏ đơn vị đã tiếp nhận chỉ đạo
+  if (editingDirectiveId && lockedAgencies.length && !isAllProvince) {
+    const submitted = agency.split(',').map(s => s.trim());
+    const removed = lockedAgencies.filter(name => !submitted.includes(name));
+    if (removed.length) {
+      showToast('Không thể xoá đơn vị đã tiếp nhận chỉ đạo: ' + removed.join(', '), 'error');
+      return;
+    }
+  }
+
   if (isAllProvince) {
     agencies = generate105Agencies(dueDate);
   } else {
@@ -783,11 +828,19 @@ window.saveDirectiveFromModal = function () {
       dir.director = director;
       dir.attachments = attachments;
       if (!dir.agencies) dir.agencies = [];
+      const prevAgencies = dir.agencies;
       // Merge agencies
-      dir.agencies = agencies.map(newAg => {
-        const existing = dir.agencies.find(x => x.name === newAg.name);
+      const merged = agencies.map(newAg => {
+        const existing = prevAgencies.find(x => x.name === newAg.name);
         return existing ? { ...existing, dueDate } : newAg;
       });
+      // Giữ lại đơn vị đã tiếp nhận chỉ đạo nếu danh sách mới không chứa (vd. nâng lên toàn tỉnh)
+      prevAgencies.forEach(oldAg => {
+        if (!merged.some(x => x.name === oldAg.name)) {
+          merged.push({ ...oldAg, dueDate });
+        }
+      });
+      dir.agencies = merged;
 
       saveDirectives();
       showToast('Cập nhật chỉ đạo thành công!');
@@ -978,7 +1031,13 @@ function populateUI() {
 
       const canEdit = dir.status === 'Chờ phân công' || dir.status === 'Đã chỉ đạo';
       const canDelete = dir.status === 'Chờ phân công' || dir.status === 'Đã chỉ đạo';
-      const canApproveReject = dir.status === 'Đã có báo cáo' || dir.status === 'Chờ phê duyệt';
+      // Ngoài màn danh sách: chỉ ĐƠN VỊ DUY NHẤT ở trạng thái Chờ phê duyệt mới được
+      // phê duyệt/từ chối tại đây. Chỉ đạo nhiều đơn vị hoặc toàn tỉnh phải xử lý
+      // từng đơn vị trong tab Chi tiết đơn vị, nên ẩn hẳn hai nút.
+      const isAllProvinceDirMenu = dir.agency === 'Chỉ đạo toàn tỉnh' || dir.agency === 'Toàn tỉnh';
+      const menuAgencyCount = isAllProvinceDirMenu ? 105
+        : (dir.agencies ? dir.agencies.length : (dir.agency ? dir.agency.split(',').length : 0));
+      const showApproveReject = !isAllProvinceDirMenu && menuAgencyCount <= 1 && dir.status === 'Chờ phê duyệt';
 
       const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source);
       const agencyFiles = (dir.attachments || []).filter(f => f.source === 'agency');
@@ -1040,8 +1099,8 @@ function populateUI() {
         '<button onclick="viewDirectiveDetail(\'' + dir.id + '\')" ><i class="fa-regular fa-eye"></i> Xem</button>' +
         (canEdit ? '<button onclick="openDirectiveFormModal(\'' + dir.id + '\')"><i class="fa-regular fa-pen-to-square"></i> Sửa</button>' : '') +
         (canDelete ? '<button onclick="deleteDirective(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-trash-can"></i> Xoá</button>' : '') +
-        (canApproveReject ? '<button onclick="approveDirective(\'' + dir.id + '\', event)" style="color:#2e7d32;"><i class="fa-regular fa-circle-check"></i> Phê duyệt</button>' : '') +
-        (canApproveReject ? '<button onclick="openRejectModal(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-circle-xmark"></i> Từ chối</button>' : '') +
+        (showApproveReject ? '<button onclick="approveDirective(\'' + dir.id + '\', event)" style="color:#2e7d32;"><i class="fa-regular fa-circle-check"></i> Phê duyệt</button>' : '') +
+        (showApproveReject ? '<button onclick="openRejectModal(\'' + dir.id + '\', event)" class="text-danger"><i class="fa-regular fa-circle-xmark"></i> Từ chối</button>' : '') +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -1456,7 +1515,7 @@ window.viewDirectiveDetail = function (id) {
       const headerCbHtml = showCheckbox ? '<input type="checkbox" id="cbAllAgencies" onchange="toggleSelectAllAgencies(this)" style="margin-right:8px; cursor:pointer;"> ' : '';
       
       historyHtml = '<table class="history-table" style="width:100%; border-collapse:collapse; text-align:left; font-size: var(--fs-xs);">' +
-        '<thead><tr style="background:#0b3d91; color:#fff;">' +
+        '<thead><tr>' +
         '<th style="padding:10px; border-bottom:1px solid #e2e8f0;"><div style="display:flex; align-items:center;">' + headerCbHtml + 'Đơn vị thực hiện</div></th>' +
         '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Người phụ trách</th>' +
         '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Thời hạn</th>' +
@@ -1473,17 +1532,22 @@ window.viewDirectiveDetail = function (id) {
         if (a.status === 'Bị từ chối') stClass = 'status-rejected';
         if (a.status === 'Chờ phê duyệt') stClass = 'status-waiting-approve';
         
-        const canApprove = a.status !== 'Bị từ chối';
-        
-        let actionHtml = '<div style="display:flex; flex-wrap:nowrap; gap:4px;">';
-        if (canApprove) {
-           actionHtml += '<button onclick="approveAgency(\'' + dir.id + '\', \'' + a.name + '\', event)" style="background:#10b981; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer; font-size: var(--fs-xs); display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;"><i class="fa-solid fa-check"></i> Phê duyệt</button>' +
-                         '<button onclick="rejectAgency(\'' + dir.id + '\', \'' + a.name + '\', event)" style="background:#fff; color:#ef4444; border:1px solid #ef4444; border-radius:6px; padding:5px 12px; font-weight:bold; cursor:pointer; font-size: var(--fs-xs); display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;"><i class="fa-solid fa-xmark"></i> Từ chối</button>';
-        } else {
-           actionHtml += '<button style="background:#a7f3d0; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:not-allowed; font-size: var(--fs-xs); display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;" disabled><i class="fa-solid fa-check"></i> Phê duyệt</button>' +
-                         '<button style="background:#fff; color:#fca5a5; border:1px solid #fca5a5; border-radius:6px; padding:5px 12px; font-weight:bold; cursor:not-allowed; font-size: var(--fs-xs); display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;" disabled><i class="fa-solid fa-xmark"></i> Từ chối</button>';
-        }
-        actionHtml += '</div>';
+        // Chỉ đơn vị ở Chờ phê duyệt mới thao tác được; các trạng thái khác vẫn
+        // hiển thị nút nhưng khoá (chưa báo cáo, đã duyệt, đã từ chối).
+        const canApprove = a.status === 'Chờ phê duyệt';
+        const canReject = a.status === 'Chờ phê duyệt';
+
+        const btnShared = 'border-radius:6px; font-weight:bold; font-size: var(--fs-xs); display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;';
+
+        const approveBtn = canApprove
+          ? '<button onclick="approveAgency(\'' + dir.id + '\', \'' + a.name + '\', event)" style="background:#10b981; color:#fff; border:none; padding:6px 12px; cursor:pointer; ' + btnShared + '"><i class="fa-solid fa-check"></i> Phê duyệt</button>'
+          : '<button style="background:#a7f3d0; color:#fff; border:none; padding:6px 12px; cursor:not-allowed; ' + btnShared + '" disabled><i class="fa-solid fa-check"></i> Phê duyệt</button>';
+
+        const rejectBtn = canReject
+          ? '<button onclick="rejectAgency(\'' + dir.id + '\', \'' + a.name + '\', event)" style="background:#fff; color:#ef4444; border:1px solid #ef4444; padding:5px 12px; cursor:pointer; ' + btnShared + '"><i class="fa-solid fa-xmark"></i> Từ chối</button>'
+          : '<button style="background:#fff; color:#fca5a5; border:1px solid #fca5a5; padding:5px 12px; cursor:not-allowed; ' + btnShared + '" disabled><i class="fa-solid fa-xmark"></i> Từ chối</button>';
+
+        const actionHtml = '<div style="display:flex; flex-wrap:nowrap; gap:4px;">' + approveBtn + rejectBtn + '</div>';
 
         let reportContent = a.report || '<span style="color:#94a3b8; font-style:italic;">Chưa có báo cáo</span>';
         let reportAttachHtml = '';
@@ -1514,7 +1578,7 @@ window.viewDirectiveDetail = function (id) {
         let paginationInfo = `${startIdx + 1}-${Math.min(endIdx, window.currentHistoryAgencies.length)}/${window.currentHistoryAgencies.length}`;
         
         historyHtml += `
-          <div class="directive-pagination" style="display: flex; margin-top: 16px;">
+          <div class="directive-pagination">
             <div class="pagination-limit">
               <span>Hiện:</span>
               <select onchange="window.currentHistoryRowsPerPage=parseInt(this.value); window.renderHistoryTable(1)">
@@ -1557,6 +1621,16 @@ window.updateCbAllAgencies = function() {
   const btnApprove = document.getElementById('btnApproveChecked');
   if (btnApprove) {
     btnApprove.style.display = checked > 0 ? 'inline-flex' : 'none';
+
+    // Chỉ mở nút khi trong các đơn vị đang chọn có ít nhất 1 đơn vị Chờ phê duyệt
+    const agencies = window.currentHistoryAgencies || [];
+    const approvable = Array.from(document.querySelectorAll('.agency-cb:checked')).filter(cb => {
+      const a = agencies.find(x => x.name === cb.value);
+      return a && a.status === 'Chờ phê duyệt';
+    });
+    btnApprove.disabled = approvable.length === 0;
+    btnApprove.style.opacity = btnApprove.disabled ? '0.5' : '1';
+    btnApprove.style.cursor = btnApprove.disabled ? 'not-allowed' : 'pointer';
   }
 };
 
@@ -2219,15 +2293,26 @@ window.selectAgencyMulti = function () {
     if (allChecked) {
       const chip = document.createElement('span');
       chip.className = 'ms-tag-chip';
-      chip.innerHTML = `Chỉ đạo toàn tỉnh <i class="fa-solid fa-xmark btn-remove-chip" onclick="document.getElementById('selectAllAgencyForm').click(); toggleSelectAllAgencyForm();"></i>`;
+      const allLocked = checkboxes.length > 0 && checkboxes.every(cb => isAgencyLocked(cb.value));
+      chip.innerHTML = allLocked
+        ? `Chỉ đạo toàn tỉnh <i class="fa-solid fa-lock chip-lock-icon"></i>`
+        : `Chỉ đạo toàn tỉnh <i class="fa-solid fa-xmark btn-remove-chip" onclick="clearAllAgencyForm(event)"></i>`;
+      if (allLocked) chip.classList.add('ms-tag-chip-locked');
       if (chevron) display.insertBefore(chip, chevron);
       else display.appendChild(chip);
     } else {
-      const visibleItems = checked.slice(0, 1);
+      // Ưu tiên hiển thị đơn vị đã tiếp nhận để người dùng thấy rõ phần bị khoá
+      const ordered = checked.slice().sort((a, b) => Number(isAgencyLocked(b.value)) - Number(isAgencyLocked(a.value)));
+      const visibleItems = ordered.slice(0, 1);
       visibleItems.forEach(cb => {
         const chip = document.createElement('span');
         chip.className = 'ms-tag-chip';
-        chip.innerHTML = `${cb.value} <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckAgencyChip('${cb.value}', event)"></i>`;
+        if (isAgencyLocked(cb.value)) {
+          chip.classList.add('ms-tag-chip-locked');
+          chip.innerHTML = `${cb.value} <i class="fa-solid fa-lock chip-lock-icon"></i>`;
+        } else {
+          chip.innerHTML = `${cb.value} <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckAgencyChip('${cb.value}', event)"></i>`;
+        }
         if (chevron) display.insertBefore(chip, chevron);
         else display.appendChild(chip);
       });
@@ -2253,11 +2338,27 @@ window.selectAgencyMulti = function () {
 
 window.uncheckAgencyChip = function (agencyVal, event) {
   if (event) event.stopPropagation();
+  if (isAgencyLocked(agencyVal)) {
+    showToast('Không thể xoá "' + agencyVal + '" vì đơn vị đã tiếp nhận chỉ đạo. Chỉ được thêm đơn vị mới.', 'error');
+    return;
+  }
   const cb = Array.from(document.querySelectorAll('#formAgencyDropdown input[type=checkbox]')).find(c => c.value === agencyVal);
   if (cb) {
     cb.checked = false;
     selectAgencyMulti();
   }
+};
+
+// Bỏ chọn "Chỉ đạo toàn tỉnh" nhưng vẫn giữ các đơn vị đã tiếp nhận chỉ đạo
+window.clearAllAgencyForm = function (event) {
+  if (event) event.stopPropagation();
+  const cbAll = document.getElementById('selectAllAgencyForm');
+  if (cbAll) cbAll.checked = false;
+  document.querySelectorAll('#formAgencyDropdown input[name="agencyCb"]').forEach(cb => {
+    cb.checked = isAgencyLocked(cb.value);
+  });
+  applyAgencyLockUI();
+  selectAgencyMulti();
 };
 
 window.onLayoutGroupChange = function () {
@@ -2522,7 +2623,7 @@ window.executeConfirmApprove = function () {
          }
       } else if (approveAllAgenciesFlag) {
          dir.agencies.forEach(a => {
-            if (a.status !== 'Bị từ chối' && a.status !== 'Kết thúc') {
+            if (a.status === 'Chờ phê duyệt') {
                a.status = 'Kết thúc';
             }
          });
@@ -2610,8 +2711,10 @@ window.toggleSelectAllAgencyForm = function() {
   const cbAll = document.getElementById('selectAllAgencyForm');
   const isChecked = cbAll.checked;
   document.querySelectorAll('#formAgencyDropdown input[name="agencyCb"]').forEach(cb => {
-    cb.checked = isChecked;
+    // Bỏ chọn tất cả vẫn phải giữ đơn vị đã tiếp nhận chỉ đạo
+    cb.checked = isChecked || isAgencyLocked(cb.value);
   });
+  if (typeof applyAgencyLockUI === 'function') applyAgencyLockUI();
   if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
 };
 
