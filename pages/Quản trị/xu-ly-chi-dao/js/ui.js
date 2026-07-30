@@ -227,6 +227,12 @@
     el.pageButtons().innerHTML = btns.join('');
   };
 
+  const toggleDisplay = (element, show, displayType = 'block') => {
+    if (!element) return;
+    element.removeAttribute('hidden');
+    element.style.display = show ? displayType : 'none';
+  };
+
   /* ── Close detail ────────────────────────────────────────────────── */
   const closeDetail = () => {
     if (el.detailOverlay()) el.detailOverlay().hidden = true;
@@ -408,7 +414,7 @@
     const dlClass = cond === 'overdue' ? 'overdue' : cond === 'warning' ? 'warning' : 'normal';
 
     const origFiles = item.attachments || [
-      { name: item.attachment || 'CD_DanCu_GiaLai_2026.pdf', size: item.attachmentSize || '1.8 MB', date: item.issuedDate },
+      { name: item.attachment || 'CD_DanCu_GiaLai_2026.png', size: item.attachmentSize || '1.8 MB', date: item.issuedDate },
       { name: 'PhuLuc_HuongDan_TrienKhai.docx', size: '540 KB', date: item.issuedDate }
     ];
 
@@ -457,10 +463,11 @@
             <span class="info-label">Tệp đính kèm</span>
             <span class="info-value">
               <div class="info-file-list">
-                ${origFiles.map(f => {
+                ${origFiles.map((f, idx) => {
                   const fname = typeof f === 'string' ? f : f.name;
-                  return `<a href="javascript:void(0)" class="file-plain-link" data-open-file="${escHtml(fname)}">${escHtml(fname)}</a>`;
-                }).join('<span class="file-comma-sep">,</span> ')}
+                  const comma = idx < origFiles.length - 1 ? '<span class="file-comma-sep">,</span>' : '';
+                  return `<span class="file-item-inline"><a href="javascript:void(0)" class="file-plain-link" data-open-file="${escHtml(fname)}">${escHtml(fname)}</a>${comma}</span>`;
+                }).join(' ')}
               </div>
             </span>
           </div>
@@ -470,17 +477,17 @@
       <!-- Chọn người xử lý & Nút Chuyển xử lý (chỉ leader + waitingAssign) -->
       ${state.role === 'leader' && status === 'waitingAssign' ? `
       <div class="assignee-dropdown-block info-block">
-        <div class="info-block-header">Chọn người xử lý</div>
+        <div class="info-block-header">Chọn người xử lý <span class="required-star">*</span></div>
         <div class="info-block-body">
           <input type="hidden" id="assigneeSelect" value="">
           <div class="directive-assignee-autocomplete" id="assigneeAutocompleteContainer">
             <div class="select-box" tabindex="0">
               <span class="placeholder">-- Chọn người xử lý --</span>
-              <span class="selected-text" hidden></span>
-              <input type="text" class="dropdown-search-input" placeholder="Gõ từ khóa tìm kiếm..." hidden>
+              <span class="selected-text" style="display: none;"></span>
+              <input type="text" class="dropdown-search-input" placeholder="Gõ từ khóa tìm kiếm..." style="display: none;">
               <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
             </div>
-            <div class="dropdown-menu" hidden>
+            <div class="dropdown-menu" style="display: none;">
               ${(node?.availableAssignees || []).map(a => `
                 <div class="dropdown-item" data-assignee-id="${escHtml(a.id)}" data-assignee-name="${escHtml(a.name)}">
                   <span>${escHtml(a.name)}</span>
@@ -488,7 +495,7 @@
               `).join('')}
             </div>
           </div>
-          <div id="assigneeSelectError" class="assignee-select-error" hidden>* Vui lòng chọn người xử lý.</div>
+          <div id="assigneeSelectError" class="assignee-select-error" style="display: none;">* Vui lòng chọn người xử lý.</div>
           <div class="assignee-actions-row">
             <button class="btn-primary-action btn-assign-inline" id="btnChuyen" type="button">
               Chuyển xử lý
@@ -969,28 +976,22 @@
 
         const openMenu = () => {
           container.classList.add('open');
-          menu.hidden = false;
-          if (!selectEl.value) {
-            placeholder.style.display = 'none';
-            selectedText.style.display = 'none';
-            searchInput.style.display = 'block';
-            searchInput.value = '';
-            searchInput.focus();
-            items.forEach(item => item.style.display = 'flex');
-          }
+          toggleDisplay(menu, true);
+          toggleDisplay(placeholder, false);
+          toggleDisplay(selectedText, false);
+          toggleDisplay(searchInput, true);
+          searchInput.value = '';
+          searchInput.focus();
+          items.forEach(item => item.style.display = 'flex');
         };
 
         const closeMenu = () => {
           container.classList.remove('open');
-          menu.hidden = true;
-          searchInput.style.display = 'none';
-          if (selectEl.value) {
-            placeholder.style.display = 'none';
-            selectedText.style.display = 'block';
-          } else {
-            placeholder.style.display = 'block';
-            selectedText.style.display = 'none';
-          }
+          toggleDisplay(menu, false);
+          toggleDisplay(searchInput, false);
+          const hasSelected = Boolean(selectEl.value && selectedText.textContent);
+          toggleDisplay(placeholder, !hasSelected);
+          toggleDisplay(selectedText, hasSelected);
         };
 
         selectBox.addEventListener('click', (e) => {
@@ -1005,24 +1006,18 @@
         searchInput.addEventListener('input', () => {
           const query = searchInput.value.toLowerCase().trim();
           items.forEach(item => {
-            const text = item.textContent.toLowerCase();
-            if (text.includes(query)) {
-              item.style.display = 'flex';
-            } else {
-              item.style.display = 'none';
-            }
+            const matches = item.textContent.toLowerCase().includes(query);
+            item.style.display = matches ? 'flex' : 'none';
           });
         });
 
         items.forEach(item => {
           item.addEventListener('click', () => {
-            const id = item.dataset.assigneeId;
-            const name = item.dataset.assigneeName;
-            selectEl.value = id;
-            selectedText.textContent = name;
+            selectEl.value = item.dataset.assigneeId;
+            selectedText.textContent = item.dataset.assigneeName;
             items.forEach(el => el.classList.remove('selected'));
             item.classList.add('selected');
-            if (errorEl) errorEl.style.display = 'none';
+            if (errorEl) toggleDisplay(errorEl, false);
             if (selectBox) selectBox.style.borderColor = '#d0d5dd';
             closeMenu();
           });
@@ -1040,10 +1035,8 @@
         const selectedVal = selectEl?.value;
         if (!selectedVal) {
           const selectBox = container?.querySelector('.select-box');
-          if (selectBox) {
-            selectBox.style.setProperty('border-color', '#dc2626', 'important');
-          }
-          if (errorEl) errorEl.style.display = 'block';
+          if (selectBox) selectBox.style.setProperty('border-color', '#dc2626', 'important');
+          if (errorEl) toggleDisplay(errorEl, true);
           return;
         }
 
