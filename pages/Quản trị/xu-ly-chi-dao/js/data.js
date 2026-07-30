@@ -152,8 +152,10 @@ const createPrototypeDirectives = () => [
           from: 'Trần Thị Bình (Chuyên viên)',
           time: prototypeHistoryTime(-5,'14:00'),
           content: 'Đã rà soát và tổng hợp số liệu từ 17 xã. Diện tích áp dụng: 12.450 ha, 2.380 nông dân được đào tạo. Báo cáo đính kèm đầy đủ số liệu chi tiết theo từng huyện.',
-          file: 'BaoCao_ChuyenDoiSo_NNPTNT_ChiTiet.pdf',
-          fileSize: '2.4 MB'
+          files: [
+            { name: 'BaoCao_ChuyenDoiSo_NNPTNT_ChiTiet.pdf', size: '2.4 MB', date: prototypeHistoryTime(-5,'14:00') },
+            { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-5,'14:00'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+          ]
         }
       ],
       history: [
@@ -208,13 +210,19 @@ const createPrototypeDirectives = () => [
     processId:     'process-1',
     leaderReport: {
       content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
-      file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+      files: [
+        { name: 'BaoCao_TrinhTinh_HaTangYTe.pdf', size: '2.8 MB', date: prototypeHistoryTime(-1, '16:30') },
+        { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-1, '16:30'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+      ],
       time: prototypeHistoryTime(-1, '16:30')
     },
     leaderReports: [
       {
         content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
-        file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+        files: [
+          { name: 'BaoCao_TrinhTinh_HaTangYTe.pdf', size: '2.8 MB', date: prototypeHistoryTime(-1, '16:30') },
+          { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-1, '16:30'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+        ],
         time: prototypeHistoryTime(-1, '16:30')
       }
     ],
@@ -232,19 +240,27 @@ const createPrototypeDirectives = () => [
           from: 'Phạm Văn Nam (Chuyên viên)',
           time: prototypeHistoryTime(-3, '10:15'),
           content: 'Đã hoàn thành khảo sát thực tế 42 trạm y tế xã tại 5 huyện miền núi (Kông Chro, Krông Pa, Ia Pa, Mang Yang, KBang).',
-          file: 'BaoCao_KhaoSat_YTe.pdf',
-          fileSize: '3.1 MB'
+          files: [
+            { name: 'BaoCao_KhaoSat_YTe.pdf', size: '3.1 MB', date: prototypeHistoryTime(-3, '10:15') },
+            { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-3, '10:15'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+          ]
         }
       ],
       leaderReport: {
         content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
-        file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+        files: [
+          { name: 'BaoCao_TrinhTinh_HaTangYTe.pdf', size: '2.8 MB', date: prototypeHistoryTime(-1, '16:30') },
+          { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-1, '16:30'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+        ],
         time: prototypeHistoryTime(-1, '16:30')
       },
       leaderReports: [
         {
           content: 'Sở Y tế đã hoàn thành khảo sát 42 trạm y tế xã tại 5 huyện miền núi. Đã tổng hợp danh mục 15 trạm cần nâng cấp cấp bách với tổng kinh phí dự kiến 45 tỷ đồng. Kính trình UBND Tỉnh xem xét phê duyệt.',
-          file: 'BaoCao_TrinhTinh_HaTangYTe.pdf',
+          files: [
+            { name: 'BaoCao_TrinhTinh_HaTangYTe.pdf', size: '2.8 MB', date: prototypeHistoryTime(-1, '16:30') },
+            { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-1, '16:30'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+          ],
           time: prototypeHistoryTime(-1, '16:30')
         }
       ],
@@ -296,13 +312,19 @@ const createPrototypeDirectives = () => [
     processId:     'process-1',
     leaderReport: {
       content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
-      file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+      files: [
+        { name: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf', size: '1.9 MB', date: prototypeHistoryTime(-6, '15:00') },
+        { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-6, '15:00'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+      ],
       time: prototypeHistoryTime(-6, '15:00')
     },
     leaderReports: [
       {
         content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
-        file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+        files: [
+          { name: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf', size: '1.9 MB', date: prototypeHistoryTime(-6, '15:00') },
+          { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-6, '15:00'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+        ],
         time: prototypeHistoryTime(-6, '15:00')
       }
     ],
@@ -320,19 +342,27 @@ const createPrototypeDirectives = () => [
           from: 'Hoàng Minh Đức (Chuyên viên)',
           time: prototypeHistoryTime(-8, '11:00'),
           content: 'Đã kiểm tra 41/41 điểm thi. Đảm bảo đầy đủ thiết bị, máy phát điện dự phòng và lực lượng công an hỗ trợ.',
-          file: 'BaoCao_KiemTra_DiemThi.pdf',
-          fileSize: '1.9 MB'
+          files: [
+            { name: 'BaoCao_KiemTra_DiemThi.pdf', size: '1.9 MB', date: prototypeHistoryTime(-8, '11:00') },
+            { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-8, '11:00'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+          ]
         }
       ],
       leaderReport: {
         content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
-        file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+        files: [
+          { name: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf', size: '1.9 MB', date: prototypeHistoryTime(-6, '15:00') },
+          { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-6, '15:00'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+        ],
         time: prototypeHistoryTime(-6, '15:00')
       },
       leaderReports: [
         {
           content: 'Sở Giáo dục & Đào tạo đã chuẩn bị đầy đủ 41 điểm thi với 820 phòng thi trên địa bàn 17 huyện, thị xã, thành phố. Tất cả phương án an ninh, y tế, điện nước và hỗ trợ học sinh vùng xa đã sẵn sàng.',
-          file: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf',
+          files: [
+            { name: 'BaoCao_TrinhTinh_ThiTHPT2026_HoanTat.pdf', size: '1.9 MB', date: prototypeHistoryTime(-6, '15:00') },
+            { name: 'Dashboard_CapNhat_ThoiDiemTrinh.png', size: '1.2 MB', date: prototypeHistoryTime(-6, '15:00'), path: 'assets/dashboard_gialai.png', url: 'assets/dashboard_gialai.png' }
+          ],
           time: prototypeHistoryTime(-6, '15:00')
         }
       ],

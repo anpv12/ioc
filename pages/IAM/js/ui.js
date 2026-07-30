@@ -302,7 +302,7 @@ function setPageHeading(title) {
 
 /* ---------- Điều hướng Sidebar: Quản lý cơ quan <-> Quản lý phòng ban ---------- */
 function setActiveNav(navId) {
-  ['nav-quan-ly-co-quan', 'nav-quan-ly-phong-ban'].forEach(id => {
+  ['nav-quan-ly-co-quan', 'nav-quan-ly-phong-ban', 'nav-quan-tri-quyen'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.toggle('active', id === navId);
@@ -1246,11 +1246,13 @@ function showToast(message, type) {
 document.addEventListener('DOMContentLoaded', () => {
   renderAgenciesTable();
 
-  /* --- Sidebar: điều hướng Quản lý cơ quan <-> Quản lý phòng ban --- */
+  /* --- Sidebar: điều hướng các trang trong IAM --- */
   const navAgency = document.getElementById('nav-quan-ly-co-quan');
   const navDept = document.getElementById('nav-quan-ly-phong-ban');
+  const navPerm = document.getElementById('nav-quan-tri-quyen');
   if (navAgency) navAgency.addEventListener('click', goToAgencyList);
   if (navDept) navDept.addEventListener('click', goToDeptListTop);
+  if (navPerm) navPerm.addEventListener('click', () => { window.location.href = 'quan-tri-quyen/index.html'; });
 
   /* --- Danh sách phòng ban (top-level): tìm kiếm / làm mới / thêm --- */
   const btnTopDeptSearch = document.getElementById('btnTopDeptSearch');

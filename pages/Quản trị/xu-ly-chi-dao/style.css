@@ -1975,6 +1975,7 @@ textarea.action-textarea.is-invalid {
   font-weight: normal !important;
   font-style: italic !important;
   padding: 4px 0 !important;
+  color: #64748b !important;
 }
 
 .status-notice-text.text-blue {
@@ -1986,7 +1987,12 @@ textarea.action-textarea.is-invalid {
 }
 
 .status-notice-text.text-slate {
-  color: #1e293b !important;
+  color: #64748b !important;
+}
+
+.detail-left > .report-input-block:last-child,
+.detail-left > .info-block:last-child {
+  margin-top: auto !important;
 }
 
 .status-notice-actions {

@@ -278,6 +278,8 @@
       const rawDate = typeof fileObj === 'object' && fileObj.date ? fileObj.date : null;
       const fileDate = formatDateTimeFormatted(rawDate);
       const ext = fileName.split('.').pop().toLowerCase();
+      const fileUrl = (typeof fileObj === 'object' && (fileObj.url || fileObj.path)) ? (fileObj.url || fileObj.path) : 'assets/dashboard_gialai.png';
+      const isImg = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext);
 
       let iconClass = 'fa-file-lines';
       let typeClass = 'default';
@@ -290,7 +292,7 @@
       } else if (['doc', 'docx'].includes(ext)) {
         iconClass = 'fa-file-word';
         typeClass = 'word';
-      } else if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
+      } else if (isImg) {
         iconClass = 'fa-file-image';
         typeClass = 'image';
       }
@@ -300,7 +302,7 @@
           <div class="file-card-main">
             <i class="fa-regular ${iconClass} file-type-icon ${typeClass}"></i>
             <div class="file-card-info">
-              <a href="javascript:void(0)" class="file-card-name" title="${escHtml(fileName)}" data-view-file="${escHtml(fileName)}">
+              <a href="javascript:void(0)" class="file-card-name" title="${escHtml(fileName)}" ${isImg ? `data-view-img="${escHtml(fileUrl)}"` : `data-view-file="${escHtml(fileName)}"`}>
                 ${escHtml(fileName)}
               </a>
               <span class="file-card-meta">${escHtml(fileSize)} • ${escHtml(fileDate)}</span>
@@ -708,7 +710,6 @@
           </div>
         </div>` : ''}
         <div class="report-input-block info-block">
-          <div class="info-block-header">Trạng thái</div>
           <div class="info-block-body">
             <div class="status-notice-text">
               ${statusText}
@@ -812,7 +813,6 @@
       }
       return `
       <div class="report-input-block info-block">
-        <div class="info-block-header">Trạng thái</div>
         <div class="info-block-body">
           <div class="status-notice-text text-slate">
             Chỉ đạo đang chờ Lãnh đạo Tỉnh phê duyệt.
@@ -832,7 +832,6 @@
         </div>
       </div>` : ''}
       <div class="report-input-block info-block">
-        <div class="info-block-header">Trạng thái</div>
         <div class="info-block-body">
           <div class="status-notice-text text-green">
             Chỉ đạo đã được hoàn thành và phê duyệt.
@@ -1093,12 +1092,21 @@
           return;
         }
 
-        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình phê duyệt báo cáo này?', () => {
+        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình duyệt báo cáo này?', () => {
           node.stage = 'reported';
           node.subReports = node.subReports || [];
+          const nowFormatted = formatDateTimeFormatted();
+          const dashboardCaptureFile = {
+            name: 'Dashboard_CapNhat_ThoiDiemTrinh.png',
+            size: '1.2 MB',
+            date: nowFormatted,
+            path: 'assets/dashboard_gialai.png',
+            url: 'assets/dashboard_gialai.png'
+          };
+
           const filesToSubmit = state.draftReportFiles && state.draftReportFiles.length
-            ? [...state.draftReportFiles]
-            : [{ name: 'BaoCao_KetQua_ChiTiet.pdf', size: '1.8 MB', date: new Date().toLocaleString('vi-VN') }];
+            ? [...state.draftReportFiles, dashboardCaptureFile]
+            : [{ name: 'BaoCao_KetQua_ChiTiet.pdf', size: '1.8 MB', date: nowFormatted }, dashboardCaptureFile];
 
           const reportObj = {
             from: node.accountName || 'Chuyên viên',
@@ -1135,10 +1143,19 @@
           return;
         }
 
-        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình Lãnh đạo Tỉnh phê duyệt?', () => {
+        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình duyệt báo cáo này?', () => {
+          const nowFormatted = formatDateTimeFormatted();
+          const dashboardCaptureFile = {
+            name: 'Dashboard_CapNhat_ThoiDiemTrinh.png',
+            size: '1.2 MB',
+            date: nowFormatted,
+            path: 'assets/dashboard_gialai.png',
+            url: 'assets/dashboard_gialai.png'
+          };
+
           const filesToSubmit = state.draftLeaderFiles && state.draftLeaderFiles.length
-            ? [...state.draftLeaderFiles]
-            : [{ name: 'BaoCao_TrinhTinh_TongHop.pdf', size: '2.4 MB', date: new Date().toLocaleString('vi-VN') }];
+            ? [...state.draftLeaderFiles, dashboardCaptureFile]
+            : [{ name: 'BaoCao_TrinhTinh_TongHop.pdf', size: '2.4 MB', date: nowFormatted }, dashboardCaptureFile];
 
           const lrObj = {
             content: content,
@@ -1154,7 +1171,7 @@
           });
           render();
           openDetail(item.id);
-          showNotice('Đã trình Tỉnh thành công!');
+          showNotice('Đã trình phê duyệt thành công!');
         });
       });
 
