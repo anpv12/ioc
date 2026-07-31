@@ -272,7 +272,7 @@ function renderAttachFileList() {
   if (!list) return;
   list.innerHTML = selectedFormFiles.map((f, idx) =>
     '<div class="attach-chip-large" onclick="previewFile(\'' + f.name + '\')">' +
-    '<i class="fa-solid fa-file-image" style="color:var(--pink); font-size:16px;"></i> ' +
+    '<i class="fa-solid fa-file-image" style="color:#1e293b; font-size:16px;"></i> ' +
     '<span>' + f.name + '</span>' +
     '<button type="button" class="btn-remove-attach" onclick="event.stopPropagation(); removeFormFile(' + idx + ')" title="Xoá file">&times;</button>' +
     '</div>'
@@ -312,7 +312,7 @@ function renderRejectAttachFileList() {
   if (!list) return;
   list.innerHTML = rejectFormFiles.map((f, idx) =>
     '<div class="attach-chip-large" onclick="previewFile(\'' + f.name + '\')">' +
-    '<i class="fa-solid fa-file-image" style="color:var(--pink); font-size:16px;"></i> ' +
+    '<i class="fa-solid fa-file-image" style="color:#1e293b; font-size:16px;"></i> ' +
     '<span>' + f.name + '</span>' +
     '<button type="button" class="btn-remove-attach" onclick="event.stopPropagation(); removeRejectFormFile(' + idx + ')" title="Xoá file">&times;</button>' +
     '</div>'
@@ -337,7 +337,7 @@ function getDaysRemaining(dueDateStr) {
 
 // Returns: 'overdue' | 'due-today' | 'soon' | 'normal' | null (completed / no date)
 function getDeadlineStatus(dir) {
-  if (dir.status === 'Hoàn thành') return null;
+  if (dir.status === 'Kết thúc') return null;
   if (!dir.dueDate) return null;
   const days = getDaysRemaining(dir.dueDate);
   if (days === null) return null;
@@ -362,7 +362,7 @@ function isMatchDeadlineFilter(dir, filterValue) {
 let activeDetailDirectiveId = null;
 
 function getDeadlineIconHtml(dir) {
-  if (dir.status === 'Hoàn thành') return '';
+  if (dir.status === 'Kết thúc') return '';
   if (!dir.dueDate) return '';
 
   const status = getDeadlineStatus(dir);
@@ -399,11 +399,11 @@ function updateAllCountdowns() {
 
     const diffDays = Math.round((target.getTime() - now.getTime()) / 86400000);
     if (diffDays < 0) {
-      tooltip.textContent = 'Quá hạn ' + Math.abs(diffDays) + ' ngày (Hạn: ' + dueDateStr.split(' ')[0] + ')';
+      tooltip.textContent = 'Quá hạn ' + Math.abs(diffDays) + ' ngày';
     } else if (diffDays === 0) {
-      tooltip.textContent = 'Hôm nay là hạn xử lý (' + dueDateStr.split(' ')[0] + ')';
+      tooltip.textContent = 'Hôm nay là hạn xử lý';
     } else {
-      tooltip.textContent = 'Còn ' + diffDays + ' ngày (Hạn: ' + dueDateStr.split(' ')[0] + ')';
+      tooltip.textContent = 'Còn ' + diffDays + ' ngày';
     }
   });
 
@@ -412,7 +412,7 @@ function updateAllCountdowns() {
     const modalEl = document.getElementById('modalCountdownText');
     if (modalEl) {
       const dir = directives.find(d => d.id === activeDetailDirectiveId);
-      if (dir && dir.status !== 'Hoàn thành' && dir.dueDate) {
+      if (dir && dir.status !== 'Kết thúc' && dir.dueDate) {
         const dueDateClean = dir.dueDate.split(' ')[0];
         modalEl.innerHTML = '<span style="color:#2e7d32; font-weight:bold; font-size:11px;">(Hạn xử lý: ' + dueDateClean + ')</span>';
       } else {
@@ -445,6 +445,36 @@ function updateDeadlineBell() {
     } else {
       badge.style.display = 'none';
       btn.classList.remove('has-overdue', 'has-warning');
+    }
+  }
+
+  const countEl = document.getElementById('drawerNotificationCount');
+  const bannerEl = document.getElementById('drawerNotificationBanner');
+  if (countEl) {
+    if (total > 0) {
+      countEl.textContent = 'Có ' + total + ' chỉ đạo cần xử lý';
+      if (bannerEl) {
+        bannerEl.style.background = '#fef2f2';
+        bannerEl.style.borderColor = '#fca5a5';
+        bannerEl.style.color = '#dc2626';
+        const bellIcon = bannerEl.querySelector('i');
+        if (bellIcon) {
+          bellIcon.style.color = '#dc2626';
+          bellIcon.className = 'fa-solid fa-triangle-exclamation'; // Warning icon
+        }
+      }
+    } else {
+      countEl.textContent = 'Không có chỉ đạo cần xử lý';
+      if (bannerEl) {
+        bannerEl.style.background = '#f8fafc';
+        bannerEl.style.borderColor = '#e2e8f0';
+        bannerEl.style.color = '#64748b';
+        const bellIcon = bannerEl.querySelector('i');
+        if (bellIcon) {
+          bellIcon.style.color = '#64748b';
+          bellIcon.className = 'fa-solid fa-bell'; // Reset icon
+        }
+      }
     }
   }
 
@@ -500,25 +530,24 @@ window.toggleDeadlinePanel = function () {
 
 // ----- Apply Directive Indicators on Metric Cards -----
 function applyDirectiveIndicators() {
+  return; // Disable ribbon indicator creation
   document.querySelectorAll('.metric-block').forEach(card => {
     card.classList.remove('has-directive-pending', 'has-directive-processing', 'has-directive-completed', 'has-directive-rejected');
     const old = card.querySelector('.directive-badge');
     if (old) old.remove();
   });
 
-  const priority = {
-    'Bị từ chối': 6,
-    'Đã chỉ đạo': 5,
-    'Chờ phân công': 4,
-    'Đang xử lý': 3,
+  const orders = {
+    'Bị từ chối': 4,
+    'Chờ phê duyệt': 3,
     'Đã có báo cáo': 2,
-    'Hoàn thành': 1
+    'Kết thúc': 1
   };
   const metricMap = {};
   directives.forEach(d => {
     const ids = d.metricIds && d.metricIds.length ? d.metricIds : (d.metricId ? [d.metricId] : []);
     ids.forEach(mid => {
-      if (!metricMap[mid] || (priority[d.status] || 0) > (priority[metricMap[mid].status] || 0)) {
+      if (!metricMap[mid] || (orders[d.status] || 0) > (orders[metricMap[mid].status] || 0)) {
         metricMap[mid] = d;
       }
     });
@@ -572,6 +601,10 @@ window.openDirectiveFormModal = function (editId = null) {
     if (modalTitle) modalTitle.textContent = 'Chỉnh sửa chỉ đạo điều hành';
     if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Cập nhật chỉ đạo';
 
+    if (fpDueDate) {
+      fpDueDate.set('minDate', null); // Cho phép giữ ngày cũ nếu đang edit
+    }
+
     // Set form fields
     const createdAtEl = document.getElementById('formCreatedAt');
     if (createdAtEl) createdAtEl.value = dir.createdAt ? dir.createdAt.split(' ')[0] : '';
@@ -607,6 +640,7 @@ window.openDirectiveFormModal = function (editId = null) {
       document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
       if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
     }
+    // (dir.title is removed)
     if (dir.content) document.getElementById('formContent').value = dir.content;
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
@@ -618,6 +652,13 @@ window.openDirectiveFormModal = function (editId = null) {
   } else {
     if (modalTitle) modalTitle.textContent = 'Thêm mới chỉ đạo điều hành';
     if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Gửi chỉ đạo';
+
+    if (fpDueDate) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      fpDueDate.set('minDate', tomorrow);
+      fpDueDate.clear(); // Reset value if it was set
+    }
 
     // Set current date dd/mm/yyyy
     const now = new Date();
@@ -657,6 +698,7 @@ window.openDirectiveFormModal = function (editId = null) {
     document.querySelectorAll('#formAgencyDropdown input[type=checkbox]').forEach(cb => cb.checked = false);
     if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
 
+    // formTitle is removed
     document.getElementById('formContent').value = '';
     const dirSelect = document.getElementById('formDirector');
     if (dirSelect) dirSelect.value = 'Chủ tịch UBND Tỉnh';
@@ -681,13 +723,29 @@ window.saveDirectiveFromModal = function () {
   const dataSourceUrls = checkedPages.map(cb => ({ name: cb.getAttribute('data-name'), url: cb.getAttribute('data-url') }));
 
   const agency = document.getElementById('formAgency').value;
-  const content = document.getElementById('formContent').value.trim();
+  // title is removed
+  const contentEl = document.getElementById('formContent');
+  const content = contentEl ? contentEl.value.trim() : '';
   const dueDate = document.getElementById('formDueDate').value;
   const director = 'Chủ tịch UBND Tỉnh';
 
   if (!agency || !content) {
     showToast('Vui lòng nhập đầy đủ các thông tin bắt buộc (*)', 'error');
     return;
+  }
+  
+  let agencies = [];
+  if (agency === 'Chỉ đạo toàn tỉnh') {
+    agencies = generate105Agencies(dueDate);
+  } else {
+    const agenciesList = agency.split(', ').filter(a => a.trim());
+    agencies = agenciesList.map(name => ({
+      name: name.trim(),
+      pic: 'Đại diện ' + name.trim(),
+      dueDate: dueDate,
+      status: 'Chờ phân công',
+      report: ''
+    }));
   }
 
   const attachments = selectedFormFiles.map(f => ({ name: f.name, source: 'leader' }));
@@ -702,15 +760,23 @@ window.saveDirectiveFromModal = function () {
       dir.dataPageNames = dataPageNames;
       dir.dataSourceUrls = dataSourceUrls;
       dir.agency = agency;
+      // title removed
       dir.content = content;
       dir.dueDate = dueDate;
       dir.director = director;
       dir.attachments = attachments;
+      if (!dir.agencies) dir.agencies = [];
+      // Merge agencies
+      dir.agencies = agencies.map(newAg => {
+        const existing = dir.agencies.find(x => x.name === newAg.name);
+        return existing ? { ...existing, dueDate } : newAg;
+      });
+
       saveDirectives();
       showToast('Cập nhật chỉ đạo thành công!');
     }
   } else {
-    directives.push({
+    directives.unshift({
       id: 'dir_' + Date.now(),
       layoutGroup,
       dataPageIds,
@@ -719,8 +785,10 @@ window.saveDirectiveFromModal = function () {
       metricIds: dataPageIds,
       metricId: dataPageIds[0],
       agency,
+      agencies, // for multi-agency
       director,
       creator: director,
+      // title removed
       content,
       dueDate,
       reportDueDate: '',
@@ -790,8 +858,13 @@ function populateUI() {
   listEl.innerHTML = '';
 
   const keyword = directiveSearch ? directiveSearch.value.trim().toLowerCase() : '';
-  const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked')).map(cb => cb.value);
-  const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked')).map(cb => cb.value);
+  const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked'))
+    .map(cb => cb.value).filter(val => val && val !== 'on');
+  const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked'))
+    .map(cb => cb.value).filter(val => val && val !== 'on');
+  const filterDeadlineValues = Array.from(document.querySelectorAll('#filterDeadlineDropdown input[type=checkbox]:checked'))
+    .map(cb => cb.value).filter(val => val && val !== 'on');
+
   const fromDateStr = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
   const toDateStr = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
   const fromDate = fromDateStr ? parseDDMMYYYY(fromDateStr) : null;
@@ -799,23 +872,21 @@ function populateUI() {
 
   // Tab filter groups
   const TAB_STATUSES = {
-    inprogress: ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối'],
-    done: ['Chờ phê duyệt', 'Kết thúc']
+    inprogress: ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Chờ phê duyệt', 'Bị từ chối'],
+    done: ['Kết thúc']
   };
   const tabStatuses = TAB_STATUSES[currentDirectiveTab] || TAB_STATUSES.inprogress;
-
-  const deadlineFilterEl = document.getElementById('directiveFilterDeadline');
-  const deadlineFilterVal = deadlineFilterEl ? deadlineFilterEl.value : 'Tất cả';
 
   const filteredDirectives = directives.filter(dir => {
     const metricLabel = (dir.metricIds || []).map(id => METRIC_LABELS[id] || id).join(' ');
     const matchKW = dir.content.toLowerCase().includes(keyword) ||
+      (dir.title || '').toLowerCase().includes(keyword) ||
       metricLabel.toLowerCase().includes(keyword) ||
       (dir.agency || '').toLowerCase().includes(keyword);
     const matchOrg = filterOrgValues.length === 0 || filterOrgValues.includes(dir.agency);
     const matchStatus = filterStatusValues.length === 0 || filterStatusValues.includes(dir.status);
     const matchTab = tabStatuses.includes(dir.status);
-    const matchDL = deadlineFilterVal === 'Tất cả' || isMatchDeadlineFilter(dir, deadlineFilterVal);
+    const matchDL = filterDeadlineValues.length === 0 || filterDeadlineValues.some(val => isMatchDeadlineFilter(dir, val));
 
     let matchDate = true;
     if (fromDate || toDate) {
@@ -848,7 +919,7 @@ function populateUI() {
     if (currentPage > totalPages) currentPage = totalPages;
     if (currentPage < 1) currentPage = 1;
 
-    const sorted = filteredDirectives.slice().reverse();
+    const sorted = filteredDirectives;
     const startIdx = (currentPage - 1) * rowsPerPage;
     const endIdx = Math.min(startIdx + rowsPerPage, sorted.length);
     const pageDirs = sorted.slice(startIdx, endIdx);
@@ -883,7 +954,7 @@ function populateUI() {
       const deadlineIcon = getDeadlineIconHtml(dir);
 
       const canEdit = dir.status === 'Chờ phân công' || dir.status === 'Đã chỉ đạo';
-      const canDelete = dir.status === 'Đã chỉ đạo';
+      const canDelete = dir.status === 'Chờ phân công' || dir.status === 'Đã chỉ đạo';
       const canApproveReject = dir.status === 'Đã có báo cáo' || dir.status === 'Chờ phê duyệt';
 
       const leaderFiles = (dir.attachments || []).filter(f => f.source === 'leader' || !f.source);
@@ -892,7 +963,7 @@ function populateUI() {
       let leaderAttachHtml = '';
       if (leaderFiles.length > 0) {
         leaderAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
-          '<span style="font-size:10px; font-weight:700; color:var(--pink);"><i class="fa-solid fa-paperclip"></i> Lãnh đạo đính kèm:</span> ' +
+          '<span style="font-size:10px; font-weight:700; color:#dc2626;"><i class="fa-solid fa-paperclip"></i> Lãnh đạo đính kèm:</span> ' +
           leaderFiles.map(f =>
             '<span class="file-preview-link leader" style="font-size:9px; padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
@@ -917,14 +988,22 @@ function populateUI() {
 
       const item = document.createElement('div');
       item.className = 'directive-item';
+      let totalReceived = dir.agencies ? dir.agencies.length : 1;
+      let totalReported = dir.agencies ? dir.agencies.filter(a => a.status === 'Đã có báo cáo' || a.status === 'Chờ phê duyệt' || a.status === 'Kết thúc').length : (dir.status === 'Đã có báo cáo' || dir.status === 'Kết thúc' ? 1 : 0);
+      
+      const statsHtml = '<div style="margin-top:6px; font-size:11px; color:#475569;">' + 
+                        '<strong>Tổng chỉ đạo:</strong> ' + totalReceived + ' đơn vị' + 
+                        ' | <strong>Đơn vị đã báo cáo:</strong> ' + totalReported + 
+                        '</div>';
+
       item.innerHTML =
         '<div class="directive-item-header">' +
         '<div class="directive-loc" style="flex: 1; min-width: 0;">' +
         '<div class="metric-tooltip-wrap" style="flex: 1; min-width: 0; padding-right: 8px;">' +
-        '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-        '<i class="fa-solid fa-chart-bar"></i> ' + metricLabels +
+        '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight:bold; font-size:13px; color:#0b3d91;">' +
+        '<i class="fa-solid fa-chart-bar"></i> ' + dir.content +
         '</div>' +
-        '<span class="metric-tooltip">' + metricLabels + '</span>' +
+        '<span class="metric-tooltip">' + dir.content + '</span>' +
         '</div>' +
         '<span class="directive-status ' + statusClass + '" style="margin-left:6px; flex-shrink: 0;">' + dir.status + '</span>' +
         '</div>' +
@@ -943,12 +1022,26 @@ function populateUI() {
         '</div>' +
         '</div>' +
         '</div>' +
-        '</div>' +
-        (dir.agency ? '<div class="directive-agency"><i class="fa-regular fa-building"></i> ' + dir.agency + '</div>' : '') +
-        '<p class="directive-text" style="margin-top:4px;">' + dir.content + '</p>' +
-        leaderAttachHtml +
+        '</div>';
+        
+      let agenciesHtml = '';
+      if (dir.agency === 'Chỉ đạo toàn tỉnh') {
+         agenciesHtml = '<div class="directive-agency" style="color:#059669; font-weight:700;"><i class="fa-solid fa-sitemap"></i> Chỉ đạo toàn tỉnh</div>';
+      } else if (dir.agencies && dir.agencies.length > 0) {
+        let max3 = dir.agencies.slice(0, 3);
+        agenciesHtml = max3.map(a => '<div class="directive-agency" style="margin-bottom:4px;"><i class="fa-regular fa-building"></i> ' + a.name + '</div>').join('');
+        if (dir.agencies.length > 3) {
+           let others = dir.agencies.slice(3).map(a => a.name).join('&#10;');
+           agenciesHtml += `<div class="directive-agency" style="margin-bottom:2px; color:#3b82f6; cursor:pointer;" title="${others}" onclick="viewDirectiveDetail('${dir.id}'); setTimeout(() => switchModalTab('history'), 50)">+ ${(dir.agencies.length - 3)} đơn vị khác (Nhấn để xem chi tiết)</div>`;
+        }
+      } else if (dir.agency) {
+        agenciesHtml = '<div class="directive-agency"><i class="fa-regular fa-building"></i> ' + dir.agency + '</div>';
+      }
+
+      item.innerHTML += agenciesHtml + leaderAttachHtml +
         reportHtml +
         agencyAttachHtml +
+        statsHtml +
         '<div class="directive-date" style="margin-top:6px;"><i class="fa-regular fa-clock"></i> Hạn: ' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'N/A') + ' | Tạo: ' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</div>';
 
       fragment.appendChild(item);
@@ -971,12 +1064,18 @@ window.switchDirectiveTab = function (tab) {
   const statusDropdown = document.getElementById('filterStatusDropdown');
   if (statusDropdown) {
     const statuses = tab === 'inprogress'
-      ? ['Đã chỉ đạo', 'Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối']
-      : ['Hoàn thành', 'Kết thúc'];
+      ? ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Chờ phê duyệt', 'Bị từ chối']
+      : ['Kết thúc'];
     
-    statusDropdown.innerHTML = statuses.map(s =>
+    let html = '<div class="fms-select-all-wrap" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">' +
+      '<label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllStatus" onchange="toggleSelectAllFilter(\'status\')"> <span>Chọn tất cả</span></label>' +
+      '</div>';
+
+    html += statuses.map(s =>
       '<label class="ms-opt"><input type="checkbox" value="' + s + '" onchange="onMultiFilterChange(\'status\')"> <span>' + s + '</span></label>'
     ).join('');
+
+    statusDropdown.innerHTML = html;
   }
 
   updateFilterLabel('status');
@@ -986,7 +1085,7 @@ window.switchDirectiveTab = function (tab) {
 
 // ----- Filter multiselect helpers -----
 window.toggleFilterDropdown = function (type) {
-  const wrapId = type === 'org' ? 'filterOrgWrap' : 'filterStatusWrap';
+  const wrapId = type === 'org' ? 'filterOrgWrap' : (type === 'deadline' ? 'filterDeadlineWrap' : 'filterStatusWrap');
   const wrap = document.getElementById(wrapId);
   if (!wrap) return;
   const isOpen = wrap.classList.contains('open');
@@ -995,17 +1094,63 @@ window.toggleFilterDropdown = function (type) {
   if (!isOpen) wrap.classList.add('open');
 };
 
+window.toggleSelectAllFilter = function (type) {
+  const selectAllId = type === 'org' ? 'selectAllOrg' : (type === 'status' ? 'selectAllStatus' : 'selectAllDeadline');
+  const dropId = type === 'org' ? 'filterOrgDropdown' : (type === 'status' ? 'filterStatusDropdown' : 'filterDeadlineDropdown');
+  const selectAllCb = document.getElementById(selectAllId);
+  if (!selectAllCb) return;
+
+  const isChecked = selectAllCb.checked;
+  document.querySelectorAll('#' + dropId + ' input[type=checkbox]').forEach(cb => {
+    if (cb !== selectAllCb) cb.checked = isChecked;
+  });
+  updateFilterLabel(type);
+  currentPage = 1;
+  populateUI();
+};
+
 window.onMultiFilterChange = function (type) {
   updateFilterLabel(type);
 };
 
-function updateFilterLabel(type) {
-  const dropId = type === 'org' ? 'filterOrgDropdown' : 'filterStatusDropdown';
-  const labelId = type === 'org' ? 'filterOrgLabel' : 'filterStatusLabel';
-  const wrapId = type === 'org' ? 'filterOrgWrap' : 'filterStatusWrap';
-  const displayId = type === 'org' ? 'filterOrgDisplay' : 'filterStatusDisplay';
+window.uncheckFilterCb = function(type, value, event) {
+  event.stopPropagation();
+  if (value === 'all') {
+    const selectAllId = type === 'org' ? 'selectAllOrg' : (type === 'status' ? 'selectAllStatus' : 'selectAllDeadline');
+    const selectAllCb = document.getElementById(selectAllId);
+    if (selectAllCb) {
+      selectAllCb.checked = false;
+      toggleSelectAllFilter(type);
+    }
+  } else {
+    const dropId = type === 'org' ? 'filterOrgDropdown' : (type === 'deadline' ? 'filterDeadlineDropdown' : 'filterStatusDropdown');
+    const cb = document.querySelector(`#${dropId} input[type=checkbox][value="${value}"]`);
+    if (cb) {
+      cb.checked = false;
+      onMultiFilterChange(type);
+      applyDirectiveFilters();
+    }
+  }
+};
 
-  const checked = Array.from(document.querySelectorAll('#' + dropId + ' input[type=checkbox]:checked'));
+function updateFilterLabel(type) {
+  const dropId = type === 'org' ? 'filterOrgDropdown' : (type === 'deadline' ? 'filterDeadlineDropdown' : 'filterStatusDropdown');
+  const labelId = type === 'org' ? 'filterOrgLabel' : (type === 'deadline' ? 'filterDeadlineLabel' : 'filterStatusLabel');
+  const wrapId = type === 'org' ? 'filterOrgWrap' : (type === 'deadline' ? 'filterDeadlineWrap' : 'filterStatusWrap');
+  const displayId = type === 'org' ? 'filterOrgDisplay' : (type === 'deadline' ? 'filterDeadlineDisplay' : 'filterStatusDisplay');
+  const selectAllId = type === 'org' ? 'selectAllOrg' : (type === 'status' ? 'selectAllStatus' : 'selectAllDeadline');
+
+  const allCbs = Array.from(document.querySelectorAll('#' + dropId + ' input[type=checkbox]'));
+  const selectAllCb = document.getElementById(selectAllId);
+  const optionCbs = allCbs.filter(cb => cb !== selectAllCb);
+  const checked = optionCbs.filter(cb => cb.checked);
+
+  if (selectAllCb) {
+    selectAllCb.checked = (checked.length === optionCbs.length && optionCbs.length > 0);
+  }
+
+  const allChecked = selectAllCb ? selectAllCb.checked : false;
+
   const display = document.getElementById(displayId);
   const label = document.getElementById(labelId);
 
@@ -1013,7 +1158,7 @@ function updateFilterLabel(type) {
 
   if (checked.length === 0) {
     label.style.display = 'inline';
-    label.textContent = type === 'org' ? 'Tất cả đơn vị' : 'Tất cả trạng thái';
+    label.textContent = type === 'org' ? 'Tất cả đơn vị' : (type === 'deadline' ? 'Tất cả tình trạng' : 'Tất cả trạng thái');
     label.className = 'fms-placeholder';
     display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
   } else {
@@ -1021,26 +1166,36 @@ function updateFilterLabel(type) {
     display.querySelectorAll('.fms-tag, .fms-count-badge').forEach(el => el.remove());
     const chevron = display.querySelector('.filter-multiselect-chevron');
 
-    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
-    const visibleItems = checked.slice(0, 2);
-    visibleItems.forEach(cb => {
+    if (allChecked && type === 'org') {
       const tag = document.createElement('span');
       tag.className = 'fms-tag';
-      tag.textContent = cb.value; // Giữ đầy đủ tên đơn vị
-      tag.title = cb.value;
+      tag.style.background = '#10b981';
+      tag.style.color = '#fff';
+      tag.style.border = 'none';
+      tag.innerHTML = `Chỉ đạo toàn tỉnh <i class="fa-solid fa-xmark" style="margin-left:4px; cursor:pointer;" onclick="uncheckFilterCb('${type}', 'all', event)"></i>`;
+      tag.title = 'Chỉ đạo toàn tỉnh';
       if (chevron) display.insertBefore(tag, chevron);
       else display.appendChild(tag);
-    });
+    } else {
+      const visibleItems = checked.slice(0, 2);
+      visibleItems.forEach(cb => {
+        const tag = document.createElement('span');
+        tag.className = 'fms-tag';
+        tag.innerHTML = `${cb.value} <i class="fa-solid fa-xmark" style="margin-left:4px; cursor:pointer;" onclick="uncheckFilterCb('${type}', '${cb.value}', event)"></i>`;
+        tag.title = cb.value;
+        if (chevron) display.insertBefore(tag, chevron);
+        else display.appendChild(tag);
+      });
 
-    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị đã chọn
-    if (checked.length > 2) {
-      const remainingCount = checked.length - 2;
-      const badge = document.createElement('span');
-      badge.className = 'fms-count-badge';
-      badge.textContent = '+' + remainingCount;
-      badge.title = 'Đã chọn tổng cộng ' + checked.length + ' mục';
-      if (chevron) display.insertBefore(badge, chevron);
-      else display.appendChild(badge);
+      if (checked.length > 2) {
+        const remainingCount = checked.length - 2;
+        const badge = document.createElement('span');
+        badge.className = 'fms-count-badge';
+        badge.textContent = '+' + remainingCount;
+        badge.title = 'Đã chọn tổng cộng ' + checked.length + ' mục';
+        if (chevron) display.insertBefore(badge, chevron);
+        else display.appendChild(badge);
+      }
     }
   }
 }
@@ -1052,11 +1207,12 @@ window.applyDirectiveFilters = function () {
 
 window.resetDirectiveFilters = function () {
   // Uncheck all multiselect
-  document.querySelectorAll('#filterOrgDropdown input[type=checkbox], #filterStatusDropdown input[type=checkbox]').forEach(cb => {
+  document.querySelectorAll('#filterOrgDropdown input[type=checkbox], #filterStatusDropdown input[type=checkbox], #filterDeadlineDropdown input[type=checkbox]').forEach(cb => {
     cb.checked = false;
   });
   updateFilterLabel('org');
   updateFilterLabel('status');
+  updateFilterLabel('deadline');
   // Clear search
   const search = document.getElementById('directiveSearch');
   if (search) search.value = '';
@@ -1154,126 +1310,234 @@ window.viewDirectiveDetail = function (id) {
   const imageSrc = 'image/IOC_TinhHinhDanCuTheoGioiTinh.png';
 
   const tabInfoHtml =
-    // Nội dung chỉ đạo
-    '<div style="background:#f8f9ff; border:1px solid #e8eaf6; border-left:4px solid var(--pink); border-radius:8px; padding:14px 16px;">' +
-    '<div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:8px;">Nội dung chỉ đạo</div>' +
-    '<p style="margin:0; font-size:13px; line-height:1.7; color:var(--text-dark);">' + dir.content + '</p>' +
+    // 1. Nguồn dữ liệu
+    '<div class="form-group" style="margin-bottom:12px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Nguồn dữ liệu</label>' +
+    '<div style="padding:8px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; display:flex; flex-wrap:wrap; gap:4px; min-height:36px; align-items:center;">' + sourceLinksHtml + '</div>' +
     '</div>' +
 
-    // Metadata
-    '<div class="detail-info-grid" style="margin-top:12px; padding:10px 12px; background:#fafafa; border-radius:8px; border:1px solid #f0f0f0;">' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Nguồn dữ liệu</strong><div style="display:flex; flex-wrap:wrap; gap:4px; text-align:left; align-items:flex-start;">' + sourceLinksHtml + '</div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Hình ảnh chỉ đạo</strong><div style="text-align:left;"><div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal(\'' + imageSrc + '\')"><img src="' + imageSrc + '" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:160px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal(\'' + imageSrc + '\')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div></div></div>' +
-    '<strong style="align-self:flex-start; margin-top:2px;">Đơn vị xử lý</strong><span style="text-align:left; font-weight:400;">' + (dir.agency || 'N/A') + '</span>' +
-    '<strong>Người chỉ đạo</strong><span style="font-weight:400;">' + (dir.creator || dir.director || 'N/A') + '</span>' +
-    '<strong>Ngày tạo</strong><span style="font-weight:400;">' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</span>' +
-    '<strong>Thời hạn xử lý</strong><span style="font-weight:400;">' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</span>' +
+    // 2. Hình ảnh chỉ đạo
+    '<div class="form-group" style="margin-bottom:12px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Hình ảnh chỉ đạo</label>' +
+    '<div style="margin-top:4px;">' +
+    '<div style="position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal(\'' + imageSrc + '\')"><img src="' + imageSrc + '" onerror="this.src=\'https://via.placeholder.com/600x300?text=Dashboard+Screenshot\'" alt="Dashboard Screenshot" style="width:100%; max-height:180px; object-fit:cover; display:block; object-position: top;"><div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;" onclick="event.stopPropagation(); openImageZoomModal(\'' + imageSrc + '\')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div></div>' +
+    '</div>' +
     '</div>' +
 
-    // Trạng thái
-    '<div style="margin-top:12px; display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; background:#fafafa; border:1px solid #f0f0f0;">' +
-    '<span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px;">Trạng thái:</span>' +
-    '<span class="directive-status ' + statusClass + '" style="font-size:12px;">' + dir.status + '</span>' +
+    // 3. Nội dung chỉ đạo
+    '<div class="form-group" style="margin-bottom:12px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Nội dung chỉ đạo</label>' +
+    '<div style="padding:10px 12px; background:#fef2f2; border:1px solid #fca5a5; border-radius:6px; font-size:13px; line-height:1.6; color:#dc2626; font-weight:600;">' + dir.content + '</div>' +
     '</div>' +
 
-    // Khối hiển thị Lý do từ chối nếu bị từ chối
+    // 4. Hàng đôi: Đơn vị xử lý & Hạn xử lý
+    '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">' +
+    '<div class="form-group" style="flex:1; min-width:200px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Đơn vị xử lý</label>' +
+    '<div style="padding:8px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; color:#0f172a;">' + (dir.agency === 'Chỉ đạo toàn tỉnh' ? '<span style="color:#059669; font-weight:bold;">Chỉ đạo toàn tỉnh (105 đơn vị)</span>' : (dir.agencies ? dir.agencies.map(a => a.name).join(', ') : (dir.agency || 'N/A'))) + '</div>' +
+    '</div>' +
+    '<div class="form-group" style="flex:1; min-width:130px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Hạn xử lý</label>' +
+    '<div style="padding:8px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; color:#0f172a;">' + (dir.dueDate ? dir.dueDate.split(' ')[0] : 'Không giới hạn') + '</div>' +
+    '</div>' +
+    '</div>' +
+
+    // 5. Hàng đôi: Người chỉ đạo & Ngày tạo
+    '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">' +
+    '<div class="form-group" style="flex:1; min-width:130px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Người chỉ đạo</label>' +
+    '<div style="padding:8px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; color:#475569;">' + (dir.creator || dir.director || 'Chủ tịch UBND Tỉnh') + '</div>' +
+    '</div>' +
+    '<div class="form-group" style="flex:1; min-width:130px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Ngày tạo</label>' +
+    '<div style="padding:8px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; color:#475569;">' + (dir.createdAt ? dir.createdAt.split(' ')[0] : 'N/A') + '</div>' +
+    '</div>' +
+    '</div>' +
+
+    // 6. Tài liệu đính kèm
+    '<div class="form-group" style="margin-bottom:12px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Tài liệu đính kèm</label>' +
+    '<div style="padding:8px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; display:flex; flex-wrap:wrap; gap:6px;">' +
+    (leaderFiles.length > 0 ? buildFileLinks(leaderFiles, 'leader') : '<span style="font-size:13px; color:var(--text-muted);">Không có tài liệu</span>') +
+    '</div>' +
+    '</div>' +
+
+    // 7. Trạng thái (và lý do từ chối nếu bị từ chối)
+    '<div class="form-group" style="margin-bottom:12px;">' +
+    '<label style="font-weight:700; font-size:13px; color:#1e293b; display:block; margin-bottom:6px;">Trạng thái</label>' +
+    '<div style="padding:8px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; display:flex; align-items:center;">' +
+    '<span class="directive-status ' + statusClass + '">' + dir.status + '</span>' +
+    '</div>' +
+    '</div>' +
+
     (dir.status === 'Bị từ chối' && dir.report ?
-      '<div class="rejection-reason-box" style="margin-top:12px;">' +
-      '<div class="rejection-reason-lbl"><i class="fa-solid fa-circle-xmark"></i> Lý do từ chối:</div>' +
-      '<p style="margin:4px 0 0; font-size:12px; color:#9b2c2c; line-height:1.6;">' + dir.report + '</p>' +
+      '<div class="form-group" style="margin-bottom:12px;">' +
+      '<label style="font-weight:700; font-size:13px; color:#9b2c2c; display:block; margin-bottom:6px;"><i class="fa-solid fa-circle-xmark"></i> Lý do từ chối</label>' +
+      '<div style="padding:10px 12px; background:#fef2f2; border:1px solid #fca5a5; border-radius:6px; font-size:13px; color:#9b2c2c; line-height:1.6;">' + dir.report + '</div>' +
       '</div>'
-      : '') +
-
-    // 2 cột Lãnh đạo / Đơn vị
-    '<div class="tab-info-two-col" style="margin-top:12px;">' +
-    '<div class="tab-info-col">' +
-    '<div class="tab-info-col-label leader-label">Lãnh đạo chỉ đạo</div>' +
-    '<div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Tài liệu đính kèm</div>' +
-    '<div style="display:flex; flex-wrap:wrap; gap:6px;">' +
-    (leaderFiles.length > 0 ? buildFileLinks(leaderFiles, 'leader') : '<span style="font-size:11px; color:var(--text-muted);">Không có tài liệu</span>') +
-    '</div>' +
-    '</div>' +
-
-    '<div class="tab-info-col">' +
-    '<div class="tab-info-col-label agency-label">Đơn vị thực hiện</div>' +
-    ((dir.report && (dir.status === 'Đã có báo cáo' || dir.status === 'Kết thúc' || dir.status === 'Chờ phê duyệt')) ?
-      '<div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Báo cáo kết quả</div>' +
-      '<p style="margin:0 0 8px; background:#f0fdf4; padding:8px 12px; border-radius:6px; border-left:3px solid #2e7d32; color:#1b5e20; font-size:12px; line-height:1.6;">' + dir.report + '</p>'
-      : '') +
-    '<div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Tài liệu đính kèm</div>' +
-    '<div style="display:flex; flex-wrap:wrap; gap:6px;">' +
-    (agencyFiles.length > 0 ? buildFileLinks(agencyFiles, 'agency') : '<span style="font-size:11px; color:var(--text-muted);">Chưa có tài liệu</span>') +
-    '</div>' +
-    '</div>' +
-    '</div>';
+    : '');
 
   document.getElementById('tabContentInfo').innerHTML = tabInfoHtml;
 
-  // ----- Tab 2: Lịch sử trạng thái (Cột Người/Thời gian phê duyệt, Tách Ghi chú & Đính kèm) -----
-  const historyList = typeof getDirectiveHistory === 'function' ? getDirectiveHistory(dir) : [];
-
-  const statusBadge = function (s) {
-    let c = 'status-pending';
-    if (s === 'Chờ phân công') c = 'status-assigned';
-    else if (s === 'Đang xử lý') c = 'status-processing';
-    else if (s === 'Đã có báo cáo') c = 'status-reported';
-    else if (s === 'Kết thúc') c = 'status-completed';
-    else if (s === 'Bị từ chối') c = 'status-rejected';
-    else if (s === 'Chờ phê duyệt') c = 'status-waiting-approve';
-    return '<span class="directive-status ' + c + '" style="font-size:10px; white-space:nowrap;">' + s + '</span>';
-  };
-
-  const overdueBadge = function (s) {
-    if (!s || s === '-') return '-';
-    if (s.startsWith('Trễ')) return '<span style="background:#ffebee;color:#c62828;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;">' + s + '</span>';
-    return '<span style="background:#e8f5e9;color:#2e7d32;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;">' + s + '</span>';
-  };
-
-  let historyRowsHtml = '';
-  if (historyList.length > 0) {
-    historyRowsHtml = historyList.map(function (h) {
-      const agencyAttachHtml = (h.agencyAttach && h.agencyAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link agency" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.agencyAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.agencyAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
-        : '';
-
-      const leaderAttachHtml = (h.leaderAttach && h.leaderAttach !== '-')
-        ? '<div style="margin-top:4px;"><span class="file-preview-link leader" style="font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" onclick="previewFile(\'' + h.leaderAttach + '\')" title="Xem danh sách file/ảnh đính kèm: ' + h.leaderAttach + '"><i class="fa-solid fa-paperclip" style="font-size:12px;"></i> File đính kèm</span></div>'
-        : '';
-
-      return '<tr>' +
-        '<td><strong>' + (h.agency || '-') + '</strong></td>' +
-        '<td style="white-space:nowrap;">' + (h.createdAt ? h.createdAt.split(' ')[0] : '-') + '</td>' +
-        '<td>' + statusBadge(h.status) + '</td>' +
-        '<td>' + overdueBadge(h.overdue) + '</td>' +
-        '<td>' + (h.approver || '-') + '</td>' +
-        '<td style="white-space:nowrap;">' + (h.approvalDate && h.approvalDate !== '-' ? h.approvalDate.split(' ')[0] : '-') + '</td>' +
-        '<td><div>' + (h.agencyNote || '-') + '</div>' + agencyAttachHtml + '</td>' +
-        '<td><div>' + (h.leaderNote || '-') + '</div>' + leaderAttachHtml + '</td>' +
-        '</tr>';
-    }).join('');
-  } else {
-    historyRowsHtml = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:16px;">Chưa có lịch sử trạng thái</td></tr>';
+  // ----- Tab 2: Chi tiết đơn vị -----
+  let agencies = dir.agencies;
+  if (!agencies || (agencies.length === 1 && agencies[0].name === 'Chỉ đạo toàn tỉnh')) {
+    if (dir.agency === 'Chỉ đạo toàn tỉnh') {
+      agencies = generate105Agencies(dir.dueDate);
+      dir.agencies = agencies;
+    } else {
+      agencies = dir.agency ? [{ name: dir.agency, pic: 'Đại diện', dueDate: dir.dueDate, status: dir.status, report: dir.report }] : [];
+    }
   }
 
-  document.getElementById('tabContentHistory').innerHTML =
-    '<div style="overflow-x:auto;">' +
-    '<table class="history-table-new" style="width:100%; border-collapse:collapse; font-size:12px;">' +
-    '<thead><tr style="background:#f8fafc; color:#334155;">' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Đơn vị tiếp nhận</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Thời gian tiếp nhận</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Trạng thái chỉ đạo</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Tình trạng</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Người phê duyệt</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Thời gian phê duyệt</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Ghi chú & Đính kèm Đơn vị</th>' +
-    '<th style="padding:8px 10px; border:1px solid #e2e8f0; text-align:left;">Ghi chú & Đính kèm Lãnh đạo</th>' +
-    '</tr></thead>' +
-    '<tbody>' + historyRowsHtml + '</tbody>' +
-    '</table>' +
-    '</div>';
+  const detailModalCard = document.querySelector('#detailModal .modal-card');
+  if (detailModalCard) detailModalCard.style.height = 'auto'; // Reset height
+
+  const tabHistory = document.getElementById('tabContentHistory');
+  if (tabHistory) {
+    if (agencies.length > 5) {
+      tabHistory.style.flex = 'none';
+      tabHistory.style.height = '480px'; // Cố định chiều cao tab để khi chọn số dòng lớn hơn không làm pop-up bị nhảy kích thước
+    } else {
+      tabHistory.style.flex = '1';
+      tabHistory.style.height = 'auto';
+    }
+  }
+
+  const approveAllContainer = document.getElementById('approveAllContainer');
+  if (approveAllContainer) {
+    if (agencies.length > 1) {
+      approveAllContainer.innerHTML = '<button id="btnApproveChecked" class="btn-submit-directive" style="display:none; padding:6px 14px; background:#10b981; color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05);" onclick="approveAllAgencies(\'' + dir.id + '\')">Phê duyệt các đơn vị đã chọn</button>';
+    } else {
+      approveAllContainer.innerHTML = '';
+    }
+  }
+
+  // Pagination logic
+  window.currentHistoryPage = 1;
+  if (!window.currentHistoryRowsPerPage) window.currentHistoryRowsPerPage = 5;
+  window.currentHistoryAgencies = agencies;
+  window.currentHistoryDir = dir;
+
+  window.renderHistoryTable = function(page = 1) {
+    window.currentHistoryPage = page;
+    const itemsPerPage = window.currentHistoryRowsPerPage;
+    const startIdx = (page - 1) * itemsPerPage;
+    const endIdx = startIdx + itemsPerPage;
+    const currentAgencies = window.currentHistoryAgencies.slice(startIdx, endIdx);
+    const totalPages = Math.ceil(window.currentHistoryAgencies.length / itemsPerPage);
+    const dir = window.currentHistoryDir;
+
+    let historyHtml = '';
+    if (window.currentHistoryAgencies.length === 0) {
+      historyHtml = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Không có dữ liệu đơn vị.</div>';
+    } else {
+      const showCheckbox = window.currentHistoryAgencies.length > 1;
+      const headerCbHtml = showCheckbox ? '<input type="checkbox" id="cbAllAgencies" onchange="toggleSelectAllAgencies(this)" style="margin-right:8px; cursor:pointer;"> ' : '';
+      
+      historyHtml = '<table class="history-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:12px;">' +
+        '<thead><tr style="background:#0b3d91; color:#fff;">' +
+        '<th style="padding:10px; border-bottom:1px solid #e2e8f0;"><div style="display:flex; align-items:center;">' + headerCbHtml + 'Đơn vị thực hiện</div></th>' +
+        '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Người phụ trách</th>' +
+        '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Thời hạn</th>' +
+        '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Trạng thái</th>' +
+        '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Kết quả</th>' +
+        '<th style="padding:10px; border-bottom:1px solid #e2e8f0;">Thao tác</th>' +
+        '</tr></thead><tbody>';
+
+      currentAgencies.forEach(a => {
+        let stClass = 'status-pending';
+        if (a.status === 'Đang xử lý') stClass = 'status-processing';
+        if (a.status === 'Đã có báo cáo') stClass = 'status-reported';
+        if (a.status === 'Kết thúc') stClass = 'status-completed';
+        if (a.status === 'Bị từ chối') stClass = 'status-rejected';
+        if (a.status === 'Chờ phê duyệt') stClass = 'status-waiting-approve';
+        
+        const canApprove = a.status !== 'Bị từ chối';
+        
+        let actionHtml = '<div style="display:flex; flex-wrap:nowrap; gap:4px;">';
+        if (canApprove) {
+           actionHtml += '<button onclick="approveAgency(\'' + dir.id + '\', \'' + a.name + '\', event)" style="background:#10b981; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;"><i class="fa-solid fa-check"></i> Phê duyệt</button>' +
+                         '<button onclick="rejectAgency(\'' + dir.id + '\', \'' + a.name + '\', event)" style="background:#fff; color:#ef4444; border:1px solid #ef4444; border-radius:6px; padding:5px 12px; font-weight:bold; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;"><i class="fa-solid fa-xmark"></i> Từ chối</button>';
+        } else {
+           actionHtml += '<button style="background:#a7f3d0; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; cursor:not-allowed; font-size:12px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;" disabled><i class="fa-solid fa-check"></i> Phê duyệt</button>' +
+                         '<button style="background:#fff; color:#fca5a5; border:1px solid #fca5a5; border-radius:6px; padding:5px 12px; font-weight:bold; cursor:not-allowed; font-size:12px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;" disabled><i class="fa-solid fa-xmark"></i> Từ chối</button>';
+        }
+        actionHtml += '</div>';
+
+        let reportContent = a.report || '<span style="color:#94a3b8; font-style:italic;">Chưa có báo cáo</span>';
+        let reportAttachHtml = '';
+        if (a.attachments && a.attachments.length > 0) {
+           reportAttachHtml = '<div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">' + 
+             a.attachments.map(f => '<span style="font-size:11px; padding:3px 8px; background:#e0f2fe; color:#0284c7; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" onclick="previewFile(\'' + f.name + '\')"><i class="fa-solid fa-paperclip"></i> ' + f.name + '</span>').join('') +
+             '</div>';
+        }
+
+        const rowCbHtml = showCheckbox ? '<input type="checkbox" class="agency-cb" value="' + a.name + '" style="margin-right:8px; cursor:pointer;" onchange="updateCbAllAgencies()"> ' : '';
+        
+        historyHtml += '<tr style="border-bottom:1px solid #f1f5f9;">' +
+          '<td style="padding:10px; font-weight:600; color:#334155;"><div style="display:flex; align-items:center;">' + rowCbHtml + a.name + '</div></td>' +
+          '<td style="padding:10px; color:#64748b;">' + a.pic + '</td>' +
+          '<td style="padding:10px; color:#64748b;">' + (a.dueDate || dir.dueDate || 'N/A').split(' ')[0] + '</td>' +
+          '<td style="padding:10px;"><span class="directive-status ' + stClass + '" style="font-size:10px; padding:3px 8px;">' + (a.status || 'Chờ phân công') + '</span></td>' +
+          '<td style="padding:10px; color:#334155; min-width:200px;">' + reportContent + reportAttachHtml + '</td>' +
+          '<td style="padding:10px;">' + actionHtml + '</td>' +
+          '</tr>';
+      });
+      historyHtml += '</tbody></table>';
+      
+      if (window.currentHistoryAgencies.length > 5) {
+        let optionsHtml = [5, 10, 25, 50, 100].map(v => 
+          `<option value="${v}" ${itemsPerPage === v ? 'selected' : ''}>${v}</option>`
+        ).join('');
+        
+        let paginationInfo = `${startIdx + 1}-${Math.min(endIdx, window.currentHistoryAgencies.length)}/${window.currentHistoryAgencies.length}`;
+        
+        historyHtml += `
+          <div class="directive-pagination" style="display: flex; margin-top: 16px;">
+            <div class="pagination-limit">
+              <span>Hiện:</span>
+              <select onchange="window.currentHistoryRowsPerPage=parseInt(this.value); window.renderHistoryTable(1)">
+                ${optionsHtml}
+              </select>
+            </div>
+            <div class="pagination-controls">
+              <button title="Trang trước" ${page === 1 ? 'disabled' : ''} onclick="renderHistoryTable(${page - 1})"><i class="fa-solid fa-chevron-left"></i></button>
+              <span>${paginationInfo}</span>
+              <button title="Trang sau" ${page === totalPages ? 'disabled' : ''} onclick="renderHistoryTable(${page + 1})"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        `;
+      }
+    }
+    document.getElementById('tabContentHistory').innerHTML = historyHtml;
+    // Keep cbAllAgencies in sync
+    window.updateCbAllAgencies();
+  };
+
+  renderHistoryTable(1);
 
   document.getElementById('detailModal').classList.add('open');
   switchModalTab('info');
+};
+
+// ----- Toggle Agency Checkboxes -----
+window.toggleSelectAllAgencies = function(el) {
+  document.querySelectorAll('.agency-cb').forEach(cb => cb.checked = el.checked);
+  window.updateCbAllAgencies();
+};
+window.updateCbAllAgencies = function() {
+  const total = document.querySelectorAll('.agency-cb').length;
+  const checked = document.querySelectorAll('.agency-cb:checked').length;
+  const cbAll = document.getElementById('cbAllAgencies');
+  if (cbAll) {
+    cbAll.checked = (total > 0 && total === checked);
+    cbAll.indeterminate = (checked > 0 && checked < total);
+  }
+  const btnApprove = document.getElementById('btnApproveChecked');
+  if (btnApprove) {
+    btnApprove.style.display = checked > 0 ? 'inline-flex' : 'none';
+  }
 };
 
 // ----- Switch Modal Tab -----
@@ -1325,6 +1589,7 @@ window.editDirective = function (id) {
 
 // ----- Reject Directive Modal -----
 let rejectingDirectiveId = null;
+let rejectingAgencyName = null;
 
 window.openRejectModal = function (id, event) {
   if (event) event.stopPropagation();
@@ -1341,6 +1606,7 @@ window.openRejectModal = function (id, event) {
 window.closeRejectModal = function () {
   document.getElementById('rejectModal').classList.remove('open');
   rejectingDirectiveId = null;
+  rejectingAgencyName = null;
   rejectFormFiles = [];
 };
 
@@ -1355,22 +1621,33 @@ window.submitRejectDirective = function () {
     return;
   }
 
-  dir.status = 'Bị từ chối';
-  dir.report = 'Lý do từ chối: ' + reason + ' (Yêu cầu đơn vị tiếp nhận báo cáo lại).';
-
-  if (rejectFormFiles && rejectFormFiles.length > 0) {
-    if (!dir.attachments) dir.attachments = [];
-    rejectFormFiles.forEach(f => {
-      if (!dir.attachments.some(att => att.name === f.name)) {
-        dir.attachments.push({ name: f.name, source: 'leader' });
+  if (rejectingAgencyName) {
+      const a = dir.agencies.find(x => x.name === rejectingAgencyName);
+      if (a) {
+          a.status = 'Bị từ chối';
+          a.report = (a.report ? a.report + ' | ' : '') + 'Lý do từ chối: ' + reason;
       }
-    });
+      showToast('❌ Đã từ chối báo cáo của ' + rejectingAgencyName);
+  } else {
+      dir.status = 'Bị từ chối';
+      dir.report = 'Lý do từ chối: ' + reason + ' (Yêu cầu đơn vị tiếp nhận báo cáo lại).';
+      if (rejectFormFiles && rejectFormFiles.length > 0) {
+        if (!dir.attachments) dir.attachments = [];
+        rejectFormFiles.forEach(f => {
+          if (!dir.attachments.some(att => att.name === f.name)) {
+            dir.attachments.push({ name: f.name, source: 'leader' });
+          }
+        });
+      }
+      showToast('❌ Đã từ chối báo cáo chỉ đạo!');
   }
 
   saveDirectives();
   closeRejectModal();
-  showToast('❌ Đã từ chối báo cáo chỉ đạo!');
   populateUI();
+  if (rejectingAgencyName) {
+      viewDirectiveDetail(rejectingDirectiveId);
+  }
 };
 
 // ----- Batch Urge Functions -----
@@ -1386,7 +1663,8 @@ window.renderUrgeDirectives = function () {
 
   if (!listContainer) return;
 
-  const uncompleted = directives.filter(d => d.status !== 'Hoàn thành');
+  // Default filter (exclude Kết thúc)
+  const uncompleted = directives.filter(d => d.status !== 'Kết thúc');
   urgeFiltered = filterAgency === 'Tất cả'
     ? uncompleted
     : uncompleted.filter(d => d.agency === filterAgency);
@@ -1505,7 +1783,14 @@ window.previewFile = function (fileName) {
 };
 
 // ----- Event Listeners -----
-document.getElementById('btnToggleDrawer').addEventListener('click', toggleDrawer);
+document.getElementById('btnToggleDrawer').addEventListener('click', () => {
+  const roleSelect = document.getElementById('mockRoleSelect');
+  if (roleSelect && roleSelect.value === 'leader_department') {
+    window.location.href = '../Quản trị/xu-ly-chi-dao/index.html';
+  } else {
+    toggleDrawer();
+  }
+});
 
 document.addEventListener('click', () => {
   document.querySelectorAll('.directive-actions-dropdown').forEach(el => el.classList.remove('open'));
@@ -1522,7 +1807,7 @@ btnNextPage.addEventListener('click', () => {
   const keyword = directiveSearch ? directiveSearch.value.trim().toLowerCase() : '';
   const filterOrgValues = Array.from(document.querySelectorAll('#filterOrgDropdown input[type=checkbox]:checked')).map(cb => cb.value);
   const filterStatusValues = Array.from(document.querySelectorAll('#filterStatusDropdown input[type=checkbox]:checked')).map(cb => cb.value);
-  const TAB_STATUSES = { inprogress: ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Bị từ chối'], done: ['Chờ phê duyệt', 'Kết thúc'] };
+  const TAB_STATUSES = { inprogress: ['Chờ phân công', 'Đang xử lý', 'Đã có báo cáo', 'Chờ phê duyệt', 'Bị từ chối'], done: ['Kết thúc'] };
   const tabStatuses = TAB_STATUSES[currentDirectiveTab] || TAB_STATUSES.inprogress;
   const filteredLen = directives.filter(dir => {
     const metricLabel = (dir.metricIds || []).map(id => METRIC_LABELS[id] || id).join(' ');
@@ -1539,7 +1824,7 @@ btnNextPage.addEventListener('click', () => {
 });
 
 // ----- Init -----
-populateUI();
+// populateUI() moved to end of file to ensure custom elements are defined first.
 
 // ----- Custom Web Component: DirectiveRibbon -----
 class DirectiveRibbon extends HTMLElement {
@@ -1653,16 +1938,16 @@ class DirectiveRibbon extends HTMLElement {
           itemIcon = clockSvg;
         }
 
-        const shortTitle = d.content && d.content.length > 35
-          ? d.content.substring(0, 35) + '...'
-          : (d.content || '');
+        const shortTitle = d.title && d.title.length > 35
+          ? d.title.substring(0, 35) + '...'
+          : (d.title || '');
 
         return `
           <div class="directive-ribbon-popover-item" data-id="${d.id}">
             <div class="directive-ribbon-popover-item-icon" style="color: ${iconColor}; width: 14px; height: 14px;">
               ${itemIcon}
             </div>
-            <div class="directive-ribbon-popover-item-text" title="${d.content || ''}">${shortTitle}</div>
+            <div class="directive-ribbon-popover-item-text" title="${d.title || ''}">${shortTitle}</div>
             <span class="directive-ribbon-popover-item-status ${statusClass}">${d.status}</span>
           </div>
         `;
@@ -1742,12 +2027,20 @@ class DirectiveRibbon extends HTMLElement {
   }
 }
 
+// ----- Modal Handlers / State -----
+let isWarningAlertEnabled = true;
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('toggleWarningAlert');
+  if (toggle) isWarningAlertEnabled = toggle.checked;
+});
+
 if (!customElements.get('directive-ribbon')) {
   customElements.define('directive-ribbon', DirectiveRibbon);
 }
 
-// ----- Modal Handlers -----
-let isWarningAlertEnabled = true;
+// ----- Init -----
+populateUI();
+
 window.handleWarningToggleChange = function (input) {
   isWarningAlertEnabled = input.checked;
   const blocks = document.querySelectorAll('.metric-block');
@@ -1764,7 +2057,7 @@ window.handleWarningToggleChange = function (input) {
     r.style.display = isWarningAlertEnabled ? 'block' : 'none';
   });
 
-  showToast(isWarningAlertEnabled ? '🔔 Đã BẬT hiển thị cảnh báo chỉ đạo!' : '🔕 Đã TẮT hiển thị cảnh báo chỉ đạo!');
+  showToast(isWarningAlertEnabled ? 'Đã bật hiển thị cảnh báo chỉ đạo!' : 'Đã tắt hiển thị cảnh báo chỉ đạo!');
 };
 
 // ============================================================
@@ -1875,46 +2168,60 @@ window.toggleAgencyDropdown = function () {
 };
 
 window.selectAgencyMulti = function () {
-  const checked = Array.from(document.querySelectorAll('#formAgencyDropdown input[type=checkbox]:checked'));
+  const cbAll = document.getElementById('selectAllAgencyForm');
+  const allChecked = cbAll ? cbAll.checked : false;
+
+  const checked = Array.from(document.querySelectorAll('#formAgencyDropdown input[name="agencyCb"]:checked'));
   const hiddenInput = document.getElementById('formAgency');
-  hiddenInput.value = checked.map(cb => cb.value).join(', ');
+  hiddenInput.value = allChecked ? 'Toàn tỉnh' : checked.map(cb => cb.value).join(', ');
 
   const placeholder = document.getElementById('formAgencyPlaceholder');
   const display = document.getElementById('formAgencyDisplay');
 
   display.querySelectorAll('.ms-tag-chip, .fms-count-badge').forEach(el => el.remove());
 
-  if (checked.length === 0) {
+  if (checked.length === 0 && !allChecked) {
     if (placeholder) placeholder.style.display = 'inline';
   } else {
     if (placeholder) placeholder.style.display = 'none';
     const chevron = display.querySelector('.multiselect-arrow-icon');
 
-    // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
-    const visibleItems = checked.slice(0, 2);
-    visibleItems.forEach(cb => {
+    if (allChecked) {
       const chip = document.createElement('span');
       chip.className = 'ms-tag-chip';
-      chip.innerHTML = cb.value + ' <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckAgencyChip(\'' + cb.value.replace(/'/g, "\\'") + '\', event)"></i>';
+      chip.style.background = '#10b981';
+      chip.style.color = '#fff';
+      chip.style.border = 'none';
+      chip.innerHTML = `Chỉ đạo toàn tỉnh <i class="fa-solid fa-xmark btn-remove-chip" style="color:#fff;" onclick="document.getElementById('selectAllAgencyForm').click(); toggleSelectAllAgencyForm();"></i>`;
       if (chevron) display.insertBefore(chip, chevron);
       else display.appendChild(chip);
-    });
+    } else {
+      // Hiển thị tên đầy đủ của 2 đơn vị đầu tiên
+      const visibleItems = checked.slice(0, 2);
+      visibleItems.forEach(cb => {
+        const chip = document.createElement('span');
+        chip.className = 'ms-tag-chip';
+        chip.innerHTML = `${cb.value} <i class="fa-solid fa-xmark btn-remove-chip" onclick="uncheckAgencyChip('${cb.value}', event)"></i>`;
+        if (chevron) display.insertBefore(chip, chevron);
+        else display.appendChild(chip);
+      });
 
-    // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị trước
-    if (checked.length > 2) {
-      const remainingCount = checked.length - 2;
-      const badge = document.createElement('span');
-      badge.className = 'fms-count-badge';
-      badge.style.padding = '3px 8px';
-      badge.style.borderRadius = '6px';
-      badge.style.background = 'var(--pink)';
-      badge.style.color = '#fff';
-      badge.style.fontSize = '11px';
-      badge.style.fontWeight = '700';
-      badge.textContent = '+' + remainingCount;
-      badge.title = 'Đã chọn tổng cộng ' + checked.length + ' đơn vị';
-      if (chevron) display.insertBefore(badge, chevron);
-      else display.appendChild(badge);
+      // Nếu quá 2 đơn vị, hiển thị thêm badge + số lượng còn lại mà KHÔNG làm mất tên các đơn vị trước
+      if (checked.length > 2) {
+        const remainingCount = checked.length - 2;
+        const badge = document.createElement('span');
+        badge.className = 'fms-count-badge';
+        badge.style.padding = '3px 8px';
+        badge.style.borderRadius = '6px';
+        badge.style.background = '#1e293b';
+        badge.style.color = '#fff';
+        badge.style.fontSize = '11px';
+        badge.style.fontWeight = '700';
+        badge.textContent = '+' + remainingCount;
+        badge.title = 'Đã chọn tổng cộng ' + checked.length + ' đơn vị';
+        if (chevron) display.insertBefore(badge, chevron);
+        else display.appendChild(badge);
+      }
     }
   }
 };
@@ -2079,91 +2386,32 @@ window.closeImageZoomModal = function () {
 // ----- Rich File Preview Modal (Hiển thị chọn 1/tất cả file đính kèm để tải hoặc xem trước) -----
 let currentPreviewFileName = '';
 window.previewFile = function (fileName) {
-  currentPreviewFileName = fileName;
-  const titleEl = document.getElementById('filePreviewTitle');
-  if (titleEl) titleEl.textContent = 'Xem trước tài liệu';
-
-  const contentEl = document.getElementById('filePreviewContent');
-  if (!contentEl) {
-    const modal = document.getElementById('filePreviewModal');
-    if (modal) modal.classList.add('open');
-    return;
-  }
-
   const lower = fileName.toLowerCase();
   const isImage = /\.(png|jpg|jpeg|gif|webp|bmp)$/i.test(lower) || lower.includes('screenshot') || lower.includes('image');
   const isPdf = lower.endsWith('.pdf');
   const isWord = lower.endsWith('.docx') || lower.endsWith('.doc');
+  const isExcel = lower.endsWith('.xlsx') || lower.endsWith('.xls');
 
-  const sampleFiles = [
-    { id: 'f1', name: fileName, type: isImage ? 'image' : isPdf ? 'pdf' : isWord ? 'word' : 'pdf', source: 'Hình ảnh chụp hệ thống', url: fileName },
-    { id: 'f2', name: 'Cong_van_huong_dan_thuc_hien_GiaLai.pdf', type: 'pdf', source: 'Lãnh đạo (Chủ tịch UBND Tỉnh) đính kèm', url: 'Cong_van_huong_dan_thuc_hien_GiaLai.pdf' },
-    { id: 'f3', name: 'IOC_TinhHinhDanCuTheoGioiTinh.png', type: 'image', source: 'Hình ảnh chụp hệ thống', url: 'image/IOC_TinhHinhDanCuTheoGioiTinh.png' },
-    { id: 'f4', name: 'Ke_hoach_trien_khai_chi_tiet_2026.docx', type: 'word', source: 'Đơn vị (Sở Thông tin và Truyền thông) đính kèm', url: 'Ke_hoach_trien_khai_chi_tiet_2026.docx' }
-  ];
-
-  const iconMap = {
-    pdf: '<i class="fa-solid fa-file-pdf" style="color:#ef4444; font-size:22px;"></i>',
-    word: '<i class="fa-solid fa-file-word" style="color:#2563eb; font-size:22px;"></i>',
-    image: '<i class="fa-solid fa-file-image" style="color:#db2777; font-size:22px;"></i>'
-  };
-
-  const fileRowsHtml = sampleFiles.map((f, idx) => {
-    const iconHtml = iconMap[f.type] || iconMap.pdf;
-    const isImg = f.type === 'image';
-    const activeBorder = (f.name === fileName) ? 'border-color:var(--pink); background:#fff0f5;' : 'border-color:#e2e8f0; background:#fff;';
-
-    const imgPreviewBlock = isImg ? `
-      <div style="margin-top:6px; position:relative; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden; cursor:pointer;" onclick="openImageZoomModal('${f.url}')">
-        <img src="${f.url}" onerror="this.src='image/IOC_TinhHinhDanCuTheoGioiTinh.png'" alt="Preview" style="width:100%; max-height:120px; object-fit:cover; display:block;">
-        <div style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.75); color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;" onclick="event.stopPropagation(); openImageZoomModal('${f.url}')"><i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh</div>
-      </div>
-    ` : '';
-
-    return `
-      <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; ${activeBorder} transition:all 0.2s;">
-        <input type="checkbox" class="preview-file-cb" value="${f.name}" onchange="updatePreviewSelectCount()" style="margin-top:4px; cursor:pointer; accent-color:var(--pink);">
-        <div style="flex:1; min-width:0;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            ${iconHtml}
-            <span style="font-size:12px; font-weight:700; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" onclick="previewSingleFile('${f.name}', '${f.type}', '${f.url}')">${f.name}</span>
-          </div>
-          <div style="font-size:11px; color:#64748b; margin-top:2px;">Nguồn: ${f.source}</div>
-          ${imgPreviewBlock}
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button type="button" onclick="previewSingleFile('${f.name}', '${f.type}', '${f.url}')" style="padding:4px 10px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:11px; font-weight:700; color:#334155; cursor:pointer;"><i class="fa-regular fa-eye"></i> Xem</button>
-          <button type="button" onclick="downloadFile('${f.name}')" style="padding:4px 10px; background:var(--pink); border:none; border-radius:6px; font-size:11px; font-weight:700; color:#fff; cursor:pointer;"><i class="fa-solid fa-download"></i> Tải</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  contentEl.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:8px; border-bottom:1px solid #e2e8f0; margin-bottom:10px;">
-      <label style="font-size:12px; font-weight:700; color:#334155; cursor:pointer; display:flex; align-items:center; gap:6px;">
-        <input type="checkbox" id="selectAllPreviewFiles" onchange="toggleSelectAllPreviewFiles(this)" style="cursor:pointer; accent-color:var(--pink);">
-        <span id="previewSelectAllLabel">Chọn tất cả</span>
-      </label>
-      <button type="button" id="btnDownloadSelectedFiles" onclick="downloadSelectedPreviewFiles()" style="display:none; padding:5px 12px; background:#10b981; color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; align-items:center; gap:4px;">
-        <i class="fa-solid fa-download"></i> Tải các file đã chọn
-      </button>
-    </div>
-    <div style="max-height:360px; overflow-y:auto; padding-right:4px;">
-      ${fileRowsHtml}
-    </div>
-  `;
-
-  const modal = document.getElementById('filePreviewModal');
-  if (modal) modal.classList.add('open');
-  updatePreviewSelectCount();
+  if (isImage) {
+    openImageZoomModal(fileName);
+  } else if (isPdf) {
+    window.open(fileName, '_blank');
+  } else if (isWord || isExcel || lower.endsWith('.csv')) {
+    downloadFile(fileName);
+  } else {
+    window.open(fileName, '_blank');
+  }
 };
 
 window.previewSingleFile = function (fileName, type, url) {
   if (type === 'image') {
-    openImageZoomModal(url);
+    openImageZoomModal(url || fileName);
+  } else if (type === 'pdf' || fileName.toLowerCase().endsWith('.pdf')) {
+    window.open(url || fileName, '_blank');
+  } else if (type === 'word' || type === 'excel' || fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx') || fileName.toLowerCase().endsWith('.xls') || fileName.toLowerCase().endsWith('.xlsx')) {
+    downloadFile(fileName);
   } else {
-    showToast('📄 Đang mở bản xem trước file: ' + fileName);
+    showToast('📄 Đang xử lý file: ' + fileName);
   }
 };
 
@@ -2217,6 +2465,9 @@ window.downloadFile = function (fileName) {
 };
 
 let approveTargetDirectiveId = null;
+let approveTargetAgencyName = null;
+let approveAllAgenciesFlag = false;
+
 window.approveDirective = function (id, event) {
   if (event) event.stopPropagation();
   approveTargetDirectiveId = id;
@@ -2228,17 +2479,44 @@ window.closeConfirmApproveModal = function () {
   const modal = document.getElementById('confirmApproveModal');
   if (modal) modal.classList.remove('open');
   approveTargetDirectiveId = null;
+  approveTargetAgencyName = null;
+  approveAllAgenciesFlag = false;
 };
 
 window.executeConfirmApprove = function () {
   if (approveTargetDirectiveId) {
     const dir = directives.find(d => d.id === approveTargetDirectiveId);
     if (dir) {
-      dir.status = 'Kết thúc';
+      if (approveTargetAgencyName) {
+         const a = dir.agencies.find(x => x.name === approveTargetAgencyName);
+         if (a) {
+             a.status = 'Kết thúc';
+             const allFinished = dir.agencies.every(x => x.status === 'Kết thúc');
+             if (allFinished) dir.status = 'Kết thúc';
+             showToast('✅ Đã phê duyệt báo cáo của ' + a.name);
+         }
+      } else if (approveAllAgenciesFlag) {
+         dir.agencies.forEach(a => {
+            if (a.status !== 'Bị từ chối' && a.status !== 'Kết thúc') {
+               a.status = 'Kết thúc';
+            }
+         });
+         const allFinished = dir.agencies.every(x => x.status === 'Kết thúc');
+         if (allFinished) dir.status = 'Kết thúc';
+         showToast('✅ Đã phê duyệt các đơn vị đã chọn');
+      } else {
+         dir.status = 'Kết thúc';
+         if (dir.agencies) {
+             dir.agencies.forEach(a => a.status = 'Kết thúc');
+         }
+         showToast('✅ Đã phê duyệt và kết thúc chỉ đạo!');
+      }
       saveDirectives();
-      showToast('✅ Đã phê duyệt và kết thúc chỉ đạo!');
       closeConfirmApproveModal();
       populateUI();
+      if (approveTargetAgencyName || approveAllAgenciesFlag) {
+         viewDirectiveDetail(approveTargetDirectiveId);
+      }
     }
   }
 };
@@ -2301,4 +2579,45 @@ window.showToast = function (msg, type = 'success') {
   window._toastTimeout = setTimeout(() => {
     toast.classList.remove('show');
   }, 3200);
+};
+
+window.toggleSelectAllAgencyForm = function() {
+  const cbAll = document.getElementById('selectAllAgencyForm');
+  const isChecked = cbAll.checked;
+  document.querySelectorAll('#formAgencyDropdown input[name="agencyCb"]').forEach(cb => {
+    cb.checked = isChecked;
+  });
+  if (typeof selectAgencyMulti === 'function') selectAgencyMulti();
+};
+
+
+window.approveAgency = function(dirId, agencyName, event) {
+   if (event) event.stopPropagation();
+   approveTargetDirectiveId = dirId;
+   approveTargetAgencyName = agencyName;
+   approveAllAgenciesFlag = false;
+   const modal = document.getElementById('confirmApproveModal');
+   if (modal) modal.classList.add('open');
+};
+
+window.rejectAgency = function(dirId, agencyName, event) {
+   if (event) event.stopPropagation();
+   const dir = directives.find(d => d.id === dirId);
+   if (!dir) return;
+
+   rejectingDirectiveId = dirId;
+   rejectingAgencyName = agencyName;
+   document.getElementById('rejectReasonInput').value = '';
+   rejectFormFiles = [];
+   renderRejectAttachFileList();
+   const modal = document.getElementById('rejectModal');
+   if (modal) modal.classList.add('open');
+};
+
+window.approveAllAgencies = function(dirId) {
+   approveTargetDirectiveId = dirId;
+   approveTargetAgencyName = null;
+   approveAllAgenciesFlag = true;
+   const modal = document.getElementById('confirmApproveModal');
+   if (modal) modal.classList.add('open');
 };

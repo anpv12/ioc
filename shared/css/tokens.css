@@ -20,6 +20,7 @@
 
   /* Typography */
   --font-family:  'Roboto', Helvetica, Arial, sans-serif;
+  --fs-2xs: 10px;
   --fs-xs:  12px;
   --fs-sm:  14px;
   --fs-md:  16px;

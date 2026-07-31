@@ -27,3 +27,14 @@ Tôi đang thiết kế chức năng tạo chỉ đạo trên dashboard quy trì
 - **Xử lý:** Admin Panel → chọn chỉ đạo → cập nhật trạng thái + báo cáo
 - **Trạng thái:** Chưa xử lý → Đang xử lý → Đã hoàn thành
 
+## Các Cập Nhật Mới (Gia Lai Dashboard V20)
+1. **Thông báo Drawer:** Đổi câu thông báo thành `"Có X chỉ đạo cần xử lý"`.
+2. **Hiển thị Đơn vị:** Loại bỏ badge trạng thái bên cạnh tên từng đơn vị trong card drawer; bổ sung giả lập chỉ đạo toàn tỉnh với 105 đơn vị (`isAllProvince`).
+3. **Xem/Tải file đính kèm:** 
+   - Click file PDF: Tự động mở tab mới để xem trước.
+   - Click file Word/Excel (`.doc`, `.docx`, `.xls`, `.xlsx`): Tự động kích hoạt tải xuống.
+   - Click file Ảnh (`.png`, `.jpg`,...): Mở modal phóng to ảnh.
+4. **Nhãn Trạng thái:** Đổi nhãn `"Trạng thái chung"` thành `"Trạng thái"` trong modal chi tiết.
+5. **Thống kê tiếp nhận:** Đổi dòng hiển thị từ `"Tổng tiếp nhận: X"` thành `"Tổng chỉ đạo: X đơn vị | Đơn vị đã báo cáo: Y"`.
+6. **Đồng bộ Typography & Tokens:** Áp dụng `var(--font-family)` và các token `--fs-*` (`--fs-2xs`, `--fs-xs`, `--fs-sm`,...) toàn bộ hệ thống.
+
