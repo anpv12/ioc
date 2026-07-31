@@ -49,6 +49,9 @@
 .drawer-content {
   flex: 1;
   overflow-y: auto;
+  /* Bắt buộc khai báo tường minh: overflow-x mặc định là visible, mà theo spec CSS
+     visible bị ép thành auto khi trục kia là auto -> sinh thanh cuộn ngang thừa. */
+  overflow-x: hidden;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -511,10 +514,10 @@ directive-ribbon {
 }
 
 /* ----- Directive Filter and Search ----- */
+/* Nhịp dọc bộ lọc: chỉ dùng gap, không margin lẻ (RULES §6 — gap chuẩn 6/10/14px) */
 .directive-filters {
   display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 6px;
 }
 
 .directive-search-wrap {
@@ -524,10 +527,13 @@ directive-ribbon {
 
 .directive-search-wrap input {
   width: 100%;
+  /* Chiều cao chuẩn của mọi control trong bộ lọc: 32px (lấy theo ô multiselect) */
+  height: 32px;
+  box-sizing: border-box;
   padding: 6px 26px 6px 10px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-family: var(--font-family);
   color: var(--text-dark);
   outline: none;
@@ -1058,7 +1064,6 @@ directive-ribbon {
   justify-content: space-between;
   border-bottom: 1px solid #eee;
   padding-bottom: 4px;
-  margin-bottom: 2px;
 }
 
 /* ----- Deadline Bell Button ----- */
@@ -1292,17 +1297,20 @@ directive-ribbon {
 .directive-date-filter {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: 1 1 100%;
 }
 
 .directive-filter-date {
-  flex: 1;
-  padding: 5px 8px;
-  border: 1px solid #ddd;
+  width: 100%;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 5px 28px 5px 8px;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-family: var(--font-family);
+  color: var(--text-dark);
   outline: none;
   background: #fff;
   cursor: pointer;
@@ -1876,7 +1884,7 @@ input:checked+.slider:before {
   border-radius: 6px;
   background: #fff;
   cursor: pointer;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   color: var(--text-dark);
   /* Chiều cao cố định 1 hàng: cả 3 ô lọc luôn thẳng nhau, không nhảy khi chọn nhiều mục.
      nowrap giữ tag + badge + chevron trên cùng hàng; tag co lại và cắt bằng ellipsis. */
@@ -1893,7 +1901,7 @@ input:checked+.slider:before {
 
 .filter-multiselect-display .fms-placeholder {
   color: var(--text-muted);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   white-space: nowrap;
 }
 
@@ -1984,10 +1992,12 @@ input:checked+.slider:before {
 
 /* Filter action buttons */
 .filter-action-btn {
+  height: 32px;
+  box-sizing: border-box;
   padding: 6px 12px;
   border-radius: 6px;
   font-family: var(--font-family);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
@@ -2277,20 +2287,10 @@ span.flatpickr-weekday {
   cursor: not-allowed !important;
 }
 
-/* ----- Đồng bộ ô nhập/bộ lọc ----- */
-.directive-filter-date,
-.directive-search-wrap input,
-.filter-multiselect-display {
-  font-family: var(--font-family) !important;
-  font-size: var(--fs-xs) !important;
-  color: var(--text-dark) !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 6px !important;
-}
-
+/* Placeholder của ô nhập trong bộ lọc — thuộc tính còn lại nằm ở rule gốc của từng selector */
 .directive-filter-date::placeholder,
 .directive-search-wrap input::placeholder {
-  font-family: var(--font-family) !important;
-  font-size: var(--fs-xs) !important;
-  color: var(--text-muted) !important;
+  font-family: var(--font-family);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
