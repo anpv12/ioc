@@ -34,6 +34,12 @@
   };
   const escapeText = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
   const clone = value => JSON.parse(JSON.stringify(value));
+  const formatConciseTooltip = (list, label = 'mục') => {
+    if (!list || !list.length) return '';
+    const cleanList = list.map(v => (typeof v === 'string' && v.includes(' - ') ? v.split(' - ')[0] : v));
+    if (cleanList.length <= 3) return cleanList.join(', ');
+    return `${cleanList.slice(0, 3).join(', ')}... (+${cleanList.length - 3} ${label} khác)`;
+  };
 
   const bindAutoComplete = (container) => {
     const searchInput = container.querySelector('.dropdown-search-input');
@@ -112,6 +118,7 @@
         textSpan.textContent = selectedList.slice(0, fitIdx).join(', ') + '...';
         summaryWrap.appendChild(textSpan);
         const plusSpan = document.createElement('span');
+        plusSpan.className = 'dropdown-plus-badge';
         plusSpan.style.fontSize = '11px';
         plusSpan.style.fontWeight = '600';
         plusSpan.style.color = '#0284c7';
@@ -119,6 +126,10 @@
         plusSpan.style.padding = '2px 6px';
         plusSpan.style.borderRadius = '4px';
         plusSpan.style.flexShrink = '0';
+        plusSpan.style.lineHeight = '1.2';
+        plusSpan.style.display = 'inline-flex';
+        plusSpan.style.alignItems = 'center';
+        plusSpan.style.height = 'auto';
         plusSpan.textContent = `+${selectedList.length - fitIdx}`;
         summaryWrap.appendChild(plusSpan);
       }
@@ -162,13 +173,13 @@
     elements.empty.hidden = rows.length > 0; elements.pageInfo.textContent = `Hiển thị ${rows.length ? start + 1 : 0}-${Math.min(start + state.pageSize, rows.length)}/${rows.length}`;
 
     const pgBtns = [];
-    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="1" ${state.page === 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} title="Trang đầu"><i class="fa-solid fa-angles-left"></i></button>`);
-    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="${Math.max(1, state.page - 1)}" ${state.page === 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} title="Trang trước"><i class="fa-solid fa-angle-left"></i></button>`);
+    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="1" ${state.page === 1 ? 'disabled' : ''} title="Trang đầu"><i class="fa-solid fa-angles-left"></i></button>`);
+    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="${Math.max(1, state.page - 1)}" ${state.page === 1 ? 'disabled' : ''} title="Trang trước"><i class="fa-solid fa-angle-left"></i></button>`);
     for (let i = 1; i <= pages; i++) {
       pgBtns.push(`<button class="pg-btn ${state.page === i ? 'active' : ''}" type="button" data-process-page="${i}">${i}</button>`);
     }
-    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="${Math.min(pages, state.page + 1)}" ${state.page === pages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} title="Trang sau"><i class="fa-solid fa-angle-right"></i></button>`);
-    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="${pages}" ${state.page === pages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} title="Trang cuối"><i class="fa-solid fa-angles-right"></i></button>`);
+    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="${Math.min(pages, state.page + 1)}" ${state.page === pages ? 'disabled' : ''} title="Trang sau"><i class="fa-solid fa-angle-right"></i></button>`);
+    pgBtns.push(`<button class="pg-btn" type="button" data-process-page="${pages}" ${state.page === pages ? 'disabled' : ''} title="Trang cuối"><i class="fa-solid fa-angles-right"></i></button>`);
 
     elements.pages.innerHTML = pgBtns.join('');
   };
@@ -177,34 +188,101 @@
     process.handlingMode = process.nodes.length > 1 ? 'delegated' : 'direct'; process.modeLabel = process.handlingMode === 'direct' ? 'Trực tiếp' : 'Phân công'; process.assignee = process.nodes[0]?.org || process.orgs[0]; process.steps = process.nodes.map(step => step.unitName); process.updatedAt = process.createdAt;
   };
   state.rows.forEach(compatibilityFields);
-  const updateOrganizationSummary = () => {
-    const checkedCheckboxes = [...elements.orgs.querySelectorAll('.dropdown-item input.process-org-checkbox:checked')];
-    const selected = checkedCheckboxes.map(input => input.value);
-    updateDropdownSummary(elements.orgs, selected, true);
+  const cleanOrgStr = str => String(str || '').trim().replace(/\s+/g, ' ');
+
+  const isOrgAssignedToOtherProcess = (orgName, currentEditingId = state.editingId) => {
+    if (!orgName) return false;
+    const targetClean = cleanOrgStr(orgName).toLowerCase();
+    if (!targetClean) return false;
+
+    return state.rows.some(process => {
+      if (process.deleted) return false;
+      if (currentEditingId && process.id === currentEditingId) return false;
+
+      if (process.orgs && process.orgs.some(o => cleanOrgStr(o).toLowerCase() === targetClean)) {
+        return true;
+      }
+      if (process.nodes && process.nodes.some(node => node.orgs && node.orgs.some(o => cleanOrgStr(o).toLowerCase() === targetClean))) {
+        return true;
+      }
+      return false;
+    });
   };
+
+  const updateOrganizationSummary = () => {
+    const checkBoxes = elements.orgs.querySelectorAll('.dropdown-item input.process-org-checkbox');
+    const selected = [];
+    checkBoxes.forEach(cb => {
+      if (isOrgAssignedToOtherProcess(cb.value, state.editingId)) {
+        cb.checked = false;
+        cb.disabled = true;
+      } else if (cb.checked) {
+        selected.push(cb.value);
+      }
+    });
+    updateDropdownSummary(elements.orgs, selected, true);
+    if (state.draft) {
+      state.draft.orgs = [...selected];
+      state.draft.nodes.forEach(n => {
+        if (n.status === 'Chờ phân công') {
+          n.orgs = [...selected];
+          n.org = selected.join(', ');
+          n.assignees = [];
+        }
+      });
+      syncOrgsFromAssignStep();
+    }
+  };
+
   const renderOrganizationChoices = selected => {
-    const isAllSelected = orgList.length > 0 && orgList.every(org => selected.includes(org));
+    const isProcessDisabled = state.viewOnly || state.draft?.processStatus === 'active';
+    const cleanSelected = (selected || []).map(o => cleanOrgStr(o).toLowerCase());
+
+    // Lọc bỏ cơ quan thuộc quy trình khác nếu đang tạo mới hoặc tạo bản sao
+    if (!state.editingId && selected && selected.length) {
+      selected = selected.filter(o => !isOrgAssignedToOtherProcess(o, state.editingId));
+      if (state.draft) state.draft.orgs = [...selected];
+    }
+
+    // Sắp xếp: Cơ quan chưa áp dụng lên đầu, cơ quan đã thuộc quy trình khác xuống cuối
+    const sortedOrgList = [...orgList].sort((a, b) => {
+      const aUsed = isOrgAssignedToOtherProcess(a, state.editingId);
+      const bUsed = isOrgAssignedToOtherProcess(b, state.editingId);
+      if (aUsed === bUsed) return 0;
+      return aUsed ? 1 : -1;
+    });
+
+    const availableOrgs = sortedOrgList.filter(org => !isOrgAssignedToOtherProcess(org, state.editingId));
+    const isAllSelected = availableOrgs.length > 0 && availableOrgs.every(org => cleanSelected.includes(cleanOrgStr(org).toLowerCase()));
+
     elements.orgs.innerHTML = `
-      <div class="select-box" ${state.viewOnly ? 'style="background-color: #f1f5f9; cursor: not-allowed; opacity: 0.8;"' : ''}>
+      <div class="select-box ${isProcessDisabled ? 'disabled-view' : ''}" ${isProcessDisabled ? 'title="Quy trình đã phát hành, không được sửa cơ quan áp dụng"' : ''}>
         <span class="placeholder">Chọn cơ quan...</span>
-        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
-        <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+        ${!isProcessDisabled ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" hidden>' : ''}
+        <svg class="arrow-icon" viewBox="0 0 24 24" ${isProcessDisabled ? 'hidden' : ''}><path d="M7 10l5 5 5-5z"/></svg>
       </div>
-      <div class="dropdown-menu">
+      <div class="dropdown-menu" ${isProcessDisabled ? 'hidden' : ''}>
         <label class="dropdown-item select-all-item">
-          <input type="checkbox" id="selectAllProcessOrgs" ${isAllSelected ? 'checked' : ''} ${state.viewOnly ? 'disabled' : ''}>
-          <span style="font-weight: bold; color: var(--admin-text);">Chọn tất cả</span>
+          <input type="checkbox" id="selectAllProcessOrgs" ${isAllSelected ? 'checked' : ''} ${isProcessDisabled ? 'disabled' : ''}>
+          <span class="select-all-label-text">Chọn tất cả (chưa áp dụng)</span>
         </label>
-        ${orgList.map(org => `
-          <label class="dropdown-item">
-            <input type="checkbox" class="process-org-checkbox" value="${escapeText(org)}" ${selected.includes(org) ? 'checked' : ''} ${state.viewOnly ? 'disabled' : ''}>
-            <span>${escapeText(org)}</span>
-          </label>
-        `).join('')}
+        ${sortedOrgList.map(org => {
+      const isUsedInOther = isOrgAssignedToOtherProcess(org, state.editingId);
+      const isDisabled = isProcessDisabled || isUsedInOther;
+      const isChecked = !isUsedInOther && cleanSelected.includes(cleanOrgStr(org).toLowerCase());
+      return `
+            <label class="dropdown-item ${isUsedInOther ? 'disabled-org-item' : ''}" title="${isUsedInOther ? 'Cơ quan này đã được áp dụng ở quy trình khác' : ''}">
+              <input type="checkbox" class="process-org-checkbox" value="${escapeText(org)}" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+              <span>${escapeText(org)} ${isUsedInOther ? '<small class="org-used-notice">(Đã áp dụng quy trình khác)</small>' : ''}</span>
+            </label>
+          `;
+    }).join('')}
       </div>
     `;
     updateOrganizationSummary();
-    bindAutoComplete(elements.orgs);
+    if (!isProcessDisabled) {
+      bindAutoComplete(elements.orgs);
+    }
   };
   const updateScopeSummary = () => {
     if (!elements.scopeContainer) return;
@@ -216,7 +294,7 @@
     elements.scopeContainer.innerHTML = `
       <div class="select-box">
         <span class="placeholder">Chọn phạm vi...</span>
-        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" hidden>
         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
       <div class="dropdown-menu">
@@ -236,7 +314,7 @@
     elements.filterOrgContainer.innerHTML = `
       <div class="select-box">
         <span class="placeholder">Chọn cơ quan...</span>
-        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" hidden>
         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
       <div class="dropdown-menu">
@@ -260,7 +338,7 @@
     elements.activeContainer.innerHTML = `
       <div class="select-box">
         <span class="placeholder">Chọn trạng thái...</span>
-        <input type="text" placeholder="Gõ để tìm kiếm..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">
+        <input type="text" placeholder="Gõ để tìm kiếm..." class="dropdown-search-input" hidden>
         <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
       </div>
       <div class="dropdown-menu">
@@ -293,16 +371,16 @@
     elements.steps.innerHTML = processSteps.map((step, index) => {
       const isStart = step.id === 'start';
       const isEnd = step.id === 'end';
-      const icon = isStart ? '<i class="fa-solid fa-play" style="font-size: 12px;"></i>' : isEnd ? '<i class="fa-solid fa-flag-checkered" style="font-size: 12px;"></i>' : index;
+      const icon = isStart ? '<i class="fa-solid fa-play"></i>' : isEnd ? '<i class="fa-solid fa-flag-checkered"></i>' : index;
       return `
         <div class="process-flow-node ${step.id === state.selectedStepId ? 'active' : ''} ${step.fixed ? 'fixed' : ''}" data-new-step-id="${step.id}">
           <span>${icon}</span>
-          <div class="node-info" style="display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0;">
+          <div class="node-info">
             <strong>${escapeText(step.unitName)}</strong>
             ${step.fixed ? '' : `<small>${escapeText(step.status)} · <span title="${escapeText(getOrgsTooltip(step.orgs || [step.org]))}">${escapeText(formatStepOrgs(step.orgs || [step.org]))}</span></small>`}
           </div>
-          ${(step.fixed || state.flowLocked) ? '<i class="fa-solid fa-lock" style="color: #94a3b8; margin-left: auto;" title="Luồng xử lý đã khóa"></i>' : `
-            <div class="step-action-menu-container" style="flex: none; margin-left: auto;">
+          ${(step.fixed || state.flowLocked) ? '<i class="fa-solid fa-lock node-lock-icon" title="Luồng xử lý đã khóa"></i>' : `
+            <div class="step-action-menu-container inline-right">
               <button class="step-menu-toggle" type="button" data-step-menu-toggle="${step.id}" title="Thao tác"><i class="fa-solid fa-pen"></i></button>
               <div class="step-action-dropdown" data-step-menu-panel="${step.id}" hidden>
                 <button type="button" data-step-act-edit="${step.id}"><i class="fa-solid fa-pen"></i> Sửa</button>
@@ -323,10 +401,10 @@
       const icon = isStart ? 'fa-play' : isEnd ? 'fa-flag-checkered' : '';
 
       diagramHtml.push(`
-        <div class="circle-node ${step.id === state.selectedStepId ? 'active' : ''} ${step.fixed ? 'fixed' : ''}" data-new-step-id="${step.id}" style="margin-bottom: 70px; position: relative; z-index: 2;">
-          <span class="node-number">${icon ? `<i class="fa-solid ${icon}" style="font-size: 13px;"></i>` : index}</span>
+        <div class="circle-node diagram-spacing ${step.id === state.selectedStepId ? 'active' : ''} ${step.fixed ? 'fixed' : ''}" data-new-step-id="${step.id}">
+          <span class="node-number">${icon ? `<i class="fa-solid ${icon}"></i>` : index}</span>
           ${(step.fixed || state.flowLocked) ? '' : `
-            <div class="step-action-menu-container" style="position: absolute; top: -8px; right: -12px; z-index: 10;">
+            <div class="step-action-menu-container floating-top-right">
               <button class="edit-btn" type="button" data-step-menu-toggle="${step.id}" title="Thao tác ${escapeText(step.unitName)}">
                 <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
               </button>
@@ -337,10 +415,10 @@
               </div>
             </div>
           `}
-          <div style="position: absolute; left: calc(50% + 40px); top: 50%; transform: translateY(-50%); text-align: left; width: 220px; font-size: 12px; font-weight: 600; color: var(--admin-text); line-height: 1.3; pointer-events: auto;">
-            <div style="font-size: 12px; font-weight: 700; white-space: nowrap;" title="${escapeText(step.unitName)}">${escapeText(step.unitName)}</div>
+          <div class="node-label-box">
+            <div class="node-unit-title" title="${escapeText(step.unitName)}">${escapeText(step.unitName)}</div>
             ${step.fixed ? '' : `
-              <div style="font-size: 10px; font-weight: normal; color: var(--admin-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeText(step.status)} – ${escapeText(formatStepOrgs(step.orgs || [step.org]))}">
+              <div class="node-status-sub" title="${escapeText(step.status)} – ${escapeText(formatStepOrgs(step.orgs || [step.org]))}">
                 ${escapeText(step.status)} – ${escapeText(formatStepOrgs(step.orgs || [step.org]))}
               </div>
             `}
@@ -349,8 +427,8 @@
       `);
     });
 
-    elements.diagram.innerHTML = `<div class="pe-diagram-zoom-wrapper" style="transform: translate(${state.panX}px, ${state.panY}px) scale(${state.zoom}); transform-origin: top center; width: 100%; display: flex; flex-direction: column; align-items: center; transition: none; cursor: grab;">
-      <div class="process-simple-diagram" style="position: relative; width: 100%; display: flex; flex-direction: column; align-items: center;">${diagramHtml.join('')}</div>
+    elements.diagram.innerHTML = `<div class="pe-diagram-zoom-wrapper" style="transform: translate(${state.panX}px, ${state.panY}px) scale(${state.zoom});">
+      <div class="process-simple-diagram">${diagramHtml.join('')}</div>
     </div>`;
 
     // Vẽ động tất cả các mũi tên UML dựa trên vị trí thực tế của các node
@@ -483,21 +561,28 @@
       });
       node.addEventListener('dragend', () => {
         node.classList.remove('dragging');
-        stepsList.querySelectorAll('.process-flow-node').forEach(el => el.classList.remove('drag-over'));
+        stepsList.querySelectorAll('.process-flow-node').forEach(el => el.classList.remove('drag-over', 'drag-over-top', 'drag-over-bottom'));
       });
       node.addEventListener('dragover', event => {
         event.preventDefault();
         const draggingNode = stepsList.querySelector('.dragging');
         if (draggingNode && draggingNode !== node && !isEndStep) {
-          node.classList.add('drag-over');
+          const rect = node.getBoundingClientRect();
+          const midY = rect.top + rect.height / 2;
+          node.classList.remove('drag-over-top', 'drag-over-bottom');
+          if (event.clientY < midY) {
+            node.classList.add('drag-over-top');
+          } else {
+            node.classList.add('drag-over-bottom');
+          }
         }
       });
       node.addEventListener('dragleave', () => {
-        node.classList.remove('drag-over');
+        node.classList.remove('drag-over', 'drag-over-top', 'drag-over-bottom');
       });
       node.addEventListener('drop', event => {
         event.preventDefault();
-        node.classList.remove('drag-over');
+        node.classList.remove('drag-over', 'drag-over-top', 'drag-over-bottom');
         if (isEndStep) return;
         const srcId = event.dataTransfer.getData('text/plain');
         const dstId = node.dataset.newStepId;
@@ -508,28 +593,30 @@
         const dstIdx = draft.nodes.findIndex(n => n.id === dstId);
         if (srcIdx === -1 || dstIdx === -1) return;
 
-        const [movedNode] = draft.nodes.splice(srcIdx, 1);
-        draft.nodes.splice(dstIdx, 0, movedNode);
+        showCustomConfirm("Bạn có chắc chắn muốn thay đổi thứ tự bước xử lý này?", () => {
+          const [movedNode] = draft.nodes.splice(srcIdx, 1);
+          draft.nodes.splice(dstIdx, 0, movedNode);
 
-        draft.nodes.forEach((n, idx) => {
-          n.order = idx + 1;
-          n.parentNodeId = idx > 0 ? draft.nodes[idx - 1].id : null;
-          if (n.actions) {
-            n.actions.forEach(act => {
-              if (act.name === 'Chuyển xử lý' || act.name === 'Phê duyệt') {
-                act.nextNodeId = draft.nodes[idx + 1]?.id || 'end';
-              } else if (act.name === 'Trả về' || act.name === 'Từ chối') {
-                act.nextNodeId = idx > 0 ? draft.nodes[idx - 1].id : 'start';
-              }
-            });
+          draft.nodes.forEach((n, idx) => {
+            n.order = idx + 1;
+            n.parentNodeId = idx > 0 ? draft.nodes[idx - 1].id : null;
+            if (n.actions) {
+              n.actions.forEach(act => {
+                if (act.name === 'Chuyển xử lý' || act.name === 'Phê duyệt') {
+                  act.nextNodeId = draft.nodes[idx + 1]?.id || 'end';
+                } else if (act.name === 'Trả về' || act.name === 'Từ chối') {
+                  act.nextNodeId = idx > 0 ? draft.nodes[idx - 1].id : 'start';
+                }
+              });
+            }
+          });
+
+          renderSteps();
+          if (state.selectedStepId && !elements.nodeOverlay.hidden) {
+            const currentStep = draft.nodes.find(n => n.id === state.selectedStepId);
+            if (currentStep) renderStepForm(currentStep);
           }
         });
-
-        renderSteps();
-        if (state.selectedStepId && !elements.nodeOverlay.hidden) {
-          const currentStep = draft.nodes.find(n => n.id === state.selectedStepId);
-          if (currentStep) renderStepForm(currentStep);
-        }
       });
     });
   };
@@ -541,7 +628,7 @@
     if (index === -1) return;
     const stepToDelete = draft.nodes[index];
 
-    showCustomConfirm("Bạn có chắc chắn muốn xóa bước này?", () => {
+    showCustomConfirm("Bạn có chắc chắn muốn xóa bước xử lý này?", () => {
       const nextStepId = draft.nodes[index + 1]?.id || 'end';
       draft.nodes.forEach(node => {
         if (node.actions) {
@@ -589,6 +676,7 @@
       state.draft.createdAt = nowText();
       state.draft.version = '1.0';
       state.draft.processStatus = 'draft';
+      showNotice('Đã tạo bản sao quy trình thành công');
     }
 
     const draftStatus = state.draft.processStatus || 'draft';
@@ -713,7 +801,7 @@
       if (oldOrgsStr !== newOrgsStr) {
         node.orgs = [...newOrgs];
         node.org = newOrgs.join(', ');
-        node.assignees = newOrgs.map(org => getOrgPersonnel(org).leader);
+        node.assignees = (node.assignees || []).filter(a => newOrgs.some(o => a.includes(o)));
         node.persisted = true;
         isAnyChanged = true;
       }
@@ -748,10 +836,7 @@
 
     const status = step.status;
     let selected = [];
-    if (status === 'Chờ phân công') {
-      const orgs = step.orgs || [];
-      selected = orgs.map(org => getOrgPersonnel(org).leader);
-    } else if (status === 'Đang xử lý') {
+    if (status === 'Chờ phân công' || status === 'Đang xử lý') {
       const checked = [...container.querySelectorAll('[data-step-assignee]:checked')];
       selected = checked.map(input => input.value);
     } else if (status === 'Đã có báo cáo') {
@@ -765,16 +850,39 @@
 
     step.assignees = selected;
 
-    const isLocked = (status === 'Chờ phân công' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
+    const displayNamesOnly = selected.map(val => (val.includes(' - ') ? val.split(' - ')[0] : val));
+    const isStepFieldsDisabled = state.viewOnly || state.draft?.processStatus === 'active';
+    const isLocked = isStepFieldsDisabled || (status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
     const showAsMulti = (status === 'Chờ phân công' || status === 'Đang xử lý' || status === 'Đã có báo cáo');
-    updateDropdownSummary(container, selected, showAsMulti);
+    updateDropdownSummary(container, displayNamesOnly, showAsMulti);
+
+    const searchInput = container.querySelector('.dropdown-search-input');
+    const placeholder = container.querySelector('.placeholder');
+    const summaryContainer = container.querySelector('.tag-summary-container');
+    const hasSelected = selected.length > 0;
+
+    if (hasSelected) {
+      if (searchInput) searchInput.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+      if (summaryContainer) summaryContainer.style.display = 'flex';
+    } else {
+      if (container.classList.contains('open')) {
+        if (summaryContainer) summaryContainer.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'none';
+        if (searchInput) searchInput.style.display = 'inline-block';
+      } else {
+        if (searchInput) searchInput.style.display = 'none';
+        if (summaryContainer) summaryContainer.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'inline';
+      }
+    }
 
     if (isLocked) {
       selectBox.style.backgroundColor = '#f1f5f9';
       selectBox.style.cursor = 'not-allowed';
       selectBox.style.opacity = '0.85';
       selectBox.classList.add('disabled-view');
-      selectBox.setAttribute('title', selected.join('\n'));
+      selectBox.setAttribute('title', formatConciseTooltip(displayNamesOnly, 'người'));
     } else {
       selectBox.style.backgroundColor = '#ffffff';
       selectBox.style.cursor = 'pointer';
@@ -798,18 +906,35 @@
 
     if (status === 'Chờ phân công') {
       const orgs = step.orgs || [];
-      selectedAssignees = orgs.map(org => getOrgPersonnel(org).leader);
-      isLocked = true;
+      orgs.forEach(org => {
+        const personnel = getOrgPersonnel(org);
+        if (personnel.leader) {
+          const parts = personnel.leader.split(' - ');
+          availableAssignees.push({ fullName: personnel.leader, name: parts[0], title: parts[1] || 'Lãnh đạo', org, role: 'leader' });
+        }
+        personnel.staff.forEach(itemStr => {
+          const parts = itemStr.split(' - ');
+          availableAssignees.push({ fullName: itemStr, name: parts[0], title: parts[1] || 'Chuyên viên', org, role: 'staff' });
+        });
+      });
+      selectedAssignees = step.assignees || [];
+      isLocked = isStepFieldsDisabled;
+      grouped = true;
     } else if (status === 'Đang xử lý') {
       const assignedOrgs = getAssignedOrgs(step);
       assignedOrgs.forEach(org => {
         const personnel = getOrgPersonnel(org);
-        personnel.staff.forEach(name => {
-          availableAssignees.push({ name, org });
+        if (personnel.leader) {
+          const parts = personnel.leader.split(' - ');
+          availableAssignees.push({ fullName: personnel.leader, name: parts[0], title: parts[1] || 'Lãnh đạo', org, role: 'leader' });
+        }
+        personnel.staff.forEach(itemStr => {
+          const parts = itemStr.split(' - ');
+          availableAssignees.push({ fullName: itemStr, name: parts[0], title: parts[1] || 'Chuyên viên', org, role: 'staff' });
         });
       });
       selectedAssignees = step.assignees || [];
-      isLocked = false;
+      isLocked = isStepFieldsDisabled;
       grouped = true;
     } else if (status === 'Đã có báo cáo') {
       const assignedOrgs = getAssignedOrgs(step);
@@ -830,48 +955,68 @@
       const orgGroups = {};
       availableAssignees.forEach(item => {
         if (!orgGroups[item.org]) orgGroups[item.org] = [];
-        orgGroups[item.org].push(item.name);
+        orgGroups[item.org].push(item);
       });
 
       menuContent = `
-        <label class="dropdown-item select-all-item">
-          <input type="checkbox" id="selectAllAssignees" ${availableAssignees.length > 0 && availableAssignees.every(item => selectedAssignees.includes(item.name)) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
-          <span style="font-weight: bold; color: var(--admin-text);">Chọn tất cả</span>
-        </label>
+        <div class="assignee-toolbar">
+          <label class="dropdown-item select-all-item">
+            <input type="checkbox" id="selectAllAssignees" ${availableAssignees.length > 0 && availableAssignees.every(item => selectedAssignees.includes(item.fullName)) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
+            <span class="select-all-label-text">Chọn tất cả</span>
+          </label>
+          <div class="role-filter-dropdown-wrapper">
+            <button type="button" class="btn-role-filter-toggle">
+              <span class="filter-label-text">Tất cả</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="role-filter-menu" hidden>
+              <div class="role-filter-option active" data-assignee-role-filter="all">Tất cả</div>
+              <div class="role-filter-option" data-assignee-role-filter="leader">Lãnh đạo</div>
+              <div class="role-filter-option" data-assignee-role-filter="staff">Chuyên viên</div>
+            </div>
+          </div>
+        </div>
+        <div class="assignee-items-scroll-container">
       `;
 
       for (const org in orgGroups) {
         menuContent += `
-          <div class="dropdown-group-header" style="font-weight: bold; padding: 6px 12px; background: #f8fafc; color: #64748b; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0;">
+          <div class="dropdown-group-header">
             ${escapeText(org)}
           </div>
         `;
-        orgGroups[org].forEach(name => {
+        orgGroups[org].forEach(item => {
           menuContent += `
-            <label class="dropdown-item" data-search-text="${escapeText(org)} ${escapeText(name)}">
-              <input type="checkbox" data-step-assignee value="${escapeText(name)}" ${selectedAssignees.includes(name) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
-              <span>${escapeText(name)}</span>
+            <label class="dropdown-item" data-assignee-role="${escapeText(item.role)}" data-search-text="${escapeText(org)} ${escapeText(item.name)} ${escapeText(item.title)}">
+              <input type="checkbox" data-step-assignee value="${escapeText(item.fullName)}" ${selectedAssignees.includes(item.fullName) ? 'checked' : ''} ${isStepFieldsDisabled ? 'disabled' : ''}>
+              <span class="assignee-item-name">${escapeText(item.name)}</span>
+              <span class="assignee-item-title">${escapeText(item.title)}</span>
             </label>
           `;
         });
       }
+      menuContent += `</div>`;
     } else {
-      menuContent = selectedAssignees.map(user => `
-        <div class="dropdown-item select-only-item">
-          <span>${escapeText(user)}</span>
-        </div>
-      `).join('');
+      menuContent = `<div class="assignee-items-scroll-container">` + selectedAssignees.map(user => {
+        const displayName = user.includes(' - ') ? user.split(' - ')[0] : user;
+        return `
+          <div class="dropdown-item select-only-item">
+            <span>${escapeText(displayName)}</span>
+          </div>
+        `;
+      }).join('') + `</div>`;
     }
+
+    const displaySelectedText = selectedAssignees.map(v => (v.includes(' - ') ? v.split(' - ')[0] : v));
 
     container.innerHTML = `
       <div class="select-box ${isLocked ? 'disabled-view' : ''}" 
-           style="${isLocked ? 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.85;' : ''}"
-           title="${isLocked ? escapeText(selectedAssignees.join('\n')) : ''}">
-        <span class="placeholder" style="${(isLocked && selectedAssignees.length === 0) ? 'color: transparent;' : ''}">Chọn người xử lý...</span>
-        ${!isLocked ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">' : ''}
-        <svg class="arrow-icon" viewBox="0 0 24 24" style="${isLocked ? 'display: none;' : ''}"><path d="M7 10l5 5 5-5z"/></svg>
+           title="${isLocked ? escapeText(formatConciseTooltip(displaySelectedText, 'người')) : ''}">
+        <span class="placeholder" ${isLocked && selectedAssignees.length === 0 ? 'hidden' : ''}>Chọn người xử lý...</span>
+        ${!isLocked ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" hidden>' : ''}
+        <svg class="arrow-icon" viewBox="0 0 24 24" ${isLocked ? 'hidden' : ''}><path d="M7 10l5 5 5-5z"/></svg>
       </div>
-      <div class="dropdown-menu" style="${isLocked ? 'display: none !important;' : ''}">
+      <div class="dropdown-menu" ${isLocked ? 'hidden' : ''}>
         ${menuContent}
       </div>
     `;
@@ -880,28 +1025,59 @@
 
     if (!isLocked) {
       const searchInput = container.querySelector('.dropdown-search-input');
-      if (searchInput) {
-        searchInput.addEventListener('input', () => {
-          const query = searchInput.value.toLowerCase().trim();
-          const items = container.querySelectorAll('.dropdown-menu .dropdown-item:not(.select-all-item)');
-          items.forEach(item => {
-            const searchText = item.dataset.searchText ? item.dataset.searchText.toLowerCase() : item.textContent.toLowerCase();
-            item.style.display = searchText.includes(query) ? 'flex' : 'none';
-          });
-          const groups = container.querySelectorAll('.dropdown-group-header');
-          groups.forEach(group => {
-            let next = group.nextElementSibling;
-            let hasVisible = false;
-            while (next && !next.classList.contains('dropdown-group-header')) {
-              if (next.style.display !== 'none') {
-                hasVisible = true;
-              }
-              next = next.nextElementSibling;
+      const filterToggleBtn = container.querySelector('.btn-role-filter-toggle');
+      const filterMenu = container.querySelector('.role-filter-menu');
+      const filterOptions = container.querySelectorAll('.role-filter-option');
+      const filterLabelText = container.querySelector('.filter-label-text');
+      let activeRole = 'all';
+
+      const applyFilters = () => {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const items = container.querySelectorAll('.dropdown-menu .dropdown-item:not(.select-all-item)');
+        items.forEach(item => {
+          const searchText = item.dataset.searchText ? item.dataset.searchText.toLowerCase() : item.textContent.toLowerCase();
+          const itemRole = item.dataset.assigneeRole || '';
+          const matchesQuery = !query || searchText.includes(query);
+          const matchesRole = (activeRole === 'all') || (activeRole === itemRole);
+          item.style.display = (matchesQuery && matchesRole) ? 'flex' : 'none';
+        });
+        const groups = container.querySelectorAll('.dropdown-group-header');
+        groups.forEach(group => {
+          let next = group.nextElementSibling;
+          let hasVisible = false;
+          while (next && !next.classList.contains('dropdown-group-header')) {
+            if (next.style.display !== 'none') {
+              hasVisible = true;
             }
-            group.style.display = hasVisible ? 'block' : 'none';
-          });
+            next = next.nextElementSibling;
+          }
+          group.style.display = hasVisible ? 'block' : 'none';
+        });
+      };
+
+      if (searchInput) {
+        searchInput.addEventListener('input', applyFilters);
+      }
+
+      if (filterToggleBtn && filterMenu) {
+        filterToggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          filterMenu.hidden = !filterMenu.hidden;
         });
       }
+
+      filterOptions.forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          filterOptions.forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+          activeRole = opt.dataset.assigneeRoleFilter;
+          const roleMap = { all: 'Tất cả', leader: 'Lãnh đạo', staff: 'Chuyên viên' };
+          if (filterLabelText) filterLabelText.textContent = roleMap[activeRole] || 'Tất cả';
+          if (filterMenu) filterMenu.hidden = true;
+          applyFilters();
+        });
+      });
     }
   };
 
@@ -935,16 +1111,11 @@
 
   const checkDefaultAssignee = (step) => {
     const status = step.status;
-    if (status === 'Chờ phân công') {
-      const orgs = step.orgs || [];
-      step.assignees = orgs.map(org => getOrgPersonnel(org).leader);
-    } else if (status === 'Đang xử lý') {
-      const assignedOrgs = getAssignedOrgs(step);
-      const validStaff = new Set();
-      assignedOrgs.forEach(org => {
-        getOrgPersonnel(org).staff.forEach(name => validStaff.add(name));
-      });
-      step.assignees = (step.assignees || []).filter(name => validStaff.has(name));
+    if (status === 'Chờ phân công' || status === 'Đang xử lý') {
+      // Không gán mặc định người xử lý khi tạo bước mới hoặc chọn Chờ phân công / Đang xử lý
+      if (!step.assignees) {
+        step.assignees = [];
+      }
     } else if (status === 'Đã có báo cáo') {
       const assignedOrgs = getAssignedOrgs(step);
       step.assignees = assignedOrgs.map(org => getOrgPersonnel(org).leader);
@@ -962,8 +1133,7 @@
     const status = step.status;
     let selected = [];
     if (status === 'Chờ phân công') {
-      const checkedCheckboxes = [...container.querySelectorAll('.dropdown-menu input.org-item-checkbox:checked')];
-      selected = checkedCheckboxes.map(input => input.value);
+      selected = state.draft ? [...(state.draft.orgs || [])] : (step.orgs || []);
     } else if (status === 'Đang xử lý' || status === 'Đã có báo cáo') {
       selected = getAssignedOrgs(step);
     } else if (status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo') {
@@ -974,11 +1144,8 @@
 
     step.orgs = selected;
     step.org = selected.join(', ');
-    if (status === 'Chờ phân công') {
-      syncOrgsFromAssignStep();
-    }
 
-    const isLocked = (status === 'Đang xử lý' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
+    const isLocked = (status === 'Chờ phân công' || status === 'Đang xử lý' || status === 'Đã có báo cáo' || status === 'Đã kết thúc' || status === 'Chờ phê duyệt' || status === 'Phê duyệt báo cáo');
     const showOrgsAsMulti = (status === 'Chờ phân công' || status === 'Đang xử lý' || status === 'Đã có báo cáo');
     updateDropdownSummary(container, selected, showOrgsAsMulti);
 
@@ -987,7 +1154,7 @@
       selectBox.style.cursor = 'not-allowed';
       selectBox.style.opacity = '0.85';
       selectBox.classList.add('disabled-view');
-      selectBox.setAttribute('title', selected.join('\n'));
+      selectBox.setAttribute('title', formatConciseTooltip(selected, 'cơ quan'));
     } else {
       const isStepFieldsDisabled = state.viewOnly || state.draft.processStatus === 'active';
       selectBox.style.backgroundColor = isStepFieldsDisabled ? '#f1f5f9' : '#ffffff';
@@ -1009,8 +1176,8 @@
     let isLocked = false;
 
     if (status === 'Chờ phân công') {
-      selectedOrgs = step.orgs || [];
-      isLocked = false;
+      selectedOrgs = state.draft ? [...(state.draft.orgs || [])] : (step.orgs || []);
+      isLocked = true;
     } else if (status === 'Đang xử lý' || status === 'Đã có báo cáo') {
       selectedOrgs = getAssignedOrgs(step);
       isLocked = true;
@@ -1053,13 +1220,12 @@
 
     container.innerHTML = `
       <div class="select-box ${isLocked ? 'disabled-view' : ''}" 
-           style="${isLocked ? 'background-color: #f1f5f9; cursor: not-allowed; opacity: 0.85;' : ''}"
-           title="${isLocked ? escapeText(selectedOrgs.join('\n')) : ''}">
-        <span class="placeholder" style="${(isLocked && selectedOrgs.length === 0) ? 'color: transparent;' : ''}">Chọn cơ quan...</span>
-        ${!isLocked ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" style="display: none; width: 100%; border: none; outline: none; background: transparent; font-size: 13px; font-weight: normal; color: var(--admin-text); padding: 0;">' : ''}
-        <svg class="arrow-icon" viewBox="0 0 24 24" style="${isLocked ? 'display: none;' : ''}"><path d="M7 10l5 5 5-5z"/></svg>
+           title="${isLocked ? escapeText(formatConciseTooltip(selectedOrgs, 'cơ quan')) : ''}">
+        <span class="placeholder" ${isLocked && selectedOrgs.length === 0 ? 'hidden' : ''}>Chọn cơ quan...</span>
+        ${!isLocked ? '<input type="text" placeholder="Gõ để tìm kiếm nhanh..." class="dropdown-search-input" hidden>' : ''}
+        <svg class="arrow-icon" viewBox="0 0 24 24" ${isLocked ? 'hidden' : ''}><path d="M7 10l5 5 5-5z"/></svg>
       </div>
-      <div class="dropdown-menu" style="${isLocked ? 'display: none !important;' : ''}">
+      <div class="dropdown-menu" ${isLocked ? 'hidden' : ''}>
         ${menuContent}
       </div>
     `;
@@ -1077,7 +1243,7 @@
       <div class="form-grid">
         <div class="form-group full-width">
           <label>Tên bước <span class="required">*</span></label>
-          <input type="text" class="form-control" data-step-field="unitName" value="${escapeText(step.unitName)}" ${isStepFieldsDisabled ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''}>
+          <input type="text" class="form-control" data-step-field="unitName" value="${escapeText(step.unitName)}" ${isStepFieldsDisabled ? 'disabled' : ''}>
         </div>
         <div class="form-group full-width">
           <label>Trạng thái xử lý <span class="required">*</span></label>
@@ -1099,13 +1265,14 @@
         </div>
         <div class="form-group full-width">
           <label>Mô tả ngắn</label>
-          <input type="text" class="form-control" data-step-field="description" placeholder="Nhập mô tả ngắn cho bước này..." value="${escapeText(step.description)}" ${state.draft.processStatus === 'active' ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''}>
+          <input type="text" class="form-control" data-step-field="description" placeholder="Nhập mô tả ngắn cho bước này..." value="${escapeText(step.description)}" ${state.draft.processStatus === 'active' ? 'disabled' : ''}>
         </div>
       </div>
     `;
     elements.saveNode.hidden = state.viewOnly;
     elements.nodeOverlay.hidden = false;
 
+    checkDefaultAssignee(step);
     renderStepStatusChoices(step);
     renderStepOrgChoices(step);
     renderStepAssigneeChoices(step);
@@ -1164,15 +1331,15 @@
     }
     if (!isValid) return;
 
-    step.assignees = assignees;
-    step.persisted = true;
-    if (!step.actions.length) step.actions.push({ name: 'Chuyển xử lý', nextNodeId: 'end' });
-    if (step.status === 'Chờ phân công') {
-      syncOrgsFromAssignStep();
-    }
-    elements.nodeOverlay.hidden = true;
-    showError('');
-    renderSteps();
+    showCustomConfirm("Bạn có chắc chắn muốn lưu bước xử lý này?", () => {
+      step.assignees = assignees;
+      step.persisted = true;
+      if (!step.actions.length) step.actions.push({ name: 'Chuyển xử lý', nextNodeId: 'end' });
+      elements.nodeOverlay.hidden = true;
+      showError('');
+      renderSteps();
+      showNotice('Đã lưu thông tin bước xử lý');
+    });
   };
   const showCustomConfirm = (message, onConfirm) => {
     const overlay = document.getElementById('confirmDialogOverlay');
@@ -1237,6 +1404,7 @@
     draft.scope = state.draft.scope;
     draft.description = elements.description.value.trim();
     draft.orgs = [...elements.orgs.querySelectorAll('.process-org-checkbox:checked')].map(input => input.value);
+    draft.orgs = draft.orgs.filter(org => !isOrgAssignedToOtherProcess(org, state.editingId));
 
     if (!draft.name) {
       showFieldError(elements.name, 'Tên quy trình không được để trống.');
@@ -1342,7 +1510,15 @@
     if (elements.activeContainer && !event.target.closest('#filterProcessActiveContainer')) { elements.activeContainer.classList.remove('open'); }
     if (!event.target.closest('.process-assignee-multiselect')) {
       const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
-      if (container) container.classList.remove('open');
+      if (container) {
+        container.classList.remove('open');
+        const searchInput = container.querySelector('.dropdown-search-input');
+        const placeholder = container.querySelector('.placeholder');
+        const summaryContainer = container.querySelector('.tag-summary-container');
+        if (searchInput) searchInput.style.display = 'none';
+        if (summaryContainer) summaryContainer.style.display = 'flex';
+        else if (placeholder) placeholder.style.display = 'inline';
+      }
     }
     if (!event.target.closest('.process-step-status-dropdown')) {
       const container = elements.nodeForm.querySelector('.process-step-status-dropdown');
@@ -1358,7 +1534,18 @@
   });
 
   elements.orgs.addEventListener('click', event => {
-    if (state.viewOnly) return;
+    const cb = event.target.closest('.process-org-checkbox') || event.target.closest('.dropdown-item')?.querySelector('.process-org-checkbox');
+    const disabledItem = event.target.closest('.disabled-org-item');
+    if (disabledItem || (cb && isOrgAssignedToOtherProcess(cb.value, state.editingId))) {
+      if (cb) {
+        cb.checked = false;
+        cb.disabled = true;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }
+    if (state.viewOnly || state.draft?.processStatus === 'active') return;
     if (event.target.closest('.select-box') && !event.target.classList.contains('remove-tag') && !event.target.classList.contains('dropdown-search-input')) {
       elements.orgs.classList.toggle('open');
       if (elements.orgs.classList.contains('open')) {
@@ -1370,9 +1557,10 @@
         }
       }
     }
-  });
+  }, true);
 
   elements.orgs.addEventListener('input', event => {
+    if (state.viewOnly || state.draft?.processStatus === 'active') return;
     if (event.target.classList.contains('dropdown-search-input')) {
       const query = event.target.value.toLowerCase().trim();
       const items = elements.orgs.querySelectorAll('.dropdown-item:not(.select-all-item)');
@@ -1383,17 +1571,27 @@
     }
   });
   elements.orgs.addEventListener('change', event => {
+    if (state.viewOnly || state.draft?.processStatus === 'active') return;
     if (event.target.id === 'selectAllProcessOrgs') {
       const checked = event.target.checked;
-      const checkBoxes = elements.orgs.querySelectorAll('.process-org-checkbox');
-      checkBoxes.forEach(cb => {
-        if (!cb.disabled) cb.checked = checked;
+      const allCheckBoxes = elements.orgs.querySelectorAll('.process-org-checkbox');
+      allCheckBoxes.forEach(cb => {
+        if (isOrgAssignedToOtherProcess(cb.value, state.editingId)) {
+          cb.checked = false;
+          cb.disabled = true;
+        } else {
+          cb.checked = checked;
+        }
       });
-    } else {
+    } else if (event.target.classList.contains('process-org-checkbox')) {
+      if (isOrgAssignedToOtherProcess(event.target.value, state.editingId)) {
+        event.target.checked = false;
+        event.target.disabled = true;
+      }
       const selectAllCb = elements.orgs.querySelector('#selectAllProcessOrgs');
-      const checkBoxes = [...elements.orgs.querySelectorAll('.process-org-checkbox')];
+      const availableCheckBoxes = [...elements.orgs.querySelectorAll('.process-org-checkbox')].filter(cb => !isOrgAssignedToOtherProcess(cb.value, state.editingId));
       if (selectAllCb) {
-        selectAllCb.checked = checkBoxes.length > 0 && checkBoxes.every(cb => cb.checked);
+        selectAllCb.checked = availableCheckBoxes.length > 0 && availableCheckBoxes.every(cb => cb.checked);
       }
     }
     updateOrganizationSummary();
@@ -1512,12 +1710,13 @@
   }
 
   elements.addStep.addEventListener('click', () => {
+    const defaultOrgs = state.draft ? [...(state.draft.orgs || [])] : [];
     const step = {
       id: `step-${Date.now()}`,
       unitName: `Bước xử lý ${state.draft.nodes.length + 1}`,
       status: statusList[0],
-      orgs: [],
-      org: '',
+      orgs: defaultOrgs,
+      org: defaultOrgs.join(', '),
       assignees: [],
       description: '',
       actions: [{ name: 'Chuyển xử lý', nextNodeId: 'end' }],
@@ -1669,6 +1868,32 @@
     updateDiagramTransform();
   }, { passive: false });
 
+  const syncStepActionsOnStatusChange = (step) => {
+    if (!state.draft || !state.draft.nodes) return;
+    const idx = state.draft.nodes.findIndex(n => n.id === step.id);
+    if (idx === -1) return;
+
+    const nextStepId = (idx < state.draft.nodes.length - 1) ? state.draft.nodes[idx + 1].id : 'end';
+    const prevStepId = (idx > 0) ? state.draft.nodes[idx - 1].id : (step.parentNodeId || 'start');
+
+    const firstActionName = step.actions?.[0]?.name || 'Chuyển xử lý';
+    const existingNextId = step.actions?.[0]?.nextNodeId;
+    const finalNextId = (existingNextId && (existingNextId === 'end' || state.draft.nodes.some(n => n.id === existingNextId)))
+      ? existingNextId
+      : nextStepId;
+
+    if (step.status === 'Chờ phê duyệt') {
+      step.actions = [
+        { name: firstActionName, nextNodeId: finalNextId },
+        { name: 'Trả về', nextNodeId: prevStepId }
+      ];
+    } else {
+      step.actions = [
+        { name: firstActionName, nextNodeId: finalNextId }
+      ];
+    }
+  };
+
   elements.nodeForm.addEventListener('input', event => {
     if (event.target.classList.contains('dropdown-search-input')) {
       const container = event.target.closest('.multiselect-container');
@@ -1687,11 +1912,8 @@
     const field = event.target.dataset.stepField;
     if (field) {
       step[field] = event.target.value;
-      if (field === 'status' && event.target.value === 'Chờ phê duyệt') {
-        step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }, { name: 'Trả xử lý', nextNodeId: step.parentNodeId || 'start' }];
-        renderStepForm(step);
-      } else if (field === 'status' && event.target.value !== 'Chờ phê duyệt') {
-        step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }];
+      if (field === 'status') {
+        syncStepActionsOnStatusChange(step);
         renderStepForm(step);
       }
       if (field === 'unitName') renderSteps();
@@ -1799,7 +2021,12 @@
       if (isStepFieldsDisabled) return;
       step.status = statusItem.dataset.stepStatusVal;
 
-      if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
+      if (step.status === 'Chờ phân công') {
+        const defaultOrgs = state.draft ? [...(state.draft.orgs || [])] : [];
+        step.orgs = defaultOrgs;
+        step.org = defaultOrgs.join(', ');
+        step.assignees = [];
+      } else if (step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') {
         step.orgs = [];
         step.org = '';
         step.assignees = [];
@@ -1808,18 +2035,14 @@
       updateStepStatusSummary(step);
       const container = elements.nodeForm.querySelector('.process-step-status-dropdown');
       if (container) container.classList.remove('open');
-      if (step.status === 'Chờ phê duyệt') {
-        step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }, { name: 'Trả về', nextNodeId: step.parentNodeId || 'start' }];
-      } else {
-        step.actions = [{ name: 'Chuyển xử lý', nextNodeId: 'end' }];
-      }
+      syncStepActionsOnStatusChange(step);
       renderStepForm(step);
       renderSteps();
       return;
     }
     const orgSelectBox = event.target.closest('.process-step-org-dropdown .select-box');
     if (orgSelectBox && !event.target.classList.contains('remove-tag') && !event.target.classList.contains('dropdown-search-input')) {
-      if (isStepFieldsDisabled || step.status === 'Chờ phê duyệt') return;
+      if (isStepFieldsDisabled || step.status === 'Chờ phân công' || step.status === 'Đang xử lý' || step.status === 'Đã có báo cáo' || step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo' || step.status === 'Đã kết thúc') return;
       const container = elements.nodeForm.querySelector('.process-step-org-dropdown');
       if (container) {
         container.classList.toggle('open');
@@ -1848,10 +2071,45 @@
       return;
     }
     const assigneeSelectBox = event.target.closest('.process-assignee-multiselect .select-box');
-    if (assigneeSelectBox) {
+    if (assigneeSelectBox && !event.target.classList.contains('dropdown-search-input')) {
       if (isStepFieldsDisabled || step.status === 'Chờ phê duyệt' || step.status === 'Phê duyệt báo cáo') return;
       const container = elements.nodeForm.querySelector('.process-assignee-multiselect');
-      if (container) container.classList.toggle('open');
+      if (container) {
+        const isOpen = container.classList.contains('open');
+        const searchInput = container.querySelector('.dropdown-search-input');
+        const placeholder = container.querySelector('.placeholder');
+        const summaryContainer = container.querySelector('.tag-summary-container');
+        const hasSelected = step.assignees && step.assignees.length > 0;
+
+        if (!isOpen) {
+          container.classList.add('open');
+          if (hasSelected) {
+            if (searchInput) searchInput.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'none';
+            if (summaryContainer) summaryContainer.style.display = 'flex';
+          } else {
+            if (placeholder) placeholder.style.display = 'none';
+            if (summaryContainer) summaryContainer.style.display = 'none';
+            if (searchInput) {
+              searchInput.style.display = 'inline-block';
+              searchInput.value = '';
+              container.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => item.style.display = 'flex');
+              container.querySelectorAll('.dropdown-group-header').forEach(g => g.style.display = 'block');
+              setTimeout(() => searchInput.focus(), 50);
+            }
+          }
+        } else {
+          container.classList.remove('open');
+          if (searchInput) searchInput.style.display = 'none';
+          if (hasSelected) {
+            if (summaryContainer) summaryContainer.style.display = 'flex';
+            if (placeholder) placeholder.style.display = 'none';
+          } else {
+            if (summaryContainer) summaryContainer.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'inline';
+          }
+        }
+      }
       return;
     }
     const addActionIcon = event.target.closest('#addStepActionIcon');
@@ -1937,26 +2195,26 @@
       let nextSelectHtml = '';
       if (isEndStep && actName === 'Chuyển xử lý') {
         nextSelectHtml = `
-          <select data-popup-action-next="${index}" disabled style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; background-color: #f1f5f9; cursor: not-allowed; width: 100%;">
+          <select class="popup-action-select" data-popup-action-next="${index}" disabled>
             <option value="end" selected> </option>
           </select>
         `;
       } else {
         nextSelectHtml = `
-          <select data-popup-action-next="${index}" ${isLocked ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; width: 100%;">
+          <select class="popup-action-select" data-popup-action-next="${index}" ${isLocked ? 'disabled' : ''}>
             ${actionOptions(state.draft, action.nextNodeId, currentActionsStepId, actName)}
           </select>
         `;
       }
 
       return `
-        <div class="process-step-action-row" style="display: grid; grid-template-columns: 1.5fr 2fr auto; gap: 10px; align-items: center; margin-bottom: 8px;">
-          <select data-popup-action-name="${index}" ${isLocked ? 'disabled style="background-color: #f1f5f9; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid var(--admin-line); border-radius: var(--admin-radius-md); font-size: 13px; font-weight: bold; color: var(--admin-text);">
+        <div class="process-step-action-row">
+          <select class="popup-action-name-select" data-popup-action-name="${index}" ${isLocked ? 'disabled' : ''}>
             <option value="Chuyển xử lý" ${actName === 'Chuyển xử lý' ? 'selected' : ''}>Chuyển xử lý</option>
             <option value="Trả về" ${actName === 'Trả về' ? 'selected' : ''}>Trả về</option>
           </select>
           ${nextSelectHtml}
-          <button class="act-btn act-del" type="button" data-popup-delete-action="${index}" ${isLocked ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="padding: 6px 10px; border: 1px solid #ef4444; color: #ef4444; background: none; border-radius: var(--admin-radius-md); cursor: pointer;">
+          <button class="act-btn act-del popup-action-del-btn" type="button" data-popup-delete-action="${index}" ${isLocked ? 'disabled' : ''}>
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>

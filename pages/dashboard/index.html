@@ -229,13 +229,13 @@
     <!-- Event Panel Drawer (position: fixed via CSS) -->
     <div class="event-drawer" id="eventDrawer">
       <div class="drawer-header">
-        <span>Bảng chỉ đạo điều hành</span>
+        <span style="color: #f1f5f9;">Bảng chỉ đạo điều hành</span>
         <button class="drawer-close" onclick="toggleDrawer()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="drawer-content" id="drawerContent">
         <!-- Notification Banner at Top -->
         <div id="drawerNotificationBanner"
-          style="padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: left; gap: 8px; margin-bottom: 10px;">
+          style="position: sticky; top: -10px; z-index: 10; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: left; gap: 8px; margin-bottom: 10px;">
           <i class="fa-solid fa-bell" style="color: #64748b;"></i>
           <span id="drawerNotificationCount" style="font-size: 13px; font-weight: 700; color: #334155;">Không có cảnh
             báo chỉ đạo</span>
@@ -292,7 +292,7 @@
                   <div class="fms-select-all-wrap"
                     style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">
                     <label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllOrg"
-                        onchange="toggleSelectAllFilter('org')"> <span>Chọn tất cả</span></label>
+                        onchange="toggleSelectAllFilter('org')"> <span>Chỉ đạo toàn tỉnh</span></label>
                   </div>
                   <label><input type="checkbox" value="Sở Nội vụ" onchange="onMultiFilterChange('org')"> Sở Nội
                     vụ</label>
@@ -529,7 +529,7 @@
                     <div class="fms-select-all-wrap"
                       style="border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 4px;">
                       <label class="ms-opt" style="font-weight: 600;"><input type="checkbox" id="selectAllAgencyForm"
-                          onchange="toggleSelectAllAgencyForm()"> <span>Chọn tất cả</span></label>
+                          onchange="toggleSelectAllAgencyForm()"> <span>Chỉ đạo toàn tỉnh</span></label>
                     </div>
                     <label class="ms-opt"><input type="checkbox" name="agencyCb" value="Sở Nội vụ"
                         onchange="selectAgencyMulti()"> <span>Sở Nội vụ</span></label>
@@ -632,13 +632,16 @@
         </div>
         <div class="modal-body">
           <!-- Tabs -->
-          <div class="modal-tabs">
-            <div class="modal-tab active" id="tabBtnInfo" onclick="switchModalTab('info')">
-              Thông tin chỉ đạo
+          <div class="modal-tabs" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+            <div style="display:flex;">
+              <div class="modal-tab active" id="tabBtnInfo" onclick="switchModalTab('info')">
+                Thông tin chỉ đạo
+              </div>
+              <div class="modal-tab" id="tabBtnHistory" onclick="switchModalTab('history')">
+                Chi tiết đơn vị
+              </div>
             </div>
-            <div class="modal-tab" id="tabBtnHistory" onclick="switchModalTab('history')">
-              Chi tiết đơn vị
-            </div>
+            <div id="approveAllContainer" style="padding-right: 12px;"></div>
           </div>
           <!-- Tab 1: Thông tin -->
           <div class="modal-tab-content active" id="tabContentInfo">
@@ -822,6 +825,15 @@
   <script src="./js/ui.js"></script>
   <script src="./js/charts.js"></script>
   <script src="./js/map.js"></script>
+
+  <!-- Mock Role Select (Dev Only) -->
+  <div id="devMockRoleContainer" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 6px;">
+    <span style="font-size: 11px; font-weight: 700; color: #dc2626; text-transform: uppercase;">Dev Only - Mô phỏng chức vụ</span>
+    <select id="mockRoleSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 13px; font-family: var(--font-family); color: #334155; cursor: pointer; outline: none;">
+      <option value="leader_province">Lãnh đạo Tỉnh</option>
+      <option value="leader_department">Lãnh đạo Sở / Chuyên viên</option>
+    </select>
+  </div>
 
 </body>
 
