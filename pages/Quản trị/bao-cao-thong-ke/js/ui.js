@@ -10,9 +10,13 @@
   };
   const filterLabels = { statuses: 'Tất cả trạng thái', units: 'Tất cả đơn vị', leaders: 'Tất cả lãnh đạo' };
   let pickers = [];
+  const periodTypes = [['', 'Từ ngày – Đến ngày'], ['today', 'Ngày hiện tại'], ['week', 'Tuần'], ['month', 'Tháng'], ['quarter', 'Quý'], ['year', 'Năm']];
 
   document.addEventListener('DOMContentLoaded', init);
   function init() {
+    if (typeof window.loadSharedLayout === 'function') {
+      window.loadSharedLayout('nav-bao-cao-thong-ke', 'Báo cáo & Thống kê Chỉ đạo');
+    }
     initDatePickers();
     initPeriodControls();
     renderMultiSelects();
@@ -32,7 +36,6 @@
     $('#btnBackToStats').addEventListener('click', backToStatistics);
     $('#btnExportExcel').addEventListener('click', exportExcel);
     $('#pageSizeSelect').addEventListener('change', event => { state.pageSize = Number(event.target.value); state.page = 1; renderTable(); });
-    $('#filterPeriod').addEventListener('change', setCurrentPeriod);
     $('#filterPeriodValue').addEventListener('change', syncPeriodDates);
     $('#filterPeriodYear').addEventListener('change', syncPeriodDates);
     document.querySelectorAll('.period-picker-toggle').forEach(button => button.addEventListener('click', event => {
@@ -50,8 +53,9 @@
       if (!option) return;
       const picker = option.closest('.period-picker');
       picker.querySelector('input').value = option.dataset.periodOption;
+      if (picker.id === 'filterPeriodPicker') { const selectedPeriod = periodTypes.find(item => item[1] === option.dataset.periodOption); picker.querySelector('input').dataset.value = selectedPeriod ? selectedPeriod[0] : ''; setCurrentPeriod(); }
       picker.classList.remove('open');
-      syncPeriodDates();
+      if (picker.id !== 'filterPeriodPicker') syncPeriodDates();
     }));
     $('#statisticsTabs').addEventListener('click', event => {
       const button = event.target.closest('[data-tab]');
@@ -65,34 +69,80 @@
       if (trigger) {
         const wrap = trigger.closest('.multiselect');
         document.querySelectorAll('.multiselect.open').forEach(item => { if (item !== wrap) item.classList.remove('open'); });
-        wrap.classList.toggle('open');
+        wrap.classList.add('open');
+        const search = wrap.querySelector('.multiselect-search');
+        if (search) setTimeout(() => search.focus(), 0);
         return;
       }
       if (!event.target.closest('.multiselect')) document.querySelectorAll('.multiselect.open').forEach(item => item.classList.remove('open'));
       if (!event.target.closest('.period-picker')) document.querySelectorAll('.period-picker.open').forEach(item => item.classList.remove('open'));
     });
-    document.querySelectorAll('.multiselect-menu').forEach(menu => menu.addEventListener('change', event => {
-      const wrap = event.target.closest('.multiselect');
+    document.addEventListener('change', event => {
+      const menu = event.target.closest('.multiselect-menu');
+      if (!menu) return;
+      const wrap = menu.closest('.multiselect');
+      if (!wrap) return;
       const filterKey = wrap.dataset.filter;
-      if (event.target.dataset.selectAll) {
-        const inputs = [...menu.querySelectorAll('input:not([data-select-all])')];
-        inputs.forEach(input => { input.checked = event.target.checked; });
-        state.filters[filterKey] = event.target.checked ? inputs.map(input => input.value) : [];
+      const isSelectAll = event.target.matches('input[type="checkbox"][data-select-all]');
+      const optionLabels = getMultiselectOptionLabels(menu);
+      if (isSelectAll) {
+        if (event.target.checked) {
+          // Chỉ giữ các mục đang hiện sau search; bỏ chọn toàn bộ mục ẩn
+          optionLabels.forEach(label => {
+            const input = label.querySelector('input[type="checkbox"]');
+            if (input) input.checked = isMultiselectOptionVisible(label);
+          });
+          state.filters[filterKey] = optionLabels
+            .filter(isMultiselectOptionVisible)
+            .map(label => label.querySelector('input[type="checkbox"]')?.value)
+            .filter(Boolean);
+        } else {
+          optionLabels.forEach(label => {
+            if (!isMultiselectOptionVisible(label)) return;
+            const input = label.querySelector('input[type="checkbox"]');
+            if (input) input.checked = false;
+          });
+          state.filters[filterKey] = collectCheckedFilterValues(menu);
+        }
+        event.target.indeterminate = false;
+      } else if (event.target.matches('input[type="checkbox"]')) {
+        state.filters[filterKey] = collectCheckedFilterValues(menu);
+        syncSelectAllCheckbox(menu);
       } else {
-        state.filters[filterKey] = [...menu.querySelectorAll('input:not([data-select-all]):checked')].map(input => input.value);
-        const all = menu.querySelector('[data-select-all]');
-        all.checked = state.filters[filterKey].length === menu.querySelectorAll('input:not([data-select-all])').length;
+        return;
       }
       updateMultiSelectText(wrap);
+    });
+    document.addEventListener('input', filterMultiselectOptions);
+    document.addEventListener('keyup', event => {
+      if (event.target.classList.contains('multiselect-search')) filterMultiselectOptions(event);
+    });
+    document.addEventListener('mousedown', event => {
+      if (event.target.closest('.multiselect-menu')) event.stopPropagation();
+    });
+    document.querySelectorAll('.multiselect-trigger').forEach(trigger => trigger.addEventListener('focus', () => {
+      const wrap = trigger.closest('.multiselect');
+      document.querySelectorAll('.multiselect.open').forEach(item => { if (item !== wrap) item.classList.remove('open'); });
+      wrap.classList.add('open');
     }));
-    document.querySelectorAll('.multiselect-menu').forEach(menu => menu.addEventListener('input', event => {
-      if (!event.target.classList.contains('multiselect-search')) return;
-      const query = event.target.value.trim().toLocaleLowerCase('vi');
-      menu.querySelectorAll('.multi-option').forEach(label => { label.hidden = !label.textContent.toLocaleLowerCase('vi').includes(query); });
+    document.querySelectorAll('.period-picker input').forEach(input => input.addEventListener('focus', () => {
+      const picker = input.closest('.period-picker');
+      document.querySelectorAll('.period-picker.open').forEach(item => { if (item !== picker) item.classList.remove('open'); });
+      picker.classList.add('open');
+      renderPeriodPickerMenu(picker, true);
+    }));
+    document.querySelectorAll('.filter-group select').forEach(select => select.addEventListener('focus', () => {
+      if (typeof select.showPicker === 'function') {
+        try { select.showPicker(); } catch (error) { /* Không hỗ trợ mở bằng script. */ }
+      }
     }));
     $('#tableBody').addEventListener('click', event => {
       const cell = event.target.closest('[data-drill-metric]');
       if (cell) startDrillDown(cell.dataset.dimension, cell.dataset.drillMetric);
+    });
+    $('#tableBody').addEventListener('mouseleave', () => {
+      const active = document.activeElement;
+      if (active && active.classList.contains('metric-link')) active.blur();
     });
     $('#tableHead').addEventListener('click', event => {
       const button = event.target.closest('[data-sort-key]');
@@ -110,9 +160,22 @@
   function initPeriodControls() {
     const currentYear = new Date().getFullYear();
     $('#filterPeriodYear').value = state.filters.periodYear || currentYear;
-    $('#filterPeriod').value = state.filters.period;
+    const selected = periodTypes.find(item => item[0] === state.filters.period) || periodTypes[3];
+    $('#filterPeriod').value = selected[1];
+    $('#filterPeriod').dataset.value = selected[0];
+    $('#filterPeriod').dataset.options = JSON.stringify(periodTypes);
+    renderPeriodPickerMenu($('#filterPeriodPicker'), true);
     updatePeriodValueOptions();
     renderPeriodPickerMenu($('#periodYearPicker'));
+    updateDateInputsLock();
+  }
+
+  function updateDateInputsLock() {
+    const locked = getSelectedPeriod() === 'today';
+    ['#filterFromDate', '#filterToDate'].forEach((selector, index) => {
+      $(selector).disabled = locked;
+      if (pickers[index]?.altInput) pickers[index].altInput.disabled = locked;
+    });
   }
 
   function getCurrentWeek(date) {
@@ -125,7 +188,7 @@
 
   function setCurrentPeriod() {
     const now = new Date();
-    const period = $('#filterPeriod').value;
+    const period = getSelectedPeriod();
     state.filters.period = period;
     state.filters.periodYear = now.getFullYear();
     state.filters.periodValue = period === 'week' ? getCurrentWeek(now)
@@ -137,7 +200,7 @@
   }
 
   function updatePeriodValueOptions() {
-    const period = $('#filterPeriod').value;
+    const period = getSelectedPeriod();
     const value = $('#filterPeriodValue');
     const labels = period === 'week' ? Array.from({ length: 53 }, (_, index) => [`${index + 1}`, `Tuần ${index + 1}`])
       : period === 'month' ? Array.from({ length: 12 }, (_, index) => [`${index + 1}`, `Tháng ${index + 1}`])
@@ -163,14 +226,16 @@
     picker.querySelector('.period-picker-menu').innerHTML = options.filter(option => option.toLocaleLowerCase('vi').includes(query)).map(option => `<button type="button" data-period-option="${option}">${option}</button>`).join('') || '<div class="period-picker-empty">Không có kết quả</div>';
   }
 
+  function getSelectedPeriod() { return $('#filterPeriod').dataset.value || ''; }
+
   function syncPeriodDates() {
-    const period = $('#filterPeriod').value;
+    const period = getSelectedPeriod();
     state.filters.period = period;
-    updatePeriodValueOptions();
     const selectedLabel = $('#filterPeriodValue').value;
     const periodOption = (JSON.parse($('#filterPeriodValue').dataset.options || '[]')).find(([, label]) => label === selectedLabel);
     state.filters.periodValue = Number(periodOption?.[0]) || state.filters.periodValue || null;
     state.filters.periodYear = Number($('#filterPeriodYear').value) || new Date().getFullYear();
+    updateDateInputsLock();
     const now = new Date();
     const year = state.filters.periodYear;
     const value = state.filters.periodValue;
@@ -185,13 +250,52 @@
     pickers[0]?.setDate(state.filters.fromDate); pickers[1]?.setDate(state.filters.toDate);
   }
 
+
+
+  function getMultiselectOptionLabels(menu) {
+    return [...menu.querySelectorAll('.multi-option')];
+  }
+  function isMultiselectOptionVisible(label) {
+    return !label.hidden && !label.classList.contains('is-filtered-out');
+  }
+  function syncSelectAllCheckbox(menu) {
+    const all = menu.querySelector('[data-select-all]');
+    if (!all) return;
+    const labels = getMultiselectOptionLabels(menu);
+    const visibleInputs = labels.filter(isMultiselectOptionVisible)
+      .map(label => label.querySelector('input[type="checkbox"]'))
+      .filter(Boolean);
+    const hiddenChecked = labels.some(label => !isMultiselectOptionVisible(label) && label.querySelector('input[type="checkbox"]')?.checked);
+    const allVisibleChecked = visibleInputs.length > 0 && visibleInputs.every(input => input.checked);
+    all.checked = allVisibleChecked && !hiddenChecked;
+    all.indeterminate = allVisibleChecked && hiddenChecked;
+  }
+  function collectCheckedFilterValues(menu) {
+    return [...menu.querySelectorAll('input[type="checkbox"]:not([data-select-all]):checked')].map(input => input.value);
+  }
+
+  function filterMultiselectOptions(event) {
+    if (!event.target.classList.contains('multiselect-search')) return;
+    const menu = event.target.closest('.multiselect-menu');
+    if (!menu) return;
+    const normalize = text => String(text ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('vi');
+    const query = normalize(event.target.value.trim());
+    getMultiselectOptionLabels(menu).forEach(label => {
+      const match = !query || normalize(label.textContent).includes(query);
+      label.classList.toggle('is-filtered-out', !match);
+      label.hidden = !match;
+    });
+    syncSelectAllCheckbox(menu);
+  }
+
+  
   function renderMultiSelects() {
     const values = { units: data.getUnique('unit'), leaders: data.getUnique('assigner') };
     document.querySelectorAll('.multiselect').forEach(wrap => {
       const key = wrap.dataset.filter;
       const menu = wrap.querySelector('.multiselect-menu');
       const selected = state.filters[key];
-      menu.innerHTML = `<div class="multiselect-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input class="multiselect-search" type="search" placeholder="Tìm kiếm..."></div><label class="select-all"><input type="checkbox" data-select-all ${selected.length === values[key].length && selected.length ? 'checked' : ''}> Chọn tất cả</label>${values[key].map(value => `<label class="multi-option"><input type="checkbox" value="${escapeHtml(value)}" ${selected.includes(value) ? 'checked' : ''}> <span>${escapeHtml(value)}</span></label>`).join('')}`;
+      menu.innerHTML = `<div class="multiselect-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input class="multiselect-search" type="text" placeholder="Tìm kiếm..." autocomplete="off"></div><label class="select-all"><input type="checkbox" data-select-all ${selected.length === values[key].length && selected.length ? 'checked' : ''}> Chọn tất cả</label>${values[key].map(value => `<label class="multi-option"><input type="checkbox" value="${escapeHtml(value)}" ${selected.includes(value) ? 'checked' : ''}> <span>${escapeHtml(value)}</span></label>`).join('')}`;
       updateMultiSelectText(wrap);
     });
   }
@@ -222,12 +326,16 @@
     const isStatistics = state.viewMode === 'statistics';
     $('#statisticsTabs').hidden = !isStatistics;
     $('#btnBackToStats').hidden = isStatistics;
-    $('#unitFilterGroup').hidden = isStatistics ? state.activeTab !== 'unit' : false;
-    $('#leaderFilterGroup').hidden = isStatistics ? state.activeTab !== 'leader' : false;
+    const showUnitFilter = isStatistics && state.activeTab === 'unit';
+    const showLeaderFilter = isStatistics && state.activeTab === 'leader';
+    $('#unitFilterGroup').hidden = !showUnitFilter;
+    $('#leaderFilterGroup').hidden = !showLeaderFilter;
+    $('#unitFilterGroup').classList.toggle('is-hidden', !showUnitFilter);
+    $('#leaderFilterGroup').classList.toggle('is-hidden', !showLeaderFilter);
     document.querySelectorAll('.statistics-tab').forEach(button => button.classList.toggle('active', button.dataset.tab === state.activeTab));
     if (isStatistics) {
       $('#viewTitle').textContent = state.activeTab === 'unit' ? 'Thống kê chỉ đạo theo đơn vị' : 'Thống kê chỉ đạo theo lãnh đạo Tỉnh';
-      $('#viewDescription').textContent = 'Bấm vào ô số để xem danh sách chỉ đạo tương ứng.';
+      $('#viewDescription').textContent = 'Nhấn vào số liệu để xem danh sách chỉ đạo chi tiết.';
     } else {
       $('#viewTitle').textContent = 'Báo cáo / Danh sách chỉ đạo chi tiết';
       $('#viewDescription').textContent = `Kết quả drill-down: ${metricLabels[state.drillDown.metric]}.`;
@@ -266,12 +374,15 @@
       return state.sort.direction === 'asc' ? compare : -compare;
     });
     $('#reportDataTable').className = `report-data-table ${isStatistics ? 'is-statistics' : 'is-detail'}`;
-    $('#tableHead').innerHTML = `<tr>${columns.map(column => `<th>${column.sortable ? `<button type="button" class="sort-header" data-sort-key="${column.key}">${escapeHtml(column.label)} <i class="fa-solid fa-sort${state.sort.key === column.key ? (state.sort.direction === 'asc' ? '-up' : '-down') : ''}"></i></button>` : escapeHtml(column.label)}</th>`).join('')}</tr>`;
+    const sortHeader = column => column.sortable ? `<button type="button" class="sort-header" data-sort-key="${column.key}">${escapeHtml(column.label)} <i class="fa-solid fa-sort${state.sort.key === column.key ? (state.sort.direction === 'asc' ? '-up' : '-down') : ''}"></i></button>` : escapeHtml(column.label);
+    $('#tableHead').innerHTML = isStatistics
+      ? `<tr class="statistics-group-header"><th rowspan="2">STT</th><th rowspan="2">${sortHeader(columns[1])}</th><th rowspan="2">${sortHeader(columns[2])}</th><th colspan="2">Đã xử lý</th><th colspan="2">Đang xử lý</th></tr><tr><th class="th-on-time">${sortHeader({ key: 'on_time_completed', label: 'Đúng hạn', sortable: true })}</th><th class="th-overdue">${sortHeader({ key: 'overdue_completed', label: 'Trễ hạn', sortable: true })}</th><th class="th-on-time">${sortHeader({ key: 'on_time_not_completed', label: 'Còn hạn', sortable: true })}</th><th class="th-overdue">${sortHeader({ key: 'overdue_not_completed', label: 'Quá hạn', sortable: true })}</th></tr>`
+      : `<tr>${columns.map(column => `<th>${sortHeader(column)}</th>`).join('')}</tr>`;
     const total = sortedRows.length; const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
     if (state.page > totalPages) state.page = totalPages;
     const start = (state.page - 1) * state.pageSize; const pageRows = sortedRows.slice(start, start + state.pageSize);
     $('#tableBody').innerHTML = pageRows.length ? pageRows.map((row, index) => isStatistics
-      ? `<tr class="statistics-row"><td>${start + index + 1}</td><td>${escapeHtml(row.dimension)}</td>${data.METRICS.map(metric => `<td><button type="button" class="metric-link" data-dimension="${escapeHtml(row.dimension)}" data-drill-metric="${metric}">${row[metric]}</button></td>`).join('')}</tr>`
+      ? `<tr class="statistics-row"><td>${start + index + 1}</td><td>${escapeHtml(row.dimension)}</td>${data.METRICS.map(metric => `<td><button type="button" class="metric-link metric-${metric}" data-dimension="${escapeHtml(row.dimension)}" data-drill-metric="${metric}">${row[metric]}</button></td>`).join('')}</tr>`
       : `<tr class="detail-row"><td>${start + index + 1}</td><td>${escapeHtml(row.code)}</td><td>${escapeHtml(row.title)}</td><td>${escapeHtml(row.unit)}</td><td>${escapeHtml(row.assigner)}</td><td>${escapeHtml(row.assignee)}</td><td>${formatDate(row.issueDate)}</td><td>${formatDate(row.dueDate)}</td><td>${escapeHtml(row.status)}</td><td>${escapeHtml(row.onTimeStatus)}</td></tr>`
     ).join('') : `<tr><td colspan="${columns.length}" class="empty-row">Không có dữ liệu phù hợp.</td></tr>`;
     $('#paginationInfo').textContent = total ? `Hiển thị ${start + 1}–${Math.min(start + state.pageSize, total)} trong tổng số ${total} bản ghi` : 'Không có bản ghi';

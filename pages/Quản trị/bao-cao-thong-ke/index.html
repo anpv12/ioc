@@ -7,18 +7,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="../shared/admin-base.css">
-  <link rel="stylesheet" href="style.css?v=20260731-4">
+  <link rel="stylesheet" href="style.css?v=20260731-21">
 </head>
 <body>
   <div class="app"><div class="main">
-    <div class="topbar"><div class="brand"><div class="brand-text"><div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div><div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div></div></div><div class="top-actions"><span class="avatar-circle"><i class="fa-solid fa-user"></i></span><span>Quản trị</span></div></div>
+    <div class="topbar"><div class="brand"><button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden><i class="fa-solid fa-bars" aria-hidden="true"></i></button><div class="brand-text"><div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div><div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div></div></div><div class="top-actions"><span class="avatar-circle"><i class="fa-solid fa-user"></i></span><span>Quản trị</span></div></div>
     <div class="breadcrumb-row"><div class="page-title" id="pageTitle">Báo cáo & Thống kê Chỉ đạo</div><div class="breadcrumb">Trang chủ <span class="sep"><i class="fa-solid fa-chevron-right"></i></span><span class="cur" id="breadcrumbCurrent">Thống kê</span></div></div>
     <main class="content"><div class="report-container">
       <section class="report-filter-panel" aria-label="Bộ lọc thống kê">
         <div class="filter-panel-header"><div class="filter-title"><i class="fa-solid fa-filter"></i><span>Bộ lọc thống kê</span></div></div>
         <div class="filter-grid">
           <div class="time-filter-row">
-          <label class="filter-group">Kỳ báo cáo<select id="filterPeriod"><option value="">Từ ngày – Đến ngày</option><option value="today">Ngày hiện tại</option><option value="week">Tuần</option><option value="month" selected>Tháng</option><option value="quarter">Quý</option><option value="year">Năm</option></select></label>
+          <label class="filter-group">Kỳ báo cáo<div class="period-picker" id="filterPeriodPicker"><input id="filterPeriod" type="text" value="Tháng" data-value="month" autocomplete="off" readonly><button type="button" class="period-picker-toggle" aria-label="Mở danh sách"><i class="fa-solid fa-chevron-down"></i></button><div class="period-picker-menu"></div></div></label>
           <label class="filter-group" id="periodValueGroup"><span id="periodValueLabel">Tháng</span><div class="period-picker" id="periodValuePicker"><input id="filterPeriodValue" type="text" autocomplete="off"><button type="button" class="period-picker-toggle" aria-label="Mở danh sách"><i class="fa-solid fa-chevron-down"></i></button><div class="period-picker-menu"></div></div></label>
           <label class="filter-group" id="periodYearGroup">Năm<div class="period-picker" id="periodYearPicker"><input id="filterPeriodYear" type="text" autocomplete="off"><button type="button" class="period-picker-toggle" aria-label="Mở danh sách"><i class="fa-solid fa-chevron-down"></i></button><div class="period-picker-menu"></div></div></label>
           <label class="filter-group">Từ ngày<div class="input-with-icon"><input id="filterFromDate" type="text" readonly placeholder="dd/mm/yyyy"><i class="fa-regular fa-calendar"></i></div></label>
@@ -44,6 +44,6 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="../shared/admin-shared.js"></script>
   <script src="js/state.js?v=20260730-8"></script>
-  <script src="js/ui.js?v=20260731-1"></script>
+  <script src="js/ui.js?v=20260731-13"></script>
 </body>
 </html>
