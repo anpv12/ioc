@@ -42,7 +42,7 @@
       <button id="btnToggleDrawer" title="Bảng chỉ đạo" style="position:relative;">
         <i class="fa-solid fa-bullhorn"></i>
         <span id="drawerBadge"
-          style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:10px; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1; box-shadow:0 1px 3px rgba(0,0,0,0.3);">0</span>
+          style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#fff; font-size: var(--fs-2xs); font-weight:700; min-width:16px; height:16px; border-radius:10px; display:none; align-items:center; justify-content:center; padding:0 4px; line-height:1; box-shadow:0 1px 3px rgba(0,0,0,0.3);">0</span>
       </button>
     </div>
 
@@ -234,11 +234,13 @@
       </div>
       <div class="drawer-content" id="drawerContent">
         <!-- Notification Banner at Top -->
-        <div id="drawerNotificationBanner"
-          style="position: sticky; top: -10px; z-index: 10; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: left; gap: 8px; margin-bottom: 10px;">
-          <i class="fa-solid fa-bell" style="color: #64748b;"></i>
-          <span id="drawerNotificationCount" style="font-size: 13px; font-weight: 700; color: #334155;">Không có cảnh
-            báo chỉ đạo</span>
+        <div id="drawerStickyHeader" style="position: sticky; top: -10px; z-index: 20; background: #ffffff; margin: -10px -10px 0 -10px; padding: 10px 10px 8px 10px; border-bottom: 1px solid #f1f5f9;">
+          <div id="drawerNotificationBanner"
+            style="padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: left; gap: 8px;">
+            <i class="fa-solid fa-bell" style="color: #64748b;"></i>
+            <span id="drawerNotificationCount" style="font-size: var(--fs-sm); font-weight: 700; color: #334155;">Không có cảnh
+              báo chỉ đạo</span>
+          </div>
         </div>
 
         <!-- Toggle Cảnh Báo removed (Yêu cầu 6) -->
@@ -255,7 +257,7 @@
               </button>
             </div>
             <button class="btn-create-inline" id="btnShowCreateForm" onclick="openDirectiveFormModal()"
-              style="padding:6px 12px; background:linear-gradient(100deg, #10b981, #34d399); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+              style="padding:6px 12px; background:linear-gradient(100deg, #10b981, #34d399); color:#fff; border:none; border-radius:6px; font-size: var(--fs-xs); font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
               <i class="fa-solid fa-plus"></i> Thêm mới
             </button>
           </div>
@@ -375,7 +377,7 @@
                 <i class="fa-regular fa-calendar"
                   style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
               </div>
-              <span style="color:var(--text-muted); font-size:10px;">—</span>
+              <span style="color:var(--text-muted); font-size: var(--fs-2xs);">—</span>
               <div style="position:relative; flex:1;">
                 <input type="text" id="filterDateTo" class="directive-filter-date" placeholder="Tạo đến ngày" readonly
                   style="width:100%; padding-right:28px;">
@@ -492,7 +494,7 @@
                     alt="Dashboard Screenshot"
                     style="width:100%; max-height:220px; object-fit:cover; display:block; object-position: top;">
                   <div
-                    style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;"
+                    style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size: var(--fs-2xs); padding:3px 8px; border-radius:4px; font-weight:600; display:flex; align-items:center; gap:4px;"
                     onclick="event.stopPropagation(); openImageZoomModal('image/IOC_TinhHinhDanCuTheoGioiTinh.png')">
                     <i class="fa-solid fa-expand"></i> Xem toàn bộ hình ảnh
                   </div>
@@ -599,11 +601,11 @@
                 style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 16px; text-align: center; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
 
                 <label for="formAttach"
-                  style="cursor: pointer; display: inline-block; padding: 8px 16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 600; color: #475569; margin: 4px 0;">
+                  style="cursor: pointer; display: inline-block; padding: 8px 16px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; font-size: var(--fs-sm); font-weight: 600; color: #475569; margin: 4px 0;">
                   Chọn file
                 </label>
                 <input type="file" id="formAttach" multiple style="display:none;" onchange="handleFileAttach(this)">
-                <p style="margin: 0; font-size: 12px; color: #94a3b8; margin-top: 8px;">Hỗ trợ: .jpg, .jpeg, .png, .pdf,
+                <p style="margin: 0; font-size: var(--fs-xs); color: #94a3b8; margin-top: 8px;">Hỗ trợ: .jpg, .jpeg, .png, .pdf,
                   .doc, .docx</p>
               </div>
               <div class="file-attach-list" id="formAttachList"
@@ -648,7 +650,7 @@
             <!-- Điền bằng JS -->
           </div>
           <!-- Tab 2: Lịch sử -->
-          <div class="modal-tab-content" id="tabContentHistory" style="overflow-x:auto;">
+          <div class="modal-tab-content" id="tabContentHistory">
             <!-- Điền bằng JS -->
           </div>
         </div>
@@ -669,13 +671,13 @@
         <div class="modal-body"
           style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
           <div
-            style="width: 52px; height: 52px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            style="width: 52px; height: 52px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: var(--fs-2xl);">
             <i class="fa-solid fa-check"></i>
           </div>
-          <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
+          <p style="margin: 0; font-size: var(--fs-sm); font-weight: 700; color: #1e293b; line-height: 1.5;">
             Phê duyệt báo cáo kết quả và đánh dấu Kết thúc chỉ đạo này?
           </p>
-          <span style="font-size: 12px; color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Kết thúc và lưu vào hệ
+          <span style="font-size: var(--fs-xs); color: #64748b;">Chỉ đạo sẽ chuyển sang trạng thái Kết thúc và lưu vào hệ
             thống.</span>
         </div>
         <div class="modal-footer"
@@ -699,12 +701,12 @@
         </div>
         <div class="modal-body" style="padding: 18px; display: flex; flex-direction: column; gap: 12px;">
           <div
-            style="background:#fff5f5; border:1px solid #fed7d7; border-left:4px solid #e53e3e; padding:10px 14px; border-radius:6px; font-size:12px; color:#c53030;">
+            style="background:#fff5f5; border:1px solid #fed7d7; border-left:4px solid #e53e3e; padding:10px 14px; border-radius:6px; font-size: var(--fs-xs); color:#c53030;">
             Chỉ đạo sẽ chuyển sang trạng thái <strong>Bị từ chối</strong> và yêu cầu đơn vị tiếp nhận tiến hành báo
             cáo lại.
           </div>
           <div class="form-group">
-            <label for="rejectReasonInput" style="font-weight:700; font-size:var(--fs-sm);">Nội dung / Lý do từ chối
+            <label for="rejectReasonInput" style="font-weight:700; font-size:var(--fs-sm);">Lý do từ chối
               <span class="required-star">(*)</span></label>
             <textarea id="rejectReasonInput" rows="3"
               placeholder="Nhập chi tiết lý do từ chối và yêu cầu đơn vị báo cáo lại..."
@@ -715,7 +717,7 @@
               kèm</label>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
               <label for="rejectAttachInput"
-                style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-weight:700; color:#334155;">
+                style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size: var(--fs-xs); font-weight:700; color:#334155;">
                 <i class="fa-solid fa-paperclip" style="color:var(--pink);"></i> Tải file/ ảnh
               </label>
               <input type="file" id="rejectAttachInput" multiple style="display:none;"
@@ -790,13 +792,13 @@
         <div class="modal-body"
           style="padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
           <div
-            style="width: 52px; height: 52px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            style="width: 52px; height: 52px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: var(--fs-2xl);">
             <i class="fa-solid fa-trash-can"></i>
           </div>
-          <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.5;">
+          <p style="margin: 0; font-size: var(--fs-sm); font-weight: 700; color: #1e293b; line-height: 1.5;">
             Bạn có chắc chắn muốn xoá chỉ đạo này không?
           </p>
-          <span style="font-size: 12px; color: #64748b;">Hành động này không thể hoàn tác sau khi thực hiện.</span>
+          <span style="font-size: var(--fs-xs); color: #64748b;">Hành động này không thể hoàn tác sau khi thực hiện.</span>
         </div>
         <div class="modal-footer"
           style="padding: 12px 18px; background: #fafafa; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
@@ -826,10 +828,10 @@
   <script src="./js/charts.js"></script>
   <script src="./js/map.js"></script>
 
-  <!-- Mock Role Select (Dev Only) -->
+  <!-- Mock Role Select -->
   <div id="devMockRoleContainer" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 6px;">
-    <span style="font-size: 11px; font-weight: 700; color: #dc2626; text-transform: uppercase;">Dev Only - Mô phỏng chức vụ</span>
-    <select id="mockRoleSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 13px; font-family: var(--font-family); color: #334155; cursor: pointer; outline: none;">
+    <span style="font-size: var(--fs-xs); font-weight: 700; color: #dc2626; text-transform: uppercase;">Mô phỏng chức vụ</span>
+    <select id="mockRoleSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: var(--fs-sm); font-family: var(--font-family); color: #334155; cursor: pointer; outline: none;">
       <option value="leader_province">Lãnh đạo Tỉnh</option>
       <option value="leader_department">Lãnh đạo Sở / Chuyên viên</option>
     </select>
