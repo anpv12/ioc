@@ -27,7 +27,114 @@ Tôi đang thiết kế chức năng tạo chỉ đạo trên dashboard quy trì
 - **Xử lý:** Admin Panel → chọn chỉ đạo → cập nhật trạng thái + báo cáo
 - **Trạng thái:** Chưa xử lý → Đang xử lý → Đã hoàn thành
 
+---
+
+# LOGIC NGHIỆP VỤ
+
+## 1. Vai trò
+
+| Vai trò | Màn hình | Quyền |
+|---|---|---|
+| Lãnh đạo Tỉnh | Dashboard | Tạo chỉ đạo, phê duyệt / từ chối kết quả |
+| Lãnh đạo Sở | Quản trị → Xử lý chỉ đạo | Xem báo cáo chuyên viên, trình Tỉnh hoặc trả về |
+| Chuyên viên | Quản trị → Xử lý chỉ đạo | Tiếp nhận, xử lý, nộp báo cáo |
+
+## 2. Hai cấp dữ liệu
+
+- Một chỉ đạo gửi tới một hoặc nhiều đơn vị; mỗi đơn vị có trạng thái riêng.
+- Trạng thái chỉ đạo (cấp cha) hiển thị trên thẻ ở danh sách.
+- Trạng thái đơn vị (cấp con) hiển thị trong tab *Chi tiết đơn vị*.
+- Toàn bộ đơn vị đạt `Kết thúc` → chỉ đạo chuyển `Kết thúc`.
+
+## 3. Vòng đời trạng thái
+
+```
+Chờ phân công → Đang xử lý → Đã có báo cáo → Chờ phê duyệt → Kết thúc
+                                   ↓ Trả về              ↓ Từ chối
+                             (Chuyên viên)            Bị từ chối
+```
+
+| Trạng thái | Việc đang ở |
+|---|---|
+| Chờ phân công | Lãnh đạo Sở |
+| Đang xử lý | Chuyên viên |
+| Đã có báo cáo | Lãnh đạo Sở |
+| Chờ phê duyệt | Lãnh đạo Tỉnh |
+| Kết thúc | — |
+| Bị từ chối | Chuyên viên |
+
+## 4. Phê duyệt / Từ chối
+
+Chỉ thao tác được khi đối tượng ở trạng thái `Chờ phê duyệt`.
+
+### 4.1. Ngoài màn danh sách — ẩn nút
+
+| Điều kiện | Nút Phê duyệt / Từ chối |
+|---|---|
+| Chỉ đạo 1 đơn vị + `Chờ phê duyệt` | Hiện |
+| Chỉ đạo nhiều đơn vị hoặc toàn tỉnh — mọi trạng thái | Ẩn |
+| Trạng thái khác | Ẩn |
+
+Chỉ đạo nhiều đơn vị: phê duyệt / từ chối từng đơn vị trong tab *Chi tiết đơn vị*.
+
+### 4.2. Trong tab Chi tiết đơn vị — luôn hiện, khoá theo trạng thái
+
+| Trạng thái đơn vị | Phê duyệt | Từ chối |
+|---|---|---|
+| Chờ phê duyệt | Mở | Mở |
+| Chờ phân công | Khoá | Khoá |
+| Đang xử lý | Khoá | Khoá |
+| Đã có báo cáo | Khoá | Khoá |
+| Kết thúc | Khoá | Khoá |
+| Bị từ chối | Khoá | Khoá |
+
+### 4.3. Phê duyệt hàng loạt
+
+- Nút *Phê duyệt các đơn vị đã chọn* chỉ mở khi nhóm đang chọn có ít nhất 1 đơn vị `Chờ phê duyệt`.
+- Chỉ đơn vị `Chờ phê duyệt` chuyển sang `Kết thúc`; đơn vị trạng thái khác giữ nguyên.
+
+### 4.4. Kết quả
+
+| Thao tác | Kết quả |
+|---|---|
+| Phê duyệt 1 đơn vị | Đơn vị → `Kết thúc`. Toàn bộ đơn vị `Kết thúc` → chỉ đạo `Kết thúc` |
+| Từ chối 1 đơn vị | Đơn vị → `Bị từ chối`. Bắt buộc nhập lý do, cho phép đính kèm tệp. Lý do hiển thị lại trên thẻ chỉ đạo |
+
+## 5. Sửa / Xoá chỉ đạo
+
+| Thao tác | Điều kiện |
+|---|---|
+| Sửa | Chỉ khi chỉ đạo ở `Chờ phân công` |
+| Xoá | Chỉ khi chỉ đạo ở `Chờ phân công` |
+
+- Đơn vị đã tiếp nhận chỉ đạo: chỉ được thêm mới, không được gỡ bỏ. Hiển thị biểu tượng ổ khoá thay nút xoá; cố gỡ thì báo lỗi và chặn lưu.
+- Không có cảnh báo tĩnh hay tooltip hover về việc khoá đơn vị — chỉ báo bằng toast khi thao tác sai.
+- Hạn xử lý: tạo mới không chọn được ngày quá khứ, mặc định gợi ý 7 ngày. Sửa chỉ đạo cũ được giữ hạn cũ.
+
+## 6. Danh sách chỉ đạo
+
+| Tab | Trạng thái |
+|---|---|
+| Đang thực hiện | Chờ phân công, Đang xử lý, Đã có báo cáo, Chờ phê duyệt, Bị từ chối |
+| Đã xử lý | Kết thúc |
+
+- **Bộ lọc:** đơn vị xử lý (chọn nhiều) · trạng thái (chọn nhiều) · tình trạng hạn Trong hạn / Quá hạn (chọn nhiều) · khoảng ngày tạo · tìm kiếm theo nội dung, nhóm dữ liệu, cơ quan.
+- **Tổng chỉ đạo** = tổng số đơn vị nhận chỉ đạo.
+- **Đơn vị đã báo cáo** = số đơn vị ở `Đã có báo cáo`, `Chờ phê duyệt` hoặc `Kết thúc`.
+- **Cảnh báo hạn:** chỉ đạo chưa `Kết thúc` đối chiếu hạn xử lý với ngày hiện tại để hiện biểu tượng quá hạn / sắp đến hạn.
+
+## 7. Chỉ đạo toàn tỉnh
+
+- Gửi tới toàn bộ 105 cơ quan, đơn vị. Hiển thị nhãn *Chỉ đạo toàn tỉnh* thay vì liệt kê từng đơn vị.
+- Áp dụng ràng buộc mục 4.1: không phê duyệt / từ chối được từ ngoài danh sách.
+- Chọn "Chỉ đạo toàn tỉnh" → khởi tạo đủ 105 đơn vị. Bỏ chọn bất kỳ đơn vị con nào → tự động bỏ trạng thái toàn tỉnh.
+
+---
+
 ## Các Cập Nhật Mới (Gia Lai Dashboard V20)
+
+> Ghi chú kỹ thuật cho DEV — bổ sung cho phần Logic nghiệp vụ ở trên.
+
 1. **Thông báo Drawer:** Đổi câu thông báo thành `"Có X chỉ đạo cần xử lý"`.
 2. **Hiển thị Đơn vị:** Loại bỏ badge trạng thái bên cạnh tên từng đơn vị trong card drawer; bổ sung giả lập chỉ đạo toàn tỉnh với 105 đơn vị (`isAllProvince`).
 3. **Xem/Tải file đính kèm:** 
