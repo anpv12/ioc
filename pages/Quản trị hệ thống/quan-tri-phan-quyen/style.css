@@ -1,0 +1,289 @@
+/* ============================================================
+   STYLE.CSS — Trang Quản trị phân quyền (Thuộc Phân hệ Quản trị hệ thống)
+   ============================================================ */
+
+.header-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-cancel-assign {
+  height: 36px;
+  padding: 0 18px;
+  background-color: #D90429;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-cancel-assign:hover {
+  background-color: #BD0323;
+}
+
+.btn-save-assign {
+  height: 36px;
+  padding: 0 24px;
+  background-color: #0091FF;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-save-assign:hover {
+  background-color: #007CE0;
+}
+
+.assign-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.assign-instruction-note {
+  font-size: 13px;
+  color: #475569;
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+.badge-assigned-note {
+  color: #0091FF;
+  font-weight: 500;
+}
+
+/* SPLIT PANE GRID */
+.split-pane-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.pane-column {
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+}
+
+.pane-header-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 12px;
+}
+
+.pane-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 38px;
+  margin-bottom: 14px;
+}
+
+.pane-search-wrap svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  pointer-events: none;
+}
+
+.pane-search-wrap input {
+  width: 100% !important;
+  height: 38px !important;
+  padding-left: 36px !important;
+  padding-right: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  color: #1E293B !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease;
+}
+
+.pane-search-wrap input:focus {
+  border-color: #0091FF !important;
+}
+
+.pane-search-wrap input::placeholder {
+  color: #94A3B8 !important;
+}
+
+/* TREE & ROLE LIST CONTAINERS */
+.pane-tree-container,
+.pane-role-list-container {
+  min-height: 480px;
+  max-height: 580px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.pane-tree-container::-webkit-scrollbar,
+.pane-role-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pane-tree-container::-webkit-scrollbar-thumb,
+.pane-role-list-container::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1;
+  border-radius: 4px;
+}
+
+/* USER TREE STYLING */
+.ut-org-group {
+  margin-bottom: 8px;
+}
+
+.ut-org-header,
+.ut-dept-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ut-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.ut-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: #0091FF;
+  cursor: pointer;
+}
+
+.ut-org-title {
+  color: #1E293B;
+  font-weight: 500;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.ut-dept-title {
+  color: #334155;
+  font-weight: 500;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.ut-emp-title {
+  color: #334155;
+  font-weight: 500;
+  font-size: 13.5px;
+  transition: color 0.2s ease;
+}
+
+.ut-caret {
+  font-size: 12px;
+  color: #64748B;
+  margin-left: auto;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* WHEN AN AGENCY IS EXPANDED / OPEN: TURNS BLUE (#0091FF) */
+.ut-org-group:not(.collapsed) > .ut-org-header .ut-org-title,
+.ut-org-group:not(.collapsed) .ut-dept-title,
+.ut-org-group:not(.collapsed) .ut-emp-title {
+  color: #0091FF !important;
+  font-weight: 500 !important;
+}
+
+.ut-org-group:not(.collapsed) > .ut-org-header .ut-caret {
+  color: #0091FF !important;
+}
+
+.ut-org-group.collapsed > .ut-dept-list,
+.ut-dept-group.collapsed > .ut-emp-list {
+  display: none !important;
+}
+
+.ut-org-group.collapsed > .ut-org-header .ut-caret,
+.ut-dept-group.collapsed > .ut-dept-header .ut-caret {
+  transform: rotate(-90deg);
+}
+
+.ut-dept-list {
+  padding-left: 20px;
+  margin-top: 2px;
+}
+
+.ut-emp-list {
+  padding-left: 24px;
+  margin-top: 2px;
+  position: relative;
+}
+
+.ut-emp-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  position: relative;
+}
+
+/* Dotted vertical line for tree connection */
+.ut-emp-row::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: -6px;
+  bottom: 50%;
+  width: 12px;
+  border-left: 1px solid #CBD5E1;
+  border-bottom: 1px solid #CBD5E1;
+}
+
+.ut-emp-title.is-assigned {
+  font-weight: 500;
+}
+
+/* ROLE LIST STYLING */
+.role-item-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.role-item-row:hover {
+  background-color: #F8FAFC;
+}
+
+.role-item-row label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #334155;
+}
+
+

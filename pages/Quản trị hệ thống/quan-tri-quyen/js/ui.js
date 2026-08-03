@@ -1,5 +1,5 @@
 /* ============================================================
-   UI.JS — Logic Giao diện Trang IAM: Quản trị quyền
+   UI.JS — Logic Giao diện Trang Quản trị quyền (Quản trị hệ thống)
    ============================================================ */
 
 let selectedRoleId = null;
@@ -523,6 +523,10 @@ function updateSingleParentCheckbox(parentCb, childCbs) {
   }
 }
 
+function renderTypeBadge(type) {
+  return '';
+}
+
 // 2. KHỞI TẠO CÂY PHÂN QUYỀN ĐỆ QUY TỪ DATA.JS
 function renderPermissionTree() {
   const container = document.getElementById('permTreeContainer');
@@ -533,7 +537,7 @@ function renderPermissionTree() {
       <div class="tree-group-header">
         <label class="tree-checkbox-label">
           <input type="checkbox" class="tree-checkbox tree-node-checkbox" id="${group.id}">
-          <span class="tree-group-title text-blue">${group.name || group.title}</span>
+          <span class="tree-group-title text-blue">${group.name || group.title}${renderTypeBadge(group.type)}</span>
         </label>
         ${group.children && group.children.length > 0 ? '<i class="fa-solid fa-chevron-down tree-caret"></i>' : ''}
       </div>
@@ -544,7 +548,7 @@ function renderPermissionTree() {
               <div class="tree-group-header sub-header">
                 <label class="tree-checkbox-label">
                   <input type="checkbox" class="tree-checkbox tree-node-checkbox" id="${sub.id}">
-                  <span class="tree-sub-group-title">${sub.name || sub.title}</span>
+                  <span class="tree-sub-group-title">${sub.name || sub.title}${renderTypeBadge(sub.type)}</span>
                 </label>
                 ${sub.children && sub.children.length > 0 ? '<i class="fa-solid fa-chevron-down tree-caret"></i>' : ''}
               </div>
@@ -554,7 +558,7 @@ function renderPermissionTree() {
                     <div class="tree-sub-item-row" data-id="${child.id}">
                       <label class="tree-checkbox-label">
                         <input type="checkbox" class="tree-checkbox tree-node-checkbox" id="${child.id}">
-                        <span>${child.name || child.title}</span>
+                        <span>${child.name || child.title}${renderTypeBadge(child.type)}</span>
                       </label>
                     </div>
                   `).join('')}
@@ -713,6 +717,6 @@ function initModalEvents() {
   }
 }
 
-// Export global helpers for IAM
+// Export global helpers
 window.showToastNotice = showToastNotice;
 window.showToastError = showToastError;

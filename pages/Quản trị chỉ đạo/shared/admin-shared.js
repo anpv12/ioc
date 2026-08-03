@@ -25,18 +25,35 @@ const ADMIN_SIDEBAR_HTML = `
 
   <div class="nav-parent open" id="adminNavParent">
     <span class="nav-ic"><i class="fa-solid fa-list-check"></i></span>
-    <span>Quản trị</span>
+    <span>Quản trị chỉ đạo</span>
     <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
   </div>
   <div class="nav-children" id="adminNavChildren">
-    <div class="nav-item" id="nav-quy-trinh-dong" onclick="window.location.href='../quy-trinh-dong/index.html'">
+    <div class="nav-item" id="nav-quy-trinh-dong" onclick="window.location.href='../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/quy-trinh-dong/index.html'">
       <span class="dot"></span><span>Quy trình động</span>
     </div>
-    <div class="nav-item" id="nav-bao-cao-thong-ke" onclick="window.location.href='../bao-cao-thong-ke/index.html'">
+    <div class="nav-item" id="nav-bao-cao-thong-ke" onclick="window.location.href='../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/bao-cao-thong-ke/index.html'">
       <span class="dot"></span><span>Báo cáo thống kê</span>
     </div>
-    <div class="nav-item" id="nav-xu-ly-chi-dao" onclick="window.location.href='../xu-ly-chi-dao/index.html'">
+    <div class="nav-item" id="nav-xu-ly-chi-dao" onclick="window.location.href='../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/xu-ly-chi-dao/index.html'">
       <span class="dot"></span><span>Xử lý chỉ đạo</span>
+    </div>
+  </div>
+
+  <div class="nav-parent open" id="sysNavParent">
+    <span class="nav-ic"><i class="fa-solid fa-gears"></i></span>
+    <span>Quản trị hệ thống</span>
+    <span class="chev"><i class="fa-solid fa-chevron-down"></i></span>
+  </div>
+  <div class="nav-children" id="sysNavChildren">
+    <div class="nav-item" id="nav-quan-tri-quyen" onclick="window.location.href='../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20h%E1%BB%87%20th%E1%BB%91ng/quan-tri-quyen/index.html'">
+      <span class="dot"></span><span>Quản trị quyền</span>
+    </div>
+    <div class="nav-item" id="nav-quan-tri-phan-quyen" onclick="window.location.href='../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20h%E1%BB%87%20th%E1%BB%91ng/quan-tri-phan-quyen/index.html'">
+      <span class="dot"></span><span>Quản trị phân quyền</span>
+    </div>
+    <div class="nav-item" id="nav-quan-ly-chi-dao" onclick="window.location.href='../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20h%E1%BB%87%20th%E1%BB%91ng/quan-ly-chi-dao/index.html'">
+      <span class="dot"></span><span>Quản lý chỉ đạo</span>
     </div>
   </div>
 </div>`;
@@ -75,6 +92,7 @@ function loadSharedLayout(activeNavId, pageTitle) {
   // Bind navigation group collapse
   bindNavigationGroup('navParent', 'navChildren');
   bindNavigationGroup('adminNavParent', 'adminNavChildren');
+  bindNavigationGroup('sysNavParent', 'sysNavChildren');
 }
 
 /* ---------------- Sidebar collapse / expand ---------------- */

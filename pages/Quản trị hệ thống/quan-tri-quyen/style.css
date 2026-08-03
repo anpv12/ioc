@@ -1,5 +1,5 @@
 /* ============================================================
-   STYLE.CSS — Trang IAM: Quản trị quyền (Quản lý nhóm quyền)
+   STYLE.CSS — Trang Quản trị quyền (Thuộc Phân hệ Quản trị hệ thống)
    ============================================================ */
 
 .sidebar-item-link {
@@ -12,7 +12,117 @@
   flex: 1;
 }
 
-/* 1. FILTER ROW & EXPAND PANEL */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* SEARCH INPUT WRAPPER — ĐỒNG BỘ 100% QUẢN TRỊ */
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 360px;
+  height: 38px;
+}
+
+.search-input-wrapper svg,
+.search-input-wrapper i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.search-input-wrapper input {
+  width: 100% !important;
+  height: 38px !important;
+  padding-left: 36px !important;
+  padding-right: 12px !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease;
+}
+
+.search-input-wrapper input:focus {
+  border-color: #0091ff !important;
+}
+
+.search-input-wrapper input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* TOOLBAR BUTTONS STYLING — ĐỒNG BỘ 100% PHÂN HỆ QUẢN TRỊ */
+.btn-search {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background-color: #23C58F;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.btn-search:hover {
+  opacity: 0.9;
+}
+
+.btn-reset {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background-color: #FFCFD9;
+  color: #FB4242;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.btn-reset:hover {
+  opacity: 0.9;
+}
+
+.btn-primary {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #0091FF;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #007CE0;
+}
+
 .btn-filter-icon {
   width: 38px;
   height: 38px;
@@ -206,7 +316,6 @@
   vertical-align: middle;
 }
 
-/* KÍCH THƯỚC CỘT & CĂN LỀ CSS (THU NHỎ CỘT TÊN NHÓM QUYỀN 15%, MỞ RỘNG MÔ TẢ 46%) */
 .role-table .col-code {
   width: 18%;
 }
@@ -243,7 +352,6 @@
   color: #888888;
 }
 
-/* CHIP TRẠNG THÁI (130PX CĂN GIỮA) */
 .chip-status-active {
   background-color: #ECFDF5;
   color: #027A48;
@@ -289,7 +397,6 @@
   background-color: #EDF2F7;
 }
 
-/* POPUP ACTION MENU (Xem / Sửa / Xóa) */
 .action-popup-menu {
   position: fixed;
   background-color: #FFFFFF;
@@ -404,7 +511,7 @@
   border-color: #CCCCCC;
 }
 
-/* 4. MODAL FORM POPUP (CỠ RỘNG 680PX, CỠ CHỮ 12.5PX, CÔNG TẮC NẰM BÊN TRÁI CÙNG HÀNG THẲNG LỀ TRÁI) */
+/* 4. MODAL FORM POPUP */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -493,11 +600,11 @@
 }
 
 .form-row-two .form-group {
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   position: relative;
 }
 
@@ -537,7 +644,6 @@
   box-shadow: 0 0 0 2px rgba(0, 145, 255, 0.15);
 }
 
-/* ĐỒNG BỘ MÀU XÁM #64748B CHO TẤT CẢ THÀNH PHẦN KHÓA Ở CHẾ ĐỘ XEM */
 .form-input:disabled {
   background-color: #F1F5F9;
   color: #64748B !important;
@@ -545,7 +651,6 @@
   cursor: not-allowed;
 }
 
-/* THIẾT KẾ VALIDATION: ĐỒNG BỘ 100% VỚI QUY TRÌNH ĐỘNG (VIỀN ĐỎ #EF4444, DÒNG LỖI 12.5PX IN NGHIÊNG BÊN DƯỚI) */
 .form-input.is-invalid,
 .perm-tree-container.is-invalid {
   border-color: #ef4444 !important;
@@ -574,20 +679,18 @@
   display: none !important;
 }
 
-/* PHÂN QUYỀN TREE CONTAINER (CỐ ĐỊNH CHIỀU CAO 340PX DÀI RỘNG THOÁNG ĐẸP) */
 .perm-tree-container {
   border: 1px solid #E2E8F0;
   border-radius: 8px;
-  padding: 10px 10px 10px 14px;
+  padding: 8px 10px 8px 12px;
   background-color: #FFFFFF;
-  height: 340px !important;
-  max-height: 340px !important;
+  height: 300px !important;
+  max-height: 300px !important;
   overflow-y: auto;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* TỔNG RỘNG 6PX = 4PX THANH CUỘN HIỂN THỊ + 2PX TẠO KHOẢNG HỞ TRONG SUỐT BÊN PHẢI VỚI VIỀN KHUNG */
 .perm-tree-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -608,14 +711,12 @@
   background-color: #94A3B8;
 }
 
-/* BỎ HOÀN TOÀN 2 HÌNH TAM GIÁC MŨI TÊN */
 .perm-tree-container::-webkit-scrollbar-button {
   display: none !important;
   width: 0;
   height: 0;
 }
 
-/* NGĂN BÔI ĐEN VĂN BẢN KHI NHẤP ĐÚP HOẶC CLICK VÀO CÂY PHÂN QUYỀN */
 .perm-tree-container,
 .tree-group,
 .tree-sub-group,
@@ -668,7 +769,6 @@
   border-radius: 4px;
 }
 
-/* THU GỌN / MỞ RỘNG (EXPAND / COLLAPSE) CÂY PHÂN QUYỀN NHIỀU CẤP */
 .tree-caret {
   font-size: 12px;
   color: #60A5FA;
@@ -687,7 +787,6 @@
   transform: rotate(-90deg);
 }
 
-/* MÀU SẮC TIÊU ĐỀ NỐT CHA (XANH NHẠT) VÀ NỐT CON (XÁM NHẠT) */
 .tree-group-title.text-blue,
 .tree-sub-group:has(.tree-sub-list-line)>.tree-group-header .tree-sub-group-title {
   color: #0091FF;
@@ -700,7 +799,6 @@
   font-weight: 400;
 }
 
-/* CHẾ ĐỘ XEM (MODE-VIEW): NỐT CHA MÀU XANH NHẠT, NỐT CON MÀU XÁM NHẠT, Ô CHECKBOX TẤT CẢ ĐỀU MÀU XANH NHẠT #93C5FD */
 .modal-box.mode-view .perm-tree-container {
   background-color: #FFFFFF !important;
   border-color: #E2E8F0;
@@ -711,7 +809,6 @@
   cursor: default !important;
 }
 
-/* Công tắc & chữ Hoạt động ở chế độ xem -> đồng bộ màu xám #64748B */
 .modal-box.mode-view .toggle-group {
   pointer-events: none !important;
   opacity: 0.75 !important;
@@ -725,21 +822,18 @@
   color: #64748B !important;
 }
 
-/* NỐT CHA Ở CHẾ ĐỘ XEM: Tiêu đề & Caret -> xanh nhạt dịu mắt #60A5FA */
 .modal-box.mode-view .tree-group-title.text-blue,
 .modal-box.mode-view .tree-sub-group:has(.tree-sub-list-line)>.tree-group-header .tree-sub-group-title,
 .modal-box.mode-view .tree-group-header .tree-caret {
   color: #60A5FA !important;
 }
 
-/* NỐT CON Ở CHẾ ĐỘ XEM: Tiêu đề chữ màu xám nhạt #475569 */
 .modal-box.mode-view .tree-sub-group:not(:has(.tree-sub-list-line)) .tree-sub-group-title,
 .modal-box.mode-view .tree-sub-item-row span {
   color: #475569 !important;
   font-weight: 400 !important;
 }
 
-/* TẤT CẢ NỐT (CHA VÀ CON) KHI ĐƯỢC CHỌN Ơ CHẾ ĐỘ XEM -> CHECKBOX ĐỀU CÓ MÀU XANH NHẠT #93C5FD */
 .modal-box.mode-view .tree-checkbox:checked {
   appearance: none !important;
   -webkit-appearance: none !important;
@@ -767,13 +861,11 @@
   box-sizing: border-box !important;
 }
 
-/* Các mục KHÔNG ĐƯỢC CHỌN -> ô mờ nhẹ & nhãn chữ xám đồng bộ #64748B */
 .modal-box.mode-view .tree-checkbox:not(:checked) {
   opacity: 0.55 !important;
   border-color: #CBD5E1 !important;
 }
 
-/* ĐỒNG BỘ KHOẢNG CÁCH DỌC 8PX VỪA VẶN CHO TẤT CẢ CÁC MỤC (LỰA CHỌN) TRONG CÂY PHÂN QUYỀN */
 .tree-sub-list-line {
   margin-left: 7px;
   padding-left: 12px;
@@ -808,7 +900,6 @@
   margin: 0;
 }
 
-/* SWITCH TOGGLE (NÚT BÊN TRÁI, CHỮ BÊN PHẢI CÙNG HÀNG THẲNG LỀ TRÁI FORM, MARGIN-TOP 22PX RỘNG THOÁNG) */
 .form-group.toggle-group,
 .toggle-group {
   display: flex !important;
@@ -875,7 +966,6 @@ input:checked+.switch-slider:before {
   margin: 0 !important;
 }
 
-/* MODAL FOOTER (NHỎ VỪA ĐỦ NÚT) */
 .modal-footer {
   display: flex;
   align-items: center;
@@ -1064,4 +1154,21 @@ input:checked+.switch-slider:before {
 #toast.danger .success-prompt-prompt,
 #toast.failure .success-prompt-prompt {
   color: #B91C1C !important;
+}
+
+/* BADGE PHÂN LOẠI CÂY PHÂN QUYỀN (MENU VS NÚT) */
+.perm-type-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  border-radius: 4px;
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  vertical-align: middle;
+  line-height: 1.3;
 }
