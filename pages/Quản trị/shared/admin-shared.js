@@ -114,17 +114,38 @@ function bindNavigationGroup(parentId, childrenId) {
   });
 }
 
-/* ---------------- Toast / showNotice ---------------- */
+/* ---------------- Toast / showNotice & showErrorNotice ---------------- */
 let _noticeTimeout = null;
 function showNotice(message, autoHideMs = 2000) {
   if (!message) return;
   const toast = document.getElementById('toast');
   if (!toast) return;
+  toast.classList.remove('error', 'danger', 'failure');
+  toast.classList.add('success');
   const titleEl = document.getElementById('toast-title');
   const msgEl = document.getElementById('toast-message');
   if (titleEl) titleEl.innerText = 'Thành công';
   if (msgEl) {
-    // Hiện message ngắn gọn, ẩn nếu trống
+    msgEl.innerText = message;
+    msgEl.hidden = !message;
+  }
+  toast.classList.add('show');
+  if (_noticeTimeout) clearTimeout(_noticeTimeout);
+  if (autoHideMs > 0) {
+    _noticeTimeout = setTimeout(() => toast.classList.remove('show'), autoHideMs);
+  }
+}
+
+function showErrorNotice(message = 'Thao tác thất bại.', title = 'Thất bại', autoHideMs = 2500) {
+  if (!message) return;
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.classList.remove('success');
+  toast.classList.add('error');
+  const titleEl = document.getElementById('toast-title');
+  const msgEl = document.getElementById('toast-message');
+  if (titleEl) titleEl.innerText = title;
+  if (msgEl) {
     msgEl.innerText = message;
     msgEl.hidden = !message;
   }
@@ -156,3 +177,8 @@ function showCustomConfirm(title, message, onOk, onCancel) {
   okBtn.addEventListener('click', doOk);
   cancelBtn.addEventListener('click', doCancel);
 }
+
+// Export global helpers
+window.showNotice = showNotice;
+window.showErrorNotice = showErrorNotice;
+window.showCustomConfirm = showCustomConfirm;

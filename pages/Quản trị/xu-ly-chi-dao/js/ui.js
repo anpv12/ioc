@@ -227,6 +227,12 @@
     el.pageButtons().innerHTML = btns.join('');
   };
 
+  const toggleDisplay = (element, show, displayType = 'block') => {
+    if (!element) return;
+    element.removeAttribute('hidden');
+    element.style.display = show ? displayType : 'none';
+  };
+
   /* ── Close detail ────────────────────────────────────────────────── */
   const closeDetail = () => {
     if (el.detailOverlay()) el.detailOverlay().hidden = true;
@@ -278,6 +284,8 @@
       const rawDate = typeof fileObj === 'object' && fileObj.date ? fileObj.date : null;
       const fileDate = formatDateTimeFormatted(rawDate);
       const ext = fileName.split('.').pop().toLowerCase();
+      const fileUrl = (typeof fileObj === 'object' && (fileObj.url || fileObj.path)) ? (fileObj.url || fileObj.path) : 'assets/dashboard_gialai.png';
+      const isImg = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext);
 
       let iconClass = 'fa-file-lines';
       let typeClass = 'default';
@@ -290,7 +298,7 @@
       } else if (['doc', 'docx'].includes(ext)) {
         iconClass = 'fa-file-word';
         typeClass = 'word';
-      } else if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
+      } else if (isImg) {
         iconClass = 'fa-file-image';
         typeClass = 'image';
       }
@@ -300,7 +308,7 @@
           <div class="file-card-main">
             <i class="fa-regular ${iconClass} file-type-icon ${typeClass}"></i>
             <div class="file-card-info">
-              <a href="javascript:void(0)" class="file-card-name" title="${escHtml(fileName)}" data-view-file="${escHtml(fileName)}">
+              <a href="javascript:void(0)" class="file-card-name" title="${escHtml(fileName)}" ${isImg ? `data-view-img="${escHtml(fileUrl)}"` : `data-view-file="${escHtml(fileName)}"`}>
                 ${escHtml(fileName)}
               </a>
               <span class="file-card-meta">${escHtml(fileSize)} • ${escHtml(fileDate)}</span>
@@ -406,7 +414,7 @@
     const dlClass = cond === 'overdue' ? 'overdue' : cond === 'warning' ? 'warning' : 'normal';
 
     const origFiles = item.attachments || [
-      { name: item.attachment || 'CD_DanCu_GiaLai_2026.pdf', size: item.attachmentSize || '1.8 MB', date: item.issuedDate },
+      { name: item.attachment || 'CD_DanCu_GiaLai_2026.png', size: item.attachmentSize || '1.8 MB', date: item.issuedDate },
       { name: 'PhuLuc_HuongDan_TrienKhai.docx', size: '540 KB', date: item.issuedDate }
     ];
 
@@ -455,10 +463,11 @@
             <span class="info-label">Tệp đính kèm</span>
             <span class="info-value">
               <div class="info-file-list">
-                ${origFiles.map(f => {
+                ${origFiles.map((f, idx) => {
                   const fname = typeof f === 'string' ? f : f.name;
-                  return `<a href="javascript:void(0)" class="file-plain-link" data-open-file="${escHtml(fname)}">${escHtml(fname)}</a>`;
-                }).join('<span class="file-comma-sep">,</span> ')}
+                  const comma = idx < origFiles.length - 1 ? '<span class="file-comma-sep">,</span>' : '';
+                  return `<span class="file-item-inline"><a href="javascript:void(0)" class="file-plain-link" data-open-file="${escHtml(fname)}">${escHtml(fname)}</a>${comma}</span>`;
+                }).join(' ')}
               </div>
             </span>
           </div>
@@ -468,17 +477,17 @@
       <!-- Chọn người xử lý & Nút Chuyển xử lý (chỉ leader + waitingAssign) -->
       ${state.role === 'leader' && status === 'waitingAssign' ? `
       <div class="assignee-dropdown-block info-block">
-        <div class="info-block-header">Chọn người xử lý</div>
+        <div class="info-block-header">Chọn người xử lý <span class="required-star">*</span></div>
         <div class="info-block-body">
           <input type="hidden" id="assigneeSelect" value="">
           <div class="directive-assignee-autocomplete" id="assigneeAutocompleteContainer">
             <div class="select-box" tabindex="0">
               <span class="placeholder">-- Chọn người xử lý --</span>
-              <span class="selected-text" hidden></span>
-              <input type="text" class="dropdown-search-input" placeholder="Gõ từ khóa tìm kiếm..." hidden>
+              <span class="selected-text" style="display: none;"></span>
+              <input type="text" class="dropdown-search-input" placeholder="Gõ từ khóa tìm kiếm..." style="display: none;">
               <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
             </div>
-            <div class="dropdown-menu" hidden>
+            <div class="dropdown-menu" style="display: none;">
               ${(node?.availableAssignees || []).map(a => `
                 <div class="dropdown-item" data-assignee-id="${escHtml(a.id)}" data-assignee-name="${escHtml(a.name)}">
                   <span>${escHtml(a.name)}</span>
@@ -486,7 +495,7 @@
               `).join('')}
             </div>
           </div>
-          <div id="assigneeSelectError" class="assignee-select-error" hidden>* Vui lòng chọn người xử lý.</div>
+          <div id="assigneeSelectError" class="assignee-select-error" style="display: none;">* Vui lòng chọn người xử lý.</div>
           <div class="assignee-actions-row">
             <button class="btn-primary-action btn-assign-inline" id="btnChuyen" type="button">
               Chuyển xử lý
@@ -708,7 +717,6 @@
           </div>
         </div>` : ''}
         <div class="report-input-block info-block">
-          <div class="info-block-header">Trạng thái</div>
           <div class="info-block-body">
             <div class="status-notice-text">
               ${statusText}
@@ -812,7 +820,6 @@
       }
       return `
       <div class="report-input-block info-block">
-        <div class="info-block-header">Trạng thái</div>
         <div class="info-block-body">
           <div class="status-notice-text text-slate">
             Chỉ đạo đang chờ Lãnh đạo Tỉnh phê duyệt.
@@ -832,7 +839,6 @@
         </div>
       </div>` : ''}
       <div class="report-input-block info-block">
-        <div class="info-block-header">Trạng thái</div>
         <div class="info-block-body">
           <div class="status-notice-text text-green">
             Chỉ đạo đã được hoàn thành và phê duyệt.
@@ -970,28 +976,22 @@
 
         const openMenu = () => {
           container.classList.add('open');
-          menu.hidden = false;
-          if (!selectEl.value) {
-            placeholder.style.display = 'none';
-            selectedText.style.display = 'none';
-            searchInput.style.display = 'block';
-            searchInput.value = '';
-            searchInput.focus();
-            items.forEach(item => item.style.display = 'flex');
-          }
+          toggleDisplay(menu, true);
+          toggleDisplay(placeholder, false);
+          toggleDisplay(selectedText, false);
+          toggleDisplay(searchInput, true);
+          searchInput.value = '';
+          searchInput.focus();
+          items.forEach(item => item.style.display = 'flex');
         };
 
         const closeMenu = () => {
           container.classList.remove('open');
-          menu.hidden = true;
-          searchInput.style.display = 'none';
-          if (selectEl.value) {
-            placeholder.style.display = 'none';
-            selectedText.style.display = 'block';
-          } else {
-            placeholder.style.display = 'block';
-            selectedText.style.display = 'none';
-          }
+          toggleDisplay(menu, false);
+          toggleDisplay(searchInput, false);
+          const hasSelected = Boolean(selectEl.value && selectedText.textContent);
+          toggleDisplay(placeholder, !hasSelected);
+          toggleDisplay(selectedText, hasSelected);
         };
 
         selectBox.addEventListener('click', (e) => {
@@ -1006,24 +1006,18 @@
         searchInput.addEventListener('input', () => {
           const query = searchInput.value.toLowerCase().trim();
           items.forEach(item => {
-            const text = item.textContent.toLowerCase();
-            if (text.includes(query)) {
-              item.style.display = 'flex';
-            } else {
-              item.style.display = 'none';
-            }
+            const matches = item.textContent.toLowerCase().includes(query);
+            item.style.display = matches ? 'flex' : 'none';
           });
         });
 
         items.forEach(item => {
           item.addEventListener('click', () => {
-            const id = item.dataset.assigneeId;
-            const name = item.dataset.assigneeName;
-            selectEl.value = id;
-            selectedText.textContent = name;
+            selectEl.value = item.dataset.assigneeId;
+            selectedText.textContent = item.dataset.assigneeName;
             items.forEach(el => el.classList.remove('selected'));
             item.classList.add('selected');
-            if (errorEl) errorEl.style.display = 'none';
+            if (errorEl) toggleDisplay(errorEl, false);
             if (selectBox) selectBox.style.borderColor = '#d0d5dd';
             closeMenu();
           });
@@ -1041,10 +1035,8 @@
         const selectedVal = selectEl?.value;
         if (!selectedVal) {
           const selectBox = container?.querySelector('.select-box');
-          if (selectBox) {
-            selectBox.style.setProperty('border-color', '#dc2626', 'important');
-          }
-          if (errorEl) errorEl.style.display = 'block';
+          if (selectBox) selectBox.style.setProperty('border-color', '#dc2626', 'important');
+          if (errorEl) toggleDisplay(errorEl, true);
           return;
         }
 
@@ -1093,12 +1085,21 @@
           return;
         }
 
-        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình phê duyệt báo cáo này?', () => {
+        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình duyệt báo cáo này?', () => {
           node.stage = 'reported';
           node.subReports = node.subReports || [];
+          const nowFormatted = formatDateTimeFormatted();
+          const dashboardCaptureFile = {
+            name: 'Dashboard_CapNhat_ThoiDiemTrinh.png',
+            size: '1.2 MB',
+            date: nowFormatted,
+            path: 'assets/dashboard_gialai.png',
+            url: 'assets/dashboard_gialai.png'
+          };
+
           const filesToSubmit = state.draftReportFiles && state.draftReportFiles.length
-            ? [...state.draftReportFiles]
-            : [{ name: 'BaoCao_KetQua_ChiTiet.pdf', size: '1.8 MB', date: new Date().toLocaleString('vi-VN') }];
+            ? [...state.draftReportFiles, dashboardCaptureFile]
+            : [{ name: 'BaoCao_KetQua_ChiTiet.pdf', size: '1.8 MB', date: nowFormatted }, dashboardCaptureFile];
 
           const reportObj = {
             from: node.accountName || 'Chuyên viên',
@@ -1135,10 +1136,19 @@
           return;
         }
 
-        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình Lãnh đạo Tỉnh phê duyệt?', () => {
+        showCustomConfirm('Xác nhận', 'Bạn có chắc chắn muốn trình duyệt báo cáo này?', () => {
+          const nowFormatted = formatDateTimeFormatted();
+          const dashboardCaptureFile = {
+            name: 'Dashboard_CapNhat_ThoiDiemTrinh.png',
+            size: '1.2 MB',
+            date: nowFormatted,
+            path: 'assets/dashboard_gialai.png',
+            url: 'assets/dashboard_gialai.png'
+          };
+
           const filesToSubmit = state.draftLeaderFiles && state.draftLeaderFiles.length
-            ? [...state.draftLeaderFiles]
-            : [{ name: 'BaoCao_TrinhTinh_TongHop.pdf', size: '2.4 MB', date: new Date().toLocaleString('vi-VN') }];
+            ? [...state.draftLeaderFiles, dashboardCaptureFile]
+            : [{ name: 'BaoCao_TrinhTinh_TongHop.pdf', size: '2.4 MB', date: nowFormatted }, dashboardCaptureFile];
 
           const lrObj = {
             content: content,
@@ -1154,7 +1164,7 @@
           });
           render();
           openDetail(item.id);
-          showNotice('Đã trình Tỉnh thành công!');
+          showNotice('Đã trình phê duyệt thành công!');
         });
       });
 

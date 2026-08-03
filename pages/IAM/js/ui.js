@@ -350,6 +350,14 @@ function setPageHeading(title) {
   if (crumbEl) crumbEl.textContent = title;
 }
 
+/* ---------- Điều hướng Sidebar: Quản lý cơ quan <-> Quản lý phòng ban ---------- */
+function setActiveNav(navId) {
+  ['nav-quan-ly-co-quan', 'nav-quan-ly-phong-ban', 'nav-quan-tri-quyen'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('active', id === navId);
+  });
+}
 function goToAgencyList() {
   showView('listView');
   setPageHeading('Quản lý cơ quan');
@@ -988,8 +996,43 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAgenciesTable();
   initCustomDropdowns();
 
+  /* --- Sidebar: điều hướng các trang trong IAM --- */
   const navAgency = document.getElementById('nav-quan-ly-co-quan');
+  const navDept = document.getElementById('nav-quan-ly-phong-ban');
+  const navPerm = document.getElementById('nav-quan-tri-quyen');
   if (navAgency) navAgency.addEventListener('click', goToAgencyList);
+  if (navDept) navDept.addEventListener('click', goToDeptListTop);
+  if (navPerm) navPerm.addEventListener('click', () => { window.location.href = 'quan-tri-quyen/index.html'; });
+
+  /* --- Danh sách phòng ban (top-level): tìm kiếm / làm mới / thêm --- */
+  const btnTopDeptSearch = document.getElementById('btnTopDeptSearch');
+  const btnTopDeptReset = document.getElementById('btnTopDeptReset');
+  const btnTopDeptAdd = document.getElementById('btnTopDeptAdd');
+  const topDeptSearchInput = document.getElementById('topDeptSearchInput');
+
+  if (btnTopDeptSearch) btnTopDeptSearch.addEventListener('click', handleTopDeptSearch);
+  if (btnTopDeptReset) btnTopDeptReset.addEventListener('click', handleTopDeptReset);
+  if (btnTopDeptAdd) btnTopDeptAdd.addEventListener('click', () => openDeptModal('add', null, 'top'));
+  if (topDeptSearchInput) {
+    topDeptSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleTopDeptSearch();
+    });
+  }
+
+  /* --- Modal xác nhận thay đổi người phụ trách --- */
+  const changeManagerCloseBtn = document.getElementById('changeManagerCloseBtn');
+  const changeManagerCancelBtn = document.getElementById('changeManagerCancelBtn');
+  const changeManagerConfirmBtn = document.getElementById('changeManagerConfirmBtn');
+  const changeManagerConfirmModal = document.getElementById('changeManagerConfirmModal');
+
+  if (changeManagerCloseBtn) changeManagerCloseBtn.addEventListener('click', closeChangeManagerConfirm);
+  if (changeManagerCancelBtn) changeManagerCancelBtn.addEventListener('click', closeChangeManagerConfirm);
+  if (changeManagerConfirmBtn) changeManagerConfirmBtn.addEventListener('click', confirmChangeManager);
+  if (changeManagerConfirmModal) {
+    changeManagerConfirmModal.addEventListener('click', (e) => {
+      if (e.target === changeManagerConfirmModal) closeChangeManagerConfirm();
+    });
+  }
 
   /* --- Danh sách cơ quan: tìm kiếm / làm mới / thêm --- */
   const btnSearch = document.getElementById('btnSearch');

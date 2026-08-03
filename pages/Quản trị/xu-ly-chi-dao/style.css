@@ -648,7 +648,7 @@
   flex-direction: column;
   border: 1px solid var(--admin-line);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 .detail-header {
@@ -724,14 +724,14 @@
 .detail-cols {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  overflow: visible !important;
   min-height: 0;
 }
 
 .detail-left {
   flex: 1;
   min-width: 0;
-  overflow-y: auto;
+  overflow-y: visible !important;
   padding: 24px 28px;
   border-right: 1px solid var(--admin-line);
   display: flex;
@@ -1559,6 +1559,7 @@ textarea.action-textarea.is-invalid {
   color: #dc2626;
   font-size: 12px;
   font-weight: 500;
+  font-style: italic !important;
   margin-top: 4px;
 }
 
@@ -1804,12 +1805,12 @@ textarea.action-textarea.is-invalid {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 99999 !important;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-  max-height: 200px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
   overflow-y: auto;
   padding: 4px 0;
   box-sizing: border-box;
@@ -1837,6 +1838,19 @@ textarea.action-textarea.is-invalid {
   font-weight: 600;
 }
 
+.required-star {
+  color: #dc2626;
+  margin-left: 2px;
+  font-weight: 600;
+}
+
+.assignee-select-error {
+  color: #dc2626 !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  margin-top: 6px !important;
+}
+
 /* ── Clean Code & DRY Utilities ─────────────────────────────────────── */
 .row-actions.centered {
   display: flex !important;
@@ -1851,7 +1865,12 @@ textarea.action-textarea.is-invalid {
 .info-file-list {
   display: inline-flex !important;
   flex-wrap: wrap !important;
-  gap: 4px 8px !important;
+  gap: 4px 6px !important;
+}
+
+.file-item-inline {
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
 .file-plain-link {
@@ -1862,6 +1881,7 @@ textarea.action-textarea.is-invalid {
 
 .file-comma-sep {
   color: #94a3b8 !important;
+  margin-left: 1px !important;
 }
 
 .assignee-dropdown-block,
@@ -1874,6 +1894,7 @@ textarea.action-textarea.is-invalid {
   color: #dc2626 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
+  font-style: italic !important;
   margin-top: 6px !important;
 }
 
@@ -1975,6 +1996,7 @@ textarea.action-textarea.is-invalid {
   font-weight: normal !important;
   font-style: italic !important;
   padding: 4px 0 !important;
+  color: #64748b !important;
 }
 
 .status-notice-text.text-blue {
@@ -1986,7 +2008,11 @@ textarea.action-textarea.is-invalid {
 }
 
 .status-notice-text.text-slate {
-  color: #1e293b !important;
+  color: #64748b !important;
+}
+
+.detail-left > .status-notice-block:last-child {
+  margin-top: auto !important;
 }
 
 .status-notice-actions {

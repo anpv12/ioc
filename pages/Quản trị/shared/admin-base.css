@@ -1848,6 +1848,13 @@ span.flatpickr-weekday {
   pointer-events: none;
 }
 
+.notifications-container #toast.error,
+.notifications-container #toast.danger,
+.notifications-container #toast.failure {
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
 .notifications-container #toast.show {
   opacity: 1;
   transform: translateY(0);
@@ -1861,11 +1868,23 @@ span.flatpickr-weekday {
   margin: 0;
 }
 
+#toast.error .success-prompt-heading,
+#toast.danger .success-prompt-heading,
+#toast.failure .success-prompt-heading {
+  color: #991b1b !important;
+}
+
 #toast .success-prompt-prompt {
   font-size: 13px;
   color: #166534;
   font-family: 'Roboto', sans-serif;
   margin: 0;
+}
+
+#toast.error .success-prompt-prompt,
+#toast.danger .success-prompt-prompt,
+#toast.failure .success-prompt-prompt {
+  color: #b91c1c !important;
 }
 
 /* ---------- EVENT DETAIL DIALOG (SHARED: xu-ly-chi-dao) ---------- */
@@ -2073,4 +2092,14 @@ select#assigneeSelect,
   outline: none !important;
   cursor: pointer !important;
   box-sizing: border-box !important;
+}
+
+/* Inline validation error messages italicized globally */
+.field-error-msg,
+.form-error-msg,
+.report-input-error,
+.assignee-select-error,
+.invalid-feedback,
+.form-error {
+  font-style: italic !important;
 }

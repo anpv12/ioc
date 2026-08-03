@@ -24,10 +24,11 @@
   - **Mục Thông tin Chỉ đạo**: Hiển thị Nội dung, Nhóm dữ liệu, Hạn xử lý, Người giao chỉ đạo, Ngày chỉ đạo, Liên kết sang Dashboard chuyên ngành, Đường dẫn xem hình ảnh/sơ đồ và Danh sách tệp đính kèm gốc của chỉ đạo.
     - Bấm vào **tệp PDF**: Tự động mở xem nội dung tệp.
     - Bấm vào **tệp Word / Excel**: Tự động tải xuống tệp.
+    - Bấm vào **tệp hình ảnh (.png, .jpg)**: Tự động mở xem bằng Popup xem ảnh phóng to.
   - **Mục Chọn người xử lý & Chuyển xử lý**: Dành cho Lãnh đạo ở bước *Chờ phân công*, gồm ô Autocomplete gõ tìm kiếm Chuyên viên và nút *Chuyển xử lý*. Chuyển sang hiển thị tên người xử lý khi ở các bước tiếp theo.
-  - **Mục Nộp báo cáo Kết quả**: Dành cho Chuyên viên ở bước *Đang xử lý*, gồm ô nhập nội dung báo cáo kết quả, đính kèm tệp và nút *Trình phê duyệt*.
-  - **Mục Xem xét Báo cáo & Trình Tỉnh**: Dành cho Lãnh đạo ở bước *Đã có báo cáo*, gồm ô nhập nội dung xem xét/từ chối, đính kèm tệp và 2 nút thao tác: *Trình phê duyệt* (gửi Tỉnh) hoặc *Trả về* (gửi Chuyên viên thực hiện lại).
-  - **Mục Thẻ Báo cáo đã nộp**: Hiển thị nội dung báo cáo đã gửi của các bước trước đó và các tệp đính kèm đi kèm.
+  - **Mục Nộp báo cáo Kết quả**: Dành cho Chuyên viên ở bước *Đang xử lý*, gồm ô nhập nội dung báo cáo kết quả, đính kèm tệp và nút *Trình phê duyệt*. Khi bấm *Trình phê duyệt*, hệ thống tự động ghi nhận ảnh chụp màn hình Dashboard tại thời điểm đó (`Dashboard_CapNhat_ThoiDiemTrinh.png`) và tự động đính kèm tệp ảnh `.png` này vào báo cáo.
+  - **Mục Xem xét Báo cáo & Trình Tỉnh**: Dành cho Lãnh đạo ở bước *Đã có báo cáo*, gồm ô nhập nội dung xem xét/từ chối, đính kèm tệp và 2 nút thao tác: *Trình phê duyệt* (gửi Tỉnh, tự động đính kèm tệp `.png` ảnh chụp màn hình Dashboard tại thời điểm trình) hoặc *Trả về* (gửi Chuyên viên thực hiện lại).
+  - **Mục Thẻ Báo cáo đã nộp**: Hiển thị nội dung báo cáo đã gửi của các bước trước đó và các tệp đính kèm đi kèm (bao gồm tệp `.png` ảnh màn hình Dashboard đã chụp).
   - **Component Sơ đồ Luồng Quy trình (UML)**: Sơ đồ minh họa trực quan các bước trong luồng xử lý chỉ đạo, đánh dấu vị trí bước hiện tại, vẽ đường luồng trả về khi bị từ chối và áp dụng quy chuẩn mã màu cố định (hardcode) theo trạng thái từng bước:
     - **Bước đã hoàn thành (`done`)**: Nút tròn icon (nền `#dcfce7`, icon `#166534`, không viền), thẻ trạng thái *Đã hoàn thành* (chữ `#166534`, nền `#f0fdf4`, viền `#bbf7d0`).
     - **Bước đang xử lý (`current`)**: Nút tròn icon (nền `#0284c7`, icon trắng `#ffffff`, không viền), thẻ trạng thái *Đang ở bước này* (chữ `#0284c7`, nền `#e0f2fe`, viền `#bae6fd`).
@@ -45,13 +46,16 @@
    - Khi thực hiện thành công các thao tác (*Chuyển xử lý*, *Trình phê duyệt*, *Trả về*): Form modal giữ nguyên mở, tự động cập nhật dữ liệu và sơ đồ luồng quy trình mới nhất, đồng thời hiển thị thông báo Toast thành công.
 
 2. **Quy tắc Kiểm tra Dữ liệu Đầu vào (Inline Validation)**:
-   - Khi chưa chọn người xử lý hoặc chưa nhập nội dung báo cáo/lý do trả về mà nhấn nút hành động, hệ thống hiển thị câu chữ báo lỗi trực tiếp bên dưới ô nhập liệu tương ứng.
+   - Khi chưa chọn người xử lý hoặc chưa nhập nội dung báo cáo/lý do trả về mà nhấn nút hành động, hệ thống hiển thị câu chữ báo lỗi trực tiếp bên dưới ô nhập liệu tương ứng (Inline Validation); **không** hiển thị Popup Toast thông báo thất bại.
 
-3. **Thông báo Xác nhận & Toast**:
+3. **Thông báo Xác nhận & Toast (Thành công / Thất bại Hệ thống)**:
    - Mọi thao tác chuyển trạng thái đều yêu cầu người dùng xác nhận qua Popup xác nhận trước khi thực hiện.
-   - Hiển thị thông báo Toast ngắn gọn sau khi hoàn thành thao tác.
+   - Hiển thị thông báo Toast màu xanh khi thao tác thành công. Popup Toast màu đỏ (thất bại) chỉ xuất hiện khi xảy ra lỗi xử lý bên trong hệ thống.
 
-4. **Phân quyền thao tác theo Vai trò**:
+4. **Tự động chụp màn hình Dashboard khi trình phê duyệt**:
+   - Tại mốc thời gian bấm nút *Trình phê duyệt*, hệ thống tự động ghi nhận ảnh chụp màn hình Dashboard tại đường dẫn liên kết chỉ đạo và tạo tệp `.png` (`Dashboard_CapNhat_ThoiDiemTrinh.png`) đính kèm trực tiếp vào báo cáo.
+
+5. **Phân quyền thao tác theo Vai trò**:
    - **Lãnh đạo (`leader`)**:
      - Bước *Chờ phân công*: Chọn Chuyên viên và nhấn *Chuyển xử lý*.
      - Bước *Đã có báo cáo*: Xem xét báo cáo, nhập ý kiến và chọn *Trình phê duyệt* hoặc *Trả về*.
