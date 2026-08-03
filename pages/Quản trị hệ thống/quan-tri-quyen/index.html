@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị quyền – Quản trị hệ thống | PM Giám sát Gia Lai</title>
+  <meta name="description" content="Quản lý nhóm quyền và phân quyền hệ thống PM Giám sát, điều hành tỉnh Gia Lai">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/shared/admin-base.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="brand">
+          <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="logo-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <clipPath id="logoClip2"><circle cx="50" cy="50" r="43"/></clipPath>
+                <clipPath id="bandClip2"><rect x="0" y="73" width="100" height="27"/></clipPath>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#153d21" stroke-width="2.2"/>
+              <circle cx="50" cy="50" r="44.5" fill="none" stroke="#861e19" stroke-width="1.4"/>
+              <circle cx="50" cy="50" r="43" fill="#ffffff"/>
+              <g clip-path="url(#logoClip2)">
+                <polygon points="10,66 34,26 55,66" fill="#1c6031"/>
+                <polygon points="45,66 66,26 92,66" fill="#1c6031"/>
+                <line x1="34" y1="26" x2="41" y2="66" stroke="#153d21" stroke-width="1.2"/>
+                <line x1="66" y1="26" x2="59" y2="66" stroke="#153d21" stroke-width="1.2"/>
+                <path d="M50,19 C43,27 40,34 44,39 C41,37 39,42 42,46 C38,43 37,49 42,52 C39,54 40,59 46,59 L54,59 C60,59 61,54 58,52 C63,49 62,43 58,46 C61,42 59,37 56,39 C60,34 57,27 50,19 Z" fill="#ee522d"/>
+                <ellipse cx="50" cy="50" rx="3.5" ry="4.5" fill="#ee522d" stroke="#c73a1f" stroke-width="0.6"/>
+                <circle cx="50" cy="50" r="44" fill="#861e19" clip-path="url(#bandClip2)"/>
+                <path d="M12,69 Q20,65.5 28,69 T44,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M56,69 Q64,65.5 72,69 T88,69" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+              </g>
+              <text x="50" y="88" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="1" font-family="Arial, sans-serif">GIA LAI</text>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="bell-wrap"><i class="fa-solid fa-bell"></i><span class="bell-dot"></span></div>
+          <div class="admin-dd">
+            <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+            <span class="name">Quản trị viên</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="breadcrumb-row">
+        <div class="page-title" id="pageTitle">Quản trị quyền</div>
+        <div class="breadcrumb">Quản trị hệ thống <span class="sep">&gt;</span> <span class="cur" id="breadcrumbCurrent">Quản trị quyền</span></div>
+      </div>
+
+      <div class="content">
+        <div class="card">
+          <!-- FILTER TOOLBAR (SEARCH & FILTER ICON) -->
+          <div class="filter-row">
+            <div class="search-input-wrapper">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              <input type="text" id="searchRoleInput" placeholder="Tìm theo mã, tên nhóm quyền...">
+            </div>
+
+            <!-- NÚT 3 GẠCH KÍCH HOẠT BỘ LỌC TRẠNG THÁI MỞ RỘNG -->
+            <button class="btn-filter-icon" id="btnToggleFilterPanel" type="button" title="Bộ lọc mở rộng">
+              <svg viewBox="0 0 24 24">
+                <path d="M3 6h18v2H3V6zm3 5h12v2H6v-2zm3 5h6v2H9v-2z"/>
+              </svg>
+            </button>
+
+            <button class="btn-search" id="btnRoleSearch" type="button" title="Tìm kiếm">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button class="btn-reset" id="btnRoleReset" type="button" title="Làm mới">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            
+            <div class="filter-spacer"></div>
+            
+            <button class="btn-primary" id="btnAddRoleGroup" type="button">
+              <i class="fa-solid fa-plus"></i> Thêm mới
+            </button>
+          </div>
+
+          <!-- KHUNG BỘ LỌC MỞ RỘNG (KÍCH HOẠT BẰNG NÚT 3 GẠCH) -->
+          <div class="filter-expand-panel" id="filterExpandPanel" hidden>
+            <div class="filter-field-item">
+              <label class="filter-field-label">Trạng thái</label>
+              <div class="custom-dropdown-wrap" id="statusDropdownWrap">
+                <button class="custom-dropdown-trigger" id="statusDropdownTrigger" type="button" aria-expanded="false">
+                  <span class="custom-dropdown-selected" id="statusSelectedText">Chọn trạng thái...</span>
+                  <i class="fa-solid fa-caret-down select-caret-icon"></i>
+                </button>
+                <div class="custom-dropdown-menu" id="statusDropdownMenu">
+                  <div class="custom-dropdown-item active" data-value="all">Chọn trạng thái...</div>
+                  <div class="custom-dropdown-item" data-value="active">Hoạt động</div>
+                  <div class="custom-dropdown-item" data-value="inactive">Không hoạt động</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROLE TABLE -->
+          <div class="role-table-container">
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th class="col-code">Mã nhóm quyền</th>
+                  <th class="col-name">Tên nhóm quyền</th>
+                  <th class="col-desc">Mô tả</th>
+                  <th class="col-status center">Hoạt động</th>
+                  <th class="col-action text-right"></th>
+                </tr>
+              </thead>
+              <tbody id="roleTableBody">
+                <!-- Data populated by ui.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- PAGINATION ROW -->
+          <div class="role-pagination-row">
+            <div class="page-size-selector">
+              <select class="select-per-page" id="selectPerPage">
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+              <span class="page-count-info">Hiển thị <strong id="pageRangeText">1-5/5</strong></span>
+            </div>
+
+            <div class="pagination-buttons" id="paginationButtons">
+              <button class="pg-nav-btn disabled" disabled><i class="fa-solid fa-chevron-left"></i></button>
+              <button class="pg-num-btn active">1</button>
+              <button class="pg-nav-btn disabled" disabled><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div>©Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div>
+        <div class="support">
+          <span>Hỗ trợ:</span>
+          <span><i class="fa-solid fa-phone fi"></i>(0256) 3815.519</span>
+          <span class="sep2">|</span>
+          <span><i class="fa-solid fa-envelope fi"></i>skhcn@gialai.gov.vn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP ACTION MENU (HIỂN THỊ KHI NHẤN NÚT 3 CHẤM Ở MỖI HÀNG DỮ LIỆU) -->
+  <div class="action-popup-menu" id="actionPopupMenu" hidden>
+    <div class="action-popup-item" id="actionItemView">
+      <i class="fa-regular fa-eye action-ic"></i>
+      <span>Xem</span>
+    </div>
+    <div class="action-popup-item" id="actionItemEdit">
+      <i class="fa-regular fa-pen-to-square action-ic"></i>
+      <span>Sửa</span>
+    </div>
+    <div class="action-popup-item danger" id="actionItemDelete">
+      <i class="fa-regular fa-trash-can action-ic"></i>
+      <span>Xóa</span>
+    </div>
+  </div>
+
+  <!-- MODAL FORM POPUP (THÊM MỚI / SỬA / XEM CHI TIẾT NHÓM QUYỀN) -->
+  <div class="modal-overlay" id="roleModalOverlay" hidden>
+    <div class="modal-box" id="roleModalBox">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitleText">Thêm mới nhóm quyền</h3>
+        <button class="modal-close-btn" id="btnModalClose" type="button" aria-label="Đóng">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="roleForm" autocomplete="off">
+          <!-- HÀNG 1: MÃ NHÓM QUYỀN & TÊN NHÓM QUYỀN -->
+          <div class="form-row-two">
+            <div class="form-group">
+              <label class="form-label" for="roleCodeInput">Mã nhóm quyền <span class="required-star">*</span></label>
+              <input type="text" class="form-input" id="roleCodeInput" placeholder="Nhập mã nhóm quyền">
+              <span class="form-error-msg" id="roleCodeError" hidden>* Vui lòng nhập mã nhóm quyền</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="roleNameInput">Tên nhóm quyền <span class="required-star">*</span></label>
+              <input type="text" class="form-input" id="roleNameInput" placeholder="Nhập tên nhóm quyền">
+              <span class="form-error-msg" id="roleNameError" hidden>* Vui lòng nhập tên nhóm quyền</span>
+            </div>
+          </div>
+
+          <!-- HÀNG 2: MÔ TẢ -->
+          <div class="form-group">
+            <label class="form-label" for="roleDescInput">Mô tả</label>
+            <input type="text" class="form-input" id="roleDescInput" placeholder="Nhập mô tả">
+          </div>
+
+          <!-- HÀNG 3: PHÂN QUYỀN TREE DỘNG (RENDER TỪ DATA.JS) -->
+          <div class="form-group">
+            <label class="form-label">Phân quyền <span class="required-star">*</span></label>
+            <div class="perm-tree-container" id="permTreeContainer">
+              <!-- Rendered dynamically by ui.js from data.js -->
+            </div>
+            <span class="form-error-msg" id="rolePermError" hidden>* Vui lòng chọn ít nhất 1 quyền</span>
+          </div>
+
+          <!-- HÀNG 4: CÔNG TẮC HOẠT ĐỘNG -->
+          <div class="form-group toggle-group">
+            <label class="switch-toggle">
+              <input type="checkbox" id="roleActiveInput" checked>
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-text">Hoạt động</span>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btnModalCancel" type="button">Trở về</button>
+        <button class="btn-modal-submit" id="btnModalSubmit" type="button">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP XÁC NHẬN (CONFIRM DIALOG) -->
+  <div id="confirmDialogOverlay" class="custom-confirm-overlay" hidden>
+    <div class="custom-confirm-box">
+      <div class="custom-confirm-header">
+        <h3 id="confirmDialogTitle">Xác nhận</h3>
+        <p id="confirmDialogMessage">Nội dung thông báo...</p>
+      </div>
+      <div class="custom-confirm-footer">
+        <button type="button" class="confirm-btn-cancel" id="confirmDialogCancel">Hủy</button>
+        <button type="button" class="confirm-btn-ok" id="confirmDialogOk">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP THÔNG BÁO THÀNH CÔNG (TOAST NOTIFICATION) -->
+  <div class="notifications-container">
+    <div id="toast" class="success">
+      <p id="toast-title" class="success-prompt-heading">Thành công</p>
+      <div id="toast-message" class="success-prompt-prompt">Thao tác đã hoàn tất thành công.</div>
+    </div>
+  </div>
+
+  <!-- Shared Admin Layout JS & Local JS -->
+  <script src="../../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/shared/admin-shared.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    if (typeof loadSharedLayout === 'function') {
+      loadSharedLayout('nav-quan-tri-quyen', 'Quản trị quyền');
+    }
+  </script>
+</body>
+
+</html>

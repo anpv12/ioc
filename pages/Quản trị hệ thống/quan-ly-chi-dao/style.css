@@ -1,0 +1,315 @@
+/* ============================================================
+   STYLE.CSS — Trang Phân quyền Quản lý chỉ đạo (Quản trị hệ thống Gia Lai)
+   ============================================================ */
+
+.header-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-save-directive-perm {
+  height: 36px;
+  padding: 0 24px;
+  background-color: #0091FF;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-save-directive-perm:hover {
+  background-color: #007CE0;
+}
+
+.directive-perm-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.directive-perm-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.search-left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box-wrap {
+  position: relative;
+  width: 480px;
+  height: 38px;
+}
+
+.search-box-wrap svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  pointer-events: none;
+}
+
+.search-box-wrap input {
+  width: 100% !important;
+  height: 38px !important;
+  padding-left: 36px !important;
+  padding-right: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  color: #1E293B !important;
+  outline: none !important;
+  box-sizing: border-box;
+}
+
+.search-box-wrap input:focus {
+  border-color: #0091FF !important;
+}
+
+.btn-search {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background-color: #23C58F;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-search:hover {
+  opacity: 0.9;
+}
+
+.btn-reset {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background-color: #FFCFD9;
+  color: #FB4242;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-reset:hover {
+  opacity: 0.9;
+}
+
+/* DATA TABLE */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.directive-perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.directive-perm-table th {
+  background-color: #F8FAFC;
+  color: #475569;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #E2E8F0;
+  white-space: nowrap;
+}
+
+.directive-perm-table th.col-stt {
+  width: 60px;
+}
+
+.directive-perm-table th.col-role-code {
+  width: 280px;
+}
+
+.directive-perm-table th.col-perm {
+  width: 160px;
+}
+
+.directive-perm-table th.text-center,
+.directive-perm-table td.text-center {
+  text-align: center !important;
+}
+
+.directive-perm-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #E2E8F0;
+  color: #1E293B;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.empty-table-cell {
+  padding: 24px !important;
+  color: #94A3B8 !important;
+}
+
+.directive-perm-table tbody tr:hover {
+  background-color: #F8FAFC;
+}
+
+.role-code-text {
+  font-weight: 500;
+  font-size: 13.5px;
+  color: #0091FF;
+}
+
+.role-name-text {
+  font-weight: 500;
+  font-size: 13.5px;
+  color: #1E293B;
+}
+
+/* TOGGLE SWITCH COMPONENT (COMPACT SIZE) */
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 34px;
+  height: 18px;
+  margin: 0 auto;
+}
+
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #CBD5E1;
+  transition: 0.2s;
+  border-radius: 18px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .switch-slider {
+  background-color: #0091FF;
+}
+
+input:checked + .switch-slider:before {
+  transform: translateX(16px);
+}
+
+/* PAGINATION ROW */
+.table-pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  font-size: 13px;
+  color: #64748B;
+}
+
+.per-page-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.custom-select-sm {
+  height: 36px;
+  width: 70px;
+  padding: 0 8px;
+  border: 1px solid #D0D0D0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #464F60;
+  background: #FFFFFF;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.page-count-info {
+  font-size: 14px;
+  color: #212121;
+}
+
+.page-count-info strong {
+  font-weight: 600;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pg-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #334155;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.pg-btn:hover:not(:disabled) {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+
+.pg-btn.active {
+  background-color: #0091FF;
+  border-color: #0091FF;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.pg-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
