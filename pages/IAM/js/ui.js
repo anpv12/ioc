@@ -992,17 +992,26 @@ function showToast(message, type) {
 /* ============================================================
    9. KHỞI TẠO SỰ KIỆN
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+function initIAMPage() {
   renderAgenciesTable();
   initCustomDropdowns();
+
+  /* --- Kiểm tra URL params để mở đúng view (vd: view=phong-ban) --- */
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('view') === 'phong-ban') {
+    goToDeptListTop();
+  }
 
   /* --- Sidebar: điều hướng các trang trong IAM --- */
   const navAgency = document.getElementById('nav-quan-ly-co-quan');
   const navDept = document.getElementById('nav-quan-ly-phong-ban');
   const navPerm = document.getElementById('nav-quan-tri-quyen');
-  if (navAgency) navAgency.addEventListener('click', goToAgencyList);
-  if (navDept) navDept.addEventListener('click', goToDeptListTop);
-  if (navPerm) navPerm.addEventListener('click', () => { window.location.href = 'quan-tri-quyen/index.html'; });
+  if (navAgency) navAgency.addEventListener('click', (e) => { e.preventDefault(); goToAgencyList(); });
+  if (navDept) navDept.addEventListener('click', (e) => { e.preventDefault(); goToDeptListTop(); });
+  if (navPerm) navPerm.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'quan-tri-quyen/index.html';
+  });
 
   /* --- Danh sách phòng ban (top-level): tìm kiếm / làm mới / thêm --- */
   const btnTopDeptSearch = document.getElementById('btnTopDeptSearch');
@@ -1132,4 +1141,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === managerChangeModal) closeManagerChangeConfirm();
     });
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initIAMPage);
+} else {
+  initIAMPage();
+}

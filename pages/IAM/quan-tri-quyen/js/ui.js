@@ -6,14 +6,20 @@ let selectedRoleId = null;
 let currentModalMode = 'add'; // 'add' | 'edit' | 'view'
 let currentFilterStatus = 'all';
 
-document.addEventListener('DOMContentLoaded', () => {
+function initQuanTriQuyen() {
   renderPermissionTree();
   renderRoleTable(roleGroupsData);
   initCustomDropdown();
   initActionPopupMenu();
   initModalEvents();
   initRealtimeValidationClearing();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initQuanTriQuyen);
+} else {
+  initQuanTriQuyen();
+}
 
 // HELPER: POPUP THÔNG BÁO THÀNH CÔNG (TOAST NOTIFICATION)
 function showToastNotice(message = 'Thao tác đã hoàn tất thành công.') {
