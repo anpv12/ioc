@@ -49,3 +49,10 @@ Quản lý người dùng, nhóm quyền, vai trò (Role-based Access Control - 
 ### 3.1.4. Hiển thị Người phụ trách chính ở Form Xem chi tiết *(TÍNH NĂNG MỚI)*
 - Dạng `username - fullName - phòng ban`.
 
+## 3.2. Điều hướng Menu Sidebar
+- **Các mục Menu**: Quản lý cơ quan, Quản lý phòng ban, Quản trị quyền.
+- **Thẻ liên kết chuẩn**: Sử dụng thẻ `<a class="sidebar-item-link">` bọc ngoài từng `.nav-item` để đảm bảo điều hướng hoạt động tốt trên cả trình duyệt trực tiếp và khi nhúng trong iframe (`pages/home/index.html`).
+- **Liên kết Quản lý phòng ban**: Chuyển hướng kèm tham số URL `?view=phong-ban` để tự động kích hoạt view Danh sách phòng ban.
+- **Tương thích DOM Ready**: Hàm khởi tạo trong `js/ui.js` kiểm tra `document.readyState` nhằm gắn sự kiện tức thì ngay cả khi sự kiện `DOMContentLoaded` đã phát sinh trước đó.
+
+
