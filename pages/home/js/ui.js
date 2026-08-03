@@ -1,6 +1,6 @@
 (function () {
   var STORAGE_KEY = 'gialai_home_sidebar_collapsed';
-  var DEFAULT_FOLDER = 'Quản trị';
+  var DEFAULT_FOLDER = 'Quản trị chỉ đạo';
 
   var nav = document.getElementById('home-nav');
   var frame = document.getElementById('home-frame');
@@ -30,7 +30,7 @@
 
   function pickDefaultRoute() {
     var found = routes.find(function (r) {
-      return r.folder === DEFAULT_FOLDER || r.title === DEFAULT_FOLDER || r.id === 'quản-trị';
+      return r.folder === DEFAULT_FOLDER || r.title === DEFAULT_FOLDER || r.id === 'quản-trị-chỉ-đạo';
     });
     return found || routes[0] || null;
   }
