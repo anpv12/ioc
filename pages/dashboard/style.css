@@ -1950,15 +1950,22 @@ input:checked+.slider:before {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  right: 0;
+  /* Rộng hơn ô lọc để tên trạng thái không bị xuống dòng */
+  min-width: 240px;
   background: #fff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   z-index: 200;
-  max-height: 200px;
+  max-height: 280px;
   overflow-y: auto;
   display: none;
+}
+
+/* Ô lọc cuối hàng: canh phải để dropdown rộng không tràn khỏi mép drawer */
+#filterDeadlineWrap .filter-multiselect-dropdown {
+  left: auto;
+  right: 0;
 }
 
 .filter-multiselect-wrap.open .filter-multiselect-dropdown {
@@ -1971,6 +1978,7 @@ input:checked+.slider:before {
   gap: 8px;
   padding: 7px 12px;
   font-size: var(--fs-sm);
+  white-space: nowrap;
   cursor: pointer;
   color: var(--text-dark);
   transition: background 0.15s;
@@ -2252,14 +2260,28 @@ span.flatpickr-weekday {
   color: var(--text-muted) !important;
 }
 
+/* Nới rộng lịch cho dễ nhìn: mặc định Flatpickr là 307.875px.
+   Calendar để auto để tự ôm phần nội dung đã nới cộng padding. */
+.flatpickr-calendar {
+  width: auto !important;
+}
+
+.flatpickr-days,
+.flatpickr-rContainer,
+.flatpickr-calendar .dayContainer {
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+}
+
 .flatpickr-day {
   font-family: var(--font-family) !important;
-  font-size: var(--fs-xs) !important;
+  font-size: var(--fs-sm) !important;
   border-radius: 6px !important;
   color: var(--text-dark) !important;
-  height: 32px !important;
-  line-height: 32px !important;
-  max-width: 32px !important;
+  height: 38px !important;
+  line-height: 38px !important;
+  max-width: 46px !important;
 }
 
 .flatpickr-day.today {
