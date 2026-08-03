@@ -36,11 +36,14 @@
   color: var(--admin-primary, #0284c7);
 }
 
-/* Filter grid — CSS Grid 6 cột cố định, mỗi ô = 1 cột, Đơn vị span 2 cột (tự bao gồm đúng khoảng gap
-   giữa 2 cột). Grid auto-flow tự xuống hàng khi cột còn lại không đủ chỗ — luôn đúng 6 ô/hàng, dàn đều 100%. */
+/* Filter grid — 6 track theo đúng thứ tự DOM: Từ ngày, Đến ngày, Đơn vị, Lãnh đạo, Người
+   thực hiện, Trạng thái. Từ/Đến ngày và Trạng thái giữ cùng 1 tỉ trọng (1fr) như cũ; Đơn
+   vị/Lãnh đạo/Người thực hiện chia đều phần còn lại (1.5fr mỗi ô). Khi 1 nhóm bị ẩn (thuộc
+   tính hidden), grid auto-flow tự dồn các nhóm còn hiện lên đúng track kế tiếp — nên tỉ lệ
+   vẫn đúng ở cả view Thống kê (chỉ hiện 3/6 nhóm) lẫn Báo cáo chi tiết (hiện đủ 6 nhóm). */
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1.5fr 1fr;
   gap: var(--admin-space-sm, 8px);
   padding: var(--admin-space-sm, 10px) var(--admin-space-md, 12px);
   overflow: visible;
@@ -48,18 +51,12 @@
 
 .filter-group {
   display: grid;
-  grid-column: span 1;
   gap: 2px;
   min-width: 0;
   overflow: visible;
   color: var(--admin-text, #334155);
   font-size: var(--admin-fs-xs, 12px);
   font-weight: 500;
-}
-
-/* Đơn vị: span 2 cột — tự động = 2 ô + đúng khoảng gap giữa 2 cột đó, không cần cộng calc() thủ công */
-.filter-group.filter-wide {
-  grid-column: span 2;
 }
 
 .report-filter-panel {
@@ -129,7 +126,12 @@
   position: relative;
 }
 
-.multiselect-input {
+/* Dùng ".multiselect .multiselect-input" (2 class) thay vì ".multiselect-input" (1 class)
+   để CHẮC CHẮN thắng specificity so với rule chung ".filter-group input" ở trên (1 class +
+   1 type — độ ưu tiên cao hơn 1 class đơn). Nếu không, phần padding-right dành riêng cho
+   caret/nút X bị rule chung đè về 10px, khiến icon chồng lên chữ (đặc biệt icon đè lên dấu
+   "…" khi giá trị dài, hoặc đè nặng hơn khi có thêm nút X). */
+.multiselect .multiselect-input {
   width: 100%;
   box-sizing: border-box;
   min-height: 40px;
@@ -142,7 +144,14 @@
   font-size: 12px;
   font-weight: 400;
   line-height: 1.2;
-  padding: 0 32px 0 10px;
+  /* Luôn chừa cố định đủ chỗ cho CẢ caret lẫn nút X — kể cả khi nút X đang ẩn — để việc
+     ẩn/hiện nút X không làm thay đổi vùng chữ rồi gây đè icon. */
+  padding: 0 50px 0 10px;
+  /* Giá trị dài (VD tên đơn vị dài) không đủ chỗ hiển thị hết → cắt bằng dấu …,
+     xem đầy đủ qua tooltip (title) được set ở ui.js. */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .multiselect-input:hover,
@@ -161,6 +170,40 @@
   color: var(--admin-muted, #64748b);
   font-size: 11px;
   pointer-events: none;
+}
+
+/* Nút X xóa nhanh toàn bộ lựa chọn của ô — chỉ hiện khi có lựa chọn (mục 5). */
+.multiselect-clear {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--admin-muted, #94a3b8);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.multiselect-clear:hover {
+  background: var(--admin-surface, #f1f5f9);
+  color: var(--admin-primary, #0284c7);
+}
+
+.multiselect-clear[hidden] {
+  display: none !important;
+}
+
+.multiselect.is-locked .multiselect-clear {
+  display: none !important;
 }
 
 .multiselect-menu {
@@ -192,6 +235,44 @@
   visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+/* Mục 7: khi không đủ chỗ phía dưới viewport, menu lật lên trên input (JS đặt class này) */
+.multiselect.open-upward .multiselect-menu {
+  top: auto;
+  bottom: calc(100% + 4px);
+  transform: translateY(4px);
+}
+
+.multiselect.open.open-upward .multiselect-menu {
+  transform: translateY(0);
+}
+
+/* Tooltip tự viết cho ô multiselect (thay title mặc định — hiện nhanh hơn, ~150ms). Dùng
+   position: fixed để không bị .table-responsive/.filter-panel cắt mất bởi overflow. */
+.mini-tooltip {
+  position: fixed;
+  z-index: 60;
+  max-width: 320px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #1e293b;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 6px 16px rgb(15 23 42 / 20%);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s ease;
+  pointer-events: none;
+  word-break: break-word;
+}
+
+.mini-tooltip.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .multiselect-menu label {
@@ -699,21 +780,11 @@ span.flatpickr-weekday {
   .filter-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .filter-group.filter-wide {
-    grid-column: span 2;
-  }
 }
 
 @media (max-width: 700px) {
   .filter-grid {
     grid-template-columns: 1fr;
-  }
-
-  .filter-group,
-  .filter-group.filter-wide,
-  .filter-group.filter-date {
-    grid-column: span 1;
   }
 
   .filter-panel-header,

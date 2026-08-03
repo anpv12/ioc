@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="../shared/admin-base.css">
-  <link rel="stylesheet" href="style.css?v=20260731-26">
+  <link rel="stylesheet" href="style.css?v=20260803-30">
 </head>
 <body>
   <div class="app">
@@ -60,10 +60,11 @@
                   <i class="fa-regular fa-calendar"></i>
                 </div>
               </label>
-              <div class="filter-group filter-wide" id="unitFilterGroup">
+              <div class="filter-group" id="unitFilterGroup">
                 <span>Đơn vị</span>
                 <div class="multiselect autocomplete" data-filter="units">
                   <input type="text" class="multiselect-input" placeholder="Tất cả đơn vị" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
                   <i class="fa-solid fa-chevron-down multiselect-caret"></i>
                   <div class="multiselect-menu"></div>
                 </div>
@@ -72,6 +73,7 @@
                 <span>Lãnh đạo Tỉnh / Người giao</span>
                 <div class="multiselect autocomplete" data-filter="leaders">
                   <input type="text" class="multiselect-input" placeholder="Tất cả lãnh đạo" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
                   <i class="fa-solid fa-chevron-down multiselect-caret"></i>
                   <div class="multiselect-menu"></div>
                 </div>
@@ -80,6 +82,7 @@
                 <span>Người thực hiện</span>
                 <div class="multiselect autocomplete" data-filter="assignees">
                   <input type="text" class="multiselect-input" placeholder="Tất cả người thực hiện" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
                   <i class="fa-solid fa-chevron-down multiselect-caret"></i>
                   <div class="multiselect-menu"></div>
                 </div>
@@ -88,14 +91,7 @@
                 <span>Trạng thái</span>
                 <div class="multiselect autocomplete" data-filter="statuses">
                   <input type="text" class="multiselect-input" placeholder="Tất cả trạng thái" autocomplete="off">
-                  <i class="fa-solid fa-chevron-down multiselect-caret"></i>
-                  <div class="multiselect-menu"></div>
-                </div>
-              </div>
-              <div class="filter-group is-hidden" id="situationFilterGroup" hidden>
-                <span>Tình trạng</span>
-                <div class="multiselect autocomplete" data-filter="situations">
-                  <input type="text" class="multiselect-input" placeholder="Tất cả tình trạng" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
                   <i class="fa-solid fa-chevron-down multiselect-caret"></i>
                   <div class="multiselect-menu"></div>
                 </div>
@@ -176,7 +172,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js"></script>
   <script src="../shared/admin-shared.js"></script>
-  <script src="js/state.js?v=20260731-26"></script>
-  <script src="js/ui.js?v=20260731-26"></script>
+  <script src="js/state.js?v=20260803-30"></script>
+  <script src="js/ui.js?v=20260803-30"></script>
 </body>
 </html>
