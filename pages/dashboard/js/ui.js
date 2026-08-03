@@ -1047,7 +1047,7 @@ function populateUI() {
         leaderAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
           '<span style="font-size: var(--fs-2xs); font-weight:700; color:#dc2626;"><i class="fa-solid fa-paperclip"></i> Lãnh đạo đính kèm:</span> ' +
           leaderFiles.map(f =>
-            '<span class="file-preview-link leader" style="font-size: var(--fs-2xs); padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
+            '<span class="file-preview-link leader" style="padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
             '<i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + f.name + '\')" title="Tải về"></i>' +
             '</span>'
@@ -1060,7 +1060,7 @@ function populateUI() {
         agencyAttachHtml = '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; align-items:center;">' +
           '<span style="font-size: var(--fs-2xs); font-weight:700; color:#2e7d32;"><i class="fa-solid fa-paperclip"></i> Đơn vị đính kèm:</span> ' +
           agencyFiles.map(f =>
-            '<span class="file-preview-link agency" style="font-size: var(--fs-2xs); padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
+            '<span class="file-preview-link agency" style="padding:2px 7px;" onclick="previewFile(\'' + f.name + '\')">' +
             '<i class="fa-solid fa-file"></i> ' + f.name +
             '<i class="fa-solid fa-download" style="margin-left:4px; opacity:0.8; cursor:pointer;" onclick="event.stopPropagation(); downloadFile(\'' + f.name + '\')" title="Tải về"></i>' +
             '</span>'

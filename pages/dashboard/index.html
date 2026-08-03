@@ -246,7 +246,7 @@
         <!-- Toggle Cảnh Báo removed (Yêu cầu 6) -->
 
         <!-- Tab Bar 2 Tab (Bỏ icon) -->
-        <div class="directive-list-header" style="flex-wrap:wrap; gap:8px;">
+        <div class="directive-list-header" style="flex-wrap:wrap; gap:6px;">
           <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
             <div class="drawer-tab-bar">
               <button class="drawer-tab active" id="tabInProgress" onclick="switchDirectiveTab('inprogress')">
@@ -266,9 +266,9 @@
         <!-- Deadline Notification Panel -->
         <div class="deadline-panel" id="deadlinePanel" style="display:none;"></div>
 
-        <div class="directives-container" style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="directives-container" style="display: flex; flex-direction: column; gap: 10px;">
           <!-- Search & Filter Controls -->
-          <div class="directive-filters" style="flex-wrap: wrap; gap: 6px;">
+          <div class="directive-filters" style="flex-wrap: wrap;">
             <!-- Hàng 1: ô tìm kiếm + nút -->
             <div style="flex: 1 1 100%; display:flex; gap:6px; align-items:center;">
               <div class="directive-search-wrap" style="flex:1;">
@@ -283,7 +283,7 @@
               </button>
             </div>
             <!-- Hàng 2: Multiselect flex row -->
-            <div style="display: flex; gap: 6px; width: 100%; flex-wrap: nowrap; margin-bottom: 4px;">
+            <div style="display: flex; gap: 6px; width: 100%; flex-wrap: nowrap;">
               <div class="filter-multiselect-wrap" id="filterOrgWrap" style="flex: 1 1 40%; min-width:150px;"
                 onclick="toggleFilterDropdown('org')">
                 <div class="filter-multiselect-display" id="filterOrgDisplay">
@@ -372,15 +372,13 @@
             <!-- Hàng 3: Lọc thời gian -->
             <div class="directive-date-filter" style="flex: 1 1 100%;">
               <div style="position:relative; flex:1;">
-                <input type="text" id="filterDateFrom" class="directive-filter-date" placeholder="Tạo từ ngày" readonly
-                  style="width:100%; padding-right:28px;">
+                <input type="text" id="filterDateFrom" class="directive-filter-date" placeholder="Tạo từ ngày" readonly>
                 <i class="fa-regular fa-calendar"
                   style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
               </div>
               <span style="color:var(--text-muted); font-size: var(--fs-2xs);">—</span>
               <div style="position:relative; flex:1;">
-                <input type="text" id="filterDateTo" class="directive-filter-date" placeholder="Tạo đến ngày" readonly
-                  style="width:100%; padding-right:28px;">
+                <input type="text" id="filterDateTo" class="directive-filter-date" placeholder="Tạo đến ngày" readonly>
                 <i class="fa-regular fa-calendar"
                   style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"></i>
               </div>
