@@ -7,43 +7,173 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="../shared/admin-base.css">
-  <link rel="stylesheet" href="style.css?v=20260731-21">
+  <link rel="stylesheet" href="style.css?v=20260803-30">
 </head>
 <body>
-  <div class="app"><div class="main">
-    <div class="topbar"><div class="brand"><button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden><i class="fa-solid fa-bars" aria-hidden="true"></i></button><div class="brand-text"><div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div><div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div></div></div><div class="top-actions"><span class="avatar-circle"><i class="fa-solid fa-user"></i></span><span>Quản trị</span></div></div>
-    <div class="breadcrumb-row"><div class="page-title" id="pageTitle">Báo cáo & Thống kê Chỉ đạo</div><div class="breadcrumb">Trang chủ <span class="sep"><i class="fa-solid fa-chevron-right"></i></span><span class="cur" id="breadcrumbCurrent">Thống kê</span></div></div>
-    <main class="content"><div class="report-container">
-      <section class="report-filter-panel" aria-label="Bộ lọc thống kê">
-        <div class="filter-panel-header"><div class="filter-title"><i class="fa-solid fa-filter"></i><span>Bộ lọc thống kê</span></div></div>
-        <div class="filter-grid">
-          <div class="time-filter-row">
-          <label class="filter-group">Kỳ báo cáo<div class="period-picker" id="filterPeriodPicker"><input id="filterPeriod" type="text" value="Tháng" data-value="month" autocomplete="off" readonly><button type="button" class="period-picker-toggle" aria-label="Mở danh sách"><i class="fa-solid fa-chevron-down"></i></button><div class="period-picker-menu"></div></div></label>
-          <label class="filter-group" id="periodValueGroup"><span id="periodValueLabel">Tháng</span><div class="period-picker" id="periodValuePicker"><input id="filterPeriodValue" type="text" autocomplete="off"><button type="button" class="period-picker-toggle" aria-label="Mở danh sách"><i class="fa-solid fa-chevron-down"></i></button><div class="period-picker-menu"></div></div></label>
-          <label class="filter-group" id="periodYearGroup">Năm<div class="period-picker" id="periodYearPicker"><input id="filterPeriodYear" type="text" autocomplete="off"><button type="button" class="period-picker-toggle" aria-label="Mở danh sách"><i class="fa-solid fa-chevron-down"></i></button><div class="period-picker-menu"></div></div></label>
-          <label class="filter-group">Từ ngày<div class="input-with-icon"><input id="filterFromDate" type="text" readonly placeholder="dd/mm/yyyy"><i class="fa-regular fa-calendar"></i></div></label>
-          <label class="filter-group">Đến ngày<div class="input-with-icon"><input id="filterToDate" type="text" readonly placeholder="dd/mm/yyyy"><i class="fa-regular fa-calendar"></i></div></label>
+  <div class="app">
+    <div class="main">
+      <header class="topbar">
+        <div class="brand">
+          <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Mở menu" title="Mở menu" hidden>
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+          <div class="brand-text">
+            <div class="agency">SỞ KHOA HỌC VÀ CÔNG NGHỆ TỈNH GIA LAI</div>
+            <div class="appname">PM GIÁM SÁT, ĐIỀU HÀNH TRUNG TÂM</div>
           </div>
-          <div class="filter-group" id="unitFilterGroup"><span>Đơn vị</span><div class="multiselect" data-filter="units"><button type="button" class="multiselect-trigger">Tất cả đơn vị<i class="fa-solid fa-chevron-down"></i></button><div class="multiselect-menu"></div></div></div>
-          <div class="filter-group" id="leaderFilterGroup" hidden><span>Lãnh đạo Tỉnh</span><div class="multiselect" data-filter="leaders"><button type="button" class="multiselect-trigger">Tất cả lãnh đạo<i class="fa-solid fa-chevron-down"></i></button><div class="multiselect-menu"></div></div></div>
         </div>
-        <div class="filter-actions"><button type="button" class="btn-apply-filter" id="btnApplyFilters"><i class="fa-solid fa-filter"></i> Lọc</button><button type="button" class="btn-reset" id="btnResetFilters"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button></div>
-      </section>
-      <section class="report-table-section">
-        <div class="table-toolbar-header"><div><h3 id="viewTitle">Thống kê chỉ đạo theo đơn vị</h3><p id="viewDescription">Bấm vào ô số để xem danh sách chỉ đạo tương ứng.</p></div><div class="table-actions-area"><button type="button" class="btn-secondary" id="btnBackToStats" hidden><i class="fa-solid fa-arrow-left"></i> Quay lại thống kê</button><button type="button" class="btn-export-main" id="btnExportExcel"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button></div></div>
-        <div class="statistics-tabs" id="statisticsTabs"><button type="button" class="statistics-tab active" data-tab="unit"><i class="fa-solid fa-building"></i> Theo đơn vị</button><button type="button" class="statistics-tab" data-tab="leader"><i class="fa-solid fa-user-tie"></i> Theo lãnh đạo Tỉnh</button></div>
-        <div class="table-responsive"><table class="report-data-table" id="reportDataTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
-        <div class="table-pagination-footer" id="paginationFooter"><div class="pagination-info" id="paginationInfo"></div><div class="pagination-controls"><label class="page-size-picker">Hiển thị <select id="pageSizeSelect"><option value="10">10</option><option value="20">20</option><option value="50">50</option></select> dòng/trang</label><div class="pagination-buttons" id="paginationButtons"></div></div></div>
-      </section>
-    </div></main>
-    <footer class="footer"><div>© Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div></footer>
-  </div></div>
-  <div class="notifications-container"><div id="toast" class="success"><p id="toast-title" class="success-prompt-heading">Thành công</p><div id="toast-message" class="success-prompt-prompt"></div></div></div>
+        <div class="top-actions">
+          <span class="avatar-circle"><i class="fa-solid fa-user"></i></span>
+          <span>Quản trị</span>
+        </div>
+      </header>
+
+      <div class="breadcrumb-row">
+        <div class="page-title" id="pageTitle">Báo cáo & Thống kê Chỉ đạo</div>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          Trang chủ <span class="sep"><i class="fa-solid fa-chevron-right"></i></span>
+          <span class="cur" id="breadcrumbCurrent">Thống kê</span>
+        </nav>
+      </div>
+
+      <main class="content">
+        <div class="report-container">
+          <section class="report-filter-panel" aria-label="Bộ lọc thống kê">
+            <div class="filter-panel-header">
+              <div class="filter-title">
+                <i class="fa-solid fa-filter"></i>
+                <span>Bộ lọc thống kê</span>
+              </div>
+            </div>
+            <div class="filter-grid">
+              <label class="filter-group filter-date">
+                Từ ngày tạo chỉ đạo
+                <div class="input-with-icon">
+                  <input id="filterFromDate" type="text" readonly placeholder="dd/mm/yyyy">
+                  <i class="fa-regular fa-calendar"></i>
+                </div>
+              </label>
+              <label class="filter-group filter-date">
+                Đến ngày tạo chỉ đạo
+                <div class="input-with-icon">
+                  <input id="filterToDate" type="text" readonly placeholder="dd/mm/yyyy">
+                  <i class="fa-regular fa-calendar"></i>
+                </div>
+              </label>
+              <div class="filter-group" id="unitFilterGroup">
+                <span>Đơn vị</span>
+                <div class="multiselect autocomplete" data-filter="units">
+                  <input type="text" class="multiselect-input" placeholder="Tất cả đơn vị" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
+                  <i class="fa-solid fa-chevron-down multiselect-caret"></i>
+                  <div class="multiselect-menu"></div>
+                </div>
+              </div>
+              <div class="filter-group" id="leaderFilterGroup" hidden>
+                <span>Lãnh đạo Tỉnh / Người giao</span>
+                <div class="multiselect autocomplete" data-filter="leaders">
+                  <input type="text" class="multiselect-input" placeholder="Tất cả lãnh đạo" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
+                  <i class="fa-solid fa-chevron-down multiselect-caret"></i>
+                  <div class="multiselect-menu"></div>
+                </div>
+              </div>
+              <div class="filter-group is-hidden" id="assigneeFilterGroup" hidden>
+                <span>Người thực hiện</span>
+                <div class="multiselect autocomplete" data-filter="assignees">
+                  <input type="text" class="multiselect-input" placeholder="Tất cả người thực hiện" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
+                  <i class="fa-solid fa-chevron-down multiselect-caret"></i>
+                  <div class="multiselect-menu"></div>
+                </div>
+              </div>
+              <div class="filter-group is-hidden" id="statusFilterGroup" hidden>
+                <span>Trạng thái</span>
+                <div class="multiselect autocomplete" data-filter="statuses">
+                  <input type="text" class="multiselect-input" placeholder="Tất cả trạng thái" autocomplete="off">
+                  <button type="button" class="multiselect-clear" aria-label="Xóa lựa chọn" hidden><i class="fa-solid fa-xmark"></i></button>
+                  <i class="fa-solid fa-chevron-down multiselect-caret"></i>
+                  <div class="multiselect-menu"></div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button type="button" class="btn-apply-filter" id="btnApplyFilters">
+                <i class="fa-solid fa-filter"></i> Lọc
+              </button>
+              <button type="button" class="btn-reset" id="btnResetFilters">
+                <i class="fa-solid fa-rotate-left"></i> Đặt lại
+              </button>
+            </div>
+          </section>
+
+          <section class="report-table-section">
+            <div class="table-toolbar-header">
+              <div>
+                <h3 id="viewTitle">Thống kê chỉ đạo theo đơn vị</h3>
+                <p id="viewDescription">Bấm vào ô số để xem danh sách chỉ đạo tương ứng.</p>
+              </div>
+              <div class="table-actions-area">
+                <button type="button" class="btn-secondary" id="btnBackToStats" hidden>
+                  <i class="fa-solid fa-arrow-left"></i> Quay lại thống kê
+                </button>
+                <button type="button" class="btn-export-main" id="btnExportExcel">
+                  <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                </button>
+              </div>
+            </div>
+            <div class="statistics-tabs" id="statisticsTabs">
+              <button type="button" class="statistics-tab active" data-tab="unit">
+                <i class="fa-solid fa-building"></i> Theo đơn vị
+              </button>
+              <button type="button" class="statistics-tab" data-tab="leader">
+                <i class="fa-solid fa-user-tie"></i> Theo lãnh đạo Tỉnh
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="report-data-table" id="reportDataTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-pagination-footer" id="paginationFooter">
+              <div class="pagination-info" id="paginationInfo"></div>
+              <div class="pagination-controls">
+                <label class="page-size-picker">
+                  Hiển thị
+                  <select id="pageSizeSelect">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                  dòng/trang
+                </label>
+                <div class="pagination-buttons" id="paginationButtons"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div>© Bản quyền 2026 thuộc Sở Khoa học và Công nghệ</div>
+      </footer>
+    </div>
+  </div>
+
+  <div class="notifications-container">
+    <div id="toast" class="success">
+      <p id="toast-title" class="success-prompt-heading">Thành công</p>
+      <div id="toast-message" class="success-prompt-prompt"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js"></script>
   <script src="../shared/admin-shared.js"></script>
-  <script src="js/state.js?v=20260730-8"></script>
-  <script src="js/ui.js?v=20260731-13"></script>
+  <script src="js/data.js"></script>
+  <script src="js/state.js?v=20260803-30"></script>
+  <script src="js/ui.js?v=20260803-30"></script>
 </body>
 </html>
