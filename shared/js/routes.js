@@ -8,13 +8,6 @@ window.GIALAI_ROUTES = [
     "html": "index.html"
   },
   {
-    "id": "iam",
-    "title": "IAM",
-    "path": "../IAM/index.html",
-    "folder": "IAM",
-    "html": "index.html"
-  },
-  {
     "id": "quản-trị",
     "title": "Quản trị",
     "path": "../Qu%E1%BA%A3n%20tr%E1%BB%8B/admin.html",
