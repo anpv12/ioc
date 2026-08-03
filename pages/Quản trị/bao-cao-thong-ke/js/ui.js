@@ -22,11 +22,13 @@
     statuses: 'Tất cả trạng thái',
     units: 'Tất cả đơn vị',
     leaders: 'Tất cả lãnh đạo',
-    assignees: 'Tất cả người thực hiện',
-    situations: 'Tất cả tình trạng'
+    assignees: 'Tất cả người thực hiện'
   };
 
   let datePickers = [];
+  let tooltipEl = null;
+  let tooltipTimer = null;
+  const TOOLTIP_SHOW_DELAY = 150; // ms — nhanh hơn nhiều so với delay mặc định ~1-1.5s của title trình duyệt
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, char => (
@@ -78,16 +80,7 @@
     completedDate: { label: 'Ngày hoàn thành', weight: 9, align: 'center', value: row => formatDate(row.completedDate) },
     lateDays: { label: 'Số ngày trễ hạn', weight: 8, align: 'center', danger: true, value: row => formatLateDays(row) },
     overdueDays: { label: 'Số ngày quá hạn', weight: 8, align: 'center', danger: true, value: row => formatOverdueNowDays(row) },
-    status: { label: 'Trạng thái', weight: 10, align: 'left', value: row => row.status },
-    situation: {
-      label: 'Tình trạng',
-      weight: 12,
-      align: 'left',
-      value: row => {
-        const key = data.getSituationKey(row);
-        return data.SITUATIONS.find(item => item.key === key)?.label || '';
-      }
-    }
+    status: { label: 'Trạng thái', weight: 10, align: 'left', value: row => row.status }
   };
 
   /**
@@ -102,7 +95,6 @@
     if (metric === 'overdue_completed') keys.push('lateDays');
     if (metric === 'overdue_not_completed') keys.push('overdueDays');
     keys.push('status');
-    if (metric === 'total') keys.push('situation');
     return keys;
   }
 
@@ -115,6 +107,7 @@
     initDatePickers();
     renderMultiSelects();
     bindEvents();
+    bindTooltipEvents();
     render();
   }
 
@@ -131,6 +124,82 @@
       window.flatpickr('#filterFromDate', { ...options, defaultDate: state.filters.fromDate || undefined }),
       window.flatpickr('#filterToDate', { ...options, defaultDate: state.filters.toDate || undefined })
     ];
+  }
+
+  /** Lật menu lên trên input nếu khoảng trống phía dưới không đủ để hiển thị hết
+   *  (hoặc không đủ tối thiểu 1 phần danh sách), tránh menu bị mép viewport cắt mất. */
+  function positionMultiselectMenu(wrap) {
+    const menu = wrap.querySelector('.multiselect-menu');
+    if (!menu) return;
+    const inputRect = wrap.getBoundingClientRect();
+    const menuHeight = menu.scrollHeight || parseFloat(getComputedStyle(menu).maxHeight) || 280;
+    const spaceBelow = window.innerHeight - inputRect.bottom;
+    const spaceAbove = inputRect.top;
+    const openUpward = spaceBelow < menuHeight && spaceAbove > spaceBelow;
+    wrap.classList.toggle('open-upward', openUpward);
+  }
+
+  /**
+   * Tooltip tự viết cho ô multiselect — thay cho thuộc tính `title` mặc định của trình
+   * duyệt (delay hiện ~1-1.5s, không tùy chỉnh được). Chỉ 1 phần tử dùng chung cho mọi ô,
+   * tạo lười (lazy) khi cần dùng lần đầu.
+   */
+  function ensureTooltipEl() {
+    if (!tooltipEl) {
+      tooltipEl = document.createElement('div');
+      tooltipEl.className = 'mini-tooltip';
+      document.body.appendChild(tooltipEl);
+    }
+    return tooltipEl;
+  }
+
+  function positionTooltip(el, input) {
+    const rect = input.getBoundingClientRect();
+    const tipRect = el.getBoundingClientRect();
+    let left = rect.left;
+    const maxLeft = window.innerWidth - tipRect.width - 8;
+    if (left > maxLeft) left = Math.max(8, maxLeft);
+    let top = rect.bottom + 6;
+    if (top + tipRect.height > window.innerHeight) top = rect.top - tipRect.height - 6;
+    el.style.left = `${left}px`;
+    el.style.top = `${top}px`;
+  }
+
+  function showTooltip(input) {
+    const text = input.dataset.tooltip;
+    if (!text) return;
+    // Chỉ hiện khi chữ thực sự bị cắt (tránh tooltip thừa lúc ô đủ chỗ hiển thị hết).
+    if (input.scrollWidth <= input.clientWidth + 1) return;
+    const el = ensureTooltipEl();
+    el.textContent = text;
+    el.classList.add('show');
+    positionTooltip(el, input);
+  }
+
+  function hideTooltip() {
+    if (tooltipEl) tooltipEl.classList.remove('show');
+  }
+
+  function bindTooltipEvents() {
+    document.addEventListener('mouseover', event => {
+      const input = event.target.closest('.multiselect-input');
+      if (!input) return;
+      clearTimeout(tooltipTimer);
+      tooltipTimer = setTimeout(() => showTooltip(input), TOOLTIP_SHOW_DELAY);
+    });
+
+    document.addEventListener('mouseout', event => {
+      if (!event.target.closest('.multiselect-input')) return;
+      clearTimeout(tooltipTimer);
+      hideTooltip();
+    });
+
+    // Ẩn tooltip ngay khi mở dropdown / gõ tìm / chọn lại — tránh đè lên menu.
+    document.addEventListener('focusin', event => {
+      if (event.target.closest('.multiselect-input')) hideTooltip();
+    });
+    window.addEventListener('scroll', hideTooltip, true);
+    window.addEventListener('resize', hideTooltip);
   }
 
   function bindEvents() {
@@ -167,6 +236,7 @@
         if (item !== wrap) item.classList.remove('open');
       });
       wrap.classList.add('open');
+      positionMultiselectMenu(wrap);
       input.select();
     });
 
@@ -182,6 +252,15 @@
 
     document.addEventListener('mousedown', event => {
       if (event.target.closest('.multiselect-menu')) event.stopPropagation();
+    });
+
+    document.addEventListener('click', event => {
+      const clearBtn = event.target.closest('.multiselect-clear');
+      if (!clearBtn) return;
+      event.stopPropagation();
+      const wrap = clearBtn.closest('.multiselect');
+      if (!wrap || wrap.classList.contains('is-locked')) return;
+      clearMultiSelect(wrap);
     });
 
     $('#tableBody').addEventListener('click', event => {
@@ -243,29 +322,46 @@
     updateMultiSelectText(wrap);
   }
 
+  /** Xóa toàn bộ lựa chọn của đúng 1 ô lọc (nút X — mục 5), dùng chung cho mọi ô multiselect. */
+  function clearMultiSelect(wrap) {
+    const key = wrap.dataset.filter;
+    state.filters[key] = [];
+    wrap.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.checked = false;
+      input.indeterminate = false;
+    });
+    updateMultiSelectText(wrap);
+  }
+
   function getOptionValues(filterKey) {
     if (filterKey === 'units') return data.getUnique('unit');
     if (filterKey === 'leaders') return data.getUnique('assigner');
     if (filterKey === 'assignees') return data.getUnique('assignee');
     if (filterKey === 'statuses') return data.STATUSES;
-    if (filterKey === 'situations') return data.SITUATIONS.map(item => item.key);
     return [];
   }
 
   function getOptionLabel(filterKey, value) {
-    if (filterKey === 'situations') {
-      return data.SITUATIONS.find(item => item.key === value)?.label || value;
-    }
     return value;
   }
 
+  /** Ô lọc bị khóa khi đang xem Báo cáo chi tiết qua drill-down đúng theo dimension đó
+   *  (drill từ Đơn vị → khóa ô Đơn vị; drill từ Lãnh đạo → khóa ô Lãnh đạo). */
+  function getLockedFilterKey() {
+    if (!state.drillDown) return null;
+    return state.drillDown.groupBy === 'unit' ? 'units' : 'leaders';
+  }
+
   function renderMultiSelects() {
+    const lockedKey = getLockedFilterKey();
     document.querySelectorAll('.multiselect').forEach(wrap => {
       const key = wrap.dataset.filter;
       const menu = wrap.querySelector('.multiselect-menu');
+      const input = wrap.querySelector('.multiselect-input');
       const selected = state.filters[key] || [];
       const values = getOptionValues(key);
       const allChecked = selected.length === values.length && selected.length > 0;
+      const isLocked = key === lockedKey;
 
       menu.innerHTML =
         `<label class="select-all"><input type="checkbox" data-select-all ${allChecked ? 'checked' : ''}> Chọn tất cả</label>` +
@@ -274,6 +370,12 @@
           const checked = selected.includes(value) ? 'checked' : '';
           return `<label class="multi-option"><input type="checkbox" value="${escapeHtml(value)}" ${checked}> <span>${escapeHtml(label)}</span></label>`;
         }).join('');
+
+      if (input) {
+        input.disabled = isLocked;
+      }
+      wrap.classList.toggle('is-locked', isLocked);
+      if (isLocked) wrap.classList.remove('open');
 
       updateMultiSelectText(wrap);
     });
@@ -311,21 +413,34 @@
     const key = wrap.dataset.filter;
     const values = state.filters[key] || [];
     const input = wrap.querySelector('.multiselect-input');
+    const clearBtn = wrap.querySelector('.multiselect-clear');
     if (!input) return;
     const allValues = getOptionValues(key);
     const placeholder = FILTER_PLACEHOLDERS[key] || 'Tất cả';
+
+    // Nút X: chỉ hiện khi đang có lựa chọn và ô không bị khóa theo drill-down (mục 5).
+    const hasSelection = values.length > 0;
+    if (clearBtn) clearBtn.hidden = !hasSelection || wrap.classList.contains('is-locked');
+
+    // Nội dung tooltip: ô bị khóa (drill-down) ưu tiên hiển thị lý do khóa; còn lại hiển thị
+    // đầy đủ giá trị đang chọn (đề phòng bị CSS cắt bớt bằng dấu … khi ô quá hẹp).
+    const lockedTooltip = wrap.classList.contains('is-locked') ? 'Đã khóa theo báo cáo chi tiết đang xem' : '';
 
     // Chọn hết hoặc chưa chọn → placeholder gốc (Tất cả …)
     if (!values.length || values.length === allValues.length) {
       input.value = '';
       input.placeholder = placeholder;
+      input.dataset.tooltip = lockedTooltip;
       return;
     }
     if (values.length === 1) {
       input.value = getOptionLabel(key, values[0]);
+      input.dataset.tooltip = lockedTooltip || input.value;
       return;
     }
     input.value = `Đã chọn ${values.length} mục`;
+    // Giá trị có thể dài hơn ô hiển thị (bị CSS cắt bằng dấu …) — tooltip cho xem đủ khi hover.
+    input.dataset.tooltip = lockedTooltip || values.map(value => getOptionLabel(key, value)).join(', ');
   }
 
   function applyFilters() {
@@ -356,14 +471,12 @@
     const showUnit = isStatistics ? state.activeTab === 'unit' : true;
     const showLeader = isStatistics ? state.activeTab === 'leader' : true;
     const showDetailFilters = !isStatistics;
-    const showSituation = showDetailFilters && getActiveMetric() === 'total';
 
     const map = {
       unitFilterGroup: showUnit,
       leaderFilterGroup: showLeader,
       statusFilterGroup: showDetailFilters,
-      assigneeFilterGroup: showDetailFilters,
-      situationFilterGroup: showSituation
+      assigneeFilterGroup: showDetailFilters
     };
 
     Object.entries(map).forEach(([id, show]) => {
@@ -397,9 +510,18 @@
     renderTable();
   }
 
+  /** Bảng Thống kê chỉ hiện đúng 1 ô lọc theo dimension đang xem (Đơn vị hoặc Lãnh đạo
+   *  Tỉnh — xem SPECS.md 3.1). Vì vậy khi tính dữ liệu phải bỏ qua filter của dimension
+   *  không hiển thị, tránh việc đổi tab vẫn còn dính filter cũ của tab trước. */
   function getStatisticsRows() {
+    const effectiveFilters = { ...state.filters };
+    if (state.activeTab === 'unit') {
+      effectiveFilters.leaders = [];
+    } else {
+      effectiveFilters.units = [];
+    }
     return data.aggregateStats(
-      data.getFilteredDirectives(state.filters),
+      data.getFilteredDirectives(effectiveFilters),
       state.activeTab === 'unit' ? 'unit' : 'assigner'
     );
   }
@@ -456,7 +578,8 @@
         : `<tr class="detail-row">${detailKeys.map(key => {
             const def = DETAIL_COLUMN_DEFS[key];
             const raw = key === 'stt' ? def.value(row, start + index) : def.value(row);
-            const cellClass = [`col-${key}`, def.danger ? 'cell-danger' : ''].filter(Boolean).join(' ');
+            const isOverdueDueDate = key === 'dueDate' && getActiveMetric() === 'total' && row.onTimeStatus === 'Quá hạn';
+            const cellClass = [`col-${key}`, (def.danger || isOverdueDueDate) ? 'cell-danger' : ''].filter(Boolean).join(' ');
             return `<td class="${cellClass}">${escapeHtml(raw)}</td>`;
           }).join('')}</tr>`
       )).join('')

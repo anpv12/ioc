@@ -202,10 +202,21 @@
     const list = [];
     let id = 1;
     const year = 2026;
+
+    // Tháng 8: đảm bảo mỗi đơn vị (80 đơn vị) có tối thiểu 8 chỉ đạo (Tổng nhận).
+    // AUG_UNIT_BASE * UNITS.length = số dòng tối thiểu để mọi đơn vị đạt ngưỡng 8;
+    // cộng thêm phần dư để có đơn vị vượt mốc, dữ liệu đa dạng hơn.
+    const AUG_UNIT_BASE = 8;
+    const AUG_COUNT = AUG_UNIT_BASE * UNITS.length + 60;
+    // Số chỉ đạo tháng 8 bị cưỡng bức "Quá hạn — chưa xử lý" (hạn xử lý trước hôm nay),
+    // rải đều theo cả 4 lãnh đạo (LEADERS[index % 4]) lẫn 40 đơn vị đầu tiên
+    // (UNITS[index % 80]) để đảm bảo mọi lãnh đạo và nhiều đơn vị đều có dữ liệu quá hạn.
+    const AUG_FORCED_OVERDUE = 40;
+
     const monthCounts = {
       1: 8, 2: 8, 3: 10, 4: 10, 5: 12, 6: 12,
       7: 50,
-      8: 100,
+      8: AUG_COUNT,
       9: 10, 10: 8, 11: 8, 12: 8
     };
 
@@ -214,19 +225,41 @@
       const count = monthCounts[month];
       const monthText = pad2(month);
       for (let index = 0; index < count; index += 1) {
-        const issueDay = Math.min(1 + (index % 15) * 2, 26);
-        const dueDay = Math.min(issueDay + 6 + (index % 4), 28);
-        const status = STATUSES[(index + month) % STATUSES.length];
-        const overdue = index % 4 === 0;
-        const unit = month === 7
+        let issueDay = Math.min(1 + (index % 15) * 2, 26);
+        let dueDay = Math.min(issueDay + 6 + (index % 4), 28);
+        let status = STATUSES[(index + month) % STATUSES.length];
+
+        const isForcedOverdueAug = month === 8 && index < AUG_FORCED_OVERDUE;
+        if (isForcedOverdueAug) {
+          // Hạn xử lý gấp (ngày 2) — đã trôi qua so với todayIso (ngày 3) — tạo case
+          // "Quá hạn — chưa xử lý" thật trong tháng hiện tại. Loại trừ "Đã kết thúc"
+          // để chắc chắn rơi đúng nhánh chưa xử lý.
+          issueDay = 1;
+          dueDay = 2;
+          status = STATUSES[index % (STATUSES.length - 1)];
+        }
+
+        const dueDate = `${year}-${monthText}-${pad2(dueDay)}`;
+
+        // Đơn vị: tháng 7 và tháng 8 rải đều tuần hoàn theo index % 80 để mọi đơn vị
+        // đều nhận đủ số lượng; các tháng khác rải theo công thức chung.
+        const unit = (month === 7 || month === 8)
           ? UNITS[index % UNITS.length]
           : UNITS[(index * 3 + month * 5) % UNITS.length];
 
+        // Chỉ đạo ĐÃ kết thúc: xác định đúng/trễ hạn dựa trên completedDate so với dueDate.
+        // Chỉ đạo CHƯA kết thúc: chỉ tính là Quá hạn nếu dueDate đã trôi qua so với hôm nay
+        // (todayIso) — bắt buộc để cột "Số ngày quá hạn" (dueDate → todayIso) tính ra được.
+        const completedLate = index % 3 === 0;
         let completedDate = '';
+        let onTimeStatus;
         if (status === 'Đã kết thúc') {
-          const completeOffset = overdue ? dueDay + 2 + (index % 5) : Math.max(issueDay + 1, dueDay - (index % 3));
+          const completeOffset = completedLate ? dueDay + 2 + (index % 5) : Math.max(issueDay + 1, dueDay - (index % 3));
           const cDay = Math.min(completeOffset, 28);
           completedDate = `${year}-${monthText}-${pad2(cDay)}`;
+          onTimeStatus = completedLate ? 'Quá hạn' : 'Đúng hạn';
+        } else {
+          onTimeStatus = dueDate < todayIso ? 'Quá hạn' : 'Đúng hạn';
         }
 
         list.push({
@@ -238,10 +271,10 @@
           assigner: LEADERS[index % LEADERS.length],
           assignee: ASSIGNEES[(index + month) % ASSIGNEES.length],
           issueDate: `${year}-${monthText}-${pad2(issueDay)}`,
-          dueDate: `${year}-${monthText}-${pad2(dueDay)}`,
+          dueDate,
           completedDate,
           status,
-          onTimeStatus: overdue ? 'Quá hạn' : 'Đúng hạn'
+          onTimeStatus
         });
         id += 1;
       }
