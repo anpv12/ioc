@@ -1,123 +1,159 @@
 # Báo cáo & Thống kê Chỉ đạo (Quản trị)
 
 ## 1. Mục tiêu
-Lọc theo kỳ / đơn vị / lãnh đạo → bảng tổng hợp (theo đơn vị hoặc lãnh đạo) → bấm số liệu xem chi tiết → xuất Excel.
+Lọc theo khoảng ngày tạo / đơn vị / lãnh đạo → bảng tổng hợp → bấm số liệu xem chi tiết (báo cáo) → xuất Excel.
+
+Prototype UI (mock JS), chưa nối backend.
 
 ## 2. Tệp
 - `index.html` — cấu trúc
 - `style.css` — style màn
-- `js/state.js` — mock data, bộ lọc, aggregate
-- `js/ui.js` — UI, render, Excel
+- `js/state.js` — mock data (80 đơn vị, ~244 chỉ đạo: tháng 7 = 50 dòng, tháng 8 = 100 dòng), aggregate
+- `js/ui.js` — UI, autocomplete, render bảng, xuất Excel
+
+Phụ thuộc shared (không sửa trong màn này): `../shared/admin-base.css`, `../shared/admin-shared.js`  
+CDN: Font Awesome 6.5, Flatpickr (+ locale vi), xlsx-js-style.
 
 ---
 
 ## 3. Logic chức năng
 
+### 3.0 User Flow
+1. Vào màn → view **Thống kê**, filter mặc định tháng hiện tại, tab Theo đơn vị.
+2. Đổi tab / chỉnh filter → Lọc → bảng thống kê (sort Tổng nhận DESC).
+3. Bấm ô số → **drill-down** sang Báo cáo chi tiết (filter dimension + metric; cột theo metric).
+4. Ở chi tiết: lọc thêm / phân trang / Xuất Excel.
+5. Quay lại thống kê → restore filter trước khi drill-down.
+
+Báo cáo chi tiết **chỉ** vào được qua drill-down (không có entry khác).
+
 ### 3.1 Bộ lọc
-**Kỳ báo cáo:** Từ ngày–Đến ngày | Ngày hiện tại | Tuần | **Tháng (mặc định)** | Quý | Năm  
-- Đổi kỳ → tự điền Tháng/Tuần/Quý + Năm theo hiện tại, tính Từ/Đến ngày.  
-- Ẩn ô Tháng/Tuần/Quý + Năm khi chọn “Từ ngày–Đến ngày” hoặc “Ngày hiện tại”.  
-- “Ngày hiện tại” → khóa 2 ô ngày.  
-- Giá trị Tuần/Tháng/Quý đã chọn không bị ghi đè về mặc định khi mở lại.
+**Từ ngày tạo chỉ đạo / Đến ngày tạo chỉ đạo:** Flatpickr (vi), `dd/mm/yyyy` — theo `issueDate`. Mặc định: đầu → cuối tháng hiện tại.
 
-**Từ ngày / Đến ngày:** Flatpickr (vi), `dd/mm/yyyy`. Kỳ sẵn có ghi đè; “Từ–Đến” chọn thủ công, bấm **Lọc** mới áp dụng.
+**Autocomplete** (Đơn vị, Lãnh đạo/Người giao, Trạng thái, Người thực hiện, Tình trạng):
+- Gõ tìm trên ô input (normalize bỏ dấu).
+- Checkbox + "Chọn tất cả" chỉ áp dụng mục đang hiện.
+- Label: chưa chọn **hoặc chọn hết** → placeholder `Tất cả …`; 1 mục → tên; nhiều (chưa hết) → `Đã chọn N mục`.
 
-**Đơn vị / Lãnh đạo:** Multiselect (checkbox + tìm kiếm, không phân biệt hoa thường, chuẩn hóa tiếng Việt).  
-- Tab Theo đơn vị → chỉ Đơn vị; Theo lãnh đạo → chỉ Lãnh đạo; chi tiết → cả hai.  
-- Nút: chưa chọn → `Tất cả …`; 1 mục → tên; nhiều → `Đã chọn N mục`.  
-- “Chọn tất cả” chỉ tác động checkbox dữ liệu (không tính ô tìm).
+**Thứ tự:** Ngày tạo (1) → Đơn vị (2) → Người giao (3) → Người thực hiện (4) → Trạng thái (5) → Tình trạng (6).
+
+**Báo cáo chi tiết chỉ vào được qua drill-down** (bấm 1 ô số ở bảng Thống kê) — không có đường vào trực tiếp khác. Vì vậy filter/cột phụ thuộc đúng 1 chỉ số đang xem:
+
+| View | Filter hiện |
+|---|---|
+| Thống kê – Theo đơn vị | Đơn vị |
+| Thống kê – Theo lãnh đạo | Lãnh đạo Tỉnh |
+| Báo cáo chi tiết (mọi chỉ số) | Đơn vị, Người giao, Người thực hiện, Trạng thái |
+| Báo cáo chi tiết – chỉ số **Tổng chỉ đạo** | + **Tình trạng** |
+| Báo cáo chi tiết – 4 chỉ số còn lại (Đúng hạn/Trễ hạn/Còn hạn/Quá hạn) | không có Tình trạng (đã cố định theo chỉ số đang xem) |
+
+**Không có filter riêng cho:** Hạn xử lý, Ngày hoàn thành, Số ngày trễ hạn, Số ngày quá hạn — 4 field này chỉ tồn tại dưới dạng **cột** ở Báo cáo chi tiết (mục 3.4), không có ô lọc tương ứng.
+
+**Tình trạng** (derive từ `status` + `onTimeStatus`, không lưu riêng):
+
+| Key | Điều kiện | Nhãn |
+|-----|-----------|------|
+| `on_time_completed` | Đã kết thúc ∧ Đúng hạn | Đã xử lý đúng hạn |
+| `overdue_completed` | Đã kết thúc ∧ Quá hạn | Đã xử lý trễ hạn |
+| `on_time_not_completed` | Chưa kết thúc ∧ Đúng hạn | Đang xử lý còn hạn |
+| `overdue_not_completed` | Chưa kết thúc ∧ Quá hạn | Đang xử lý quá hạn |
 
 | Nút | Hành vi |
-|-----|---------|
-| Lọc | Áp dụng khoảng ngày, trang 1, render |
-| Đặt lại | Kỳ=Tháng hiện tại, bỏ chọn ĐV/LĐ, trang 1 |
+|---|---|
+| Lọc | Áp dụng filter, trang 1 |
+| Đặt lại | Về tháng hiện tại, xóa filter, trang 1 |
 
-### 3.2 Tab
-Chỉ hiện khi view thống kê. Đổi tab → trang 1, render theo chiều tương ứng.
+**Drill-down:** lưu filter hiện tại (`baseFilters`), gán dimension (unit/leader), gán `situations = [metric]` nếu metric ≠ `total`.  
+**Quay lại thống kê:** restore `baseFilters`, xóa drill-down.
+
+### 3.2 Tab thống kê
+Chỉ hiện ở view Thống kê (Theo đơn vị / Theo lãnh đạo Tỉnh). Đổi tab → trang 1.
 
 ### 3.3 Bảng thống kê
 Cột: **STT | Tên ĐV/LĐ | Tổng nhận | Đúng hạn | Trễ hạn | Còn hạn | Quá hạn**  
-Header 2 tầng: nhóm **Đã xử lý** (Đúng/Trễ hạn) + **Đang xử lý** (Còn/Quá hạn).
+Header 2 tầng: **Đã xử lý** (Đúng hạn, Trễ hạn) | **Đang xử lý** (Còn hạn, Quá hạn). Sort mặc định: Tổng nhận DESC. Ô số = drill-down sang báo cáo chi tiết.
 
-| Cột | Điều kiện |
-|-----|-----------|
-| Tổng nhận | Mọi chỉ đạo thỏa lọc |
-| Đúng hạn | Đã kết thúc ∧ Đúng hạn |
-| Trễ hạn | Đã kết thúc ∧ Quá hạn |
-| Còn hạn | ≠ Đã kết thúc ∧ Đúng hạn |
-| Quá hạn | ≠ Đã kết thúc ∧ Quá hạn |
+### 3.4 Bảng báo cáo chi tiết
+Cột đầy đủ: **STT | Nội dung | Đơn vị | Người giao | Người thực hiện | Ngày tạo chỉ đạo | Hạn xử lý | Ngày hoàn thành | Số ngày trễ hạn | Số ngày quá hạn | Trạng thái | Tình trạng**
 
-- Nhóm theo `unit` hoặc `assigner`. Ô số = nút drill-down.  
-- Sort mặc định: Tổng nhận ↓. Click header đổi tăng/giảm.
+Không phải cột nào cũng luôn hiện — **ẩn/hiện đúng theo 1 chỉ số đang drill-down** (matrix bắt buộc tuân thủ):
 
-### 3.4 Chi tiết (drill-down)
-Bấm ô số → lọc đúng ĐV/LĐ + metric → bảng chi tiết, sort Ngày ban hành ↓, trang 1.  
-Cột: **STT | Mã | Nội dung | Đơn vị | Người giao | Người xử lý | Ngày BH | Hạn XL | Trạng thái | Đúng/Quá hạn**  
-**Quay lại** → khôi phục filter trước drill-down, sort Tổng nhận ↓, trang 1.
+| Chỉ số drill-down | Ngày hoàn thành | Số ngày trễ hạn | Số ngày quá hạn | Tình trạng |
+|---|:---:|:---:|:---:|:---:|
+| Tổng chỉ đạo | Hiện | Ẩn | Ẩn | Hiện |
+| Đúng hạn (đã xử lý) | Hiện | Ẩn | Ẩn | Ẩn |
+| Trễ hạn (đã xử lý) | Hiện | Hiện | Ẩn | Ẩn |
+| Còn hạn (đang xử lý) | Ẩn | Ẩn | Ẩn | Ẩn |
+| Quá hạn (đang xử lý) | Ẩn | Ẩn | Hiện | Ẩn |
+
+(STT, Nội dung, Đơn vị, Người giao, Người thực hiện, Ngày tạo chỉ đạo, Hạn xử lý, Trạng thái: luôn hiện ở mọi chỉ số.)
+
+**Căn lề bảng chi tiết:**
+- Header (`<th>`): **luôn căn giữa** mọi cột.
+- Nội dung (`<td>`):
+  - **Căn giữa:** STT, Ngày tạo chỉ đạo, Hạn xử lý, Ngày hoàn thành, Số ngày trễ hạn, Số ngày quá hạn.
+  - **Căn trái:** Nội dung, Đơn vị, Người giao, Người thực hiện, Trạng thái, Tình trạng.
+
+- Sort mặc định: Ngày tạo mới nhất trước (`issueDate` DESC).
+- "Số ngày trễ hạn" / "Số ngày quá hạn": tô đỏ text (`#dc2626`).
+- Công thức:
+  - Số ngày trễ hạn = Ngày hoàn thành − Hạn xử lý (đã hoàn thành nhưng trễ; chỉ giá trị > 0).
+  - Số ngày quá hạn = Ngày hiện tại − Hạn xử lý (chưa hoàn thành và đã quá hạn; chỉ giá trị > 0).
+  - Không áp dụng → `—`.
+- Nhãn cột Tình trạng dùng chung 1 nguồn với filter "Tình trạng".
+- Độ rộng cột theo trọng số riêng từng cột qua `<colgroup>` sinh động (không chia đều, không dùng `nth-child` vì số cột đổi theo chỉ số drill-down).
 
 ### 3.5 Phân trang
-10 / 20 / 50 dòng (mặc định 10). Đổi size hoặc sort → trang 1.  
-Text: `Hiển thị a–b trong tổng số N bản ghi`.
+10 / 20 / 50 (mặc định 10).
 
 ### 3.6 Xuất Excel
-Dòng 1: tiêu đề (merge). Dòng 2: Từ–Đến ngày (merge). Từ dòng 3: data theo view.  
-File: `thong-ke-chi-dao.xlsx` | `bao-cao-chi-tiet-chi-dao.xlsx`.
+Đồng bộ tuyệt đối với bảng đang hiển thị (cùng 1 nguồn cột — xem mục 3.4).
+- Dòng 1: tiêu đề merge, in đậm, nền `#BAE6FD`
+- Dòng 2: Từ/Đến ngày tạo, nền `#E0F2FE`
+- Header: chữ trắng, nền `#0284C7`
+- Data: xen kẽ `#F0F9FF` / trắng; **không wrap**; cột auto width theo nội dung
+- File: `thong-ke-chi-dao.xlsx` | `bao-cao-chi-tiet-chi-dao.xlsx`
 
 ### 3.7 Dữ liệu
-**Trạng thái:** Chờ phân công | Đang xử lý | Đã có báo cáo | Chờ phê duyệt | Đã kết thúc  
-**Đúng/Quá hạn:** Đúng hạn | Quá hạn  
-Mock: 40 chỉ đạo (4–7/2026). Nối API chỉ thay nguồn, giữ cách đếm cột.
+Mock: ~244 chỉ đạo (tháng **7/2026: 50 dòng**, tháng **8/2026: 100 dòng**); **80 đơn vị** tên thực tế.  
+**status (5):** Chờ phân công | Đang xử lý | Đã có báo cáo | Chờ phê duyệt | Đã kết thúc.  
+**Field chính:** `issueDate`, `unit`, `assigner`, `assignee`, `status`, `onTimeStatus` (`Đúng hạn`|`Quá hạn`), `dueDate`, `completedDate`, `title`.
+
+**Metrics:** `total` | `on_time_completed` | `overdue_completed` | `on_time_not_completed` | `overdue_not_completed`
 
 ---
 
-## 4. Màu & kích thước
+## 4. Mã màu
 
 | Mã | Dùng |
-|----|------|
-| `#0284c7` | Primary: nút Lọc/Xuất, tab active, ô số, trang active, ngày chọn, focus viền ô lọc |
-| `#dbeafe` | Hover ô số liệu / ô bảng (chữ giữ `#0284c7` / `#334155`) |
-| `#f0f9ff` | Header bảng, hover hàng, hover item menu, soft primary |
-| `#fff` | Nền panel, input, nút phụ, menu |
-| `#e2e8f0` / `#cbd5e1` | Viền panel / ô lọc / bảng / menu |
-| `#1e293b` / `#334155` | Chữ chính |
-| `#64748b` / `#94a3b8` | Chữ phụ, icon, placeholder, empty |
-| `#f8fafc` | Hàng chẵn chi tiết; nền ô disabled |
+|---|---|
+| `#0284c7` | Primary: nút, tab, ô số, focus, Excel header |
+| `#f1f5f9` | Header bảng |
+| `#e0f2fe` | Hover ô; hover nút Đặt lại |
+| `#f8fafc` | Hover dòng |
+| `#fff` / `#cbd5e1` | Nền / viền |
+| `#334155` | Chữ chính |
+| `#dc2626` | Chữ đỏ — cột Số ngày trễ hạn / Số ngày quá hạn |
+| `#047857` + `#10b981` | Header nhóm "Đã xử lý": Đúng hạn / Trễ hạn (bảng Thống kê) |
+| `#b91c1c` + `#f87171` | Header nhóm "Đang xử lý": Còn hạn / Quá hạn (bảng Thống kê) |
 
-### Style chung ô lọc
-Áp dụng thống nhất cho: period-picker, input ngày, multiselect trigger, select (nếu có).
+## 5. Căn chỉnh trang (layout)
 
-| Trạng thái | Style |
-|------------|--------|
-| Mặc định | Cao 40px, radius 6px, border `#cbd5e1`, nền `#fff`, chữ `#334155`, font 12px, pad ngang 10px |
-| Hover / Focus / Mở | Viền `#0284c7`, không box-shadow |
-| Disabled | Nền `#f8fafc`, chữ `#64748b`, cursor not-allowed |
-| Placeholder | `#94a3b8`, font 12px, weight 400 |
-| Label nhóm lọc | `#334155`, font 12px, weight 500 |
+### Font
+- `--admin-fs-xs` → **12px** (ô lọc, bảng, menu, calendar)
+- Tiêu đề bảng: 16px; header thống kê: 11px; phân trang: 11px
 
-**Menu dropdown** (period / multiselect / panel tháng Flatpickr):  
-border `#cbd5e1`, radius 6px, nền `#fff`, shadow `0 6px 16px rgb(15 23 42 / 12%)`, pad 6px; item cao ~32px, pad ngang 8px, font 12px `#334155`; hover nền `#f0f9ff` chữ `#0284c7`; mở/đóng fade + slide 160ms.
+### Ô lọc / Autocomplete
+- **Kích thước ô:** cao **40px**, radius 6px, border `#cbd5e1`, font 12px.
+- Menu: max-height 280px, max-width `min(420px, calc(100vw - 48px))`.
+- Layout: CSS Grid 6 cột, gap cố định; Đơn vị `span 2` (= 2 ô + gap). Responsive: 2 cột ≤900px, 1 cột ≤700px.
 
-**Nút lọc:** Lọc / Xuất — nền + viền `#0284c7`, chữ trắng, cao 30px. Đặt lại / phụ — nền `#fff`, viền `#cbd5e1`, chữ `#334155`, cao 30px.
+### Bảng
+- `table-layout: fixed`, border cột đầy đủ, nội dung wrap trên UI.
+- Bảng Thống kê: giữ nguyên độ rộng cố định theo `nth-child` (số cột luôn cố định).
+- Bảng chi tiết: độ rộng cột theo trọng số riêng qua `<colgroup>` sinh động (không dùng `nth-child` vì số cột đổi theo chỉ số drill-down).
+- **Căn lề bảng chi tiết:** header luôn căn giữa; ô nội dung text căn trái; ô STT / ngày tháng / số ngày căn giữa (chi tiết mục 3.4).
 
-### Bảng & khác
-
-| Thành phần | Size |
-|------------|------|
-| Ô body bảng | cao 35px, pad 2×6, font 12px |
-| Header thống kê (merge) | cao 26–28px, font 11px, pad 1×4 |
-| Cột STT | 42px, center |
-| Cột tên ĐV/LĐ (thống kê) | 18% |
-| Cột Mã chỉ đạo (chi tiết) | 120px cố định |
-| Nội dung (chi tiết) | min 340px, nowrap; bảng min 1550px |
-| Empty | `Không có dữ liệu phù hợp.` `#64748b` |
-| Placeholder ngày / search | `dd/mm/yyyy` · `Tìm kiếm...` |
-
-### Header đúng/trễ hạn (chỉ header, số liệu giữ primary)
-- **Đúng hạn**, **Còn hạn**: nền `#ecfdf5`, chữ `#047857`, gạch dưới `#10b981`.  
-- **Trễ hạn**, **Quá hạn**: nền `#fef2f2`, chữ `#b91c1c`, gạch dưới `#f87171`.  
-- Ô số liệu: đồng màu primary `#0284c7` (không tô xanh/đỏ từng số).
-
-### Flatpickr
-- Calendar: border `#cbd5e1`, radius 6px, font 12px, shadow như menu app.  
-- Header tháng / năm: cùng size (cao 28px), font 12px weight 500, màu `#334155`, **không border**, nền trong suốt; hover nền `#f0f9ff` chữ `#0284c7`. Chọn tháng bằng dropdown mặc định (vẫn chọn được).  
-- Ngày chọn: nền `#0284c7`; hover ngày: `#f0f9ff`.
+### Ghi chú BE
+Sort thống kê: Tổng nhận DESC. Chi tiết: `issueDate` DESC. Lọc thời gian theo **ngày tạo**. Công thức Số ngày trễ hạn / Số ngày quá hạn tính như mục 3.4.  
+Khi nối API: thay `mockDirectives`, `getFilteredDirectives`, `aggregateStats`; đồng bộ format ngày `Y-m-d`.
