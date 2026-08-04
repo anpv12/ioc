@@ -1880,7 +1880,7 @@ window.previewFile = function (fileName) {
 document.getElementById('btnToggleDrawer').addEventListener('click', () => {
   const roleSelect = document.getElementById('mockRoleSelect');
   if (roleSelect && roleSelect.value === 'leader_department') {
-    window.location.href = '../Quản trị/xu-ly-chi-dao/index.html';
+    window.location.href = '../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/xu-ly-chi-dao/index.html';
   } else {
     toggleDrawer();
   }
