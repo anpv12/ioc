@@ -18,7 +18,7 @@
 ### 1.4. Form Chi tiết Hồ sơ Chỉ đạo (Modal Popup)
 - **Thông tin chỉ đạo**: Hiển thị nội dung chỉ đạo, hạn xử lý, người giao, đường dẫn xem hình ảnh và danh sách tệp đính kèm văn bản. Bấm vào tệp để xem trực tiếp hoặc tải về.
 - **Khu vực Phân công / Báo cáo theo Vai trò**:
-  - *Lãnh đạo (bước Chờ phân công)*: Chọn Chuyên viên thực hiện và bấm *Chuyển xử lý*.
+  - *Lãnh đạo (bước Chờ phân công)*: Chọn Chuyên viên thực hiện, nhập *Nội dung xử lý* (tùy chọn, không bắt buộc) và bấm *Chuyển xử lý*.
   - *Chuyên viên (bước Đang xử lý)*: Nhập nội dung báo cáo kết quả, đính kèm tệp và bấm *Trình phê duyệt*. Khi bấm trình phê duyệt, hệ thống tự động lưu hình ảnh màn hình tại thời điểm đó vào báo cáo.
   - *Lãnh đạo (bước Đã có báo cáo)*: Xem xét báo cáo, chọn *Trình phê duyệt* (gửi Tỉnh) hoặc *Trả về* (yêu cầu làm lại).
 

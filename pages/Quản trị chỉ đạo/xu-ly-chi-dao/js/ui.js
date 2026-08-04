@@ -496,6 +496,10 @@
             </div>
           </div>
           <div id="assigneeSelectError" class="assignee-select-error" style="display: none;">* Vui lòng chọn người xử lý.</div>
+          <div class="process-content-group" style="margin-top: 10px;">
+            <div class="info-block-header" style="margin-bottom: 6px; font-weight: 500;">Nội dung xử lý</div>
+            <textarea id="processContentInput" class="process-content-textarea" rows="3" placeholder="Nhập nội dung xử lý..."></textarea>
+          </div>
           <div class="assignee-actions-row">
             <button class="btn-primary-action btn-assign-inline" id="btnChuyen" type="button">
               Chuyển xử lý
@@ -1041,6 +1045,10 @@
         }
 
         const assignee = (node.availableAssignees || []).find(a => a.id === selectedVal);
+        const processContentInput = document.getElementById('processContentInput');
+        const processNoteText = processContentInput ? processContentInput.value.trim() : '';
+        const noteDetail = processNoteText ? `Phân công cho ${assignee?.name || ''}: ${processNoteText}` : `Phân công cho ${assignee?.name || ''}`;
+
         showCustomConfirm(
           'Xác nhận',
           'Bạn có chắc chắn muốn chuyển xử lý chỉ đạo này?',
@@ -1058,8 +1066,8 @@
                 stage: 'processing',
                 availableAssignees: [],
                 slaDeadline: node.slaDeadline,
-                notes: '', notesFile: null, subReports: [],
-                history: [{ order: 1, time: new Date().toLocaleString('vi-VN'), actor: 'Lãnh đạo', action: 'Chuyển xử lý', note: `Phân công cho ${assignee.name}` }],
+                notes: processNoteText, notesFile: null, subReports: [],
+                history: [{ order: 1, time: new Date().toLocaleString('vi-VN'), actor: 'Lãnh đạo', action: 'Chuyển xử lý', note: noteDetail }],
                 children: []
               });
             }

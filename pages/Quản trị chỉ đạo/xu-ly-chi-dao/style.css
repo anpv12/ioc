@@ -2033,3 +2033,23 @@ textarea.action-textarea.is-invalid {
   padding: 6px 14px !important;
   font-size: 12.5px !important;
 }
+
+.process-content-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--admin-text);
+  border: 1px solid var(--admin-control-line);
+  border-radius: 6px;
+  background: #ffffff;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  margin-top: 4px;
+}
+
+.process-content-textarea:focus {
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 2px rgba(22, 101, 52, 0.1);
+}
