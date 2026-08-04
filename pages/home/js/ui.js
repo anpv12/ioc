@@ -30,7 +30,7 @@
 
   function pickDefaultRoute() {
     var found = routes.find(function (r) {
-      return r.folder === DEFAULT_FOLDER || r.title === DEFAULT_FOLDER || r.id === 'quản-trị-chỉ-đạo';
+      return r.folder === DEFAULT_FOLDER || r.title === DEFAULT_FOLDER || r.id === 'quan-tri-pm6' || r.id === 'quản-trị-chỉ-đạo';
     });
     return found || routes[0] || null;
   }
@@ -46,7 +46,7 @@
   }
 
   function iconFor(route) {
-    if (route.folder === DEFAULT_FOLDER || route.id === 'quản-trị') return 'fa-solid fa-gear';
+    if (route.folder === DEFAULT_FOLDER || route.id === 'quan-tri-pm6' || route.id === 'quản-trị') return 'fa-solid fa-gear';
     if (route.folder === 'dashboard' || route.id === 'dashboard') return 'fa-solid fa-chart-pie';
     return 'fa-solid fa-file-lines';
   }

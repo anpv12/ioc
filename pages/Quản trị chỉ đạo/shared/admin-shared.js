@@ -71,27 +71,16 @@ function loadSharedLayout(activeNavId, pageTitle) {
     app.insertAdjacentHTML('afterbegin', ADMIN_SIDEBAR_HTML);
   }
 
-  // Lọc hiển thị nhóm menu theo ngữ cảnh (Quản trị chỉ đạo vs Quản trị hệ thống)
-  const sysNavIds = ['nav-quan-tri-quyen', 'nav-quan-tri-phan-quyen', 'nav-quan-ly-chi-dao'];
-  const currentUrl = decodeURIComponent(window.location.href);
-  const isSysModule = sysNavIds.includes(activeNavId) || currentUrl.includes('Quản trị hệ thống');
-
+  // Đảm bảo hiển thị cả 2 nhóm menu cha (Quản trị chỉ đạo & Quản trị hệ thống)
   const adminParent = document.getElementById('adminNavParent');
   const adminChildren = document.getElementById('adminNavChildren');
   const sysParent = document.getElementById('sysNavParent');
   const sysChildren = document.getElementById('sysNavChildren');
 
-  if (isSysModule) {
-    if (adminParent) adminParent.style.display = 'none';
-    if (adminChildren) adminChildren.style.display = 'none';
-    if (sysParent) sysParent.style.display = '';
-    if (sysChildren) sysChildren.style.display = '';
-  } else {
-    if (sysParent) sysParent.style.display = 'none';
-    if (sysChildren) sysChildren.style.display = 'none';
-    if (adminParent) adminParent.style.display = '';
-    if (adminChildren) adminChildren.style.display = '';
-  }
+  if (adminParent) adminParent.style.display = '';
+  if (adminChildren) adminChildren.style.display = '';
+  if (sysParent) sysParent.style.display = '';
+  if (sysChildren) sysChildren.style.display = '';
 
   // Đánh dấu nav-item active
   if (activeNavId) {

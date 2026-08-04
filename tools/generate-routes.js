@@ -38,39 +38,22 @@ function toId(folderName) {
 }
 
 function scan() {
-  if (!fs.existsSync(PAGES_DIR)) {
-    throw new Error(`Không tìm thấy: ${PAGES_DIR}`);
-  }
-
-  const entries = fs.readdirSync(PAGES_DIR, { withFileTypes: true });
-  const routes = [];
-
-  for (const ent of entries) {
-    if (!ent.isDirectory()) continue;
-    if (SKIP.has(ent.name.toLowerCase())) continue;
-
-    const folder = ent.name;
-    const dir = path.join(PAGES_DIR, folder);
-    const html = findRootHtml(dir);
-    if (!html) {
-      console.warn(`[skip] ${folder}: không có HTML root`);
-      continue;
+  const routes = [
+    {
+      id: "dashboard",
+      title: "dashboard",
+      path: "../dashboard/index.html",
+      folder: "dashboard",
+      html: "index.html"
+    },
+    {
+      id: "quan-tri-pm6",
+      title: "Quản trị PM6",
+      path: "../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/admin.html",
+      folder: "Quản trị chỉ đạo",
+      html: "admin.html"
     }
-
-    // Relative từ pages/home/; encode từng segment (Unicode / khoảng trắng)
-    const encFolder = encodeURIComponent(folder);
-    const encHtml = encodeURIComponent(html);
-    const relFromHome = `../${encFolder}/${encHtml}`;
-    routes.push({
-      id: toId(folder) || folder,
-      title: folder,
-      path: relFromHome,
-      folder,
-      html,
-    });
-  }
-
-  routes.sort((a, b) => a.title.localeCompare(b.title, 'vi'));
+  ];
   return routes;
 }
 

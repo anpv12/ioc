@@ -8,17 +8,10 @@ window.GIALAI_ROUTES = [
     "html": "index.html"
   },
   {
-    "id": "quản-trị-chỉ-đạo",
-    "title": "Quản trị chỉ đạo",
+    "id": "quan-tri-pm6",
+    "title": "Quản trị PM6",
     "path": "../Qu%E1%BA%A3n%20tr%E1%BB%8B%20ch%E1%BB%89%20%C4%91%E1%BA%A1o/admin.html",
     "folder": "Quản trị chỉ đạo",
     "html": "admin.html"
-  },
-  {
-    "id": "quản-trị-hệ-thống",
-    "title": "Quản trị hệ thống",
-    "path": "../Qu%E1%BA%A3n%20tr%E1%BB%8B%20h%E1%BB%87%20th%E1%BB%91ng/index.html",
-    "folder": "Quản trị hệ thống",
-    "html": "index.html"
   }
 ];
